@@ -1,4 +1,4 @@
-/* $Id: sCalcPostfix.c,v 1.3 2003-05-28 22:17:33 bcda Exp $
+/* $Id: sCalcPostfix.c,v 1.4 2003-06-11 19:08:12 rivers Exp $
  * Subroutines used to convert an infix expression to a postfix expression
  *
  *      Author:          Bob Dalesio
@@ -282,6 +282,7 @@ static struct expression_element	fetch_string_element = {
 "AA",		0,	0,	OPERAND,	SFETCH,   /* fetch var */
 };
 
+#ifdef vxWorks
 static int strncasecmp(char *s1, char *s2, size_t n)
 {
 	short i;
@@ -291,7 +292,7 @@ static int strncasecmp(char *s1, char *s2, size_t n)
 	}
 	return(0);
 }
-
+#endif
 
 /*
  * sCalcCheck()
