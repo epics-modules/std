@@ -399,7 +399,11 @@ asyncFinish(sseqRecord *pR)
 	return(0);
 }
 
-dbCaCallback putCallbackCB(void *arg)
+/*
+ * compiler doesn't seem to understand that dbCaCallback means pointer to
+ * function returning void, and it wants a return argument.
+  */
+void /* dbCaCallback */ putCallbackCB(void *arg)
 {
         struct link *plink = (struct link *)arg;
 	sseqRecord			*pR = (sseqRecord *)(plink->value.pv_link.precord);
@@ -508,7 +512,7 @@ processCallback(CALLBACK *pCallback)
 			if (sseqRecDebug >= 5)
 				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
 			status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_STRING,
-				&(plinkGroup->s), 1, putCallbackCB, (void *)(&(plinkGroup->lnk)));
+				&(plinkGroup->s), 1, (dbCaCallback) putCallbackCB, (void *)(&(plinkGroup->lnk)));
 			did_putCallback = 1;
 		} else {
 			if (sseqRecDebug >= 5)
@@ -522,7 +526,7 @@ processCallback(CALLBACK *pCallback)
 			if (sseqRecDebug >= 5)
 				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
 			status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_DOUBLE,
-				&(plinkGroup->dov), 1, putCallbackCB, (void *)(&(plinkGroup->lnk)));
+				&(plinkGroup->dov), 1, (dbCaCallback) putCallbackCB, (void *)(&(plinkGroup->lnk)));
 			did_putCallback = 1;
 		} else {
 			if (sseqRecDebug >= 5)
@@ -584,8 +588,10 @@ static void checkLinksCallback(CALLBACK *pCallback)
 
     callbackGetUser(pR, pCallback);
     pdpvt = (struct callbackSeq	*)pR->dpvt;
-    
+
 	if (!interruptAccept) {
+		if (sseqRecDebug >= 10) printf("sseq:checkLinksCB(%s), before interruptAccept\n",
+			pR->name);
 		/* Can't call dbScanLock yet.  Schedule another CALLBACK */
 		pdpvt->pending_checkLinksCB = 1;  /* make sure */
 		callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
@@ -608,6 +614,8 @@ static void checkLinks(sseqRecord *pR)
 
 	pdpvt->linkStat = LINKS_ALL_OK;
 	for (i = 0; i < NUM_LINKS; i++, plinkGroup++) {
+		if (sseqRecDebug >= 10)
+			printf("sseq:checkLinks(%s): checking link %d\n", pR->name, i);
 		plinkGroup->dol_field_type = DBF_unknown;
 		if (plinkGroup->dol.value.pv_link.pvname[0]) {
 			plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
@@ -635,11 +643,20 @@ static void checkLinks(sseqRecord *pR)
 			}
 		}
 	}
-	if (!pdpvt->pending_checkLinksCB && (pdpvt->linkStat == LINKS_NOT_OK)) {
-		/* Schedule another CALLBACK */
-		pdpvt->pending_checkLinksCB = 1;
-		callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
-
+	if (pdpvt->linkStat == LINKS_NOT_OK) {
+		if (!pdpvt->pending_checkLinksCB) {
+			/* Schedule another callback */
+			if (sseqRecDebug >= 10)
+				printf("sseq:checkLinks(%s): scheduling another callback\n", pR->name);
+			pdpvt->pending_checkLinksCB = 1;
+			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
+		} else {
+			/* We need another callback, but one has already been scheduled */
+			if (sseqRecDebug >= 10)
+				printf("sseq:checkLinks(%s): callback already pending\n", pR->name);
+		}
+	} else {
+		if (sseqRecDebug >= 10) printf("sseq:checkLinks(%s): links ok\n", pR->name);
 	}
 }
 
