@@ -10,7 +10,6 @@ SRCS.c += ../devXxHP10895LaserAxis.c
 SRCS.c += ../devXxHeidenhainGpib.c
 SRCS.c += ../devXxKeithleyDMM199Gpib.c
 SRCS.c += ../initHooks.c ../initHooks_debug.c
-SRCS.c += ../module_types.c
 SRCS.c += ../scalerRecord.c ../devScaler.c
 SRCS.c += ../scanparmRecord.c
 SRCS.c += ../serialRecord.c
@@ -84,9 +83,6 @@ SRCS.c += xiahsc.c
 PROD += xia_slit.o
 SRCS.c += xia_slit.c
 
-include ../baseLIBOBJS
-PROD += baseLib
-
 STD_BIN = .
 include ../stdLIBOBJS		#defines STDLIBOBJS
 PROD += stdLib
@@ -103,11 +99,6 @@ SRCS.c += $(LOCAL_SEQOBJS:%.o=%.c)
 include $(TOP)/config/RULES.Vx
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
-#still need this in beta12? inc:: $(INSTALL_INCREC)
 
 stdLib: $(STDLIBOBJS)
 	$(LINK.c) $@ $(STDLIBOBJS)
-
-baseLib: $(BASELIBOBJS)
-	$(LINK.c) $@ $(BASELIBOBJS)
-
