@@ -24,6 +24,8 @@
                    M(n) = M(n-1) - KP * (E(n) - E(n-1))/dT(n), where E(n) is defined
                    as the readback value itself.  This algorithm will seek a maximum
                    if KP is positive and a minimum if KP is negative.
+    06/11/03  MLR  Converted to R3.14.2, OSI.
+    06/11/03  MLR  Converted to R3.14.2, OSI.
  */
 
 
@@ -39,10 +41,6 @@
  *  dT(n)   Time difference between n-1 and n
  */
 
-#include    <vxWorks.h>
-#include    <types.h>
-#include    <stdioLib.h>
-#include    <tickLib.h>
 #include    <alarm.h>
 #include    <dbDefs.h>
 #include    <dbAccess.h>
@@ -51,7 +49,10 @@
 #include    <errMdef.h>
 #include    <recSup.h>
 #include    <devSup.h>
+#include    <epicsTime.h>
+#include    <recGbl.h>
 #include    "epidRecord.h"
+#include    <epicsExport.h>
 
 /* Create DSET */
 static long init_record();
@@ -73,6 +74,7 @@ EPID_SOFT_DSET devEpidSoft = {
     NULL,
     do_pid
 };
+epicsExportAddress(EPID_SOFT_DSET, devEpidSoft);
 
 static long init_record(epidRecord *pepid)
 {
@@ -82,12 +84,12 @@ static long init_record(epidRecord *pepid)
 
 static long do_pid(epidRecord *pepid)
 {
-    unsigned long   ctp;    /*clock ticks previous  */
-    unsigned long   ct;     /*clock ticks       */
+    epicsTimeStamp  ctp;    /*previous time */
+    epicsTimeStamp  ct;     /*current time       */
     float           cval;   /*actual value      */
     float           pcval;  /*previous value of cval */
     float           setp;   /*setpoint          */
-    float           dt;     /*delta time (seconds)  */
+    double          dt;     /*delta time (seconds)  */
     float       kp,ki,kd;   /*gains        */
     float           di;     /*change in integral term */
     float           e=0.;   /*error         */
@@ -115,19 +117,10 @@ static long do_pid(epidRecord *pepid)
     
     /* compute time difference and make sure it is large enough*/
     ctp = pepid->ct;
-    ct = tickGet();
-    if(ctp==0) {/*this happens the first time*/
-        dt=0.0;
-    } else {
-        if(ctp<ct) {
-            dt = (float)(ct-ctp);
-        } else { /* clock has overflowed */
-            dt = (unsigned long)(0xffffffff) - ctp;
-            dt = dt + ct + 1;
-        }
-        dt = dt/vxTicksPerSecond;
-        if(dt<pepid->mdt) return(1);
-    }
+    epicsTimeGetCurrent(&ct);
+    dt = epicsTimeDiffInSeconds(&ct, &ctp);
+    if (dt<pepid->mdt) return(1);
+    
     /* get the rest of values needed */
     kp = pepid->kp;
     ki = pepid->ki;

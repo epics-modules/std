@@ -1,5 +1,4 @@
 /*
-/*
  *      Author: 
  *      Date:   02-18-92
  *
@@ -55,11 +54,8 @@
 #define DSET_SI         devSiGP307Gpib
 #define DSET_SO         devSoGP307Gpib
 
-#include	<vxWorks.h>
-#include	<taskLib.h>
-#include	<rngLib.h>
-#include	<types.h>
-#include	<stdioLib.h>
+#include	<stdlib.h>
+#include	<string.h>
 
 #include	<alarm.h>
 #include	<cvtTable.h>
@@ -69,7 +65,6 @@
 #include	<recSup.h>
 #include	<drvSup.h>
 #include	<link.h>
-#include	<module_types.h>
 #include	<dbCommon.h>
 #include	<aiRecord.h>
 #include	<aoRecord.h>
@@ -84,65 +79,8 @@
 
 #include	<drvGpibInterface.h>
 #include	<devCommonGpib.h>
+#include	<devGpib.h>	/* needed to exportAddress the DSETS defined above */
 
-static long	init_dev_sup(), report();
-static int	srqHandler();
-extern struct devGpibParmBlock devGP307gpib_Parms;
-
-/******************************************************************************
- *
- * Define all the dset's.
- *
- * Note that the dset names are provided via the #define lines at the top of
- * this file.
- *
- * Other than for the debugging flag(s), these DSETs are the only items that
- * will appear in the global name space within the IOC.
- *
- * The last 3 items in the DSET structure are used to point to the parm 
- * structure, the  work functions used for each record type, and the srq 
- * handler for each record type.
- *
- ******************************************************************************/
-gDset DSET_AI   = {6, {report, init_dev_sup, devGpibLib_initAi, NULL, 
-	devGpibLib_readAi, NULL, (DRVSUPFUN)&devGP307gpib_Parms,
-	(DRVSUPFUN)devGpibLib_aiGpibWork, (DRVSUPFUN)devGpibLib_aiGpibSrq}};
-
-gDset DSET_AO   = {6, {NULL, NULL, devGpibLib_initAo, NULL, 
-	devGpibLib_writeAo, NULL, (DRVSUPFUN)&devGP307gpib_Parms,
-	(DRVSUPFUN)devGpibLib_aoGpibWork, NULL}};
-
-gDset DSET_BI   = {5, {NULL, NULL, devGpibLib_initBi, NULL, 
-	devGpibLib_readBi, (DRVSUPFUN)&devGP307gpib_Parms,
-	(DRVSUPFUN)devGpibLib_biGpibWork, (DRVSUPFUN)devGpibLib_biGpibSrq}};
-
-gDset DSET_BO   = {5, {NULL, NULL, devGpibLib_initBo, NULL, 
-	devGpibLib_writeBo, (DRVSUPFUN)&devGP307gpib_Parms,
-	(DRVSUPFUN)devGpibLib_boGpibWork, NULL}};
-
-gDset DSET_MBBI = {5, {NULL, NULL, devGpibLib_initMbbi, NULL, 
-	devGpibLib_readMbbi, (DRVSUPFUN)&devGP307gpib_Parms,
-	(DRVSUPFUN)devGpibLib_mbbiGpibWork, (DRVSUPFUN)devGpibLib_mbbiGpibSrq}};
-
-gDset DSET_MBBO = {5, {NULL, NULL, devGpibLib_initMbbo, NULL, 
-	devGpibLib_writeMbbo, (DRVSUPFUN)&devGP307gpib_Parms,
-	(DRVSUPFUN)devGpibLib_mbboGpibWork, NULL}};
-
-gDset DSET_SI   = {5, {NULL, NULL, devGpibLib_initSi, NULL, 
-	devGpibLib_readSi, (DRVSUPFUN)&devGP307gpib_Parms,
-	(DRVSUPFUN)&devGpibLib_stringinGpibWork, (DRVSUPFUN)devGpibLib_stringinGpibSrq}};
-
-gDset DSET_SO   = {5, {NULL, NULL, devGpibLib_initSo, NULL, 
-	devGpibLib_writeSo, (DRVSUPFUN)&devGP307gpib_Parms, 
-	(DRVSUPFUN)devGpibLib_stringoutGpibWork, NULL}};
-
-gDset DSET_LI   = {5, {NULL, NULL, devGpibLib_initLi, NULL, 
-	devGpibLib_readLi, (DRVSUPFUN)&devGP307gpib_Parms, 
-	(DRVSUPFUN)devGpibLib_liGpibWork, (DRVSUPFUN)devGpibLib_liGpibSrq}};
-
-gDset DSET_LO   = {5, {NULL, NULL, devGpibLib_initLo, NULL, 
-	devGpibLib_writeLo, (DRVSUPFUN)&devGP307gpib_Parms, 
-	(DRVSUPFUN)devGpibLib_loGpibWork, NULL}};
 
 /******************************************************************************
  *
@@ -172,31 +110,11 @@ extern int ibSrqDebug;		/* declared in the GPIB driver */
  * Strings used by the init routines to fill in the znam, onam, ...
  * fields in BI and BO record types.
  *
+ * EXAMPLE:
+ * static  char            *offOnList[] = { "Off", "On" };
+ * static  struct  devGpibNames   offOn = { 2, offOnList, NULL, 1 };
  ******************************************************************************/
 
-static  char            *offOnList[] = { "Off", "On" };
-static  struct  devGpibNames   offOn = { 2, offOnList, NULL, 1 };
-
-static  char            *initNamesList[] = { "Init", "Init" };
-static  struct  devGpibNames   initNames = { 2, initNamesList, NULL, 1 };
-
-static  char    *disableEnableList[] = { "Disable", "Enable" };
-static  struct  devGpibNames   disableEnable = { 2, disableEnableList, NULL, 1 };
-
-static  char    *resetList[] = { "Reset", "Reset" };
-static  struct  devGpibNames   reset = { 2, resetList, NULL, 1 };
-
-static  char    *lozHizList[] = { "50 OHM", "IB_Q_HIGH Z" };
-static  struct  devGpibNames   lozHiz = {2, lozHizList, NULL, 1};
-
-static  char    *invertNormList[] = { "INVERT", "NORM" };
-static  struct  devGpibNames   invertNorm = { 2, invertNormList, NULL, 1 };
-
-static  char    *fallingRisingList[] = { "FALLING", "RISING" };
-static  struct  devGpibNames   fallingRising = { 2, fallingRisingList, NULL, 1 };
-
-static  char    *clearList[] = { "CLEAR", "CLEAR" };
-static  struct  devGpibNames   clear = { 2, clearList, NULL, 1 };
 
 /******************************************************************************
  *
@@ -208,18 +126,19 @@ static  struct  devGpibNames   clear = { 2, clearList, NULL, 1 };
  * of elements in them that they use... The intExtSsBm structure only represents
  * 4 elements, while the intExtSsBmStop structure represents 5.
  *
+ * EXAMPLE:
+ * static  char *intExtSsBmStopList[] = { "INTERNAL", "EXTERNAL",
+ *    "SINGLE SHOT", "BURST MODE", "STOP" };
+ *
+ * static  unsigned long intExtSsBmStopVal[] = { 0, 1, 2, 3, 2 };
+ *
+ * static  struct  devGpibNames intExtSsBm = { 4, intExtSsBmStopList, 
+ *    intExtSsBmStopVal, 2 };
+ *
+ * static  struct  devGpibNames intExtSsBmStop = { 5, intExtSsBmStopList,
+ * 	  intExtSsBmStopVal, 3 };
  ******************************************************************************/
 
-static  char            *intExtSsBmStopList[] = { "INTERNAL", "EXTERNAL",
-				"SINGLE SHOT", "BURST MODE", "STOP" };
-
-static  unsigned long   intExtSsBmStopVal[] = { 0, 1, 2, 3, 2 };
-
-static  struct  devGpibNames    intExtSsBm = { 4, intExtSsBmStopList, 
-				intExtSsBmStopVal, 2 };
-
-static  struct  devGpibNames    intExtSsBmStop = { 5, intExtSsBmStopList,
-                                        intExtSsBmStopVal, 3 };
 
 /******************************************************************************
  *
@@ -241,8 +160,10 @@ static  struct  devGpibNames    intExtSsBmStop = { 5, intExtSsBmStopList,
  * device common stuff               
  ******************************************************************************/
 #define UDF "Undefined"
+/*
 static int getRespStr();
 static int putRespStr();
+*/
 
 /* Binary OUT strings */
 
@@ -364,83 +285,52 @@ static struct gpibCmd gpibCmds[] =
  * scanned"... not passive.
  *
  ******************************************************************************/
-static struct  devGpibParmBlock devGP307gpib_Parms = {
-  &GP307Debug,         /* debugging flag pointer */
-  1,                   /* device does not respond to writes */
-  TIME_WINDOW,          /* # of clock ticks to skip after a device times out */
-  NULL,                 /* hwpvt list head */
-  gpibCmds,             /* GPIB command array */
-  NUMPARAMS,            /* number of supported parameters */
-  -1,			/* magic SRQ param number (-1 if none) */
-  "devXxGP307Gpib",	/* device support module type name */
-  DMA_TIME,		/* # of clock ticks to wait for DMA completions */
-  NULL,			/* SRQ handler function (NULL if none) */
-  NULL			/* secondary conversion routine (NULL if none) */
-};
-
-/******************************************************************************
- *
- * Initialization for device support
- * This is called one time before any records are initialized with a parm
- * value of 0.  And then again AFTER all record-level init is complete
- * with a param value of 1.
- *
- ******************************************************************************/
-static long 
-init_dev_sup(parm)
-int	parm;
+static struct  devGpibParmBlock devSupParms;
+static long init_ai(int parm)
 {
-  return(devGpibLib_initDevSup(parm,&DSET_AI));
+	if (parm==0)  {
+		devSupParms.debugFlag = &GP307Debug;
+		devSupParms.respond2Writes = -1;
+		devSupParms.timeWindow = TIME_WINDOW;
+		devSupParms.hwpvtHead = 0;
+		devSupParms.gpibCmds = gpibCmds;
+		devSupParms.numparams = NUMPARAMS;
+		devSupParms.magicSrq = 0;
+		devSupParms.name = "devXxGP307Gpib";
+		devSupParms.timeout = DMA_TIME;
+		devSupParms.srqHandler = devGpibLib_srqHandler;
+		devSupParms.wrConversion = 0;
+	}
+ 	return(devGpibLib_initDevSup(parm, &DSET_AI));
 }
 
-/******************************************************************************
- *
- * Print a report of operating statistics for all devices supported by this
- * module.
- *
- * This function will no longer be required after epics 3.3 is released
- *
- ******************************************************************************/
-static long
-report()
-{
-  return(devGpibLib_report(&DSET_AI));
-}
 /**********************************************
  * Secondary convert routine
+ *
+ * EXAMPLE:
+ *static int putRespStr(int status, struct gpibDpvt *pdpvt)
+ *{
+ *	if (status) {
+ *		pdpvt->phwpvt->pupvt = UDF;
+ *	} else {
+ *		pdpvt->phwpvt->pupvt = pdpvt->rsp;
+ *	}
+ *	return(status);
+ *}
  **********************************************/
- static int putRespStr(status,pdpvt)
-	struct gpibDpvt *pdpvt;
-	int status;
-
-	{
-		if(status != ERROR)
-		{
-			pdpvt->phwpvt->pupvt = pdpvt->rsp;
-		}
-		else
-		{
-			pdpvt->phwpvt->pupvt = UDF;
-	    	}
-		return(status);
-	}
 
 /**********************************************
  * Primary convert routine
+ *
+ * EXAMPLE:
+ *static int getRespStr(struct gpibDpvt *pdpvt, int P1, int P2, char **P3)
+ *{
+ *	stringinRecord *pstringin= (stringinRecord *)(pdpvt->precord);
+ *	struct gpibCmd *pCmd = &gpibCmds[pdpvt->parm];
+ *
+ *	pstringin->udf = FALSE;
+ *	strncpy(pstringin->val,pdpvt->phwpvt->pupvt,39);
+ *	pstringin->val[40]='\0';
+ *	return(2);
+ *}
  **********************************************/
- static int getRespStr(pdpvt,P1,P2,P3)
-	struct gpibDpvt *pdpvt;
-	int P1;
-	int P2;
-	char **P3;
-
-	{
-		struct stringinRecord *pstringin= (struct stringinRecord *)
-		(pdpvt->precord);
-		struct gpibCmd *pCmd = &gpibCmds[pdpvt->parm];
-
-		pstringin->udf = FALSE;
-		strncpy(pstringin->val,pdpvt->phwpvt->pupvt,39);
-		pstringin->val[40]='\0';
-		return(2);
-	}

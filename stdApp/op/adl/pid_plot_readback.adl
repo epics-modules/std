@@ -1,6 +1,6 @@
 
 file {
-	name="j:\epics\support\std\stdApp\op\adl\pid_plot_readback.adl"
+	name="j:\epics\R3.13.1\share\stdApp\op\adl\pid_plot_readback.adl"
 	version=020306
 }
 display {
@@ -103,14 +103,10 @@ display {
 	pen[0] {
 		chan="$(P)$(PID).VAL"
 		clr=20
-		limits {
-		}
 	}
 	pen[1] {
 		chan="$(P)$(PID).CVAL"
 		clr=54
-		limits {
-		}
 	}
 }
 "text entry" {
@@ -166,4 +162,32 @@ text {
 		clr=14
 	}
 	textix="Display maxiumum"
+}
+"related display" {
+	object {
+		x=313
+		y=443
+		width=103
+		height=20
+	}
+	display[0] {
+		label="Plot"
+		name="pid_plot_readback.adl"
+		args="P=$(P), PID=$(PID)"
+		policy="replace display"
+	}
+	clr=14
+	bclr=4
+}
+text {
+	object {
+		x=334
+		y=417
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Replot"
 }

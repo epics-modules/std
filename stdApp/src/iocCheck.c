@@ -19,7 +19,9 @@
 #include        <vme.h>
 
 #include	<dbDefs.h>
+#include    <registryFunction.h>
 #include	<subRecord.h>
+#include    <epicsExport.h>
 #include	<taskwd.h>
 
 void taskFault();
@@ -62,3 +64,16 @@ void taskFault(userarg)
 {
     iocStatus = 0;
 }
+
+static registryFunctionRef iocCheckRef[] = {
+    {"iocCheckInit",(REGISTRYFUNCTION)iocCheckInit},
+    {"iocCheck",(REGISTRYFUNCTION)iocCheck}
+};
+
+static void iocCheckRegister(void)
+{
+    registryFunctionRefAdd(iocCheckRef,NELEMENTS(iocCheckRef));
+}
+epicsExportRegistrar(iocCheckRegister);
+
+

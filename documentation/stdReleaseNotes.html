@@ -1,0 +1,43 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<title>stdReleaseNotes</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1 align="center">std Release Notes</h1>
+
+<h2 align="center">Release 2-3</h2>
+
+<p align="left">This is what's left of the synApps std module
+after the modules autosave, calc, optics, sscan, and vme were split out.
+</p>
+
+This version is intended to build with EPICS base 3.14.5.
+
+Differences from std 2.2:
+<ul>
+<li><p>scaler record - device support that used "struct callback" defined
+in devScaler.h must now replace that with "CALLBACK", and must include
+epics/base/include/callback.h
+<li>sseq record - Now allows user to specify whether or not the record
+should wait, after putting a link value, for the resulting processing to
+complete before processing the next link.  Some code cleanup.  Added
+seqRecDebug.
+<li>topDAC8.adl - Deleted to avoid conflict with dac128V module.
+<li>VXstats_full.adl
+<li>pid_control_settings.req - added delta time
+<li>Added device-independent scaler database and save-restore settings files.
+<li>timeString.db - new capability in 3.14.5: stringin record can get time date.
+</ul>
+<address>
+    Suggestions and Comments to: <br>
+    <a href="mailto:mooney@aps.anl.gov">Tim Mooney </a>:
+    (mooney@aps.anl.gov) <br>
+    Last modified: March 4, 2004 
+</address>
+</body>
+</html>

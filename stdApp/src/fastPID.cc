@@ -25,10 +25,10 @@
                    moved to this file.
 */
 
-#include <vxWorks.h>
-#include <iv.h>
 #include <string.h>
 #include <stdio.h>
+
+#include <epicsExport.h>
 
 #include "Message.h"
 #include "Float64Message.h"
@@ -42,10 +42,15 @@ extern "C"
 #ifdef NODEBUG
 #define DEBUG(l,f,v) ;
 #else
-#define DEBUG(l,f,v...) { if(l<fastPIDDebug) printf(f,## v); }
+#ifdef __GNUG__
+#define DEBUG(l,f,v...) { if(l<fastPIDDebug) printf(f ,## v); }
+#else
+#define DEBUG(l,f,v)  { if(l<fastPIDDebug) printf(f,v); };
+#endif
 #endif
 volatile int fastPIDDebug = 0;
 }
+epicsExportAddress(int, fastPIDDebug);
 
 fastPID::fastPID(): KP(1), KI(0), KD(0), 
                     P(0), I(0), D(0), 

@@ -1,6 +1,6 @@
 
 file {
-	name="/home/beams/BCDA/epics/synApps_T202_R3_13_7_R4_5/support/stdR3_13/stdApp/op/adl/VXstats.adl"
+	name="/home/oxygen4/MOONEY/epics/synApps_4_6/support/std/stdApp/op/adl/VXstats.adl"
 	version=030003
 }
 display {
@@ -119,7 +119,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)memory"
+		chan="$(P)memoryUsedPercent"
 		clr=54
 		bclr=3
 	}
@@ -135,7 +135,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)cpu"
+		chan="$(P)cpuUsedPercent"
 		clr=54
 		bclr=3
 	}
@@ -151,7 +151,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)fd"
+		chan="$(P)fdUsedPercent"
 		clr=54
 		bclr=3
 	}
@@ -237,7 +237,7 @@ bar {
 		height=15
 	}
 	monitor {
-		chan="$(P)memory"
+		chan="$(P)memoryUsedPercent"
 		clr=14
 		bclr=51
 	}
@@ -253,7 +253,7 @@ bar {
 		height=15
 	}
 	monitor {
-		chan="$(P)cpu"
+		chan="$(P)cpuUsedPercent"
 		clr=14
 		bclr=51
 	}
@@ -269,7 +269,7 @@ bar {
 		height=15
 	}
 	monitor {
-		chan="$(P)fd"
+		chan="$(P)fdUsedPercent"
 		clr=14
 		bclr=51
 	}
@@ -295,7 +295,7 @@ bar {
 text {
 	object {
 		x=268
-		y=28
+		y=18
 		width=40
 		height=10
 	}
@@ -338,14 +338,14 @@ text {
 text {
 	object {
 		x=268
-		y=98
+		y=28
 		width=40
 		height=10
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="SECONDS"
+	textix="(SECONDS)"
 	align="horiz. centered"
 }
 text {
@@ -396,4 +396,20 @@ text {
 		clr=54
 	}
 	textix="%"
+}
+"related display" {
+	object {
+		x=268
+		y=100
+		width=41
+		height=20
+	}
+	display[0] {
+		label="more stats"
+		name="VXstats_full.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=17
+	label="-More"
 }

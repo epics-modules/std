@@ -213,15 +213,17 @@ recordtype(epid) {
 		special(SPC_NOMOD)
 		interest(2)
 	}
-	field(CT,DBF_ULONG) {
-		prompt("Clock Ticks")
+	field(CT,DBF_NOACCESS) {
+		prompt("Time")
 		special(SPC_NOMOD)
 		interest(4)
+                extra("epicsTimeStamp  ct")
 	}
-	field(CTP,DBF_ULONG) {
-		prompt("Clock Ticks Prev")
+	field(CTP,DBF_NOACCESS) {
+		prompt("Previous time")
 		special(SPC_NOMOD)
 		interest(4)
+                extra("epicsTimeStamp   ctp")
 	}
 	field(DT,DBF_FLOAT) {
 		prompt("Delta T")

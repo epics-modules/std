@@ -1,7 +1,7 @@
 
 file {
-	name="/net/epics/Public/aod/blops/IDINFO/UndulatorCtl.adl"
-	version=020306
+	name="/net/epics/xfd/operations/UndulatorCtl.adl"
+	version=020305
 }
 display {
 	object {
@@ -273,6 +273,10 @@ text {
 	}
 	"basic attribute" {
 		clr=53
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="ID$(xx):Attention"
 	}
 	textix="ID Gap Control"
 	align="horiz. centered"

@@ -30,15 +30,9 @@
  * -----------------
  *  .01 05-17-99  tmm  Created from seq record (by John Winans)
  */
-#include	<vxWorks.h>
 #include	<stdlib.h>
 #include	<stdio.h>
 #include	<string.h>
-#include	<lstLib.h>
-#include	<string.h>
-#include	<memLib.h>
-#include	<wdLib.h>
-#include	<sysLib.h>
 
 #include	<dbDefs.h>
 #include	<epicsPrint.h>
@@ -50,16 +44,19 @@
 #include	<devSup.h>
 #include	<errMdef.h>
 #include	<recSup.h>
+#include	<recGbl.h>
 #include	<special.h>
 #include	<callback.h>
 #include	<cvtFast.h>
+#include	<dbCa.h>
 
 #define GEN_SIZE_OFFSET
 #include	"sseqRecord.h"
 #undef  GEN_SIZE_OFFSET
+#include        <epicsExport.h>
 
-int	sseqRecDebug = 0;
-
+volatile int sseqRecDebug = 0;
+epicsExportAddress(int, sseqRecDebug);
 
 /* Total number of link-groups in a sequence record */
 #define NUM_LINKS	10
@@ -67,35 +64,35 @@ int	sseqRecDebug = 0;
 
 #define DBF_unknown -1
 /* This is what a link-group looks like in a string-sequence record */
-struct	linkDesc {
+struct	linkGroup {
 	double          dly;	/* Delay value (in seconds) */
-	struct link     dol;	/* Where to fetch the input value from */
+	DBLINK          dol;	/* Where to fetch the input value from */
 	double          dov;	/* If dol is CONSTANT, this is the CONSTANT value */
-	struct link     lnk;	/* Where to put the value from dol */
+	DBLINK          lnk;	/* Where to put the value from dol */
 	char            s[40]; /* string value */
 	short			dol_field_type;
 	short			lnk_field_type;
+	epicsEnum16		usePutCallback;
 };
 
 /* Callback structure used by the watchdog function to queue link processing */
 #define LINKS_ALL_OK	0
 #define LINKS_NOT_OK	1
 struct callbackSeq {
-	CALLBACK		callback;	/* used for the callback task */
-	WDOG_ID			wd_id;		/* Watchdog ID's for delays */
-	struct linkDesc	*plinks[NUM_LINKS+1]; /* Pointers to links to process */
-	int				index;
-	CALLBACK		checkLinksCB;
-	WDOG_ID			wd_id_1;
-	short			wd_id_1_LOCK;
-	short			linkStat; /* LINKS_ALL_OK, LINKS_NOT_OK */
+	CALLBACK			callback;	/* used for the callback task */
+	struct linkGroup	*plinkGroups[NUM_LINKS+1]; /* Pointers to links to process */
+	int					index;
+	CALLBACK			checkLinksCB;
+	short				pending_checkLinksCB;
+	short				linkStat; /* LINKS_ALL_OK, LINKS_NOT_OK */
+	double				saveDOV;
+	char				saveString[40];
 };
 
 static long init_record(sseqRecord *pR, int pass);
 static long process(sseqRecord *pR);
 static int processNextLink(sseqRecord *pR);
 static long asyncFinish(sseqRecord *pR);
-static void watchDog(CALLBACK *pcallback);
 static void processCallback(CALLBACK *pCallback);
 static long get_precision(struct dbAddr *paddr, long *precision);
 static void checkLinksCallback(CALLBACK *pCallback);
@@ -124,6 +121,7 @@ struct rset sseqRSET={
 	NULL 			/* get_alarm_double */
 
 };
+epicsExportAddress(rset, sseqRSET);
 /*****************************************************************************
  *
  * Initialize a sequence record.
@@ -139,7 +137,7 @@ static long
 init_record(sseqRecord *pR, int pass)
 {
 	int					index;
-	struct linkDesc		*plink;
+	struct linkGroup	*plinkGroup;
 	struct callbackSeq	*pdpvt;
 	struct dbAddr       dbAddr;
 	struct dbAddr       *pAddr = &dbAddr;
@@ -151,19 +149,17 @@ init_record(sseqRecord *pR, int pass)
 	}
 
 	/* Allocate a callback structure for use in processing */
-	pR->dpvt = (void *)malloc(sizeof(struct  callbackSeq));
+	pR->dpvt = (void *)calloc(1,sizeof(struct  callbackSeq));
 	pdpvt = (struct callbackSeq *)pR->dpvt;
 
 	callbackSetCallback(processCallback, &pdpvt->callback);
 	callbackSetPriority(pR->prio, &pdpvt->callback);
 	callbackSetUser(pR, &pdpvt->callback);
-	pdpvt->wd_id = wdCreate();
 
 	callbackSetCallback(checkLinksCallback, &pdpvt->checkLinksCB);
-	callbackSetPriority(0, &pdpvt->checkLinksCB);
+	callbackSetPriority(pR->prio, &pdpvt->checkLinksCB);
 	callbackSetUser(pR, &pdpvt->checkLinksCB);
-	pdpvt->wd_id_1 = wdCreate();
-	pdpvt->wd_id_1_LOCK = 0;
+	pdpvt->pending_checkLinksCB = 0;
 
 	/* Get link selection if sell is a constant and nonzero */
 	if (pR->sell.type==CONSTANT) {
@@ -174,51 +170,50 @@ init_record(sseqRecord *pR, int pass)
 	}
 
 	/*** init links, get initial values, field types ***/
-	plink = (struct linkDesc *)(&(pR->dly1));
-	for (index = 0; index < NUM_LINKS; index++, plink++) {
+	plinkGroup = (struct linkGroup *)(&(pR->dly1));
+	for (index = 0; index < NUM_LINKS; index++, plinkGroup++) {
 		/* init DOL*-related stuff (input links) */
-		if (plink->dol.type == CONSTANT) {
-			recGblInitConstantLink(&plink->dol, DBF_DOUBLE, &plink->dov);
-			recGblInitConstantLink(&plink->dol, DBF_STRING, plink->s);
-			plink->dol_field_type = DBF_NOACCESS;
-        } else if (!dbNameToAddr(plink->dol.value.pv_link.pvname, pAddr)) {
-			plink->dol_field_type = pAddr->field_type;
+		if (plinkGroup->dol.type == CONSTANT) {
+			recGblInitConstantLink(&plinkGroup->dol, DBF_DOUBLE, &plinkGroup->dov);
+			recGblInitConstantLink(&plinkGroup->dol, DBF_STRING, plinkGroup->s);
+			plinkGroup->dol_field_type = DBF_NOACCESS;
+        } else if (!dbNameToAddr(plinkGroup->dol.value.pv_link.pvname, pAddr)) {
+			plinkGroup->dol_field_type = pAddr->field_type;
 			if (sseqRecDebug) printf("sseq:init:dol_field_type=%d (%s)\n",
-				plink->dol_field_type,
-				pamapdbfType[plink->dol_field_type].strvalue);
+				plinkGroup->dol_field_type, plinkGroup->dol_field_type>=0 ?
+					pamapdbfType[plinkGroup->dol_field_type].strvalue : "");
 		} else {
 			/* pv is not on this ioc. Callback later for connection stat */
 			pdpvt->linkStat = LINKS_NOT_OK;
-			plink->dol_field_type = DBF_unknown; /* don't know field type */
+			plinkGroup->dol_field_type = DBF_unknown; /* don't know field type */
 		}
 		/* same for LNK* stuff (output links) */
-		if (plink->lnk.type == CONSTANT) {
-			plink->lnk_field_type = DBF_unknown;
-        } else if (!dbNameToAddr(plink->lnk.value.pv_link.pvname, pAddr)) {
-			plink->lnk_field_type = pAddr->field_type;
+		if (plinkGroup->lnk.type == CONSTANT) {
+			plinkGroup->lnk_field_type = DBF_unknown;
+        } else if (!dbNameToAddr(plinkGroup->lnk.value.pv_link.pvname, pAddr)) {
+			plinkGroup->lnk_field_type = pAddr->field_type;
 			if (sseqRecDebug) printf("sseq:init:lnk_field_type=%d (%s)\n",
-				plink->lnk_field_type,
-				pamapdbfType[plink->lnk_field_type].strvalue);
+				plinkGroup->lnk_field_type, plinkGroup->lnk_field_type>=0 ?
+					pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
 		} else {
 			/* pv is not on this ioc. Callback later for connection stat */
 			pdpvt->linkStat = LINKS_NOT_OK;
-			plink->lnk_field_type = DBF_unknown; /* don't know field type */
+			plinkGroup->lnk_field_type = DBF_unknown; /* don't know field type */
 		}
 
 		/* convert between value types */
-		if (plink->s[0]) {
-			plink->dov = atof(plink->s);
-			db_post_events(pR, &plink->dov, DBE_VALUE);
+		if (plinkGroup->s[0]) {
+			plinkGroup->dov = atof(plinkGroup->s);
+			db_post_events(pR, &plinkGroup->dov, DBE_VALUE);
 		} else {
-			cvtDoubleToString(plink->dov, plink->s, pR->prec);
-			db_post_events(pR, &plink->s, DBE_VALUE);
+			cvtDoubleToString(plinkGroup->dov, plinkGroup->s, pR->prec);
+			db_post_events(pR, &plinkGroup->s, DBE_VALUE);
 		}
 	}
 
 	if (pdpvt->linkStat == LINKS_NOT_OK) {
-		wdStart(pdpvt->wd_id_1, 60, (FUNCPTR)callbackRequest,
-			(int)(&pdpvt->checkLinksCB));
-		pdpvt->wd_id_1_LOCK = 1;
+		callbackRequestDelayed(&pdpvt->checkLinksCB, 1.0);
+		pdpvt->pending_checkLinksCB = 1;
 	}
 
 	return(0);
@@ -250,7 +245,7 @@ static long
 process(sseqRecord *pR)
 {
 	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
-	struct linkDesc		*plink;
+	struct linkGroup	*plinkGroup;
 	unsigned short		lmask;
 	int					tmp;
 
@@ -298,24 +293,24 @@ process(sseqRecord *pR)
 
 	/* Figure out which links are going to be processed */
 	pcb->index = 0;
-	plink = (struct linkDesc *)(&(pR->dly1));
-	for (tmp = 1; lmask; lmask >>= 1, plink++, tmp++) {
+	plinkGroup = (struct linkGroup *)(&(pR->dly1));
+	for (tmp = 1; lmask; lmask >>= 1, plinkGroup++, tmp++) {
 		if (sseqRecDebug > 4) {
 			printf("sseqRec:process: link %d - lnk.type=%d dol.type=%d\n",
-				tmp, plink->lnk.type, plink->dol.type);
+				tmp, plinkGroup->lnk.type, plinkGroup->dol.type);
 		}
 
-		if ((lmask & 1) && ((plink->lnk.type != CONSTANT) ||
-				(plink->dol.type != CONSTANT))) {
+		if ((lmask & 1) && ((plinkGroup->lnk.type != CONSTANT) ||
+				(plinkGroup->dol.type != CONSTANT))) {
 			if (sseqRecDebug > 4) {
 				printf("  sseqRec:process: Adding link %d at index %d\n",
 					tmp, pcb->index);
 			}
-			pcb->plinks[pcb->index] = plink;
+			pcb->plinkGroups[pcb->index] = plinkGroup;
 			pcb->index++;
 		}
 	}
-	pcb->plinks[pcb->index] = NULL;	/* mark the bottom of the list */
+	pcb->plinkGroups[pcb->index] = NULL;	/* mark the bottom of the list */
 
 	if (!pcb->index) {
 		/* There was nothing to do, finish record processing here */
@@ -348,26 +343,23 @@ process(sseqRecord *pR)
 static int processNextLink(sseqRecord *pR)
 {
 	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
-	struct linkDesc		*plink = (struct linkDesc *)(pcb->plinks[pcb->index]);
-	int					wdDelay;
+	struct linkGroup	*plinkGroup =
+		(struct linkGroup *)(pcb->plinkGroups[pcb->index]);
 
 	if (sseqRecDebug > 5) {
 		printf("processNextLink(%s) looking for work to do, index = %d\n",
 			pR->name, pcb->index);
 	}
 
-	if (plink == NULL) {
+	if (plinkGroup == NULL) {
 		/* None left, finish up. */
 		(*(struct rset *)(pR->rset)).process(pR);
 	} else {
-		if (plink->dly > 0.0) {
-			/* Use the watch-dog as a delay mechanism */
-			wdDelay = plink->dly * sysClkRateGet();
-			wdStart(pcb->wd_id, wdDelay, (FUNCPTR)watchDog,
-				(int)(&(pcb->callback)));
+		if (plinkGroup->dly > 0.0) {
+			callbackRequestDelayed(&pcb->callback, plinkGroup->dly);
 		} else {
 			/* No delay, do it now.  Avoid recursion;  use callback task */
-			watchDog(&(pcb->callback));
+			callbackRequest(&pcb->callback);
 		}
 	}
   return(0);
@@ -397,6 +389,7 @@ asyncFinish(sseqRecord *pR)
 	}
 
 	/* process the forward scan link record */
+	if (sseqRecDebug>=2) printf("sseqRecord:asyncFinish: calling recGblFwdLink\n");
 	recGblFwdLink(pR);
 
 	recGblGetTimeStamp(pR);
@@ -405,19 +398,44 @@ asyncFinish(sseqRecord *pR)
 
 	return(0);
 }
-/*****************************************************************************
- *
- * Schedule the process continuation via the callback tasks.
- *
- * This function is called by the watchdog task when it is time to process the
- * "next" link-group in the sequence record.
- *
- ******************************************************************************/
-static void
-watchDog(CALLBACK *pcallback)
+
+/*
+ * compiler doesn't seem to understand that dbCaCallback means pointer to
+ * function returning void, and it wants a return argument.
+  */
+void /* dbCaCallback */ putCallbackCB(void *arg)
 {
-	callbackRequest(pcallback);
+        struct link *plink = (struct link *)arg;
+	sseqRecord			*pR = (sseqRecord *)(plink->value.pv_link.precord);
+	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
+	struct linkGroup	*plinkGroup;
+
+	if (sseqRecDebug>=2) printf("sseqRecord:putCallbackCB: entry\n");
+
+	dbScanLock((struct dbCommon *)pR);
+	plinkGroup = (struct linkGroup *)(pcb->plinkGroups[pcb->index]);
+
+	if (pcb->saveDOV != plinkGroup->dov) {
+		if (sseqRecDebug > 0) {
+			printf("link %d changed from %f to %f\n", pcb->index,
+				pcb->saveDOV, plinkGroup->dov);
+		}
+		db_post_events(pR, &plinkGroup->dov, DBE_VALUE|DBE_LOG);
+	} else if (strcmp(pcb->saveString, plinkGroup->s)) {
+		if (sseqRecDebug > 0) {
+			printf("link %d changed from '%s' to '%s'\n", pcb->index,
+				pcb->saveString, plinkGroup->s);
+		}
+		db_post_events(pR, &plinkGroup->s, DBE_VALUE|DBE_LOG);
+	}
+
+	/* Find the 'next' link-seq that is ready for processing. */
+	pcb->index++;
+	processNextLink(pR);
+
+	dbScanUnlock((struct dbCommon *)pR);
 	return;
+
 }
 /*****************************************************************************
  *
@@ -439,45 +457,44 @@ processCallback(CALLBACK *pCallback)
 {
 	sseqRecord			*pR = (sseqRecord *)(pCallback->user);
 	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
-	struct linkDesc		*plink = (struct linkDesc *)(pcb->plinks[pcb->index]);
-	double				myDouble;
-	char				myString[40];
-	int					status;
+	struct linkGroup	*plinkGroup =
+		(struct linkGroup *)(pcb->plinkGroups[pcb->index]);
+	int					status, did_putCallback=0;
 	char				str[40];
 	double				d;
 
 	dbScanLock((struct dbCommon *)pR);
 
-	if (sseqRecDebug > 5) {
+	if (sseqRecDebug >= 5) {
 		printf("sseqRecord:processCallback(%s) processing field index %d\n",
 			pR->name, pcb->index);
 	}
 
 	/* Save the old value */
-	myDouble = plink->dov;
-	strcpy(myString, plink->s);
+	pcb->saveDOV = plinkGroup->dov;
+	strcpy(pcb->saveString, plinkGroup->s);
 
 	/* get the value */
 	if (sseqRecDebug) printf("sseq:processCallback:dol_field_type=%d (%s)\n",
-			plink->dol_field_type,
-			pamapdbfType[plink->dol_field_type].strvalue);
-	switch (plink->dol_field_type) {
+			plinkGroup->dol_field_type, plinkGroup->dol_field_type>=0 ?
+				pamapdbfType[plinkGroup->dol_field_type].strvalue : "");
+	switch (plinkGroup->dol_field_type) {
 	case DBF_STRING: case DBF_CHAR: case DBF_ENUM: case DBF_MENU:
 	case DBF_DEVICE: case DBF_INLINK: case DBF_OUTLINK: case DBF_FWDLINK:
-		status = dbGetLink(&(plink->dol), DBR_STRING, &(plink->s),0,0);
-		d = atof(plink->s);
-		if (d != plink->dov) {
-			plink->dov = d;
-			db_post_events(pR, &plink->dov, DBE_VALUE);
+		status = dbGetLink(&(plinkGroup->dol), DBR_STRING, &(plinkGroup->s),0,0);
+		d = atof(plinkGroup->s);
+		if (d != plinkGroup->dov) {
+			plinkGroup->dov = d;
+			db_post_events(pR, &plinkGroup->dov, DBE_VALUE);
 		}
 		break;
 	case DBF_UCHAR: case DBF_SHORT: case DBF_USHORT: case DBF_LONG:
 	case DBF_ULONG: case DBF_FLOAT: case DBF_DOUBLE:
-		status = dbGetLink(&(plink->dol), DBR_DOUBLE, &(plink->dov),0,0);
-		cvtDoubleToString(plink->dov, str, pR->prec);
-		if (strcmp(str, plink->s)) {
-			strcpy(plink->s, str);
-			db_post_events(pR, &plink->s, DBE_VALUE);
+		status = dbGetLink(&(plinkGroup->dol), DBR_DOUBLE, &(plinkGroup->dov),0,0);
+		cvtDoubleToString(plinkGroup->dov, str, pR->prec);
+		if (strcmp(str, plinkGroup->s)) {
+			strcpy(plinkGroup->s, str);
+			db_post_events(pR, &plinkGroup->s, DBE_VALUE);
 		}
 		break;
 	default:
@@ -486,39 +503,60 @@ processCallback(CALLBACK *pCallback)
 
 	/* Dump the value to the destination field */
 	if (sseqRecDebug) printf("sseq:processCallback:lnk_field_type=%d (%s)\n",
-			plink->lnk_field_type,
-			pamapdbfType[plink->lnk_field_type].strvalue);
-	switch (plink->lnk_field_type) {
+			plinkGroup->lnk_field_type, plinkGroup->lnk_field_type>=0 ?
+				pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
+	switch (plinkGroup->lnk_field_type) {
 	case DBF_STRING: case DBF_CHAR: case DBF_ENUM: case DBF_MENU:
 	case DBF_DEVICE: case DBF_INLINK: case DBF_OUTLINK: case DBF_FWDLINK:
-		status = dbPutLink(&(plink->lnk), DBR_STRING, &(plink->s),1);
+		if (plinkGroup->usePutCallback && (plinkGroup->lnk.type == CA_LINK)) {
+			if (sseqRecDebug >= 5)
+				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
+			status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_STRING,
+				&(plinkGroup->s), 1, (dbCaCallback) putCallbackCB, (void *)(&(plinkGroup->lnk)));
+			did_putCallback = 1;
+		} else {
+			if (sseqRecDebug >= 5)
+				printf("sseqRecord:processCallback: calling dbPutLink\n");
+			status = dbPutLink(&(plinkGroup->lnk), DBR_STRING, &(plinkGroup->s),1);
+		}
 		break;
 	case DBF_UCHAR: case DBF_SHORT: case DBF_USHORT: case DBF_LONG:
 	case DBF_ULONG: case DBF_FLOAT: case DBF_DOUBLE:
-		status = dbPutLink(&(plink->lnk), DBR_DOUBLE, &(plink->dov),1);
+		if (plinkGroup->usePutCallback && (plinkGroup->lnk.type == CA_LINK)) {
+			if (sseqRecDebug >= 5)
+				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
+			status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_DOUBLE,
+				&(plinkGroup->dov), 1, (dbCaCallback) putCallbackCB, (void *)(&(plinkGroup->lnk)));
+			did_putCallback = 1;
+		} else {
+			if (sseqRecDebug >= 5)
+				printf("sseqRecord:processCallback: calling dbPutLink\n");
+			status = dbPutLink(&(plinkGroup->lnk), DBR_DOUBLE, &(plinkGroup->dov),1);
+		}
 		break;
 	default:
 		break;
 	}
 
-	if (myDouble != plink->dov) {
-		if (sseqRecDebug > 0) {
-			printf("link %d changed from %f to %f\n", pcb->index, myDouble,
-				plink->dov);
+	if (did_putCallback == 0) {
+		if (pcb->saveDOV != plinkGroup->dov) {
+			if (sseqRecDebug > 0) {
+				printf("link %d changed from %f to %f\n", pcb->index, pcb->saveDOV,
+					plinkGroup->dov);
+			}
+			db_post_events(pR, &plinkGroup->dov, DBE_VALUE|DBE_LOG);
+		} else if (strcmp(pcb->saveString, plinkGroup->s)) {
+			if (sseqRecDebug > 0) {
+				printf("link %d changed from '%s' to '%s'\n", pcb->index,
+					pcb->saveString, plinkGroup->s);
+			}
+			db_post_events(pR, &plinkGroup->s, DBE_VALUE|DBE_LOG);
 		}
-		db_post_events(pR, &plink->dov, DBE_VALUE|DBE_LOG);
-	} else if (strcmp(myString, plink->s)) {
-		if (sseqRecDebug > 0) {
-			printf("link %d changed from '%s' to '%s'\n", pcb->index, myString,
-				plink->s);
-		}
-		db_post_events(pR, &plink->s, DBE_VALUE|DBE_LOG);
+
+		/* Find the 'next' link-seq that is ready for processing. */
+		pcb->index++;
+		processNextLink(pR);
 	}
-
-	/* Find the 'next' link-seq that is ready for processing. */
-	pcb->index++;
-	processNextLink(pR);
-
 	dbScanUnlock((struct dbCommon *)pR);
 	return;
 }
@@ -550,15 +588,16 @@ static void checkLinksCallback(CALLBACK *pCallback)
 
     callbackGetUser(pR, pCallback);
     pdpvt = (struct callbackSeq	*)pR->dpvt;
-    
+
 	if (!interruptAccept) {
+		if (sseqRecDebug >= 10) printf("sseq:checkLinksCB(%s), before interruptAccept\n",
+			pR->name);
 		/* Can't call dbScanLock yet.  Schedule another CALLBACK */
-		pdpvt->wd_id_1_LOCK = 1;  /* make sure */
-		wdStart(pdpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-			(int)(&pdpvt->checkLinksCB));
+		pdpvt->pending_checkLinksCB = 1;  /* make sure */
+		callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 	} else {
 	    dbScanLock((struct dbCommon *)pR);
-	    pdpvt->wd_id_1_LOCK = 0;
+	    pdpvt->pending_checkLinksCB = 0;
 	    checkLinks(pR);
 	    dbScanUnlock((struct dbCommon *)pR);
 	}
@@ -567,36 +606,57 @@ static void checkLinksCallback(CALLBACK *pCallback)
 
 static void checkLinks(sseqRecord *pR)
 {
-	struct linkDesc *plink = (struct linkDesc *)(&(pR->dly1));
+	struct linkGroup *plinkGroup = (struct linkGroup *)(&(pR->dly1));
 	struct callbackSeq	*pdpvt = (struct callbackSeq *)pR->dpvt;
 	int i;
 
-	if (sseqRecDebug) printf("sseq:checkLinks(%s)\n", pR->name);
+	if (sseqRecDebug >= 10) printf("sseq:checkLinks(%s)\n", pR->name);
 
 	pdpvt->linkStat = LINKS_ALL_OK;
-	for (i = 0; i < NUM_LINKS; i++, plink++) {
-		plink->dol_field_type = DBF_unknown;
-		if (plink->dol.value.pv_link.pvname[0]) {
-			plink->dol_field_type = dbGetLinkDBFtype(&plink->dol);
-			if (plink->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
-			if (sseqRecDebug) printf("sseq:checkLinks:dol_field_type=%d (%s)\n",
-				plink->dol_field_type,
-				pamapdbfType[plink->dol_field_type].strvalue);
+	for (i = 0; i < NUM_LINKS; i++, plinkGroup++) {
+		if (sseqRecDebug >= 10)
+			printf("sseq:checkLinks(%s): checking link %d\n", pR->name, i);
+		plinkGroup->dol_field_type = DBF_unknown;
+		if (plinkGroup->dol.value.pv_link.pvname[0]) {
+			plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
+			if (plinkGroup->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
+			if (sseqRecDebug>=10) {
+				printf("sseq:checkLinks:dol_field_type=%d (%s), linked to %s\n",
+					plinkGroup->dol_field_type,
+					plinkGroup->dol_field_type>=0 ?
+						pamapdbfType[plinkGroup->dol_field_type].strvalue : "???",
+					plinkGroup->dol.value.pv_link.pvname);
+			}
 		}
-		plink->lnk_field_type = DBF_unknown;
-		if (plink->lnk.value.pv_link.pvname[0]) {
-			plink->lnk_field_type = dbGetLinkDBFtype(&plink->lnk);
-			if (plink->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
-			if (sseqRecDebug) printf("sseq:checkLinks:lnk_field_type=%d (%s)\n",
-				plink->lnk_field_type,
-				pamapdbfType[plink->lnk_field_type].strvalue);
+		plinkGroup->lnk_field_type = DBF_unknown;
+		if (plinkGroup->lnk.value.pv_link.pvname[0]) {
+			plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
+			if (plinkGroup->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
+			if (plinkGroup->usePutCallback && (plinkGroup->lnk.type != CA_LINK))
+				pdpvt->linkStat = LINKS_NOT_OK;
+			if (sseqRecDebug>=10) {
+				printf("sseq:checkLinks:lnk_field_type=%d (%s), linked to %s\n",
+					plinkGroup->lnk_field_type,
+					plinkGroup->lnk_field_type>=0 ?
+						pamapdbfType[plinkGroup->lnk_field_type].strvalue : "???",
+					plinkGroup->lnk.value.pv_link.pvname);
+			}
 		}
 	}
-	if (!pdpvt->wd_id_1_LOCK && (pdpvt->linkStat == LINKS_NOT_OK)) {
-		/* Schedule another CALLBACK */
-		pdpvt->wd_id_1_LOCK = 1;
-		wdStart(pdpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-			(int)(&pdpvt->checkLinksCB));
+	if (pdpvt->linkStat == LINKS_NOT_OK) {
+		if (!pdpvt->pending_checkLinksCB) {
+			/* Schedule another callback */
+			if (sseqRecDebug >= 10)
+				printf("sseq:checkLinks(%s): scheduling another callback\n", pR->name);
+			pdpvt->pending_checkLinksCB = 1;
+			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
+		} else {
+			/* We need another callback, but one has already been scheduled */
+			if (sseqRecDebug >= 10)
+				printf("sseq:checkLinks(%s): callback already pending\n", pR->name);
+		}
+	} else {
+		if (sseqRecDebug >= 10) printf("sseq:checkLinks(%s): links ok\n", pR->name);
 	}
 }
 
@@ -607,7 +667,7 @@ static long special(struct dbAddr *paddr, int after)
 	struct callbackSeq	*pdpvt = (struct callbackSeq *)pR->dpvt;
 	int                 fieldIndex = dbGetFieldIndex(paddr);
 	int                 lnkIndex;
-	struct linkDesc		*plink;
+	struct linkGroup	*plinkGroup;
 	char				str[40];
 	double				d;
 
@@ -625,24 +685,22 @@ static long special(struct dbAddr *paddr, int after)
 	case(sseqRecordDOL9):
 	case(sseqRecordDOLA):
 		lnkIndex = ((char *)paddr->pfield - (char *)&pR->dly1) /
-			sizeof(struct linkDesc);
-		plink = (struct linkDesc *)&pR->dly1;
-		plink += lnkIndex;
-		plink->dol_field_type = DBF_unknown;
-		if (plink->dol.value.pv_link.pvname[0]) {
-			plink->dol_field_type = dbGetLinkDBFtype(&plink->dol);
-			if (plink->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
+			sizeof(struct linkGroup);
+		plinkGroup = (struct linkGroup *)&pR->dly1;
+		plinkGroup += lnkIndex;
+		plinkGroup->dol_field_type = DBF_unknown;
+		if (plinkGroup->dol.value.pv_link.pvname[0]) {
+			plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
+			if (plinkGroup->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 		}
-		if (!pdpvt->wd_id_1_LOCK && (pdpvt->linkStat == LINKS_NOT_OK)) {
-			pdpvt->wd_id_1_LOCK = 1;
-			wdStart(pdpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-				(int)(&pdpvt->checkLinksCB));
+		if (!pdpvt->pending_checkLinksCB && (pdpvt->linkStat == LINKS_NOT_OK)) {
+			pdpvt->pending_checkLinksCB = 1;
+			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 		}
 		if (sseqRecDebug) printf("sseq:special:dol_field_type=%d (%s)\n",
-			plink->dol_field_type,
-			pamapdbfType[plink->dol_field_type].strvalue);
+			plinkGroup->dol_field_type, plinkGroup->dol_field_type>=0 ?
+				pamapdbfType[plinkGroup->dol_field_type].strvalue : "");
 		return(0);
-		break;
 
 	case(sseqRecordLNK1):
 	case(sseqRecordLNK2):
@@ -655,29 +713,27 @@ static long special(struct dbAddr *paddr, int after)
 	case(sseqRecordLNK9):
 	case(sseqRecordLNKA):
 		lnkIndex = ((char *)paddr->pfield - (char *)&pR->dly1) /
-			sizeof(struct linkDesc);
-		plink = (struct linkDesc *)&pR->dly1;
-		plink += lnkIndex;
+			sizeof(struct linkGroup);
+		plinkGroup = (struct linkGroup *)&pR->dly1;
+		plinkGroup += lnkIndex;
 		if (sseqRecDebug) {
 			printf("sseq:special:lnkIndex=%d\n", lnkIndex);
-			printf("sseq:special: &lnk1=%p, &plink->lnk=%p\n",
-				&pR->lnk1, &plink->lnk);
+			printf("sseq:special: &lnk1=%p, &plinkGroup->lnk=%p\n",
+				&pR->lnk1, &plinkGroup->lnk);
 		}
-		plink->lnk_field_type = DBF_unknown;
-		if (plink->lnk.value.pv_link.pvname[0]) {
-			plink->lnk_field_type = dbGetLinkDBFtype(&plink->lnk);
-			if (plink->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
+		plinkGroup->lnk_field_type = DBF_unknown;
+		if (plinkGroup->lnk.value.pv_link.pvname[0]) {
+			plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
+			if (plinkGroup->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 		}
-		if (!pdpvt->wd_id_1_LOCK && (pdpvt->linkStat == LINKS_NOT_OK)) {
-			pdpvt->wd_id_1_LOCK = 1;
-			wdStart(pdpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-				(int)(&pdpvt->checkLinksCB));
+		if (!pdpvt->pending_checkLinksCB && (pdpvt->linkStat == LINKS_NOT_OK)) {
+			pdpvt->pending_checkLinksCB = 1;
+			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 		}
 		if (sseqRecDebug) printf("sseq:special:lnk_field_type=%d (%s)\n",
-			plink->lnk_field_type,
-			pamapdbfType[plink->lnk_field_type].strvalue);
+			plinkGroup->lnk_field_type, plinkGroup->lnk_field_type>=0 ?
+				pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
 		return(0);
-		break;
 
 	case(sseqRecordDO1):
 	case(sseqRecordDO2):
@@ -690,13 +746,13 @@ static long special(struct dbAddr *paddr, int after)
 	case(sseqRecordDO9):
 	case(sseqRecordDOA):
 		lnkIndex = ((char *)paddr->pfield - (char *)&pR->dly1) /
-			sizeof(struct linkDesc);
-		plink = (struct linkDesc *)&pR->dly1;
-		plink += lnkIndex;
-		cvtDoubleToString(plink->dov, str, pR->prec);
-		if (strcmp(str, plink->s)) {
-			strcpy(plink->s, str);
-			db_post_events(pR, &plink->s, DBE_VALUE);
+			sizeof(struct linkGroup);
+		plinkGroup = (struct linkGroup *)&pR->dly1;
+		plinkGroup += lnkIndex;
+		cvtDoubleToString(plinkGroup->dov, str, pR->prec);
+		if (strcmp(str, plinkGroup->s)) {
+			strcpy(plinkGroup->s, str);
+			db_post_events(pR, &plinkGroup->s, DBE_VALUE);
 		}
 		break;
 
@@ -711,13 +767,13 @@ static long special(struct dbAddr *paddr, int after)
 	case(sseqRecordSTR9):
 	case(sseqRecordSTRA):
 		lnkIndex = ((char *)paddr->pfield - (char *)&pR->dly1) /
-			sizeof(struct linkDesc);
-		plink = (struct linkDesc *)&pR->dly1;
-		plink += lnkIndex;
-		d = atof(plink->s);
-		if (d != plink->dov) {
-			plink->dov = d;
-			db_post_events(pR, &plink->dov, DBE_VALUE);
+			sizeof(struct linkGroup);
+		plinkGroup = (struct linkGroup *)&pR->dly1;
+		plinkGroup += lnkIndex;
+		d = atof(plinkGroup->s);
+		if (d != plinkGroup->dov) {
+			plinkGroup->dov = d;
+			db_post_events(pR, &plinkGroup->dov, DBE_VALUE);
 		}
 		break;
 

@@ -1,0 +1,1197 @@
+
+file {
+	name="/home/oxygen4/MOONEY/epics/synApps_4_6/ioc/xxx/xxxApp/op/adl/IOC_Status.adl"
+	version=030003
+}
+display {
+	object {
+		x=6
+		y=25
+		width=400
+		height=830
+	}
+	clr=14
+	bclr=2
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=410
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):IFOErrs"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=30
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):Engineer"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=50
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):Load"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=70
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):CAClnt"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=90
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):MemMax"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=110
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):CACnx"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=130
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):FDAv"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=150
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):FDMax"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=170
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):Access_Cmd"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=190
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):Time"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=210
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):BootTime"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=232
+		width=200
+		height=14
+	}
+	monitor {
+		chan="$(P):StartupScript1"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=252
+		width=200
+		height=14
+	}
+	monitor {
+		chan="$(P):StartupScript2"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=270
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):kernel_vers"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=290
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):BSP_rev"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=312
+		width=200
+		height=14
+	}
+	monitor {
+		chan="$(P):EPICS_vers"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=330
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):minDataMBuf"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=350
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):minSysMBuf"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=370
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):Location"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=390
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):IFIErrs"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=225
+		y=410
+		width=7
+		height=18
+	}
+	monitor {
+		chan="$(P):IFOErrs.EGU"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=430
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):FDUsed"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=450
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):MemAlloc"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=470
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):MemFree"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=34
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Engineer"
+}
+text {
+	object {
+		x=10
+		y=54
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="CPU Load (%)"
+}
+text {
+	object {
+		x=10
+		y=74
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="# CA Clients"
+}
+text {
+	object {
+		x=10
+		y=94
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Max Free Memory Block (bytes)"
+}
+text {
+	object {
+		x=10
+		y=114
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="# CA Connections"
+}
+text {
+	object {
+		x=10
+		y=134
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Available File Descriptors"
+}
+text {
+	object {
+		x=10
+		y=154
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Max File Descriptors"
+}
+text {
+	object {
+		x=10
+		y=174
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Access_Cmd"
+}
+text {
+	object {
+		x=10
+		y=194
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="The current date/time"
+}
+text {
+	object {
+		x=10
+		y=214
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Date/time the IOC was booted"
+}
+text {
+	object {
+		x=10
+		y=234
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Startup Script pt1"
+}
+text {
+	object {
+		x=10
+		y=254
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Startup Script pt2"
+}
+text {
+	object {
+		x=10
+		y=274
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="kernel version"
+}
+text {
+	object {
+		x=10
+		y=294
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="BSP revision"
+}
+text {
+	object {
+		x=10
+		y=314
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="EPICS version"
+}
+text {
+	object {
+		x=10
+		y=334
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="min % free data mbufs"
+}
+text {
+	object {
+		x=10
+		y=354
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="min % free sys mbufs"
+}
+text {
+	object {
+		x=10
+		y=374
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="IOC location"
+}
+text {
+	object {
+		x=10
+		y=394
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="ifShow input errors"
+}
+text {
+	object {
+		x=10
+		y=414
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="ifShow output errors"
+}
+text {
+	object {
+		x=10
+		y=434
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="# File Descriptors In Use"
+}
+text {
+	object {
+		x=10
+		y=454
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Allocated Memory (bytes)"
+}
+text {
+	object {
+		x=10
+		y=474
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Free Memory (bytes)"
+}
+text {
+	object {
+		x=10
+		y=514
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Current date/time (compact)"
+}
+"text update" {
+	object {
+		x=200
+		y=510
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):TimeMed"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=534
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="The current time"
+}
+"text update" {
+	object {
+		x=200
+		y=530
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):TimeShort"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=554
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Heartbeat mod 9"
+}
+"text update" {
+	object {
+		x=200
+		y=550
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):HBtMod"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=574
+		width=190
+		height=11
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="IOC heartbeat"
+}
+"text update" {
+	object {
+		x=200
+		y=570
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):HBt"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=594
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="boot line pt1"
+}
+"text update" {
+	object {
+		x=200
+		y=590
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):BootLine1"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=614
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="boot line pt2"
+}
+"text update" {
+	object {
+		x=200
+		y=610
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):BootLine2"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=634
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="boot line pt3"
+}
+"text update" {
+	object {
+		x=200
+		y=630
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):BootLine3"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=200
+		y=490
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):Status"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=494
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Max Sever: Ld+CA+Mem+FD"
+}
+text {
+	object {
+		x=10
+		y=774
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Update rate (Hz) for FD stats"
+}
+text {
+	object {
+		x=10
+		y=754
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Update rate (Hz) for CA stats"
+}
+text {
+	object {
+		x=10
+		y=814
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Update rate (Hz) for Mem stats"
+}
+text {
+	object {
+		x=10
+		y=794
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Update rate (Hz) for CPU Load"
+}
+text {
+	object {
+		x=10
+		y=654
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="boot line pt4"
+}
+"text update" {
+	object {
+		x=200
+		y=650
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):BootLine4"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=674
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="boot line pt5"
+}
+"text update" {
+	object {
+		x=200
+		y=670
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):BootLine5"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=694
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="boot line pt6"
+}
+"text update" {
+	object {
+		x=200
+		y=690
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):BootLine6"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=714
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="data mbufs"
+}
+"text update" {
+	object {
+		x=200
+		y=710
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):DataMBufs"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=734
+		width=190
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="sys mbufs"
+}
+"text update" {
+	object {
+		x=200
+		y=730
+		width=200
+		height=18
+	}
+	monitor {
+		chan="$(P):SysMBufs"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=200
+		y=770
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P):R_FD"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=200
+		y=750
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P):R_CA"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=200
+		y=810
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P):R_Mem"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=200
+		y=790
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P):R_Load"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=5
+		width=400
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ioc$(P) info"
+	align="horiz. centered"
+}

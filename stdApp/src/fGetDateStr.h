@@ -1,1 +1,0 @@
-int fGetDateStr( char datetime[]);

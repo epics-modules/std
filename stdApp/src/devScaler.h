@@ -1,4 +1,6 @@
 /* devScaler.h */
+/* OSI by S. Kate Feng 3/03 */
+
 /* ----------------Device Support Entry Table for devSCALER----------------- */
 
 #define MAX_SCALER_CHANNELS 32
@@ -16,9 +18,3 @@ typedef struct {
 	DEVSUPFUN	done;
 } SCALERDSET;
 
-/*** callback stuff ***/
-struct callback {
-	CALLBACK	callback;
-	struct dbCommon *precord;
-	WDOG_ID wd_id;
-};

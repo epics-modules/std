@@ -1,5 +1,5 @@
 /* devXxKeithleyDMM199Gpib.c */
-/* share/src/devOpt $Id: devXxKeithleyDMM199Gpib.c,v 1.1.1.1 2001-07-03 20:05:25 sluiter Exp $ */
+/* share/src/devOpt $Id: devXxKeithleyDMM199Gpib.c,v 1.3 2003-12-10 22:55:33 mooney Exp $ */
 /*
  *      Author: John Winans
  *      Date:   02-18-92
@@ -33,8 +33,9 @@
  *
  * Modification Log:
  * -----------------
- * .01  02-18-92        jrw     Initial Release
-
+ * .01  02-18-92  jrw  Initial Release
+ *      12-04-03  tmm  removed unused srq-handler function
+ *
  */
 
 /******************************************************************************
@@ -56,11 +57,8 @@
 #define	DSET_SI		devSiKeithleyDMM199
 #define	DSET_SO		devSoKeithleyDMM199
 
-#include	<vxWorks.h>
-#include	<taskLib.h>
-#include	<rngLib.h>
-#include	<types.h>
-#include	<stdioLib.h>
+#include	<stdlib.h>
+#include	<string.h>
 
 #include	<alarm.h>
 #include	<cvtTable.h>
@@ -70,7 +68,6 @@
 #include	<recSup.h>
 #include	<drvSup.h>
 #include	<link.h>
-#include	<module_types.h>
 #include	<dbCommon.h>
 #include	<aiRecord.h>
 #include	<aoRecord.h>
@@ -85,67 +82,9 @@
 
 #include	<drvGpibInterface.h>
 #include	<devCommonGpib.h>
+#include	<devGpib.h>	/* needed to exportAddress the DSETS defined above */
 
 #define STATIC static
-
-STATIC long	init_dev_sup(), report();
-STATIC int	srqHandler();
-extern	struct  devGpibParmBlock devXxKeithleyDMM199Gpib_Parms;
-
-/******************************************************************************
- *
- * Define all the dset's.
- *
- * Note that the dset names are provided via the #define lines at the top of
- * this file.
- *
- * Other than for the debugging flag(s), these DSETs are the only items that
- * will appear in the global name space within the IOC.
- *
- * The last 3 items in the DSET structure are used to point to the parm 
- * structure, the  work functions used for each record type, and the srq 
- * handler for each record type.
- *
- ******************************************************************************/
-gDset DSET_AI   = {6, {report, init_dev_sup, devGpibLib_initAi, NULL, 
-	devGpibLib_readAi, NULL, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms,
-	(DRVSUPFUN)devGpibLib_aiGpibWork, (DRVSUPFUN)devGpibLib_aiGpibSrq}};
-
-gDset DSET_AO   = {6, {NULL, NULL, devGpibLib_initAo, NULL, 
-	devGpibLib_writeAo, NULL, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms,
-	(DRVSUPFUN)devGpibLib_aoGpibWork, NULL}};
-
-gDset DSET_BI   = {5, {NULL, NULL, devGpibLib_initBi, NULL, 
-	devGpibLib_readBi, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms,
-	(DRVSUPFUN)devGpibLib_biGpibWork, (DRVSUPFUN)devGpibLib_biGpibSrq}};
-
-gDset DSET_BO   = {5, {NULL, NULL, devGpibLib_initBo, NULL, 
-	devGpibLib_writeBo, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms,
-	(DRVSUPFUN)devGpibLib_boGpibWork, NULL}};
-
-gDset DSET_MBBI = {5, {NULL, NULL, devGpibLib_initMbbi, NULL, 
-	devGpibLib_readMbbi, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms,
-	(DRVSUPFUN)devGpibLib_mbbiGpibWork, (DRVSUPFUN)devGpibLib_mbbiGpibSrq}};
-
-gDset DSET_MBBO = {5, {NULL, NULL, devGpibLib_initMbbo, NULL, 
-	devGpibLib_writeMbbo, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms,
-	(DRVSUPFUN)devGpibLib_mbboGpibWork, NULL}};
-
-gDset DSET_SI   = {5, {NULL, NULL, devGpibLib_initSi, NULL, 
-	devGpibLib_readSi, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms,
-	(DRVSUPFUN)&devGpibLib_stringinGpibWork, (DRVSUPFUN)devGpibLib_stringinGpibSrq}};
-
-gDset DSET_SO   = {5, {NULL, NULL, devGpibLib_initSo, NULL, 
-	devGpibLib_writeSo, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms, 
-	(DRVSUPFUN)devGpibLib_stringoutGpibWork, NULL}};
-
-gDset DSET_LI   = {5, {NULL, NULL, devGpibLib_initLi, NULL, 
-	devGpibLib_readLi, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms, 
-	(DRVSUPFUN)devGpibLib_liGpibWork, (DRVSUPFUN)devGpibLib_liGpibSrq}};
-
-gDset DSET_LO   = {5, {NULL, NULL, devGpibLib_initLo, NULL, 
-	devGpibLib_writeLo, (DRVSUPFUN)&devXxKeithleyDMM199Gpib_Parms, 
-	(DRVSUPFUN)devGpibLib_loGpibWork, NULL}};
 
 /******************************************************************************
  *
@@ -177,29 +116,6 @@ extern int ibSrqDebug;		/* declared in the GPIB driver */
  *
  ******************************************************************************/
 
-static  char            *offOnList[] = { "Off", "On" };
-static  struct  devGpibNames   offOn = { 2, offOnList, NULL, 1 };
-
-static  char            *initNamesList[] = { "Init", "Init" };
-static  struct  devGpibNames   initNames = { 2, initNamesList, NULL, 1 };
-
-static  char    *disableEnableList[] = { "Disable", "Enable" };
-static  struct  devGpibNames   disableEnable = { 2, disableEnableList, NULL, 1 };
-
-static  char    *resetList[] = { "Reset", "Reset" };
-static  struct  devGpibNames   reset = { 2, resetList, NULL, 1 };
-
-static  char    *lozHizList[] = { "50 OHM", "IB_Q_HIGH Z" };
-static  struct  devGpibNames   lozHiz = {2, lozHizList, NULL, 1};
-
-static  char    *invertNormList[] = { "INVERT", "NORM" };
-static  struct  devGpibNames   invertNorm = { 2, invertNormList, NULL, 1 };
-
-static  char    *fallingRisingList[] = { "FALLING", "RISING" };
-static  struct  devGpibNames   fallingRising = { 2, fallingRisingList, NULL, 1 };
-
-static  char    *clearList[] = { "CLEAR", "CLEAR" };
-static  struct  devGpibNames   clear = { 2, clearList, NULL, 1 };
 
 /******************************************************************************
  *
@@ -213,16 +129,6 @@ static  struct  devGpibNames   clear = { 2, clearList, NULL, 1 };
  *
  ******************************************************************************/
 
-static  char            *intExtSsBmStopList[] = { "INTERNAL", "EXTERNAL",
-				"SINGLE SHOT", "BURST MODE", "STOP" };
-
-static  unsigned long   intExtSsBmStopVal[] = { 0, 1, 2, 3, 2 };
-
-static  struct  devGpibNames    intExtSsBm = { 4, intExtSsBmStopList, 
-				intExtSsBmStopVal, 2 };
-
-static  struct  devGpibNames    intExtSsBmStop = { 5, intExtSsBmStopList,
-                                        intExtSsBmStopVal, 3 };
 
 /******************************************************************************
  *
@@ -239,9 +145,10 @@ static  struct  devGpibNames    intExtSsBmStop = { 5, intExtSsBmStopList,
  * characters.  You must take care when defining input strings so you include
  * them as well.
  *
+ * EXAMPLE:
+ * static char	*(userOffOn[]) = {"USER OFF;", "USER ON;", NULL};
  ******************************************************************************/
 
-static char	*(userOffOn[]) = {"USER OFF;", "USER ON;", NULL};
 
 /******************************************************************************
  *
@@ -272,35 +179,6 @@ static struct gpibCmd gpibCmds[] =
 /* The following is the number of elements in the command array above.  */
 #define NUMPARAMS	sizeof(gpibCmds)/sizeof(struct gpibCmd)
 
-/******************************************************************************
- *
- * Structure containing the user's functions and operating parameters needed
- * by the gpib library functions.
- *
- * The magic SRQ parm is the parm number that, if specified on a passive
- * record, will cause the record to be processed automatically when an
- * unsolicited SRQ interrupt is detected from the device.
- *
- * If the parm is specified on a non-passive record, it will NOT be processed
- * when an unsolicited SRQ is detected.
- *
- * In the future, the magic SRQ parm records will be processed as "I/O event
- * scanned"... not passive.
- *
- ******************************************************************************/
-static struct  devGpibParmBlock devXxKeithleyDMM199Gpib_Parms = {
-  &KeithleyDMM199Debug,         /* debugging flag pointer */
-  -1,                   /* device does not respond to writes */
-  TIME_WINDOW,          /* # of clock ticks to skip after a device times out */
-  NULL,                 /* hwpvt list head */
-  gpibCmds,             /* GPIB command array */
-  NUMPARAMS,            /* number of supported parameters */
-  -1,			/* magic SRQ param number (-1 if none) */
-  "devXxKeithleyDMM199Gpib",	/* device support module type name */
-  DMA_TIME,		/* # of clock ticks to wait for DMA completions */
-  NULL,			/* SRQ handler function (NULL if none) */
-  NULL			/* secondary conversion routine (NULL if none) */
-};
 
 /******************************************************************************
  *
@@ -310,110 +188,21 @@ static struct  devGpibParmBlock devXxKeithleyDMM199Gpib_Parms = {
  * with a param value of 1.
  *
  ******************************************************************************/
-STATIC long 
-init_dev_sup(int parm)
+static struct  devGpibParmBlock devSupParms;
+static long init_ai(int parm)
 {
-  return(devGpibLib_initDevSup(parm,&DSET_AI));
-}
-
-/******************************************************************************
- *
- * Print a report of operating statistics for all devices supported by this
- * module.
- *
- * This function will no longer be required after epics 3.3 is released
- *
- ******************************************************************************/
-STATIC long
-report(void)
-{
-  return(devGpibLib_report(&DSET_AI));
-}
-/******************************************************************************
- *
- * A sample SRQ handler.  This one is taken from the DC5009 gpib device support
- * module.  Its primary function is to check the serial poll byte to determine
- * why an SRQ was generated from the device.  If the SRQ is an operation
- * complete, and the GPIB library code was expecting one, it would have left
- * a pointer to a function that can be used to finish processing the 
- * transaction that solicited the OPC SRQ.  In other cases, an error or event
- * of interest has occured and notice should be taken.
- *
- * This is invoked by the linkTask when an SRQ is detected from a device
- * operated by this module.
- *
- * It calls the work routine associated with the type of record expecting
- * the SRQ response.
- *
- * No semaphore locks are needed around the references to anything in the
- * hwpvt structure, because it is static unless modified by the linkTask and
- * the linkTask is what will execute this function.
- *
- * THIS ROUTINE WILL GENERATE UNPREDICTABLE RESULTS IF...
- * - the MAGIC_SRQ_PARM command is a GPIBREADW command.
- * - the device generates unsolicited SRQs while processing GPIBREADW commands.
- *
- * In general, this function will have to be modified for each device
- * type that SRQs are to be supported.  This is because the serial poll byte
- * format varies from device to device.
- *
- ******************************************************************************/
-
-#define	DC5009_GOODBITS	0xef	/* I only care about these bits */
-
-#define	DC5009_PON	65	/* power just turned on */
-#define DC5009_OPC	66	/* operation just completed */
-#define	DC5009_USER	67	/* user requested SRQ */
-
-STATIC int srqHandler(struct hwpvt *phwpvt, int srqStatus)
-{
-  int	status = IDLE;		/* assume device will be idle when finished */
-
-  if (KeithleyDMM199Debug || ibSrqDebug)
-    printf("dc5009 srqHandler(0x%08.8X, 0x%02.2X): called\n", phwpvt, srqStatus);
-
-  switch (srqStatus & DC5009_GOODBITS) {
-  case DC5009_OPC:
-
-    /* Invoke the command-type specific SRQ handler */
-    if (phwpvt->srqCallback != NULL)
-      status = ((*(phwpvt->srqCallback))(phwpvt->parm, srqStatus));
-    else
-      printf("dc5009 srqHandler: Unsolicited operation complete from DC5009 device support!\n");
-    break;
-/* BUG - I have to clear out the error status by doing an err? read operation */
-
-  case DC5009_USER:
-
-    /* user requested srq event is specific to the Dc5009 */
-      printf("dc5009 srqHandler: Dc5009 User requested srq event link %d, device %d\n", phwpvt->link, phwpvt->device);
-      break;
-/* BUG - I have to clear out the error status by doing an err? read operation */
-
-  case DC5009_PON:
-
-    printf("dc5009 srqHandler: Power cycled on DC5009\n");
-    break;
-/* BUG - I have to clear out the error status by doing an err? read operation */
-
-  default:
-
-
-    if (phwpvt->unsolicitedDpvt != NULL)
-    {
-      if(KeithleyDMM199Debug || ibSrqDebug)
-        printf("dc5009 srqHandler: Unsolicited SRQ being handled from link %d, device %d, status = 0x%02.2X\n",
-          phwpvt->link, phwpvt->device, srqStatus);
-
-      ((struct gpibDpvt*)(phwpvt->unsolicitedDpvt))->head.callback.callback = ((struct gpibDpvt *)(phwpvt->unsolicitedDpvt))->process;
-      ((struct gpibDpvt *)(phwpvt->unsolicitedDpvt))->head.callback.priority = ((struct gpibDpvt *)(phwpvt->unsolicitedDpvt))->processPri;
-      callbackRequest((CALLBACK*)phwpvt->unsolicitedDpvt);
-    }
-    else
-    {
-      printf("dc5009 srqHandler: Unsolicited SRQ ignored from link %d, device %d, status = 0x%02.2X\n",
-          phwpvt->link, phwpvt->device, srqStatus);
-    }
-  }
-  return(status);
+	if (parm==0)  {
+		devSupParms.debugFlag = &KeithleyDMM199Debug;
+		devSupParms.respond2Writes = -1;
+		devSupParms.timeWindow = TIME_WINDOW;
+		devSupParms.hwpvtHead = 0;
+		devSupParms.gpibCmds = gpibCmds;
+		devSupParms.numparams = NUMPARAMS;
+		devSupParms.magicSrq = 0;
+		devSupParms.name = "devXxKeithleyDMM199Gpib";
+		devSupParms.timeout = DMA_TIME;
+		devSupParms.srqHandler = devGpibLib_srqHandler;
+		devSupParms.wrConversion = 0;
+	}
+ 	return(devGpibLib_initDevSup(parm, &DSET_AI));
 }

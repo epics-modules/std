@@ -1,49 +1,99 @@
-# sample database using all the different types of statistics
-record(ai,"$(P)memory")
-{
-	field(DTYP,"VX stats")
+record(ai,"$(P)memoryUsedPercent") {
 	field(SCAN,"I/O Intr")
+	field(DTYP,"VX stats")
 	field(INP,"@memory")
-	field(HOPR,"100.0")
 	field(HIHI,"90.0")
 	field(HIGH,"60.0")
-	field(HHSV, "MAJOR")
-	field(HSV, "MINOR")
+	field(HHSV,"MAJOR")
+	field(HSV,"MINOR")
+	field(PREC,"2")
 }
-record(ai,"$(P)cpu")
-{
-	field(DTYP,"VX stats")
+record(ai,"$(P)memoryTotal") {
 	field(SCAN,"I/O Intr")
-	field(INP,"@cpu")
-	field(HOPR,"100.0")
-	field(HIHI,"90.0")
-	field(HIGH,"60.0")
-	field(HHSV, "MAJOR")
-	field(HSV, "MINOR")
+	field(DTYP,"VX stats")
+	field(INP,"@memoryTotal")
+	field(PREC,"6")
 }
-record(ai,"$(P)fd")
-{
-	field(DTYP,"VX stats")
+record(ai,"$(P)memoryUsed") {
 	field(SCAN,"I/O Intr")
+	field(DTYP,"VX stats")
+	field(INP,"@memoryUsed")
+	field(PREC,"6")
+}
+record(ai,"$(P)memoryFree") {
+	field(SCAN,"I/O Intr")
+	field(DTYP,"VX stats")
+	field(INP,"@memoryFree")
+	field(PREC,"6")
+}
+record(ai,"$(P)fdUsedPercent") {
+	field(SCAN,"I/O Intr")
+	field(DTYP,"VX stats")
 	field(INP,"@fd")
-	field(HOPR,"100.0")
 	field(HIHI,"90.0")
 	field(HIGH,"60.0")
-	field(HHSV, "MAJOR")
-	field(HSV, "MINOR")
+	field(HHSV,"MAJOR")
+	field(HSV,"MINOR")
+	field(PREC,"0")
 }
-record(ao,"$(P)memoryScanPeriod")
-{
+record(longin,"$(P)fdTotal") {
+	field(SCAN,"I/O Intr")
+	field(DTYP,"VX stats")
+	field(INP,"@fdTotal")
+}
+record(longin,"$(P)fdUsed") {
+	field(SCAN,"I/O Intr")
+	field(DTYP,"VX stats")
+	field(INP,"@fdUsed")
+}
+record(longin,"$(P)fdFree") {
+	field(SCAN,"I/O Intr")
+	field(DTYP,"VX stats")
+	field(INP,"@fdFree")
+}
+record(ai,"$(P)cpuUsedPercent") {
+	field(SCAN,"I/O Intr")
+	field(DTYP,"VX stats")
+	field(INP,"@cpu")
+	field(HIHI,"90.0")
+	field(HIGH,"60.0")
+	field(HHSV,"MAJOR")
+	field(HSV,"MINOR")
+	field(PREC,"1")
+}
+record(ao,"$(P)memoryScanPeriod") {
 	field(DTYP,"VX stats")
 	field(OUT,"@memoryScanPeriod")
 }
-record(ao,"$(P)fdScanPeriod")
-{
+record(ao,"$(P)memoryTotalScanPeriod") {
+	field(DTYP,"VX stats")
+	field(OUT,"@memoryTotalScanPeriod")
+}
+record(ao,"$(P)memoryUsedScanPeriod") {
+	field(DTYP,"VX stats")
+	field(OUT,"@memoryUsedScanPeriod")
+}
+record(ao,"$(P)memoryFreeScanPeriod") {
+	field(DTYP,"VX stats")
+	field(OUT,"@memoryFreeScanPeriod")
+}
+record(ao,"$(P)fdScanPeriod") {
 	field(DTYP,"VX stats")
 	field(OUT,"@fdScanPeriod")
 }
-record(ao,"$(P)cpuScanPeriod")
-{
+record(ao,"$(P)fdTotalScanPeriod") {
+	field(DTYP,"VX stats")
+	field(OUT,"@fdTotalScanPeriod")
+}
+record(ao,"$(P)fdUsedScanPeriod") {
+	field(DTYP,"VX stats")
+	field(OUT,"@fdUsedScanPeriod")
+}
+record(ao,"$(P)fdFreeScanPeriod") {
+	field(DTYP,"VX stats")
+	field(OUT,"@fdFreeScanPeriod")
+}
+record(ao,"$(P)cpuScanPeriod") {
 	field(DTYP,"VX stats")
 	field(OUT,"@cpuScanPeriod")
 }
