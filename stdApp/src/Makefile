@@ -148,7 +148,7 @@ INC += symTable.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
-std_LIBS += mpf mpfEpics
+std_LIBS += mpf mpfEpics mpfSerial
 std_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
