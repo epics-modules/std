@@ -86,8 +86,13 @@
  *                    This caused saveData to behave as if realTime1D were on at boot.
  *                    Added code to print file-write time if debug_saveData==1.
  * .26 07-22-02  tmm  v1.13 null terminate DBR_STRING variables
+ * .27 04-26-04  tmm  v1.14 Allow user to specify the value of the sscan-record field,
+ *                    DATA, on which saveData signals that the sscan record should wait.
+ *                    If 0 (the default) saveData will signal when a scan starts; if 1,
+ *                    when the scan posts data.  This is specified with the volatile
+ *                    variable saveData_HandshakeOnDATAHigh.
+ *                    Also, fixes for a few inconsequential compiler warnings.
  */
-
 
 #define FILE_FORMAT_VERSION (float)1.3
 #define SAVE_DATA_VERSION   "1.13.0"
@@ -763,7 +768,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.4.2.2 2004-04-26 15:44:37 mooney Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.4.2.3 2004-04-26 15:47:14 mooney Exp $\n");
 }
 
 void saveData_Info() {
