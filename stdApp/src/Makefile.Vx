@@ -75,12 +75,6 @@ clean::
 	@$(RM) dbLoadRecords.c dbLoadRecords_lex.c dbLoadTemplate.c \
 		dbLoadTemplate_lex.c
 
-# Add routines we need that were deleted in going from 3.13.0.beta12 to 3.13.1
-# Let's see if we can do without these routines
-#SRCS.c += ../locationProbe.c
-#SRCS.c += ../ldpp.c
-
-
 # Pete Jemian's support for X-ray Instrumentation Associates
 # HSC-1 slit controller (SNL program)
 PROD += xiahsc.o
