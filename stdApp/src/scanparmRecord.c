@@ -43,19 +43,22 @@
 
 
 
+#ifdef vxWorks
 #include	<vxWorks.h>
+#endif
 #include	<types.h>
 #include	<stdioLib.h>
-#include	<lstLib.h>
 #include	<string.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
+#include	<dbEvent.h>
 #include	<dbFldTypes.h>
 #include	<errMdef.h>
 #include	<special.h>
 #include	<recSup.h>
+#include	<recGbl.h>
 #define GEN_SIZE_OFFSET
 #include	"scanparmRecord.h"
 #undef GEN_SIZE_OFFSET
