@@ -12,9 +12,22 @@
   <h1>Standard Support<BR>Release Notes</h1>
 </center>
 
-<h2>Release 1-4,&nbsp;&nbsp;????, 2003</h2>
+<h2>Release 1-4,&nbsp;&nbsp;January 29, 2004</h2>
 
 <ul>
+  <li>Added or updated documentation for IK320, autoSaveRestore, epid record,
+      genSub record, gpibRecord, lookup-table (interp), sCalcout record, saveData
+      file format, scaler record, sscan record, sseq record, table record,
+      transform record, and vme record.</li>
+  <li>Added autosave request files for BunchClkGenA, IK320, scaler, SGM, 4step,
+      scan parameters, sscan record, swait record, table record, transform record,
+      userAve, userCalcs, userStringCalcs, userTransforms</li>
+  <li>interp - Added this support for lookup-table applications</li>
+  <li>module_types.c - moved to xxx module </li>
+  <li>std no longer makes choices of objects in base for xxx</li>
+  <li>BitBus is no longer supported</li>
+  <li>saveData - saveData_SetCptWait() function replaced by saveData_SetCptWait_ms() because PPC processors cannot use floating point arguments in st.cmd</li>
+
   <li>
     Heidenhain IK320 bug fixes.
     <ul>
