@@ -72,8 +72,19 @@
  *                     bit has been marked, then treat the value as new (don't do the calc)
  *                     In special, if the value is being written to as a direct result of
  *                     our processing (i.e., if PACT != 0), then don't mark the bitmap.
+ * .21  06-14-02  tmm  v5.5: If new alarm severity >= INVALID_ALARM, and IVLA (new
+ *                     field in this version) is "Do Nothing", just complete
+ *                     alarm handling and return.  On first valid calculation,
+ *                     post all value fields.  Otherwise there's no way for a
+ *                     client  (e.g. soft motor) to determine if the zero it
+ *                     received during init is real or will soon be amended.
+ * .22  04-09-03  tmm  v5.6: Change arg list to sCalcPostfix.
+ * .23  06-01-03  tmm  v5.7: Added DBE_LOG to all db_post_events() calls..
+ * .23  08-28-03  tmm  v5.8: test for new value had typo which resulted in a zero,
+ *                     value always looking old (no recalc unless the PV had been
+ *                     marked as changed in the .MAP bitmap)
  */
-#define VERSION 5.4
+#define VERSION 5.8
 
 #include	<vxWorks.h>
 #include	<types.h>
@@ -111,6 +122,8 @@
 			  printf(FMT,V); } }
 #endif
 volatile int    transformRecordDebug = 0;
+
+#define DEBUG_LEVEL (transformRecordDebug + 10*ptran->tpro)
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -178,10 +191,12 @@ struct rpvtStruct {
 	WDOG_ID		wd_id;
 	short		wd_id_LOCK;
 	short		caLinkStat; /* NO_CA_LINKS,CA_LINKS_ALL_OK,CA_LINKS_NOT_OK */
+	short		firstCalcPosted;
 };
 
-/* If the .dbd file changes, these must also change. */
+/* These must agree with the .dbd file. */
 #define INFIX_SIZE 40
+#define POSTFIX_SIZE 240
 #define ARG_MAX 16
 /* Fldnames should have ARG_MAX elements */
 static char Fldnames[ARG_MAX][FLDNAME_SZ] =
@@ -196,9 +211,8 @@ init_record(transformRecord *ptran, int pass)
 	struct link		*pinlink, *poutlink;
 	double			*pvalue, *plvalue;
 	short			error_number;
-	/* ptr to arrays of ptrs to buffers holding infix, postfix expressions */
-	char			*pclcbuf, **pprpcbuf;	
-	/* for checking links */
+	/* buffers holding infix, postfix expressions */
+	char			*pclcbuf, *prpcbuf;	
     unsigned short	*pInLinkValid, *pOutLinkValid;
     struct dbAddr	dbAddr;
     struct rpvtStruct	*prpvt;
@@ -223,19 +237,18 @@ init_record(transformRecord *ptran, int pass)
 	pvalue = &ptran->a;
 	plvalue = &ptran->la;
 	pclcbuf = ptran->clca;	/* infix expressions */
-	pprpcbuf = (char **)&(ptran->rpca);	/* postfix expressions */
+	prpcbuf = ptran->rpca;	/* postfix expressions */
 	pcalcInvalid = &ptran->cav;
 	for (i = 0; i < ARG_MAX;
 	     i++, pinlink++, poutlink++, pvalue++, plvalue++, pInLinkValid++,
-		pOutLinkValid++, pclcbuf += INFIX_SIZE, pprpcbuf++, pcalcInvalid++) {
+		pOutLinkValid++, pclcbuf += INFIX_SIZE, prpcbuf += POSTFIX_SIZE,
+		pcalcInvalid++) {
 
 		Debug(25, "init_record: ...field %s\n", Fldnames[i]);
-		*pprpcbuf = NULL;
-
 		/*** check input links ***/
 		if (pinlink->type == CONSTANT) {
 			recGblInitConstantLink(pinlink,DBF_DOUBLE,pvalue);
-			db_post_events(ptran, pvalue, DBE_VALUE);
+			db_post_events(ptran, pvalue, DBE_VALUE|DBE_LOG);
             *pInLinkValid = transformIAV_CON;
 		}
         /* see if the PV resides on this ioc */
@@ -247,7 +260,7 @@ init_record(transformRecord *ptran, int pass)
             *pInLinkValid = transformIAV_EXT_NC;
              prpvt->caLinkStat = CA_LINKS_NOT_OK;
         }
-        db_post_events(ptran,pInLinkValid,DBE_VALUE);
+        db_post_events(ptran,pInLinkValid,DBE_VALUE|DBE_LOG);
 
 		/*** check output links ***/
 		if (poutlink->type == CONSTANT) {
@@ -262,7 +275,7 @@ init_record(transformRecord *ptran, int pass)
             *pOutLinkValid = transformIAV_EXT_NC;
              prpvt->caLinkStat = CA_LINKS_NOT_OK;
         }
-        db_post_events(ptran,pOutLinkValid,DBE_VALUE);
+        db_post_events(ptran,pOutLinkValid,DBE_VALUE|DBE_LOG);
 
 		/*** check and convert calc expressions ***/
 		*pcalcInvalid = 0; /* empty expression is valid */
@@ -270,20 +283,12 @@ init_record(transformRecord *ptran, int pass)
 			/* make sure it's no longer than INFIX_SIZE characters */
 			pclcbuf[INFIX_SIZE - 1] = (char) 0;
 			Debug(19, "init_record: infix expression: '%s'\n", pclcbuf);
-			*pcalcInvalid = sCalcPostfix(pclcbuf, pprpcbuf, &error_number);
+			*pcalcInvalid = sCalcPostfix(pclcbuf, prpcbuf, &error_number);
 			if (*pcalcInvalid) {
 				recGblRecordError(S_db_badField,(void *)ptran,
 					"transform: init_record: Illegal CALC field");
 			}
-			db_post_events(ptran,pcalcInvalid,DBE_VALUE);
-			if (transformRecordDebug+10*ptran->tpro >= 19) {
-				printf("transform(%s):init_record: postfix expression:", ptran->name);
-				for (j = 0; (*pprpcbuf)[j] != BAD_EXPRESSION; j++) {
-					printf(" %2d", (*pprpcbuf)[j]);
-					if ((*pprpcbuf)[j] == END_STACK) break;
-				}
-				printf("\n");
-			}
+			db_post_events(ptran,pcalcInvalid,DBE_VALUE|DBE_LOG);
 		}
 		*plvalue = *pvalue;
 	}
@@ -310,11 +315,14 @@ process(transformRecord *ptran)
 	long			status;
 	struct link		*plink;
 	double			*pval, *plval;
-	char			**pprpcbuf, *pclcbuf;
+	char			*prpcbuf, *pclcbuf;
     struct rpvtStruct	*prpvt = (struct rpvtStruct *)ptran->rpvt;
 	int				*pu, *plu;
 
-	Debug(15, "process: entry%s\n", ".");
+	if (DEBUG_LEVEL >= 15) {
+		printf("transform(%s):process: entry, NSTA=%d, NSEV=%d\n",
+			ptran->name, ptran->nsta, ptran->nsev);
+	}
 	ptran->pact = TRUE;
 	ptran->udf = FALSE;
 
@@ -334,39 +342,56 @@ process(transformRecord *ptran)
 				Debug(15, "process: dbGetLink() failed for field %s.\n", Fldnames[i]);
 				*pval = 0.;
 			}
-			Debug(15, " ...process: Value is %f.\n", *pval);
+			if (DEBUG_LEVEL >= 15) {
+				printf("transform(%s.%s):process: Val = %f, NSTA=%d, NSEV=%d\n",
+					ptran->name, Fldnames[i], *pval, ptran->nsta, ptran->nsev);
+			}
 		}
+	}
+
+	if (DEBUG_LEVEL >= 12) {
+		printf("transform(%s): NSTA=%d, NSEV=%d\n",
+			ptran->name, ptran->nsta, ptran->nsev);
+	}
+
+	if ((ptran->nsev >= INVALID_ALARM) && (ptran->ivla == transformIVLA_DO_NOTHING)) {
+		recGblGetTimeStamp(ptran);
+		alarm(ptran);
+		recGblResetAlarms(ptran); /* monitor normally would do this */
+		ptran->pact = FALSE;
+		return (0);
 	}
 
 	/* Do calculations. */
 	plink = &ptran->inpa;
 	pval = &ptran->a;
 	plval = &ptran->la;
-	pprpcbuf = (char **) &(ptran->rpca);
+	prpcbuf = (char *)ptran->rpca;
 	pclcbuf = (char *)ptran->clca;
 	for (i=0; i < ARG_MAX;
-			i++, plink++, pval++, plval++, pprpcbuf++, pclcbuf+=INFIX_SIZE) {
+			i++, plink++, pval++, plval++,
+			prpcbuf+=POSTFIX_SIZE, pclcbuf+=INFIX_SIZE) {
 		no_inlink = plink->type == CONSTANT;
 		/* if value is same as last time, and bitmap is unmarked, don't calc */
 		pu = (int *)pval;
 		plu = (int *)plval;
 		same = (*pval==0. && *plval==0.) || ((pu[0] == plu[0]) && (pu[1] == plu[1]));
-		if (transformRecordDebug+10*ptran->tpro >= 15) {
+		if (DEBUG_LEVEL >= 15) {
 			printf("transform(%s.%1s): same=%d, (*pval==*plval) = %d, map=0x%x\n", ptran->name,
 				Fldnames[i], same, *pval == *plval, ptran->map);
 		}
-		if (transformRecordDebug+10*ptran->tpro >= 19) {
+		if (DEBUG_LEVEL >= 19) {
 			printf("   *pval=%f, *plval=%f, pu=%x,%x, plu=%x,%x\n",
 					*pval,*plval,pu[0],pu[1],plu[0],plu[1]);
 		}
 		new_value = (!same || ((ptran->map&(1<<i)) != 0));
-		postfix_ok = *pclcbuf && (**pprpcbuf != BAD_EXPRESSION);
+		postfix_ok = *pclcbuf && (*prpcbuf != BAD_EXPRESSION);
 		Debug(15, "process: %s input link; \n", no_inlink ? "NO" : "");
 		Debug(15, "process: value is %s\n", new_value ? "NEW" : "OLD");
 		Debug(15, "process: expression is%s ok\n", postfix_ok ? " " : " NOT");
 		if (no_inlink && !new_value && postfix_ok) {
 			Debug(15, "process: calculating for field %s\n", Fldnames[i]);
-			if (sCalcPerform(&ptran->a, 16, NULL,0, pval, NULL,0, *pprpcbuf)) {
+			if (sCalcPerform(&ptran->a, 16, NULL,0, pval, NULL,0, prpcbuf)) {
 				recGblSetSevr(ptran, CALC_ALARM, INVALID_ALARM);
 				ptran->udf = TRUE;
 			}
@@ -383,7 +408,7 @@ process(transformRecord *ptran)
 			Debug(15, "process: field %s has an output link.\n", Fldnames[i]);
 			status = dbPutLink(plink, DBR_DOUBLE, pval, 1);
 			if (!RTN_SUCCESS(status)) {
-				Debug(15, "process: ERROR %d PUTTING TO OUTPUT LINK.\n", status);
+				Debug(15, "process: ERROR %ld PUTTING TO OUTPUT LINK.\n", status);
 			}
 		}
 	}
@@ -407,7 +432,7 @@ special(struct dbAddr *paddr, int after)
 	transformRecord	*ptran = (transformRecord *) (paddr->precord);
 	int				special_type = paddr->special;
 	short			error_number;
-	char			*pclcbuf, **pprpcbuf;
+	char			*pclcbuf, *prpcbuf;
 	struct link		*plink = &ptran->inpa;
     int				fieldIndex = dbGetFieldIndex(paddr);
 	/* link-check stuff */
@@ -438,34 +463,26 @@ special(struct dbAddr *paddr, int after)
 	switch (special_type) {
 	case (SPC_CALC):
 		pclcbuf = ptran->clca;
-		pprpcbuf = (char **)&(ptran->rpca);
+		prpcbuf = (char *)ptran->rpca;
 		pcalcInvalid = &ptran->cav;
 		for (i = 0;
 		     i < ARG_MAX && paddr->pfield != (void *) pclcbuf;
-		     i++, pclcbuf += INFIX_SIZE, pprpcbuf++, pcalcInvalid++);
+		     i++, pclcbuf+=INFIX_SIZE, prpcbuf+=POSTFIX_SIZE, pcalcInvalid++);
 		if (i < ARG_MAX) {
 			status = 0; /* empty expression is valid */
 			if (*pclcbuf) {
 				/* make sure it's no longer than INFIX_SIZE chars */
 				pclcbuf[INFIX_SIZE - 1] = (char) 0;
 				Debug(15, "special: infix expression: '%s'\n", pclcbuf);
-				status = sCalcPostfix(pclcbuf, pprpcbuf, &error_number);
+				status = sCalcPostfix(pclcbuf, prpcbuf, &error_number);
 				if (status) {
 					recGblRecordError(S_db_badField,(void *)ptran,
 						"transform:special: Illegal CALC field");
 				}
-				if (transformRecordDebug+10*ptran->tpro >= 5) {
-					printf("special: postfix expression:");
-					for (j = 0; ((char *)(*pprpcbuf))[j] != BAD_EXPRESSION; j++) {
-						printf(" %2d", ((unsigned char *)(*pprpcbuf))[j]);
-						if (((char *)(*pprpcbuf))[j] == END_STACK) break;
-					}
-					printf("\n");
-				}
 			}
 			if (*pcalcInvalid != status) {
 				*pcalcInvalid = status;
-				db_post_events(ptran, pcalcInvalid, DBE_VALUE);
+				db_post_events(ptran, pcalcInvalid, DBE_VALUE|DBE_LOG);
 			}
 		}
 		return (0);
@@ -494,7 +511,7 @@ special(struct dbAddr *paddr, int after)
 				/* get initial value if this is an input link */
 	            if (fieldIndex < transformRecordOUTA) {
 	                recGblInitConstantLink(plink,DBF_DOUBLE,pvalue);
-	                db_post_events(ptran,pvalue,DBE_VALUE);
+	                db_post_events(ptran,pvalue,DBE_VALUE|DBE_LOG);
 	            }
 				Debug(15, "special: ...constant link, i=%d\n", i);
 	            *plinkValid = transformIAV_CON;
@@ -517,7 +534,7 @@ special(struct dbAddr *paddr, int after)
 					Debug(15, "special: ...CA link, i=%d, call wdStart()\n", i);
 	            }
 	        }
-	        db_post_events(ptran,plinkValid,DBE_VALUE);
+	        db_post_events(ptran,plinkValid,DBE_VALUE|DBE_LOG);
 		}
 
 		return(0);
@@ -560,21 +577,26 @@ alarm(transformRecord *ptran)
 static void 
 monitor(transformRecord *ptran)
 {
-	unsigned short  monitor_mask;
-	double         *pnew;
-	double         *pprev;
-	int             i;
+	unsigned short      monitor_mask;
+	double              *pnew, *pprev;
+	int                 i;
+    struct rpvtStruct   *prpvt = (struct rpvtStruct *)ptran->rpvt;
 
 	monitor_mask = recGblResetAlarms(ptran);
-	monitor_mask = DBE_VALUE;
+	monitor_mask = DBE_VALUE|DBE_LOG;
 
 	/* check all value fields for changes */
 	for (i = 0, pnew = &ptran->a, pprev = &ptran->la; i < ARG_MAX; i++, pnew++, pprev++) {
-		if (*pnew != *pprev) {
+		if ((*pnew != *pprev) || (prpvt->firstCalcPosted == 0)) {
+			if (DEBUG_LEVEL >= 15) {
+				printf("transform(%s.%1s):posting value (new=%f,prev=%f)\n",
+					ptran->name,Fldnames[i],*pnew, *pprev);
+			}
 			db_post_events(ptran, pnew, monitor_mask);
 			*pprev = *pnew;
 		}
 	}
+	prpvt->firstCalcPosted = 1;
 	return;
 }
 
@@ -626,12 +648,12 @@ static void checkLinks(struct transformRecord *ptran)
             }
             else if (!stat && (*plinkValid == transformIAV_EXT)) {
                 *plinkValid = transformIAV_EXT_NC;
-                db_post_events(ptran,plinkValid,DBE_VALUE);
+                db_post_events(ptran,plinkValid,DBE_VALUE|DBE_LOG);
                 caLinkNc = 1;
             } 
             else if (stat && (*plinkValid == transformIAV_EXT_NC)) {
                 *plinkValid = transformIAV_EXT;
-                db_post_events(ptran,plinkValid,DBE_VALUE);
+                db_post_events(ptran,plinkValid,DBE_VALUE|DBE_LOG);
             } 
         }
         
