@@ -37,11 +37,10 @@ Contents</H2>
 <A NAME="Overview"></A>
 <H2>
 Overview</H2>
-This documentation describes version 5.0 of the EPICS table record, and
+This documentation describes version 5.13 of the EPICS table record, and
 related EPICS software recommended for building and using it. This version
-of the record is compatible with EPICS Release 3.13, and it may be compatible
-with later releases, but it is not compatible with any earlier releases
-of EPICS.
+of the record is compatible with EPICS Release 3.13.X, and it is not compatible
+with any earlier releases of EPICS, or with EPICS 3.14.
 <P>The table record controls six (or fewer) motors that drive an optical
 table, a platform that generally can move in three orthogonal directions
 (X, Y, and Z), and rotate about the X, Y, and Z axes by angles AX, AY,
@@ -49,9 +48,9 @@ and AZ.&nbsp; The record allows users to specify the point about which
 rotations are to occur--this is called the "fixed point" in the figures
 below.
 <P>The record assumes the platform rests on three pivot points named M0,
-M1, and M2. (See Figs. 1-3, below). The locations of these pivot points,
+M1, and M2. (See Figs. 1-4, below). The locations of these pivot points,
 and the manner in which they move, is specified by the field GEOM (loosely,
-the table geometry). Three geometries, named SRI, GEOCARS, and NEWPORT,
+the table geometry). Four geometries, named SRI, PNC, GEOCARS, and NEWPORT,
 are supported by this version of the table record.
 <BR>&nbsp;
 <BR>&nbsp;
@@ -61,23 +60,24 @@ are supported by this version of the table record.
 <CENTER>
 <P><IMG SRC="table_setup_SRI.adl.gif" >
 <BR>Figure 1 (SRI geometry)
+<P><IMG SRC="table_setup_PNC.adl.gif" >
+<BR>Figure 2 (PNC geometry)
 <P><IMG SRC="table_setup_GEOCARS.adl.gif" >
-<BR>Figure 2 (GEOCARS geometry)
+<BR>Figure 3 (GEOCARS geometry)
 <P><IMG SRC="table_setup_NEWPORT.adl.gif" >
-<BR>Figure 3 (NEWPORT geometry)</CENTER>
-
+<BR>Figure 4 (NEWPORT geometry)
+</CENTER>
 <BR>&nbsp;
 <P><BR>
-<P>In the SRI and GEOCARS geometries, three motors (M0Y, M1Y, M2Y) move
-M0, M1, and M2 in the Y direction; one motor (M0X) moves M0 in the X direction;
-one motor (M2X) moves M2 in the X direction; and one motor (M2Z) moves
+<P>In the SRI, PNC, and GEOCARS geometries, three motors (M0Y, M1Y, M2Y) move
+M0, M1, and M2 in the Y direction (vertically); one motor (M0X) moves M0 in the
+X direction; one motor (M2X) moves M2 in the X direction; and one motor (M2Z) moves
 M2 in the Z direction. M1 is unconstrained in the X-Z plane; M0 is unconstrained
 along the Z axis.
 <P>In the NEWPORT geometry, the three motors (M0Y, M1Y, M2Y) vary the lengths
 of the table legs (i.e., the distances between the table top and pivot
 points M0, M1, and M2). Thus, in this geometry the pivot points do not
-move vertically. Otherwise, this geometry is similar to the SRI and GEOCARS
-geometries.
+move vertically.
 <P>You are (or the instrument specialist is) expected to customize the
 table software by specifying the motors it is to control, and to set up
 the table by describing the locations of the pivot points, and by specifying
@@ -105,7 +105,7 @@ measurements are practical (e.g., a corner of the table surface); and
 the vector, S, which locates the fixed point relative to R.  These
 vectors are specified with the fields RX, RY, RZ, SX, SY, SZ.  They
 are defined relative to the origin of the table's local coordinate system.
-(See Figs. 1-3.)
+(See Figs. 1-4.)
 <P>If R=0, the new system is nearly identical to the old, except for the value
 SX, whose definition has changed such that SX_new = LX - SX_old.  (In most
 cases, SX_old was equal to LX/2, so no change is required.)
@@ -841,7 +841,7 @@ down to find the actual item.</CAPTION>
 
 <TD>DOUBLE&nbsp;</TD>
 
-<TD>(0:"SRI", 1:"GEOCARS", 2:"NEWPORT") Specify the arrangement of table
+<TD>(0:"SRI", 1:"GEOCARS", 2:"NEWPORT", 3:"PNC") Specify the arrangement of table
 legs and motors.</TD>
 </TR>
 
@@ -2452,7 +2452,8 @@ kind of messy in words.  See Fig. 1-3 above.)
 <UL>
 <DL>
 <DT><P><B>Specify the locations of the pivot points (legs).</B>
-<DD><P>Select a table geometry by setting the field GEOM to "SRI", "GEOCARS", or "NEWPORT".
+<DD><P>Select a table geometry by setting the field GEOM to "SRI", "GEOCARS",
+"NEWPORT", or "PNC".
 	<DL>
 	<DT><P>SRI geometry</DT>
 	<DD>The distance between M0 and M1 is specified with the field LX.  (A
@@ -2469,16 +2470,21 @@ kind of messy in words.  See Fig. 1-3 above.)
 	LX. (A line perpendicular to M0-M2 defines the x direction of the table's
 	local coordinate system. The distance from M0 to M2 is specified with the
 	field LZ.</DD>
-
+	<DT><P>PNC geometry</DT>
+	<DD>The distance between M0 and M1 is specified with the field LX.  (A
+	line from M0 to M1 defines the positive x direction of the table's
+	local coordinate system.  The perpendicular distance from M2 to the
+	line M0-M1 is specified with the field LZ.</DD>
 
 	</DL>
 <DT><P><B>Specify the orientation of the table with respect to the laboratory coordinate system.</B>
 <DD><P>The table orientation is specified with YANG, the angle through which
 the table must be rotated from an arbitrarily chosen "standard" position to
-the position in which you are going to use it.  For the SRI geometry, when YANG=0, M2 is
-downstream.  For the GEOCARS geometry, when YANG=0, M1 is directly downstream from M2.
-As the table rotates clockwise (as seen from above) YANG increases.  (These standard
-positions are illustrated in Figs. 1-3.)
+the position in which you are going to use it.  For the SRI and PNC geometries, when
+YANG=0, M2 is downstream.  For the GEOCARS geometry, when YANG=0, M1 is directly
+downstream from M2.  For the NEWPORT geometry, when YANG=0, M2 is directly downstream
+from M0.  As the table rotates clockwise (as seen from above) YANG increases.
+(These standard positions are illustrated in Figs. 1-4.)
 <DT><P><B>Specify the point about which the table is to rotate.</B>
 <DD><P>This point is specified by (RZ, RY, RZ) and (SX, SY, SZ), as shown in Figs. 1-3, above. 
 </DL>
@@ -2507,7 +2513,7 @@ positions are illustrated in Figs. 1-3.)
 
 <TD>DOUBLE&nbsp;</TD>
 
-<TD>(0:"SRI", 1:"GEOCARS", 2:"NEWPORT") Specify the arrangement of table legs and motors.</TD>
+<TD>(0:"SRI", 1:"GEOCARS", 2:"NEWPORT", 3:"PNC") Specify the arrangement of table legs and motors.</TD>
 </TR>
 
 <TR>
@@ -4466,12 +4472,8 @@ Private fields</H2>
 <H2>
 Files</H2>
 The following table briefly describes the files required to implement and
-use the table record. The reader is assumed to be familiar with the <A HREF="http://www.aps.anl.gov/asd/controls/epics/EpicsDocumentation/AppDevManuals/iocAppBuildSRcontrol.html">EPICS
-Application Source/Release Control document</A> which describes how to
-build an EPICS application tree into which these files are placed. These
-files can all be obtained from the <A HREF="http://www.aps.anl.gov/xfd/SoftDist/Welcome.html">EPICS
-Software Distribution</A> (in the <A HREF="http://www.aps.anl.gov/xfd/SoftDist/Welcome.html#Custom_EPICS">custom-software
-section</A>).&nbsp;<!--------------------------------------------------------------------->
+use the table record.  
+&nbsp;<!--------------------------------------------------------------------->
 <P><TABLE BORDER >
 <TR>
 <TH COLSPAN="2">SOURCE CODE
@@ -4597,6 +4599,12 @@ to operate unless all of their non-blank link fields contain valid links.&nbsp;<
 </TR>
 
 <TR VALIGN=TOP>
+<TD>table_setup_PNC.adl&nbsp;</TD>
+
+<TD>Setup display for PNC geometry</TD>
+</TR>
+
+<TR VALIGN=TOP>
 <TD>table_full.adl&nbsp;</TD>
 
 <TD>Full control display</TD>
@@ -4657,6 +4665,6 @@ Restrictions</H2>
 Suggestions and comments to:</ADDRESS>
 
 <BR><A HREF="mailto:mooney@aps.anl.gov">Tim Mooney</A> : (mooney@aps.anl.gov)
-<BR>Last modified: February 2, 1999
+<BR>Last modified: January 15, 2004
 </BODY>
 </HTML>
