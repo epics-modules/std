@@ -1,3 +1,19 @@
+menu(sscanNOYES) {
+	choice(sscanNOYES_NO,"NO")
+	choice(sscanNOYES_YES,"YES")
+}
+menu(sscanDSTATE) {
+	choice(sscanDSTATE_UNPACKED, "UNPACKED")
+	choice(sscanDSTATE_TRIG_ARRAY_READ, "TRIG_ARRAY_READ")
+	choice(sscanDSTATE_ARRAY_READ_WAIT, "ARRAY_READ_WAIT")
+	choice(sscanDSTATE_SAVE_DATA_WAIT, "SAVE_DATA_WAIT")
+	choice(sscanDSTATE_PACKED, "PACKED")
+	choice(sscanDSTATE_POSTED, "POSTED")
+}
+menu(sscanLINKWAIT) {
+	choice(sscanLINKWAIT_YES,"YES")
+	choice(sscanLINKWAIT_NO,"NO")
+}
 menu(sscanP1SM) {
 	choice(sscanP1SM_Linear,"LINEAR")
 	choice(sscanP1SM_Table,"TABLE")
@@ -52,8 +68,12 @@ menu(sscanFAZE) {
 	choice(sscanFAZE_AFTER_SCAN_DO,"DO:AFTER_SCAN")
 	choice(sscanFAZE_AFTER_SCAN_WAIT,"WAIT:AFTER_SCAN")
 	choice(sscanFAZE_SCAN_DONE,"SCAN_DONE")
-	choice(sscanFAZE_PREVIEW,"PREVIEW")
+	choice(sscanFAZE_SAVE_DATA_WAIT,"WAIT:SAVE_DATA")
 	choice(sscanFAZE_SCAN_PENDING,"SCAN_PENDING")
+
+	choice(sscanFAZE_TRIG_ARRAY_READ,"TRIG_ARRAY_READ")
+	choice(sscanFAZE_ARRAY_READ_WAIT,"WAIT:ARRAY_READ")
+	choice(sscanFAZE_PREVIEW,"PREVIEW")
 }
 menu(sscanACQM) {
 	choice(sscanACQM_NORMAL,"NORMAL")
@@ -142,6 +162,16 @@ recordtype(sscan) {
 	field(WTNG,DBF_SHORT) {
 		prompt("Waiting for client(s)")
 		special(SPC_NOMOD)
+	}
+	field(AWAIT, DBF_SHORT) {
+		prompt("Waiting for data-storage client")
+		special(SPC_MOD)
+		pp(TRUE)
+	}
+	field(AAWAIT, DBF_MENU) {
+		prompt("AutoWait for data-storage client")
+		promptgroup(GUI_INPUTS)
+		menu(sscanNOYES)
 	}
 	field(DATA,DBF_SHORT) {
 		prompt("Scan data ready")
@@ -980,6 +1010,14 @@ recordtype(sscan) {
 		interest(1)
 		size(40)
 	}
+	field(A1PV,DBF_STRING) {
+		prompt("Array-read trigger 1 PV Name")
+		promptgroup(GUI_CALC)
+		asl(ASL0)
+		special(SPC_MOD)
+		interest(1)
+		size(40)
+	}
 	field(BSPV,DBF_STRING) {
 		prompt("Before Scan  PV Name")
 		promptgroup(GUI_CALC)
@@ -995,6 +1033,22 @@ recordtype(sscan) {
 		special(SPC_MOD)
 		interest(1)
 		size(40)
+	}
+	field(BSWAIT,DBF_MENU) {
+		prompt("Wait for completion?")
+		promptgroup(GUI_INPUTS)
+		asl(ASL0)
+		interest(1)
+		menu(sscanLINKWAIT)
+		initial("YES")
+	}
+	field(ASWAIT,DBF_MENU) {
+		prompt("Wait for completion?")
+		promptgroup(GUI_INPUTS)
+		asl(ASL0)
+		interest(1)
+		menu(sscanLINKWAIT)
+		initial("YES")
 	}
 	field(P1NV,DBF_MENU) {
 		prompt("P1  PV Status")
@@ -1574,6 +1628,12 @@ recordtype(sscan) {
 	}
 	field(T4NV,DBF_MENU) {
 		prompt("T4  PV Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sscanP1NV)
+	}
+	field(A1NV,DBF_MENU) {
+		prompt("A1  PV Status")
 		special(SPC_NOMOD)
 		interest(1)
 		menu(sscanP1NV)
@@ -6532,6 +6592,14 @@ recordtype(sscan) {
 		interest(1)
 		initial(1.0)
 	}
+	field(A1CD,DBF_FLOAT) {
+		prompt("A1 Cmnd")
+		promptgroup(GUI_INPUTS)
+		asl(ASL0)
+		special(SPC_MOD)
+		interest(1)
+		initial(1.0)
+	}
 	field(BSCD,DBF_FLOAT) {
 		prompt("Before Scan Cmnd")
 		promptgroup(GUI_INPUTS)
@@ -6608,5 +6676,13 @@ recordtype(sscan) {
 		interest(1)
 		menu(sscanACQT)
 		initial("SCALAR")
+	}
+	field(DSTATE,DBF_MENU) {
+		prompt("Data state")
+		promptgroup(GUI_COMMON)
+		asl(ASL0)
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sscanDSTATE)
 	}
 }
