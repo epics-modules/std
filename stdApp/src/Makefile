@@ -103,6 +103,9 @@ std_SRCS_vxWorks  += subAve.c
 # ioc status checking stuff
 std_SRCS_vxWorks   += iocCheck.c
 
+# gensub-based interpolation routines
+std_SRCS += interp.c
+
 # Register stuff
 std_SRCS += stdRegister.c
 std_SRCS_vxWorks += stdVXRegister.c
