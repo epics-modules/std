@@ -25,12 +25,6 @@ include "genSubRecord.dbd"
 device(wait,CONSTANT,devWaitIoEvent,"Soft Channel")
 device(scaler,VME_IO,devScaler,"Joerger VSC8/16")
 
-# Queensgate Piezo drive.
-#device(ao,BBGPIB_IO,devAoAX301,"PZT Bug")
-#device(ai,BBGPIB_IO,devAiAX301,"PZT Bug")
-#device(bo,BBGPIB_IO,devBoAX301,"PZT Bug")
-#device(longout,BBGPIB_IO,devLoAX301,"PZT Bug")
-
 # GP307 GPIB
 device(ai,GPIB_IO,devAiGP307Gpib,"Vg307 GPIB Instrument")
 device(bi,GPIB_IO,devBiGP307Gpib,"Vg307 GPIB Instrument")
@@ -77,7 +71,6 @@ device(stringout,GPIB_IO,devSoKeithleyDMM199,"KeithleyDMM199")
 
 # Generic GPIB record
 device(gpib,GPIB_IO,devGPIB,"GPIB (NI or HIDEOS)")
-#device(gpib,BBGPIB_IO,devGPIB,"GPIB (BitBusS)")
 
 # Bunch clock generator (Frank Lenkszus)
 device(ai,VME_IO,devAiBunchClkGen,"APS Bunch Clock")
