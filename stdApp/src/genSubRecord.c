@@ -1,30 +1,35 @@
-/* genSubRecord.c */
-
 /* genSubRecord.c - Record Support Routines for
  *                  General Subroutine Records
  *
  *      Author: Andy Foster
- *      Date:   12th November 1996
- *
- *	18/04/97	ajf	Fixed get_value, pvdes->pvalue, field. 
- *      18/06/97        ajf     Changed number of fields from 10 to 21.
  *
  *	History
  *	-------
- *	Version 1.0  15/10/97  ajf  Changes for 3.13.
- *	Version 1.1  31/10/97  ajf  Set precision of VERS field to 1.
+ *	Version 1.0  12/11/96  ajf  Created.
+ *	Version 1.1  18/04/97  ajf  Fixed get_value, pvdes->pvalue, field.
+ *      Version 1.2  18/06/97  ajf  Changed number of fields from 10 to 21.
+ *      Version 1.3  05/04/00  cjm  Fixed bug where fldnames was defined as
+ *                                  a static array. Cannot do this since there
+ *                                  are many instances of the genSub record.
+ *	Version 1.4  15/03/01  ajf  Changes for 3.13.
+ *                                  Set precision of VERS field to 1.
  *                                  Initialise "string" constants to 0.
+ *                                  Replace "symFindbyName" by "symFindbyNameEPICS"
+ *                                  for architectures which do not prepend an
+ *                                  "_" (i.e. PPC).
+ *      Version 1.5  11/12/03  ajf  Changes to comply with the new macro for 
+ *                                  "dbGetLink" in EPICS 3.13.9.
  *
  */
 
 #define DEBUG   0
-#define VERSION 1.1
+#define VERSION 1.5
 
 #include	<vxWorks.h>
 #include	<stdlib.h>
-#include        <stdio.h>
-#include	<string.h>
+#include	<stdio.h>
 #include	<lstLib.h>
+#include	<string.h>
 #include	<symLib.h>
 #include        <sysSymTbl.h>   /* for sysSymTbl*/
 #include        <a_out.h>       /* for N_TEXT */
@@ -38,15 +43,18 @@
 #include	<recSup.h>
 #include	<devSup.h>
 #include 	<special.h>
+#include        <epicsDynLink.h>
 
 #define GEN_SIZE_OFFSET
-#include	"genSubRecord.h"
+#include	<genSubRecord.h>
 #undef  GEN_SIZE_OFFSET
+
 
 /* Create RSET - Record Support Entry Table*/
 
 static long init_record();
 static long process();
+static long get_value();
 static long get_precision();
 static long cvt_dbaddr();
 static long get_array_info();
@@ -55,7 +63,6 @@ static long special();
 #define report             NULL
 #define initialize         NULL
 #define get_units          NULL
-#define get_value	   NULL
 #define get_graphic_double NULL
 #define get_control_double NULL
 #define get_alarm_double   NULL
@@ -83,8 +90,8 @@ struct rset genSubRSET={
 	get_control_double,
 	get_alarm_double };
 
-static void monitor( struct genSubRecord *, int );
-static long do_sub( struct genSubRecord * );
+static void monitor( genSubRecord *, int );
+static long do_sub( genSubRecord * );
 static long findField( int, struct dbAddr *, long *, long );
 
 #define ARG_MAX        21
@@ -101,14 +108,14 @@ static char Ofldnames[ARG_MAX][FLDNAME_SZ+1] =
     "VALH", "VALI", "VALJ", "VALK", "VALL", "VALM", "VALN",
     "VALO", "VALP", "VALQ", "VALR", "VALS", "VALT", "VALU" };
 
-/* This is a dummy area into which one of the above is copied */
-static char fldnames[ARG_MAX][FLDNAME_SZ+1];
-
 /* Sizes of field types */
 static int sizeofTypes[] = {0, 1, 1, 2, 2, 4, 4, 4, 8, 2};
 
+/* This is here so that input link checking can be switched on from the shell */
+int CHECKgensubLINKS = 0;
 
-static long init_record( struct genSubRecord *pgsub, int pass )
+
+static long init_record( genSubRecord *pgsub, int pass )
 {
   FUNCPTR        psubroutine;
   char           sub_type;
@@ -128,6 +135,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
   struct link    *plinkin;
   struct link    *plinkout;
   STATUS         ret;
+  char           fldnames[ARG_MAX][FLDNAME_SZ+1];
 
   status = 0;
   if( pass == 0 )
@@ -140,7 +148,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
         ufunct = pgsub->ufa;
         typptr = &pgsub->fta;
         valptr = &pgsub->a;
-	ovlptr = NULL;
+        ovlptr = NULL;
         nelptr = &pgsub->noa;
         memcpy( fldnames, Ifldnames, ARG_MAX*(FLDNAME_SZ+1) );
       }
@@ -183,7 +191,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
             num = (*nelptr)*(*totptr);
             if( num > MAX_ARRAY_SIZE )
             {
-              printf("Link %s - Array too large! %d Bytes\n", fldnames[i], num);
+              printf("Link %s - Array too large! %ld Bytes\n", fldnames[i], num);
               status = S_db_errArg;
             }
             else
@@ -206,7 +214,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
             num = (*nelptr)*MAX_STRING_SIZE;
             if( num > MAX_ARRAY_SIZE )
             {
-              printf("Link %s - Array too large! %d Bytes\n", fldnames[i], num);
+              printf("Link %s - Array too large! %ld Bytes\n", fldnames[i], num);
               status = S_db_errArg;
             }
             else
@@ -227,7 +235,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
             num = (*nelptr)*sizeofTypes[*typptr];
             if( num > MAX_ARRAY_SIZE )
             {
-              printf("Link %s - Array too large! %d Bytes\n", fldnames[i], num);
+              printf("Link %s - Array too large! %ld Bytes\n", fldnames[i], num);
               status = S_db_errArg;
             }
             else
@@ -264,6 +272,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
             strcpy(pgsub->snam, " ");
         }
         break;
+
       case (PV_LINK):
       case (DB_LINK):
       case (CA_LINK):
@@ -411,7 +420,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
             strcat(temp,pgsub->snam);
             ret = symFindByNameEPICS( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
 #if DEBUG
-            printf("Calling symFindByNameEPICS from init_record: %s\n", temp);
+            printf("Calling symFindByNameEPICS from init_record\n");
 #endif
             if( (ret < 0) || ((sub_type & N_TEXT) == 0) )
             {
@@ -429,9 +438,11 @@ static long init_record( struct genSubRecord *pgsub, int pass )
 }
 
 
-static long process( struct genSubRecord *pgsub )
+static long process( genSubRecord *pgsub )
 {
   int            i;
+  int            j;
+  int            len;
   char           sub_type;
   void           *sub_addr;
   char           temp[40];
@@ -447,13 +458,13 @@ static long process( struct genSubRecord *pgsub )
 
   pgsub->pact = TRUE;
   status      = 0;
-  options     = 0;
 
   if( pgsub->lflg == genSubLFLG_READ )
   {
     /* Get the Subroutine Name from the Link and look it up */
 
     nRequest = 1;
+    options  = 0;
     status   = dbGetLink( &(pgsub->subl), DBR_STRING, pgsub->snam, &options, &nRequest );
     if( !status )
     {
@@ -495,16 +506,31 @@ static long process( struct genSubRecord *pgsub )
     for( i=0; i<ARG_MAX; i++, plinkin++, valptr++, nelptr++, typptr++ )
     {
       nRequest = *nelptr;
+      options  = 0;
       status   = dbGetLink( plinkin, *typptr, *valptr, &options, &nRequest );
       if( status )
       {
-        printf("Status %d from dbGetLink (%s)\n", status, Ifldnames[i]);
+        if( CHECKgensubLINKS )
+        {
+          if( !dbIsLinkConnected(plinkin) )
+          {
+            len = strlen(pgsub->name);
+            printf("genSub=\"%s\"", pgsub->name);
+            for( j=0; j<PVNAME_STRINGSZ-len; j++ )
+              printf(" ");
+            printf(", Disconnected Link (%s) to \"%s\"\n", Ifldnames[i], plinkin->value.pv_link.pvname );
+          }
+        }
         break;
       }
     }
   }
 
-  /* Call the user routine */
+  /* From EPICS 3.13.8, dbGetLink returns -1 if the link is   */
+  /* a disconnected CA link. This means that the user routine */
+  /* will no longer be called in this case. Neither will the  */
+  /* values be placed on the output links. This is consistent */
+  /* with the records in EPICS base.                          */
 
   if( !status )
     pgsub->val = do_sub(pgsub);
@@ -522,26 +548,26 @@ static long process( struct genSubRecord *pgsub )
       nRequest = *nelptr;
       status   = dbPutLink( plinkout, *typptr, *valptr, nRequest );
       status   = 0;
-/* Do not check this because dbPutLink returns -1 if channel 
-   not connected
+
+/*
+      Do not check this because dbPutLink returns -1 if channel not connected!
       if( status )
       {
-        printf("Status %d from dbPutLink (%s)\n", status, Ofldnames[i]);
+        printf("Status %d from recGblPutLinkValue (%s)\n", status, Ofldnames[i]);
         break;
       }
 */
     }
   }
 
-  if( !status )
-  {
-    tsLocalTime(&pgsub->time);
-    monitor(pgsub, 1);
-    recGblFwdLink(pgsub);
-  } 
+  /* These routines should always be called */
 
+  recGblGetTimeStamp( pgsub );
+  monitor(pgsub, 1);
+  recGblFwdLink(pgsub);
   pgsub->pact = FALSE;
-  return(status);
+
+  return(0);
 }
 
 
@@ -549,7 +575,7 @@ static long get_precision( struct dbAddr *paddr, long *precision )
 {
     genSubRecord *pgsub;
     int          fieldIndex;
- 
+
     fieldIndex = dbGetFieldIndex(paddr);
     if( fieldIndex == genSubRecordVERS )
     {
@@ -557,7 +583,7 @@ static long get_precision( struct dbAddr *paddr, long *precision )
       return 0;
     }
 
-    pgsub = (genSubRecord *)paddr->precord;
+    pgsub      = (genSubRecord *)paddr->precord;
     *precision = pgsub->prec;
     if( paddr->pfield == (void *)&pgsub->val ) 
       return(0);
@@ -566,7 +592,19 @@ static long get_precision( struct dbAddr *paddr, long *precision )
 }
 
 
-static void monitor( struct genSubRecord *pgsub, int reset )
+static long get_value( genSubRecord *pgsub, struct valueDes *pvdes )
+{
+#if DEBUG
+    printf("Calling get_value...\n");
+#endif
+    pvdes->no_elements = 1;
+    pvdes->pvalue      = (void *)(&pgsub->val);
+    pvdes->field_type  = DBF_LONG;
+    return(0);
+}
+
+
+static void monitor( genSubRecord *pgsub, int reset )
 {
   int            i;
   unsigned short monitor_mask;
@@ -641,7 +679,7 @@ static void monitor( struct genSubRecord *pgsub, int reset )
 }
 
 
-static long do_sub( struct genSubRecord *pgsub )
+static long do_sub( genSubRecord *pgsub )
 {
   long    status;
   FUNCPTR psubroutine;
@@ -682,6 +720,7 @@ static long cvt_dbaddr( struct dbAddr *paddr )
 #if DEBUG
   printf("Calling cvt_dbaddr...\n");
 #endif
+
   flag  = 1;
   nNew  = 0;
   error = findField( flag, paddr, &no_elements, nNew );
@@ -729,13 +768,13 @@ static long put_array_info( struct dbAddr *paddr, long nNew )
 
 static long special( struct dbAddr *paddr, int after )
 {
-  struct genSubRecord *pgsub;
-  char                sub_type;
-  void                *sub_addr;
-  char                temp[40];
-  STATUS              ret;
+  genSubRecord *pgsub;
+  char          sub_type;
+  void         *sub_addr;
+  char          temp[40];
+  STATUS        ret;
 
-  pgsub = (struct genSubRecord *)paddr->precord;
+  pgsub = (genSubRecord *)paddr->precord;
   if( after )
   {
     if( pgsub->lflg == genSubLFLG_IGNORE )
@@ -752,7 +791,7 @@ static long special( struct dbAddr *paddr, int after )
 #endif
         if( (ret < 0) || ((sub_type & N_TEXT) == 0) )
         {
-          recGblRecordError(S_db_BadSub,(void *)pgsub,"genSubRecord(process) symFindByNameEPICS failed");
+          recGblRecordError(S_db_BadSub,(void *)pgsub,"genSubRecord(special) symFindByNameEPICS failed");
           return(S_db_BadSub);
         }
         else

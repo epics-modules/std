@@ -1,12 +1,4 @@
-menu(genSubLFLG) {
-	choice(genSubLFLG_IGNORE,"IGNORE")
-	choice(genSubLFLG_READ,"READ")
-}
-menu(genSubEFLG) {
-	choice(genSubEFLG_NEVER,"NEVER")
-	choice(genSubEFLG_ON_CHANGE,"ON CHANGE")
-	choice(genSubEFLG_ALWAYS,"ALWAYS")
-}
+include "menuGenSub.dbd"
 recordtype(genSub) {
 	include "dbCommon.dbd" 
         field(VERS,DBF_DOUBLE) {
