@@ -86,20 +86,20 @@ static long do_pid(epidRecord *pepid)
 {
     epicsTimeStamp  ctp;    /*previous time */
     epicsTimeStamp  ct;     /*current time       */
-    float           cval;   /*actual value      */
-    float           pcval;  /*previous value of cval */
-    float           setp;   /*setpoint          */
+    double           cval;   /*actual value      */
+    double           pcval;  /*previous value of cval */
+    double           setp;   /*setpoint          */
     double          dt;     /*delta time (seconds)  */
-    float       kp,ki,kd;   /*gains        */
-    float           di;     /*change in integral term */
-    float           e=0.;   /*error         */
-    float           ep;     /*previous error    */
-    float           de;     /*change in error   */
-    float           oval;   /*new value of manip variable */
-    float           p;      /*proportional contribution*/
-    float           i;      /*integral contribution*/
-    float           d;      /*derivative contribution*/
-    float         sign;
+    double       kp,ki,kd;   /*gains        */
+    double           di;     /*change in integral term */
+    double           e=0.;   /*error         */
+    double           ep;     /*previous error    */
+    double           de;     /*change in error   */
+    double           oval;   /*new value of manip variable */
+    double           p;      /*proportional contribution*/
+    double           i;      /*integral contribution*/
+    double           d;      /*derivative contribution*/
+    double         sign;
 
     pcval = pepid->cval;
     
@@ -107,7 +107,7 @@ static long do_pid(epidRecord *pepid)
     if (pepid->inp.type == CONSTANT) { /* nothing to control*/
         if (recGblSetSevr(pepid,SOFT_ALARM,INVALID_ALARM)) return(0);
     }
-    if (dbGetLink(&pepid->inp,DBR_FLOAT,&pepid->cval,0,0)) {
+    if (dbGetLink(&pepid->inp,DBR_DOUBLE,&pepid->cval,0,0)) {
        recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
        return(0);
     }
@@ -151,7 +151,7 @@ static long do_pid(epidRecord *pepid)
                 /* Feedback just made transition from off to on.  Set the integral
                    term to the current value of the controlled variable */
                 if (pepid->outl.type != CONSTANT) {
-                   if (dbGetLink(&pepid->outl,DBR_FLOAT,&i,0,0)) {
+                   if (dbGetLink(&pepid->outl,DBR_DOUBLE,&i,0,0)) {
                       recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
                   }
                }
@@ -177,7 +177,7 @@ static long do_pid(epidRecord *pepid)
                 /* Feedback just made transition from off to on.  Set the output
                    to the current value of the controlled variable */
                 if (pepid->outl.type != CONSTANT) {
-                   if (dbGetLink(&pepid->outl,DBR_FLOAT,&oval,0,0)) {
+                   if (dbGetLink(&pepid->outl,DBR_DOUBLE,&oval,0,0)) {
                       recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
                    }
                 }
@@ -215,7 +215,7 @@ static long do_pid(epidRecord *pepid)
     /* If feedback is on, and output link is a PV_LINK then write the 
      * output link */
     if (pepid->fbon && (pepid->outl.type != CONSTANT)) {
-        if (dbPutLink(&pepid->outl,DBR_FLOAT, &pepid->oval,1)) {
+        if (dbPutLink(&pepid->outl,DBR_DOUBLE, &pepid->oval,1)) {
             recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
         }
     } 
