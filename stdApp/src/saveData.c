@@ -76,14 +76,15 @@
  * .21 05-01-01  tmm  v1.8 Don't allow punctuation characters in filename.
  *                    Extension changed to ".mda".
  *                    e.g., tmm:scan1_0000.scan  --> tmm_scan1_000.mda
- * .21 02-27-02  tmm  v1.9 Support filename PV, so clients can easily determine
+ * .22 02-27-02  tmm  v1.9 Support filename PV, so clients can easily determine
  *                    the current data file.  Write char array with xdr_vector()
  *                    instead of xdr_bytes(), which wasn't working.
+ * .23 03-24-02  tmm  v1.10 Increased stack from 5000 to 10000.
  */
 
 
 #define FILE_FORMAT_VERSION (float)1.3
-#define SAVE_DATA_VERSION   "1.9.0"
+#define SAVE_DATA_VERSION   "1.10.0"
 
 
 #include "req_file.h"
@@ -710,7 +711,7 @@ int saveData_Init(char* fname, char* macros)
       return -1;
     }
     printf("saveData: message queue created\n");
-    if(taskSpawn("saveDataTask", PRIORITY, VX_FP_TASK, 5000, (FUNCPTR)saveDataTask, 
+    if(taskSpawn("saveDataTask", PRIORITY, VX_FP_TASK, 10000, (FUNCPTR)saveDataTask, 
                        taskIdSelf(),0,0,0,0,0,0,0,0,0)==ERROR) {
       Debug0(1, "Unable to create saveDataTask\n");
       msgQDelete(msg_queue);
@@ -751,7 +752,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.2 2002-02-27 17:22:07 bcda Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.3 2002-03-26 17:20:11 bcda Exp $\n");
 }
 
 void saveData_Info() {
