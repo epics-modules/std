@@ -76,11 +76,14 @@
  * .21 05-01-01  tmm  v1.8 Don't allow punctuation characters in filename.
  *                    Extension changed to ".mda".
  *                    e.g., tmm:scan1_0000.scan  --> tmm_scan1_000.mda
+ * .21 02-27-02  tmm  v1.9 Support filename PV, so clients can easily determine
+ *                    the current data file.  Write char array with xdr_vector()
+ *                    instead of xdr_bytes(), which wasn't working.
  */
 
 
 #define FILE_FORMAT_VERSION (float)1.3
-#define SAVE_DATA_VERSION   "1.8.0"
+#define SAVE_DATA_VERSION   "1.9.0"
 
 
 #include "req_file.h"
@@ -514,6 +517,7 @@ LOCAL char* local_subdir;
 LOCAL chid  save_status_chid;
 LOCAL short save_status= STATUS_INACTIVE;
 LOCAL chid  message_chid;
+LOCAL chid  filename_chid;
 LOCAL chid  full_pathname_chid;
 
 #define FS_NOT_MOUNTED	0
@@ -747,7 +751,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.1.1.1 2001-07-03 20:05:24 sluiter Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.2 2002-02-27 17:22:07 bcda Exp $\n");
 }
 
 void saveData_Info() {
@@ -1812,6 +1816,19 @@ LOCAL int initSaveDataTask()
     }
   }
 
+  /* Connect to saveData_filename					*/
+  filename_chid= NULL;
+  if(req_gotoSection(rf, "filename")!=0) {
+    printf("saveData: section [filename] not found\n");
+  } else {
+    if(req_readMacId(rf, buff1, 40)==0) {
+      printf("saveData: filename pv name not defined\n");
+    } else {
+      ca_search(buff1, &filename_chid);
+      ca_pend_io(0.5);
+    }
+  }
+
   /* Connect to saveData_fullPathName					*/
   full_pathname_chid= NULL;
   if(req_gotoSection(rf, "fullPathName")!=0) {
@@ -1975,7 +1992,8 @@ LOCAL void saveExtraPV(XDR* pxdrs)
       case DBR_CTRL_CHAR:
         cptr= pval->cchrval.units;
         xdr_counted_string(pxdrs, &cptr);
-        xdr_bytes(pxdrs,(char**)&pval->cchrval.value,&count, count);
+        /* xdr_bytes(pxdrs,(char**)&pval->cchrval.value,&count, count); */
+        xdr_vector(pxdrs,(char*)&pval->cchrval.value,count,sizeof(char),xdr_char);
         break;
       case DBR_CTRL_SHORT:
         cptr= pval->cshrtval.units;
@@ -2154,6 +2172,12 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
       sprintf(msg, "saving: %s", pscan->fname);	  
       msg[39]= '\0';
       sendUserMessage(msg);
+
+      /* Write file name where client can easily find it. */
+      ca_array_put(DBR_LONG, 1, counter_chid, &counter);
+      if (filename_chid) {
+        ca_array_put(DBR_STRING, 1, filename_chid, pscan->fname);
+      }
 
       /* increment scan number and write it to the PV */
       counter = pscan->counter + 1;
@@ -3089,3 +3113,5 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
   }
   return 0;
 }    
+
+
