@@ -3,6 +3,10 @@ menu(sseqSELM) {
 	choice(sseqSELM_Specified,"Specified")
 	choice(sseqSELM_Mask,"Mask")
 }
+menu(sseqWAIT) {
+	choice(sseqWAIT_NoWait,"NoWait")
+	choice(sseqWAIT_Wait,"Wait")
+}
 recordtype(sseq) {
 	include "dbCommon.dbd" 
 	field(VAL,DBF_LONG) {
@@ -72,6 +76,11 @@ recordtype(sseq) {
 		interest(4)
 		special(SPC_NOMOD)
 	}
+	field(WAIT1,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
+	}
 	field(DLY2,DBF_DOUBLE) {
 		prompt("Delay 2")
 		promptgroup(GUI_SEQ1)
@@ -110,6 +119,11 @@ recordtype(sseq) {
 		prompt("LNK link type")
 		interest(4)
 		special(SPC_NOMOD)
+	}
+	field(WAIT2,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
 	}
 	field(DLY3,DBF_DOUBLE) {
 		prompt("Delay 3")
@@ -150,6 +164,11 @@ recordtype(sseq) {
 		interest(4)
 		special(SPC_NOMOD)
 	}
+	field(WAIT3,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
+	}
 	field(DLY4,DBF_DOUBLE) {
 		prompt("Delay 4")
 		promptgroup(GUI_SEQ2)
@@ -188,6 +207,11 @@ recordtype(sseq) {
 		prompt("LNK link type")
 		interest(4)
 		special(SPC_NOMOD)
+	}
+	field(WAIT4,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
 	}
 	field(DLY5,DBF_DOUBLE) {
 		prompt("Delay 5")
@@ -228,6 +252,11 @@ recordtype(sseq) {
 		interest(4)
 		special(SPC_NOMOD)
 	}
+	field(WAIT5,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
+	}
 	field(DLY6,DBF_DOUBLE) {
 		prompt("Delay 6")
 		promptgroup(GUI_SEQ2)
@@ -266,6 +295,11 @@ recordtype(sseq) {
 		prompt("LNK link type")
 		interest(4)
 		special(SPC_NOMOD)
+	}
+	field(WAIT6,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
 	}
 	field(DLY7,DBF_DOUBLE) {
 		prompt("Delay 7")
@@ -306,6 +340,11 @@ recordtype(sseq) {
 		interest(4)
 		special(SPC_NOMOD)
 	}
+	field(WAIT7,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
+	}
 	field(DLY8,DBF_DOUBLE) {
 		prompt("Delay 8")
 		promptgroup(GUI_SEQ3)
@@ -344,6 +383,11 @@ recordtype(sseq) {
 		prompt("LNK link type")
 		interest(4)
 		special(SPC_NOMOD)
+	}
+	field(WAIT8,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
 	}
 	field(DLY9,DBF_DOUBLE) {
 		prompt("Delay 9")
@@ -384,6 +428,11 @@ recordtype(sseq) {
 		interest(4)
 		special(SPC_NOMOD)
 	}
+	field(WAIT9,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
+	}
 	field(DLYA,DBF_DOUBLE) {
 		prompt("Delay 10")
 		promptgroup(GUI_SEQ3)
@@ -422,5 +471,10 @@ recordtype(sseq) {
 		prompt("LNK link type")
 		interest(4)
 		special(SPC_NOMOD)
+	}
+	field(WAITA,DBF_MENU) {
+		prompt("Wait for completion?")
+		interest(1)
+		menu(sseqWAIT)
 	}
 }
