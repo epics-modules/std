@@ -1,4 +1,4 @@
-/* $Id: drvIK320.c,v 1.1.1.1.2.4 2003-09-12 20:56:24 sluiter Exp $ */
+/* $Id: drvIK320.c,v 1.1.1.1.2.5 2003-09-18 16:24:33 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -11,7 +11,7 @@
  *
  * Author: Till Straumann (PTB, 1999)
  *
- * drvIK320.c,v
+ * $Log: not supported by cvs2svn $
  * Revision 1.1.1.1  2001/07/03 20:05:28  sluiter
  * Creating
  *
@@ -59,6 +59,8 @@
  *	     updates to device handler pointer (irqHandler) and a master device
  *	     interrupt handler (IK320IrqMaster).
  *	     - bug fix drvIK320report() trashing all the other reports.
+ *	     - bug fix for bus error when harware is missing; i.e., probe for
+ *           memory from drvIK320Connect().
  *
  */
 
@@ -83,6 +85,10 @@
 #include <dbAccess.h>
 
 #include "drvIK320.h"
+
+/* Define for return test on locationProbe() */
+#define PROBE_SUCCESS(STATUS) ((STATUS)==S_dev_addressOverlap)
+extern long locationProbe(epicsAddressType, char *);
 
 #ifndef NODEBUG
 int drvIK320Debug=0;
@@ -201,8 +207,7 @@ static int drvIK320IrqLogger();
 
 long drvIK320Connect(int sw1, int sw2, int irqLevel, IK320Driver *pDrv)
 {
-    void        *localA24=0;
-    void        *localA16=0;
+    void *localA24 = 0, *localA16 = 0, *vmeA24;
     IK320Driver rval=0;
     int         intEnabled=0;
     long        status;
@@ -255,7 +260,16 @@ long drvIK320Connect(int sw1, int sw2, int irqLevel, IK320Driver *pDrv)
 	status = S_dev_noMemory;
 	goto cleanup;
     }
-    if ((status=devRegisterAddress("drvIK320",atVMEA24,A24BASE(sw2),0x4000,&localA24)))
+
+    vmeA24 = A24BASE(sw2);
+    status = locationProbe(atVMEA24, (char *) vmeA24);
+    if (!PROBE_SUCCESS(status))
+    {
+	epicsPrintf("drvIK320Connect(): bus error at address = 0x%08.8x\n", (uint_t) vmeA24);
+	goto cleanup;
+    }
+
+    if ((status=devRegisterAddress("drvIK320", atVMEA24, vmeA24, 0x4000, &localA24)))
 	goto cleanup;
     if ((status=devRegisterAddress("drvIK320",atVMEA16,A16PORT(sw1),0x2,&localA16)))
 	goto cleanup;
@@ -362,7 +376,7 @@ long drvIK320Connect(int sw1, int sw2, int irqLevel, IK320Driver *pDrv)
     if (irqHandler)
 	devDisconnectInterrupt(intVME,sw1,irqHandler);
     if (localA24)
-	devUnregisterAddress(atVMEA24,A24BASE(sw2),"drvIK320");
+	devUnregisterAddress(atVMEA24, vmeA24, "drvIK320");
     if (localA16)
 	devUnregisterAddress(atVMEA16,A16PORT(sw1),"drvIK320");
     if (rval)
