@@ -106,7 +106,7 @@
 #include "swaitRecord.h"
 #undef  GEN_SIZE_OFFSET
 #include "recDynLink.h"
-
+#include <epicsExport.h>
 
 #define PRIVATE_FUNCTIONS 1	/* normal:1, debug:0 */
 #if PRIVATE_FUNCTIONS
@@ -134,7 +134,7 @@ STATIC long get_graphic_double();
 #define get_control_double NULL 
 STATIC long get_alarm_double(); 
  
-struct rset swaitRSET={
+rset swaitRSET={
 	RSETNUMBER,
 	report,
 	initialize,
@@ -154,19 +154,21 @@ struct rset swaitRSET={
 	get_control_double,
 	get_alarm_double
 };
+epicsExportAddress(rset, swaitRSET);
 
 /* Create DSET for "soft channel" to allow for IO Event (this is to implement
    the feature of processing the record when an input changes) */
 
 static long get_ioint_info();
-struct {
+typedef struct {
         long            number;
         DEVSUPFUN       dev_report;
         DEVSUPFUN       init_dev;
         DEVSUPFUN       dev_init_record;
         DEVSUPFUN       get_ioint_info;
         DEVSUPFUN       read_event;
-} devSWaitIoEvent = {
+} WAIT_IO_EVENT;
+WAIT_IO_EVENT devSWaitIoEvent = {
         5,
         NULL,
         NULL,
@@ -174,7 +176,7 @@ struct {
         get_ioint_info,
         NULL
 };
-
+epicsExportAddress(WAIT_IO_EVENT, devSWaitIoEvent);
 
 /* DEFINES */
 #define   ARG_MAX   12  /* Number of input arguments of the record */

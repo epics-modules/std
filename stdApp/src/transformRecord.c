@@ -110,6 +110,7 @@
 #define GEN_SIZE_OFFSET
 #include "transformRecord.h"
 #undef GEN_SIZE_OFFSET
+#include "epicsExport.h"
 
 #ifdef NODEBUG
 #define Debug(l,FMT,V) ;
@@ -141,7 +142,7 @@ static long     get_precision();
 #define get_control_double NULL
 #define get_alarm_double NULL
 
-struct rset     transformRSET = {
+rset    transformRSET = {
 	RSETNUMBER,
 	report,
 	initialize,
@@ -161,6 +162,7 @@ struct rset     transformRSET = {
 	get_control_double,
 	get_alarm_double
 };
+epicsExportAddress(rset, transformRSET);
 
 static void     alarm();
 static void     monitor();

@@ -209,11 +209,9 @@
 
 
 
-#ifdef vxWorks
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#endif
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -234,11 +232,11 @@
 #include <special.h>
 #include <callback.h>
 #include <taskwd.h>
-#include <drvTS.h>	/* also includes timers.h and tsDefs.h */
 #include <epicsMutex.h>	/* semaphore */
 #include <epicsTimer.h>	/* access to timers for delayed callbacks */
 
 #include "recDynLink.h"
+#include "epicsExport.h"
 
 #define GEN_SIZE_OFFSET
 #include "sscanRecord.h"
@@ -269,6 +267,9 @@
 /***************************
   Declare constants
 ***************************/
+
+#define OK               0
+#define ERROR           (-1)
 #define DEF_WF_SIZE     10
 #define PVN_SIZE        40
 
@@ -343,7 +344,7 @@ static long     get_graphic_double();
 static long     get_control_double();
 static long     get_alarm_double();
 
-struct rset     sscanRSET = {
+rset     sscanRSET = {
 	RSETNUMBER,
 	report,
 	initialize,
@@ -363,6 +364,7 @@ struct rset     sscanRSET = {
 	get_control_double,
 	get_alarm_double
 };
+epicsExportAddress(rset, sscanRSET);
 
 typedef struct recDynLinkPvt {
 	sscanRecord	*psscan;		/* pointer to scan record */
@@ -712,7 +714,7 @@ init_record(sscanRecord *psscan, int pass)
 			POST(ppvn);
 			*pPvStat = NO_PV;
 		} else {
-			if (ppvn[0] != NULL) {
+			if (ppvn[0] != 0) {
 				*pPvStat = PV_NC;
 				lookupPV(psscan, i);
 			} else {
@@ -987,7 +989,7 @@ special(struct dbAddr *paddr, int after)
 						epicsTimeGetCurrent(&timeCurrent);
 						if (epicsTimeDiffInSeconds(&timeCurrent, &puserPvt->lookupTime) >= sscanRecordLookupTime) {
 							ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
-							if (ppvn[0] != NULL) {
+							if (ppvn[0] != 0) {
 								if (sscanRecordDebug > 5)
 									printf("%s:special: renewing link %d\n", psscan->name, i);
 								/* force flags to indicate PV_NC until callback happens */
@@ -1134,7 +1136,7 @@ special(struct dbAddr *paddr, int after)
 						pPvStat = &psscan->p1nv + i;	/* pointer arithmetic */
 						oldStat = *pPvStat;
 						ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
-						ppvn[0] = NULL; POST(ppvn);
+						ppvn[0] = 0; POST(ppvn);
 						if (*pPvStat != NO_PV) {
 							/* PV is now NULL but didn't used to be */
 							*pPvStat = NO_PV;
@@ -1214,7 +1216,7 @@ special(struct dbAddr *paddr, int after)
 					ppvn[0] = '\0';
 					POST(ppvn);
 				} 
-				if (ppvn[0] != NULL) {
+				if (ppvn[0] != 0) {
 					if (sscanRecordDebug > 5)
 						printf("%s:Search during special \n", psscan->name);
 					*pPvStat = PV_NC;
@@ -1551,14 +1553,14 @@ get_units(struct dbAddr *paddr, char *units)
 		i = (fieldIndex - sscanRecordP1PP) / (sscanRecordP2PP - sscanRecordP1PP);
 		if (i>=0 && i<NUM_POS) {
 			strncpy(units, pPos[i].p_eu, 7);
-			units[7] = NULL;
+			units[7] = 0;
 			return(0);
 		}
 	} else if (fieldIndex >= sscanRecordD01HR) {
 		i = (fieldIndex - sscanRecordD01HR) / (sscanRecordD02HR - sscanRecordD01HR);
 		if (i>=0 && i<NUM_DET) {
 			strncpy(units, pDet[i].d_eu, 7);
-			units[7] = NULL;
+			units[7] = 0;
 			return(0);
 		}
 	}

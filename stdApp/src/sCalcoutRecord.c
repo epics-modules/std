@@ -50,16 +50,11 @@
 #define VERSION 3.7
 
 
-#ifdef vxWorks
-#include	<vxWorks.h>
 #include	<stdlib.h>
 #include	<stdarg.h>
-/* #include	<sysLib.h> */
-#endif
 #include	<stdio.h>
 #include	<string.h>
 #include	<math.h>
-
 
 #include	<epicsVersion.h>
 #include	<alarm.h>
@@ -73,13 +68,13 @@
 #include	<special.h>
 #include	<callback.h>
 #include	<taskwd.h>
-#include	<drvTS.h>	/* also includes timers.h and tsDefs.h */
 #include	"sCalcPostfix.h"
 
 #define GEN_SIZE_OFFSET
 #include	"sCalcoutRecord.h"
 #undef  GEN_SIZE_OFFSET
 #include	<menuIvoa.h>
+#include        <epicsExport.h>
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -100,7 +95,7 @@ static long get_graphic_double();
 static long get_control_double();
 static long get_alarm_double();
 
-struct rset scalcoutRSET={
+rset scalcoutRSET={
 	RSETNUMBER,
 	report,
 	initialize,
@@ -120,7 +115,7 @@ struct rset scalcoutRSET={
 	get_control_double,
 	get_alarm_double
 };
-
+epicsExportAddress(rset, scalcoutRSET);
 
 /* To provide feedback to the user as to the connection status of the 
  * links (.INxV and .OUTV), the following algorithm has been implemented ...
