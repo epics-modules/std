@@ -22,51 +22,53 @@ OSI by S. Kate Feng, NSLS, BNL 3/03
 
 Modification Log:
 -----------------
-.01  6/26/93	tmm     Lecroy-scaler record
-.02  1/16/95    tmm     Joerger-scaler
-.03  8/28/95    tmm     Added .vers (code version) and .card (VME-card number)
-                        fields 
-.04  2/8/96     tmm     v1.7:  Fixed bug: was posting CNT field several times
-                        when done.
-.05  2/21/96    tmm     v1.71:  precision of vers field is 2
-.06  6/5/96     tmm     v1.8: precision defaults to PREC field
-.07  8/16/96    tmm     v2.0: conversion to EPICS 3.13
-.07  8/16/96    tmm     v2.1: fixed off-by-one problem (in 3.13 version)
-.09  2/27/97    tmm     v2.11: fix TP/PR1 problem
-.10  3/03/97    tmm     v3.0: allow auto-count overridden by user count
-.11  7/09/97    tmm     v3.1: init_record wasn't posting TP, PR1, FREQ, or CARD
-.12 11/14/97    tmm     v3.2: fixed bug: if .cnt went true then false during the
-                        .dly period, scaler would lock up.
-.13  4/24/98    tmm     v3.3 call recGblFwdLink only when user count completes.
-.14  10/2/98    tmm     v3.4 if dbPutNotify then delay longer before resuming
-                        autocount.
-.15  3/24/99    tmm     v3.5 call recGblFwdLink whenever scaler is idle and
-						CNT = 0.
-.16  4/21/99    tmm     v3.6 call recGblFwdLink whenever USER_STATE_IDLE and
-						SCALER_STATE_IDLE and CNT makes a transition to 0.
-.17  7/14/99    tmm     v3.7 minor fixes
-.18 11/04/99    tmm     v3.8 added link to start and stop external process that
-                        should coincide with scaler-integration period.
-.19  7/14/99    tmm     v3.9 hold time before autocount wipes scalers increased
-                        to 5 sec for all count requests.
-.20  ?          ?       v3.10 changed max number of signals from 16 to 32
-.21  11/12/01   tmm     v3.11 hold time before autocount wipes scalers is
-                        volatile int
-.22  01/08/02   tmm     v3.12 Set VAL field to T and post after completed count
-.23  05/08/03   tmm     v3.13 Kate Feng's OSI version, with a new version number
-.24  10/22/03   tmm     v3.14 3.13 compatibility removed
-.23  09/22/03   tmm     v3.13 changed max number of signals from 32 to 64
-.24  09/26/03   tmm     v3.14 Make sure channel-1 preset count agrees with time
-                        preset and freq.  (Required for VS64, because it changes
-                        freq, and uses pr1/freq to infer count time.)
-.25  02/19/04   tmm     v3.15 Added semaphore to avoid contention for scanLock
-                        between autocount-restart callback and periodic update
-                        callback.  More mods for Joerger VS64
-.26  05/17/04   tmm     v3.16 merged VS64-capable 3.13 version with 3.14 version
-
+06/26/93    tmm     Lecroy-scaler record
+01/16/95    tmm     Joerger-scaler
+08/28/95    tmm     Added .vers (code version) and .card (VME-card number)
+                    fields 
+02/8/96     tmm     v1.7:  Fixed bug: was posting CNT field several times
+                    when done.
+02/21/96    tmm     v1.71:  precision of vers field is 2
+06/5/96     tmm     v1.8: precision defaults to PREC field
+08/16/96    tmm     v2.0: conversion to EPICS 3.13
+08/16/96    tmm     v2.1: fixed off-by-one problem (in 3.13 version)
+02/27/97    tmm     v2.11: fix TP/PR1 problem
+03/03/97    tmm     v3.0: allow auto-count overridden by user count
+07/09/97    tmm     v3.1: init_record wasn't posting TP, PR1, FREQ, or CARD
+11/14/97    tmm     v3.2: fixed bug: if .cnt went true then false during the
+                    .dly period, scaler would lock up.
+04/24/98    tmm     v3.3 call recGblFwdLink only when user count completes.
+10/2/98     tmm     v3.4 if dbPutNotify then delay longer before resuming
+                    autocount.
+03/24/99    tmm     v3.5 call recGblFwdLink whenever scaler is idle and
+                    CNT = 0.
+04/21/99    tmm     v3.6 call recGblFwdLink whenever USER_STATE_IDLE and
+                    SCALER_STATE_IDLE and CNT makes a transition to 0.
+07/14/99    tmm     v3.7 minor fixes
+11/04/99    tmm     v3.8 added link to start and stop external process that
+                    should coincide with scaler-integration period.
+07/14/99    tmm     v3.9 hold time before autocount wipes scalers increased
+                    to 5 sec for all count requests.
+ ?          ?       v3.10 changed max number of signals from 16 to 32
+11/12/01   tmm      v3.11 hold time before autocount wipes scalers is
+                    volatile int
+01/08/02   tmm     v3.12 Set VAL field to T and post after completed count
+05/08/03   tmm     v3.13 Kate Feng's OSI version, with a new version number
+10/22/03   tmm     v3.14 3.13 compatibility removed
+09/22/03   tmm     v3.13 changed max number of signals from 32 to 64
+09/26/03   tmm     v3.14 Make sure channel-1 preset count agrees with time
+                   preset and freq.  (Required for VS64, because it changes
+                   freq, and uses pr1/freq to infer count time.)
+02/19/04   tmm     v3.15 Added semaphore to avoid contention for scanLock
+                   between autocount-restart callback and periodic update
+                   callback.  More mods for Joerger VS64
+05/17/04   tmm     v3.16 merged VS64-capable 3.13 version with 3.14 version
+11/17/04   tmm     v3.17 If device support changed PR1, recalc and post TP.
+                   Autocount now calls write_preset again if device support
+                   changed PR1, but doesn't let this change get out to user.
 
 *******************************************************************************/
-#define VERSION 3.16
+#define VERSION 3.17
 
 #include        <epicsVersion.h>
 
@@ -421,7 +423,11 @@ scalerRecord *pscal;
 					pscal->pr1 = (long) NINT(pscal->tp * pscal->freq);
 					(*pdset->write_preset)(card, 0, pscal->pr1);
 				}
-				if (old_pr1 != pscal->pr1) db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
+				if (old_pr1 != pscal->pr1) {
+					db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
+					pscal->tp = (double)(pscal->pr1 / pscal->freq);
+					db_post_events(pscal,&(pscal->tp),DBE_VALUE);
+				}
 				if (old_freq != pscal->freq) {
 					db_post_events(pscal,&(pscal->freq),DBE_VALUE);
 				}
@@ -498,9 +504,20 @@ scalerRecord *pscal;
 			 * presets the user may have set.
 			 */
 			 old_freq = pscal->freq;
+			 old_pr1 = pscal->pr1;
 			(*pdset->reset)(card);
 			if (pscal->tp1 >= 1.e-3) {
+				save_pr1 = pscal->pr1;
 				(*pdset->write_preset)(card, 0, (long)(pscal->tp1*pscal->freq));
+				if (save_pr1 != pscal->pr1) {
+					/*
+					 * Device support wants to use a different clock freq.  We might
+					 * get a more accurate counting time if we recalc the preset count
+					 * from tp1 with the new clock frequency.
+					 */
+					(*pdset->write_preset)(card, 0, (long)(pscal->tp1*pscal->freq));
+				}
+
 			} else {
 				for (i=0; i<pscal->nch; i++) {
 					pdir[i] = pgate[i];
@@ -508,6 +525,8 @@ scalerRecord *pscal;
 				}
 			}
 			if (old_freq != pscal->freq) db_post_events(pscal,&(pscal->freq),DBE_VALUE);
+			/* Don't let autocount disturb user's channel-1 preset */
+			pscal->pr1 = old_pr1;
 			(*pdset->arm)(card, 1);
 			pscal->ss = SCALER_STATE_COUNTING;
 
