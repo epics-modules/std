@@ -1,13 +1,13 @@
 
 file {
-	name="/home/oxygen4/MOONEY/epics/3.13.1/tmm/tmmApp/op/adl/interp.adl"
-	version=020305
+	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/interp.adl"
+	version=020306
 }
 display {
 	object {
-		x=370
-		y=53
-		width=330
+		x=915
+		y=51
+		width=460
 		height=85
 	}
 	clr=14
@@ -87,10 +87,111 @@ display {
 		1a7309,
 	}
 }
+text {
+	object {
+		x=140
+		y=30
+		width=80
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Description"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=5
+		y=30
+		width=80
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="X (input)"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=100
+		y=35
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="SHOW"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=140
+		y=45
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)interp_y1.DESC"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=140
+		y=65
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)interp_y2.DESC"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=100
+		y=45
+		width=40
+		height=20
+	}
+	display[0] {
+		label="plot"
+		name="arrayPlot.adl"
+		args="P=$(P),X=$(P)interp.A,Y=$(P)interp.B,YLABEL=Y1"
+	}
+	clr=0
+	bclr=17
+	label="-Y1(X)"
+}
+"related display" {
+	object {
+		x=100
+		y=65
+		width=40
+		height=20
+	}
+	display[0] {
+		label="plot"
+		name="arrayPlot.adl"
+		args="P=$(P),X=$(P)interp.A,Y=$(P)interp.C,YLABEL=Y2"
+	}
+	clr=0
+	bclr=17
+	label="-Y2(X)"
+}
 "text entry" {
 	object {
 		x=5
-		y=40
+		y=45
 		width=80
 		height=20
 	}
@@ -102,151 +203,10 @@ display {
 	limits {
 	}
 }
-"text entry" {
-	object {
-		x=90
-		y=40
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)interp_y1.VAL"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=90
-		y=60
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)interp_y2.VAL"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=175
-		y=40
-		width=150
-		height=20
-	}
-	control {
-		chan="$(P)interp_y1.OUT"
-		clr=14
-		bclr=40
-	}
-	format="string"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=175
-		y=60
-		width=150
-		height=20
-	}
-	control {
-		chan="$(P)interp_y2.OUT"
-		clr=14
-		bclr=40
-	}
-	format="string"
-	limits {
-	}
-}
-text {
-	object {
-		x=5
-		y=26
-		width=80
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="X"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=90
-		y=26
-		width=80
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Y(i)"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=175
-		y=26
-		width=150
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Output Link"
-	align="horiz. centered"
-}
-rectangle {
-	object {
-		x=0
-		y=0
-		width=330
-		height=25
-	}
-	"basic attribute" {
-		clr=0
-	}
-}
-text {
-	object {
-		x=0
-		y=0
-		width=330
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Look-up table interpolator"
-	align="horiz. centered"
-}
-polyline {
-	object {
-		x=0
-		y=23
-		width=330
-		height=0
-	}
-	"basic attribute" {
-		clr=53
-		width=3
-	}
-	points {
-		(0,23)
-		(330,23)
-	}
-}
 "shell command" {
 	object {
 		x=5
-		y=60
+		y=65
 		width=20
 		height=20
 	}
@@ -254,30 +214,184 @@ polyline {
 		label="Load lookup tables"
 		name="cd ../burt; burtwb -f interp.load"
 	}
-	clr=0
-	bclr=17
+	clr=14
+	bclr=51
 }
 text {
 	object {
 		x=25
-		y=60
+		y=65
 		width=55
 		height=10
 	}
 	"basic attribute" {
 		clr=64
 	}
-	textix="LOAD"
+	textix="LOAD X,Yi"
 }
 text {
 	object {
 		x=25
-		y=70
+		y=75
 		width=55
 		height=10
 	}
 	"basic attribute" {
 		clr=64
 	}
-	textix="LOOKUP TBL"
+	textix="ARRAYS"
+}
+composite {
+	object {
+		x=0
+		y=0
+		width=462
+		height=25
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=0
+				y=0
+				width=460
+				height=25
+			}
+			"basic attribute" {
+				clr=0
+			}
+		}
+		text {
+			object {
+				x=0
+				y=0
+				width=460
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Lookup table interpolator"
+			align="horiz. centered"
+		}
+		polyline {
+			object {
+				x=0
+				y=22
+				width=461
+				height=3
+			}
+			"basic attribute" {
+				clr=53
+				width=3
+			}
+			points {
+				(1,23)
+				(459,23)
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=305
+		y=30
+		width=150
+		height=55
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=305
+				y=30
+				width=150
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Output Link"
+			align="horiz. centered"
+		}
+		"text entry" {
+			object {
+				x=305
+				y=45
+				width=150
+				height=20
+			}
+			control {
+				chan="$(P)interp_y1.OUT"
+				clr=14
+				bclr=40
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=305
+				y=65
+				width=150
+				height=20
+			}
+			control {
+				chan="$(P)interp_y2.OUT"
+				clr=14
+				bclr=40
+			}
+			format="string"
+			limits {
+			}
+		}
+	}
+}
+"text update" {
+	object {
+		x=225
+		y=47
+		width=70
+		height=16
+	}
+	monitor {
+		chan="$(P)interp_y1.VAL"
+		clr=54
+		bclr=2
+	}
+	align="horiz. centered"
+	format="string"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=225
+		y=67
+		width=70
+		height=16
+	}
+	monitor {
+		chan="$(P)interp_y2.VAL"
+		clr=54
+		bclr=2
+	}
+	align="horiz. centered"
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=225
+		y=30
+		width=80
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Y (output)"
+	align="horiz. centered"
 }
