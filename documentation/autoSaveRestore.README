@@ -18,19 +18,19 @@ during reboot.
 v3.5 highlights
 ---------------
 Beginning with version 3.5, arrays can be saved and restored much as scalar
-PV's.  Arrays are read and written using run-time database access (scalar PV's
-are read using channel access and (usually) written using static database
-access), which implies that they can only be written during pass 1 of the
-restore, and that you cannot save the value of a non-local array PV.
+PV's.  Arrays are read and written using run-time database access, which
+implies that they can only be written during pass 1 of the restore, and that
+you cannot save the value of a non-local array PV.  (Scalar PV's are read using
+channel access and normally are written using static database access.)
 
 Beginning with v3.5, scalar PV's which have type DBF_NOACCESS in the .dbd file,
 and are set to some other DBF type during record initialization, can be
 restored in pass 1.  (Some fields of the genSub record behave in this way, and
-previous versions of save_restore could not handle them.)
+previous versions of autosave could not restore them.)
 
 Prior to v3.5, PV's were listed 'backwards' in the save file -- i.e., the first
 PV in the request file became the last PV in the save file.  Now, both files
-have the same ordering.
+have the same ordering.  
 
 v3.3 highlights
 ---------------
@@ -45,8 +45,8 @@ defend parameter values against a server power failure, and attempts to defend
 against a user messing around with the directory into which save files are
 being written.
 
-Autosave now allows you to change, at run time, the directory and/or
-the server to which save files are written.  Here's an example:
+Autosave now allows you to change, at run time, the directory and/or the server
+to which save files are written.  Here's an example:
 
 	# The normal autosave directory setup, in st.cmd: 
 	save_restoreSet_NFSHost("oxygen", "164.54.52.4")
@@ -63,12 +63,14 @@ the server to which save files are written.  Here's an example:
 	set_savefile_path("/local/autosave", "")
 	# autosave will immediately attempt to mount the new file path
 
-The above code assumes the ioc has permission to mount file systems on
-wheaties, and that the ioc has read/write/execute permission to
-/local/autosave.
+The above code assumes the ioc has permission to mount file systems on the host
+('wheaties', in this case) and that the ioc has read/write/execute permission
+to the directory in which it is suppoed to write .sav files (in this case,
+'/local/autosave').  Neither of these conditions are likely to be met by
+default; you must take action to arrange them.
 
-Autosave cannot defend against adverse file permissions, or against
-the save directory (NFS mount point) disappearing altogether.
+Autosave cannot defend against adverse file permissions, or against the save
+directory (NFS mount point) disappearing altogether.
 
 
 Contents
@@ -104,26 +106,29 @@ v3.5
 Sometime in the past, I made fdbrestore() and fdbrestoreX() unavailable to
 console users by making them macros.  This is fixed.
 
-
 save_restore v3.3; dbrestore v3.3:
 ----------------------------------
-Several variables and user-callable functions have been renamed, as
-their meanings have changed.  In preparation for 3.14, most
-user-settable variables can now be set by a function call.
-Here's a list of variables and functions added, deleted, or changed:
+Several variables and user-callable functions have been renamed, as their
+meanings have changed.  In preparation for 3.14, most user-settable variables
+can now be set by a function call.  Here's a list of variables and functions
+added, deleted, or changed:
 
 OLD                                   NEW
 ----------------------------------------------------------------------
-sr_restore_incomplete_save_sets_ok -> save_restoreIncompleteSaveSetsOk
-sr_save_incomplete_sets_ok         -> save_restoreIncompleteSaveSetsOk
-sr_restore_incomplete_sets_ok      -> save_restoreIncompleteSaveSetsOk
+sr_restore_incomplete_sets_ok      -> save_restoreIncompleteSetsOk
+sr_save_incomplete_sets_ok         -> save_restoreIncompleteSetsOk
 <no comparable function>           -> save_restoreSet_IncompleteSetsOk(value)
+	NOTE: both old and new variables default to 1.
 
 reboot_restoreDebug                -> save_restoreDebug
 <no comparable function>           -> save_restoreSet_Debug(value)
 
-reboot_restoreDatedBu              -> save_restoreDatedBackupFiles
+reboot_restoreDatedBU              -> save_restoreDatedBackupFiles
 <no comparable function>           -> save_restoreSet_DatedBackupFiles(value)
+	NOTE: reboot_restoreDatedBU defaulted to 0, while
+	save_restoreDatedBackupFiles defaults to 1.  This means new save_restore,
+	with an old (unmodified) st.cmd file, will write a new backup file every
+	time the ioc boots.
 
 <no comparable variable>           -> save_restoreNumSeqFiles
 <no comparable function>           -> save_restoreSet_NumSeqFiles(value)
@@ -152,20 +157,23 @@ reload_manual_set(file)            -> reload_manual_set(file,macro)
 	for a reload to complete before starting another one.
 
 	*************************************************************************
-	NOTE: IN VERSIONS EARLIER THAN 2.7, PERIODS WERE SPECIFIED USING FLOATING
-	POINT NUMBERS.  THEY ARE NOW SPECIFIED AS INTEGERS (IN SECONDS).
+	NOTE: IN VERSIONS EARLIER THAN 2.7, Time PERIODS WERE SPECIFIED USING
+	FLOATING POINT NUMBERS.  THEY ARE NOW SPECIFIED AS INTEGERS (IN SECONDS).
 	*************************************************************************
 	
 set_savefile_path(path)            -> set_savefile_path(path,pathsub)
 set_requestfile_path(path)         -> set_requestfile_path(path,pathsub)
-	NOTE: if pathsub is specified, it is appended to path.
+	NOTE: if pathsub is specified, it is appended to path.  The purpose of
+	this change was to make it easier to use variabled defined in cdCommands
+	as path elements.  Example: set_requestfile_path(std,"stdApp/Db")
 
 <no comparable function>           -> save_restoreSet_status_prefix(value)
 	NOTE: save_restore expects PV's with which it can display its status.
 	Status PV's are request-file specific; the supplied database contains
 	PV's for auto_positions.req and auto_settings.req only.  If you use
 	other request files, you can add your own PV's.  It's OK if the PV's
-	don't exist.
+	don't exist, but you will get informational messages when their absence
+	is noticed.
 
 <no comparable function>           -> save_restoreSet_NFSHost(host,IPaddress)
 <no comparable variable>           -> save_restoreRemountThreshold
@@ -175,100 +183,95 @@ set_requestfile_path(path)         -> set_requestfile_path(path,pathsub)
 	I/O errors (e.g. to fix a stale file handle).
 ----------------------------------------------------------------------
 
-Autosave now maintains status PV's for each PV list, and rolled-up
-status PV's for overall save status and reboot status.
+Autosave now maintains status PV's for each PV list, and rolled-up status PV's
+for overall save status and reboot status.
 
 fdblist() renamed as save_restoreShow(), now enhanced with more status
 information, including rolled-up reboot status.
 
-Can now maintain up to ten "sequence files" (named *.savX, where X is a
-digit in [0..(save_restoreNumSeqFiles-1)]), which are copies of the
-most recent .sav or .savB file, copied at user-specified intervals.  If
-no valid .sav or .savB file exists, autosave will write sequence files
-directly from its PV list, as though it were writing a .sav file.  At
-boot time, if .sav and .savB are both corrupt or missing, autosave will
-restore from the most recent sequence file.
+Autosave can now maintain up to ten "sequence files" (named *.savX, where X is
+a digit in [0..(save_restoreNumSeqFiles-1)]), which are copies of the most
+recent .sav or .savB file, copied at user-specified intervals.  If no valid
+.sav or .savB file exists, autosave will write sequence files directly from its
+PV list, as though it were writing a .sav file.  At boot time, if .sav and
+.savB are both corrupt or missing, autosave will restore from the most recent
+sequence file.
 
-No longer test fopen() by writing a temporary file, before saving.
+Autosave no longer tests fopen() by writing a temporary file, before saving.
 
-save_restore will manage its own NFS mount, if the host name and
-address has been specified with a call to save_restoreSet_NFSHost(),
-and the save_restore file path (used as the mount point) has been set
-by a call to set_savefile_path().  When more than ten unexpected I/O
-errors have occurred, autosave will attempt to remount the file system.
+Autosave will manage its own NFS mount, if the host name and address has been
+specified with a call to save_restoreSet_NFSHost(), and the save-file path
+(used as the mount point) has been set by a call to set_savefile_path().  When
+more than 'save_restoreRemountThreshold' consecutive, unexpected I/O errors
+(the default number is ten) have occurred, autosave will attempt to remount the
+file system.
 
-Previously, save_restore saved floats and doubles using an algorithm
-that was prone to failure, especially for PV's from another ioc.
-(Thanks to Mark Rivers for finding and fixing this bug.)
+Previously, save_restore saved floats and doubles using an algorithm that was
+prone to failure, especially for PV's from another ioc. (Thanks to Mark Rivers
+for finding and fixing this bug.)
 
-Now use errlogPrintf() for all messages except those from callback
-routines, where logMsg() is used.
+Now use errlogPrintf() for all messages except those from callback routines,
+where logMsg() is used.
 
-All CA monitors are now set up by the save_restore task.  Previously,
-some were setup by whatever task called create_XXX_set().
+All CA monitors are now set up by the save_restore task.  Previously, some were
+setup by whatever task called create_XXX_set().
 
-Previously, if a save-file write failed, it would not be retried until
-the normal conditions (e.g., a PV's value changed) were again met.
-Now, if autosave is managing its own NFS mount, and enough I/O errors
-have accumulated to cause an NFS remount, all save sets in failure are
-written immediately after the remount succeeds.
+Previously, if a save-file write failed, it would not be retried until the
+normal conditions (e.g., a PV's value changed) were again met. Now, if autosave
+is managing its own NFS mount, and enough I/O errors have accumulated to cause
+an NFS remount, all save sets in failure are written immediately after the
+remount succeeds.
 
 Some ca_pend timeouts adjusted or limited.  Previous timeouts were
-inappropriate if many thousands of PV's were specified in a request
-file.
+inappropriate if many thousands of PV's were specified in a request file.
 
-Save files now contain the time at which they were written, in the
-format of fGetDateStr() -- yy/mm/dd-hh/mm/ss.
+Save files now contain the time at which they were written, in the format of
+fGetDateStr() -- yymmdd-hhmmss.
 
-Dated backup files now have an underscore between the name and the
-date.
+Dated backup files now have an underscore between the name and the date.
 
-Previously, if the second fopen() call in myFileCopy() failed, the
-function would return without closing the first file.
+Previously, if the second fopen() call in myFileCopy() failed, the function
+would return without closing the first file.
 
-Previously, autosave would overwrite corrupted files in the normal
-course of operation.  Now, whenever a corrupted file is encountered, a
-copy is made.  If the copy is made at restore time, the copy is named,
-e.g., auto_settings.sav_RBAD_030818-134850; if at save time, it's
-named, e.g., auto_settings.sav_SBAD_030818-134850
+Previously, autosave would overwrite corrupted files in the normal course of
+operation.  Now, whenever a corrupted file is encountered, a copy is made.  If
+the copy is made at restore time, the copy is named, e.g.,
+auto_settings.sav_RBAD_030818-134850; if at save time, it's named, e.g.,
+auto_settings.sav_SBAD_030818-134850.
 
-save_restore no longer uses the vxWorks 'copy' command for anything,
-because it writes files with inconvenient permissions.
+save_restore no longer uses the vxWorks 'copy' command for anything, because it
+writes files with inconvenient permissions.
 
 save_restore v2.9a; dbrestore v2.7:
 ----------------------------------
-Previously, create_data_set() would return without releasing a
-semaphore (causing the save_restore task to hang) if called with
-save_method==TRIGGERED, but no trigger channel was specified.
+Previously, create_data_set() would return without releasing a semaphore
+(causing the save_restore task to hang) if called with save_method==TRIGGERED,
+but no trigger channel was specified.
 
-Previously, fdbrestore() would return without releasing a semaphore
-(causing the save_restore task to hang) if called with the name of a
-save set currently being maintained, and the save list contained
-unconnected PV's, and the variable 'sr_restore_incomplete_sets_ok' was
-false.
+Previously, fdbrestore() would return without releasing a semaphore (causing
+the save_restore task to hang) if called with the name of a save set currently
+being maintained, and the save list contained unconnected PV's, and the
+variable 'sr_restore_incomplete_sets_ok' was false.
 
 Added macro-string argument to create_xxx_set()
 
 Added argument 'verbose' to fdblist()
 
-Added second argument, 'subpath', to set_XXXfile_path(). This allows
-the caller to pass the path as two args to be concatenated, making it
-easier to build the path string using a variable set in the cdCommands
-file.
+Added second argument, 'subpath', to set_XXXfile_path(). This allows the caller
+to pass the path as two args to be concatenated, making it easier to build the
+path string using a variable set in the cdCommands file.
 
-Use logMsg() instead of epicsPrintf() for several informational
-messages.
+Use logMsg() instead of epicsPrintf() for several informational messages.
 
 The variables chlist and reqFilePathList are now private.
 
-Increased ca_pend_io search timeout in connect_list() from 2 to 5
-seconds.  Decreased fetch timeout from num_channels/10 to 10 seconds.
+Increased ca_pend_io search timeout in connect_list() from 2 to 5 seconds. 
+Decreased fetch timeout from num_channels/10 to 10 seconds.
 
-Decreased ca_pend_io clear-channel timeout from num_channels/10 to 10
-seconds in remove_data_set().
+Decreased ca_pend_io clear-channel timeout from num_channels/10 to 10 seconds
+in remove_data_set().
 
-Changed call to macParseDefns() to specify the macro-substitution
-handle.
+Changed call to macParseDefns() to specify the macro-substitution handle.
 
 save_restore v2.7; dbrestore v2.7:
 ---------------------------------
@@ -286,77 +289,72 @@ now take 'int' arguments to specify time periods, instead of 'double'
 arguments.  This change was required for compatibility with PPC
 processors.
 
-In Frank Lenkszus' version, the calls 
-	set_pass<n>_restoreFile()
-were required to specify files to be restored.  In this version, if no
-restore files have been specified, initHooks specifies the default files
-auto_positions.sav and auto_settings.sav for you, for backward
-compatibility with my previous version.  If you really don't want to
-restore any files, you now must either not load initHooks, or replace
-it with your own version.
+In Frank Lenkszus' version, the calls set_pass<n>_restoreFile() were required
+to specify files to be restored.  In this version, if no restore files have
+been specified, initHooks specifies the default files auto_positions.sav and
+auto_settings.sav for you, for backward compatibility with my previous
+version.  If you really don't want to restore any files, you now must either
+not load initHooks, or replace it with your own version.
 
-In Frank Lenkszus' version, set_requestfile_path() could specify only a
-single directory.  Now that include files are a possibility, you can
-specify several request-file directories by calling
-set_requestfile_path() several times.
+In Frank Lenkszus' version, set_requestfile_path() could specify only a single
+directory.  Now that include files are a possibility, you can specify several
+request-file directories by calling set_requestfile_path() several times.
 
-Backup files made as part of a restore operation (i.e., files ending in
-".bu", or "YYMMDD-HHMMSS") are no longer created using the VxWorks
-"copy" command.
+Backup files made as part of a restore operation (i.e., files ending in ".bu",
+or "YYMMDD-HHMMSS") are no longer created using the VxWorks "copy" command.
 
 
 How to use this software
 ========================
 
-This software can be used in many different ways.  I'll describe what
-you have to do to use it as it's commonly used at APS beamlines to save
-PV values periodically, and restore them on reboot.
+This software can be used in many different ways.  I'll describe what you have
+to do to use it as it's commonly used at APS beamlines to save PV values
+periodically, and restore them on reboot.
 
 
 *) (required) Build save_restore.o, dbrestore.o, initHooks.o, and
-fGetDateStr.o.  Don't use an old copy of initHooks.o.  Although
-initHooks.c hasn't changed since save_restore v2.6, it uses a data
-structure from save_restore.h, which has changed.
+fGetDateStr.o.  Don't use an old copy of initHooks.o.   Although initHooks.c
+hasn't changed since save_restore v2.6, it uses a data structure from
+save_restore.h, which has changed, and if initHooks doesn't get recompiled, it
+will corrupt that data structure.
 
 
 *) (required) Create "request" files (e.g., auto_settings.req,
-auto_positions.req) specifying the PVs whose values you want to save
-and restore.  The save files corresponding to these request files will
-have the ".req" suffix replaced by ".sav".
+auto_positions.req) specifying the PVs whose values you want to save and
+restore.  The save files corresponding to these request files will have the
+".req" suffix replaced by ".sav".
 
-Request files can include other request files (nested includes are
-allowed) and macro substitution can be performed on the included files
-(using William Lupton's macro library), with the following syntax:
+Request files can include other request files (nested includes are allowed) and
+macro substitution can be performed on the included files (using William
+Lupton's macro library), with the following syntax:
 
 	file <request_file> <macro-substitution_string>
 
 e.g.,
 
-	file xx_auto_motor_settings.req P=xxx:,M=m1
+	file motor_settings.req P=xxx:,M=m1
 
-I've tried to defend against forseeable variations in syntax, so that
-include lines with embedded whitespace and/or quotes, macro strings
-without commas, empty macro strings, and lines with trailing comments
-will be parsed as one would want.  Generally, quotes are ignored,
-whitespace implies a comma but otherwise is ignored, and everything
-after the second sequence of non-whitespace characters (i.e., after the
-file name) and before the (optional) comment character '#' is taken as
-the macro-substitution string.  Macro substitution is performed on the
-entire line, so it's possible to parameterize names of included files,
-as well as PV names.  It is also possible to define a macro that
-replaces its target with nothing.
+I've tried to defend against forseeable variations in syntax, so that include
+lines with embedded whitespace and/or quotes, macro strings without commas,
+empty macro strings, and lines with trailing comments will be parsed as one
+would want.  Generally, quotes are ignored, whitespace implies a comma but
+otherwise is ignored, and everything after the second sequence of
+non-whitespace characters (i.e., after the file name) and before the (optional)
+comment character '#' is taken as the macro-substitution string.  Macro
+substitution is performed on the entire line, so it's possible to parameterize
+names of included files, as well as PV names.  It is also possible to define a
+macro that replaces its target with nothing.
 
 
-*) (optional, recommended) Specify one or more directories to be
-searched for request files using one or more invocations of the
-function
+*) (optional, recommended) Specify one or more directories to be searched for
+request files, using one or more invocations of the function
 
 	set_requestfile_path()
 
 
-*) (optional, recommended) Specify the NFS host from which save files
-will be read, at restore time, and to which they will be written, at
-save time, by calling the function
+*) (optional, recommended) Specify the NFS host from which save files will be
+read at restore time, and to which they will be written at save time, by
+calling the function
 
 	save_restoreSet_NFSHost()
 
@@ -372,33 +370,33 @@ files to be written, by calling the function
 
 	set_savefile_path()
 
-in your startup script, before the create_xxx_set() commands, to
-specify the path to the directory.  If you are using NFS (strongly
-recommended), ensure that the path does not contain symbolic links.  In
-my experience, VxWorks cannot write through a symbolic link.  (I don't
-understand all the ins and outs of this limitation.)
+in your startup script, before the create_xxx_set() commands, to specify the
+path to the directory.  If you are using NFS (strongly recommended), ensure
+that the path does not contain symbolic links.  In my experience, VxWorks
+cannot write through a symbolic link.  (I don't understand all the ins and outs
+of this limitation.  It may be that symbolic links are OK if they contain
+absolute path names.)
 
 
-*) (required) Give the "crate" write permission to the directory in
-which the save files are to be written.  If you forget this step,
-autosave may be able to write save files, but the files will be
-corrupted because the crate will not be able to change their lengths.
-autosave attempts to detect this condition, but cannot work
-around it if the file length must increase.
+*) (required) Give the IOC write permission to the directory in which the save
+files are to be written.  If you forget this step, autosave may be able to
+write save files, but the files will be corrupted because autosave will not be
+permitted to change their lengths.  Autosave attempts to detect this condition,
+but cannot work around it if the file length must increase.
 
 
-*) (optional, recommended) Specify which save files are to be restored
-before record initialization (pass 0) and which are to be restored
-after record initialization (pass 1), using the commands
+*) (optional, recommended) Specify which save files are to be restored before
+record initialization (pass 0) and which are to be restored after record
+initialization (pass 1), using the commands
 
 	set_pass0_restoreFile()
 	set_pass1_restoreFile()
 
-Place these commands in the startup file before iocInit.  If you don't
-call either of these functions (or if your calls fail completely to
-specify any restore files) the supplied initHooks routine will attempt
-to restore the file "auto_positions.sav" before record init, and the
-file "auto_settings.sav" both before and after record init.
+Place these commands in the startup file before iocInit.  If you don't call
+either of these functions (or if your calls fail completely to specify any
+restore files) the supplied initHooks routine will attempt to restore the file
+"auto_positions.sav" before record init, and the file "auto_settings.sav" both
+before and after record init.
 
 Notes:
   Link fields cannot be restored (by dbStatic calls) after record
@@ -412,18 +410,18 @@ Notes:
   the restored value.
 
 
-*) (required) Load a copy of initHooks that calls reboot_restore() to
-restore saved parameter values.  The copy of initHooks included in
-this distribution is recommended.
+*) (required) Load a copy of initHooks that calls reboot_restore() to restore
+saved parameter values.  The copy of initHooks included in this distribution is
+recommended.
 
 
-*) (optional, recommended) Tell autosave to writed dated backup files.
-At boot time, the restore software writes a backup copy of the ".sav"
-file from which it restored PV's.  This file can either be named
-xxx.sav.bu, and be rewritten every reboot, or named xxx.sav_YYMMDD-HHMMSS,
-where "YY..." is a date.  Dated backups are not overwritten.  If you want
-dated backup files (recommended), put either of the following two lines
-to your st.cmd file before the call to iocInit():
+*) (optional, recommended) Tell autosave to writed dated backup files. At boot
+time, the restore software writes a backup copy of the ".sav" file from which
+it restored PV's.  This file can either be named xxx.sav.bu, and be rewritten
+every reboot, or named xxx.sav_YYMMDD-HHMMSS, where "YY..." is a date.  Dated
+backups are not overwritten.  If you want dated backup files (recommended), put
+either of the following two lines to your st.cmd file before the call to
+iocInit():
 
 	save_restoreDatedBackupFiles=1
 OR
@@ -431,37 +429,39 @@ OR
 
 
 Note:
-  If a save file is restored in both pass 0 and pass 1, the boot-backup
-  file will be written only during pass 0.
+  If a save file is restored in both pass 0 and pass 1, the boot-backup file
+  will be written only during pass 0.
 
 
-*) (required) Invoke the "save" part of this software as part of the
-EPICS startup sequence, by adding lines of the form
+*) (required) Invoke the "save" part of this software as part of the EPICS
+startup sequence, by calling create_XXX_set() -- e.g., adding lines of the form
 
 	create_monitor_set("auto_positions.req", 5, "P=xxx:")
 	create_monitor_set("auto_settings.req", 30, "P=xxx:")
 
-to the end of your EPICS startup file.  You can call the files anything
-you want.  The third argument is a macro-substitution string, as
-described above in the discussion of request files.  If supplied, this
-macro-substitution string supplements any macro strings supplied in
-include-file directives of request files read for this save set.
+to your EPICS startup file after iocInit.  You can call the files anything you
+want, but note that the file names "auto_positions" and "auto_settings" receive
+special treatment: they are default restore-file names, and the included
+database and medm-display files assume these file names.  The third argument to
+create_monitor_set()  is a macro-substitution string, as described above in the
+discussion of request files.  If supplied, this macro-substitution string
+supplements any macro strings supplied in include-file directives of request
+files read for this save set.
 
 For each "create_monitor_set(<name>.req, <time>, <macro>)" command, the
-save_restore process will write the files <name>.sav and <name>.savB
-every <time> seconds, if any of the PVs named in the file <name>.req
-have changed value since the last write.  Other create_xxx_set()
-commands do the same thing, but with different conditions triggering
-the save operation.
+save_restore process will write the files <name>.sav and <name>.savB every
+<time> seconds, if any of the PVs named in the file <name>.req have changed
+value since the last write.  Other create_xxx_set() commands do the same thing,
+but with different conditions triggering the save operation.
 
-Note that in versions prior to 2.7, create_monitor_set() used an
-argument of type double to specify the period (in seconds).  This
-doesn't work on the PPC, so the arguments for this and similar
-functions were changed to int.
+Note that in versions prior to 2.7, create_monitor_set() used an argument of
+type double to specify the period (in seconds).  This doesn't work on the PPC,
+so the arguments for this and similar functions were changed to int.
 
-If your VME crate takes a really long time to boot, it's possible the
-PVs you want to save will not have the correct values when the
-save_restore task first looks at them.  You can avoid this by putting a
+If your IOC takes a really long time to boot, it's possible the PVs you want to
+save will not have the correct values when the save_restore task first looks at
+them.  (If you are restoring lots of long arrays, this is even more likely.)
+You can avoid this by putting a
 
 	taskDelay(<number_of_60_Hz_clock_ticks>)
 
@@ -471,18 +471,17 @@ before create_monitor_set().
 
 About save files
 ================
-Save files are not intended to be edited manually.  If you,
-nevertheless, do edit a save file, you must end it with the text
+Save files are not intended to be edited manually.  If you, nevertheless, do
+edit a save file, you must end it with the text
 
 <END>
 
-followed by a single arbitrary character (normally '\n').  If the file
-does not end with this text, reboot_restore() will assume the crate
-crashed while the file was being written, and will not use the file.
-Once a save file has been created successfully, save_restore will not
-overwrite the file unless a good ".savB" backup file exists.
-Similarly, it will not overwrite the ".savB" file unless the save file
-was successfully written.
+followed by a single arbitrary character (normally '\n').  If the file does not
+end with this text, reboot_restore() will assume the crate crashed while the
+file was being written, or that some other bad thing happened, and will not use
+the file. Once a save file has been created successfully, save_restore will not
+overwrite the file unless a good ".savB" backup file exists. Similarly, it will
+not overwrite the ".savB" file unless the save file was successfully written.
 
 
 
@@ -617,30 +616,30 @@ int set_pass1_restoreFile(char *save_file)
 	Up to eight files can be specified using calls to this function.
 
 void save_restoreSet_Debug(int debug_level)
-	Sets the value (int) save_restoreDebug.
-	Initially 0.  Increase to get more informational messages printed
-	to the console.
+	Sets the value (int) save_restoreDebug (initially 0).  Increase to
+	get more informational messages printed to the console.
 	This function can be called at any time.
 
 void save_restoreSet_IncompleteSetsOk(int ok)
-	Sets the value of (int) save_restoreIncompleteSetsOk
-	Initially 1.  If set to zero, save files will not be restored at boot
-	time unless they are perfect, and they will not be overwritten at save
-	time unless a valid CA connection exists for every PV in the list.
+	Sets the value of (int) save_restoreIncompleteSetsOk (initially 1).
+	If set to zero, save files will not be restored at boot time unless
+	they are perfect, and they will not be overwritten at save time
+	unless a valid CA connection and value exists for every PV in the
+	list.
 	This function can be called at any time.
 
 void save_restoreSet_NumSeqFiles(int numSeqFiles)
-	Sets the value of (int) save_restoreNumSeqFiles.
+	Sets the value of (int) save_restoreNumSeqFiles (initially 3).
 	This is the number of sequenced backup files to be maintained.  
 	This function can be called at any time.
 
 void save_restoreSet_SeqPeriodInSeconds(int period)
-	Sets the value of (int) save_restoreSeqPeriodInSeconds.
+	Sets the value of (int) save_restoreSeqPeriodInSeconds (initially 60).
 	Sequenced backup files will be written with this period.
 	This function can be called at any time.
 
 void save_restoreSet_DatedBackupFiles(int ok)
-	Sets the value of (int) save_restoreDatedBackupFiles
+	Sets the value of (int) save_restoreDatedBackupFiles (initially 1).
 	If zero, the backup file written at reboot time (a copy of the file
 	from which parameter values are restored) will have the suffix '.bu',
 	and will be overwritten every reboot.  If nonzero, each reboot will
@@ -649,15 +648,15 @@ void save_restoreSet_DatedBackupFiles(int ok)
 
 void save_restoreSet_status_prefix(char *prefix)
 	Specifies the prefix to be used to construct the names of PV's with
-	which save_restore reports its status.
+	which autosave reports its status.
 	This function must be called before the first call to create_xxx_set().
 
 void save_restoreSet_NFSHost(char *hostname, char *address)
-	Specifies the name and IP adress of the NFS host.  If both have been
+	Specifies the name and IP address of the NFS host.  If both have been
 	specified, and set_savefile_path() has been called to specify the file
 	path, autosave will manage its own NFS mount.  This allows autosave to
 	recover from a reboot of the NFS host (i.e., a stale file handle) and
-	from from some kinds of tampering with the autosave directory.
+	from some kinds of tampering with the autosave directory.
 
 
 Example of use:
