@@ -42,7 +42,11 @@ extern "C"
 #ifdef NODEBUG
 #define DEBUG(l,f,v) ;
 #else
-#define DEBUG(l,f,v...) { if(l<fastPIDDebug) printf(f,## v); }
+#ifdef __GNUG__
+#define DEBUG(l,f,v...) { if(l<fastPIDDebug) printf(f ,## v); }
+#else
+#define DEBUG(l,f,v)  { if(l<fastPIDDebug) printf(f,v); };
+#endif
 #endif
 volatile int fastPIDDebug = 0;
 }
