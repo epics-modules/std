@@ -19,7 +19,7 @@
 <A NAME="Overview">
 <H2>Overview</H2></A>
 
-This documentation describes version 5.1 of the EPICS transform record,
+This documentation describes version 5.4 of the EPICS transform record,
 and related EPICS software recommended for building and using it.  This
 version of the record is compatible with EPICS Release 3.13, and it may
 be compatible with later releases, but it is not compatible with any
@@ -44,7 +44,7 @@ with 16 sets of the following fields:<BR>
 <DL>
 <DT>input link (<tt>INPA...INPP</tt>) and status (<tt>IAV...IPV</tt>)
 <DD>
-<DT>input/output value (<tt>A...P</t>)
+<DT>input/output value (<tt>A...P</tt>)
 <DD>
 <DT>expression (<tt>CLCA...CLCP</tt>)
 <DD>
@@ -61,19 +61,26 @@ following sequence occurs:
 <LI>Values are fetched, in order <tt>A</tt> through <tt>P</tt>, from
 all valid input links.  That is, if <tt>INPA</tt> is a valid input
 link, the value of the field pointed to by <tt>INPA</tt> will be placed
-into the field <tt>A</tt>, and so on.
+into the field <tt>A</tt>, and so on.  Note that all inputs are fetched
+before any calculations are performed.
 
 <LI>Valid expressions are evaluated in order <tt>CLCA</tt> through
 <tt>CLCP</tt>, but expression <tt>CLC</tt>&lt;x&gt; is evaluated only
-if &lt;x&gt; has the same value it had after the last time the record
-was processed.  In other words, new values are regarded as independent
-variables in the set of equations <tt>CLCA...CLCP</tt>, and unchanged
-values are regarded as dependent variables.
+if &lt;x&gt; is "old": if &lt;x&gt; has the same value it had after the
+last time the record was processed, and &lt;x&gt; was not written to
+since the last time the record was processed.  In other words, new values
+are regarded as independent variables in the set of equations
+<tt>CLCA...CLCP</tt>, and unchanged/unwritten values are regarded as
+dependent variables.  (Note that writes received while PACT==1 are special:
+they will change the field they write to, but they will not be regarded as
+writes for the purpose of determining whether a value is "new".  This rule allows a transform record to write to itself (using database links) without
+messing up its notion of which values are new. 
 
-<LI>Valid output links are triggered in order OUTA through OUTP---regardless
-of whether the corresponding values have changed.  That is, if OUTA is a
-valid link, the value in field A is poked into the field pointed to by
-OUTA, and so on.
+<LI>Valid output links are triggered in order OUTA through OUTP---
+regardless of whether the corresponding values have changed.  That is,
+if OUTA is a valid link, the value in field A is poked into the field
+pointed to by OUTA, and so on.  Note that output links are not
+processed until after all calculations have been performed.
 </OL>
 
 <P>The transform record uses the expression-evaluation software
@@ -99,7 +106,7 @@ slit system.  You can implement a bidirectional coordinate transformation
 with the following expressions (where position values are assumed to
 increase as we go from left to right):
 
-<TABLE CELLPADDING=0>
+<TABLE CELLPADDING=10>
 <TR VALIGN=TOP><TH>value <TH>expression <TH>comment
 <TR VALIGN=TOP><TD>A <TD>C-D/2 <TD>position of left edge of slit
 <TR VALIGN=TOP><TD>B <TD>C+D/2 <TD>position of right edge of slit
@@ -107,7 +114,7 @@ increase as we go from left to right):
 <TR VALIGN=TOP><TD>D <TD>B-A <TD>width of slit
 </TABLE>
 
-<P>Now, if a user command moves the left side of the slit (A changes) and
+<P>Now, if a user command moves the left side of the slit (writes to A) and
 causes the record to process, A will not be recalculated because it's value
 is new, the right side of the slit will remain
 still (B is unnecessarily recalculated from old values of C and D), the
@@ -372,18 +379,20 @@ files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/src/</CODE>
 <TD>This file is not included in the distribution.  If you're upgrading
 an application or share directory that has an earlier version of the
 transform record, you don't need to do anything with this file.  Otherwise,
-verify that the following lines exist:
+verify that the following line exists:
 <P><CODE>
-DBDEXPAND = </CODE>&lt;app&gt;<CODE>Include.dbd<BR>
-DBDNAME = </CODE>&lt;app&gt;<CODE>App.dbd
-</CODE>
+SRCS.c += ../transformRecord.c
+</CODE></TD>
+</TR>
 
-<P>and add the following lines:
-
+<TR VALIGN=TOP>
+<TD>Makefile.Host</TD>
+<TD>This file is not included in the distribution.  If you're upgrading
+an application or share directory that has an earlier version of the
+transform record, you don't need to do anything with this file.  Otherwise,
+verify that the following line exists:
 <P><PRE>
 RECTYPES += transformRecord.h
-SRCS.c += ../transformRecord.c
-INSTALLS += transformRecord.o
 </PRE></TD>
 </TR>
 
@@ -392,9 +401,9 @@ INSTALLS += transformRecord.o
 <TD>&lt;app&gt;Include.dbd</TD>
 <TD>(I'm just guessing what the filename might be in your case.
 The real filename is whatever appears after "<CODE>DBDEXPAND = </CODE>" in
-Makefile.Vx.)  This file is not included in the distribution.  If you're upgrading
-an application or share directory that has an earlier version of the
-transform record, you don't need to do anything with this file.  Otherwise,
+Makefile.Host.)  This file is not included in the distribution.  If you're
+upgrading an application or share directory that has an earlier version of
+the transform record, you don't need to do anything with this file.  Otherwise,
 add the following line:
 <PRE>
 include "transformRecord.dbd"
@@ -473,7 +482,7 @@ This file is normally <CODE>#include</CODE>'d (once for each transform record) b
 Suggestions and comments to: 
 <BR><A HREF="mailto:mooney@aps.anl.gov">Tim Mooney</A> : (mooney@aps.anl.gov)
 <BR>
-Last modified: December 4, 2001
+Last modified: May 3, 2002
 </ADDRESS>
 
 </BODY>
