@@ -58,8 +58,14 @@
  * .15  02-06-98  tmm  v4.1: uses new sCalcPostfix() and sCalcPerform().
  * .16  05-20-98  tmm  v5.0: get scanOnce out of special() (kills dbNotify())
  * .17  02-08-99  tmm  v5.1: delete test code re SPC_MOD treatment of APP, etc.
+ * .18  01-21-02  tmm  v5.2: test for old value (e.g., A == LA) failed (always
+ *                     returned false) if A and LA were NaN.  This meant
+ *                     you could never get rid of a NaN result: the expression
+ *                     would never be evaluated, because the value always looked
+ *                     new.)  Now we test bit pattern directly to see if a value
+ *                     is new.
  */
-#define VERSION 5.1
+#define VERSION 5.2
 
 #include	<vxWorks.h>
 #include	<types.h>
@@ -288,16 +294,16 @@ init_record(transformRecord *ptran, int pass)
 	return (0);
 }
 
-
 static long 
 process(transformRecord *ptran)
 {
-	int				i, no_inlink, no_new_value, postfix_ok;
+	int				i, no_inlink, no_new_value, postfix_ok, same;
 	long			status;
 	struct link		*plink;
 	double			*pval, *plval;
 	char			**pprpcbuf, *pclcbuf;
     struct rpvtStruct	*prpvt = (struct rpvtStruct *)ptran->rpvt;
+	int				*pu, *plu;
 
 	Debug(5, "process: entry%s\n", ".");
 	ptran->pact = TRUE;
@@ -333,7 +339,13 @@ process(transformRecord *ptran)
 			i++, plink++, pval++, plval++, pprpcbuf++, pclcbuf+=INFIX_SIZE) {
 		no_inlink = plink->type == CONSTANT;
 		/* if value is same as last time, and bitmap is unmarked, don't calc */
-		no_new_value = ((*pval == *plval) && ((ptran->map&(1<<i)) == 0));
+		pu = (int *)pval;
+		plu = (int *)plval;
+		same = (pu[0] == plu[0]) && (pu[1] == plu[1]);
+		if (transformRecordDebug)
+			printf("same=%d, (*pval==*plval) = %d\n", same, *pval == *plval);
+		no_new_value = (same && ((ptran->map&(1<<i)) == 0));
+		/*no_new_value = ((*pval == *plval) && ((ptran->map&(1<<i)) == 0));*/
 		postfix_ok = *pclcbuf && (**pprpcbuf != BAD_EXPRESSION);
 		Debug(5, "\nprocess: %s input link exists\n", no_inlink ? "NO" : "");
 		Debug(5, "process: value is %s\n", no_new_value ? "OLD" : "NEW");
