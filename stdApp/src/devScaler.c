@@ -18,6 +18,8 @@ Initial development by:
 	Advanced Photon Source
 	Argonne National Laboratory
 
+OSI  by S. Kate Feng 3/03
+
 Modification Log:
 -----------------
 .01  6/26/93	tmm     Lecroy scaler
@@ -29,30 +31,73 @@ Modification Log:
 .07  3/03/96    tmm     v1.5 fix test distinguishing VSC16 and VSC8 for ECL/NIM
 .08  3/03/97    tmm     v1.6 add reboot hook (disable interrupts & reset)
 .09  4/24/98    tmm     v1.7 use callbackRequest instead of scanIoReq
+.10  3/20/03    skf     OSI
 *******************************************************************************/
+#include        <epicsVersion.h>
+
+#if EPICS_VERSION < 3 || (EPICS_VERSION==3 && EPICS_REVISION < 14)
+#define NOT_YET_OSI
+#endif
+
+#ifdef HAS_IOOPS_H
+#include        <basicIoOps.h>
+#endif
+
+typedef unsigned int uint32;
+typedef unsigned short uint16;
+
+#if defined(NOT_YET_OSI) || defined(VXWORKSTARGET)
 /* version 1.5 */
 #include	<vxWorks.h>
+#ifndef __vxworks
+#define __vxworks 1
+#endif
 #include	<vme.h>
 #include	<types.h>
 #include	<stdioLib.h>
-#include	<string.h>
-#include	<math.h>
 #include	<iv.h>
 #include	<wdLib.h>
+#include	<module_types.h>
+#include        <rebootLib.h>
+#else
 
-#include	<devLib.h> 
+#include	<stdlib.h>
+#include	<stdio.h>
+#include        <epicsTimer.h>
+#include        <epicsThread.h>
+
+epicsTimerQueueId	scalerWdTimerQ=0;
+
+
+#ifndef         ERROR
+#define ERROR   -1
+#endif
+
+#ifndef         OK
+#define OK      0
+#endif
+
+#endif
+
+#include        <devLib.h>
+ 
+#include	<string.h>
+#include	<math.h>
+
 #include	<alarm.h>
-/* #include	<dbRecType.h> tmm: EPICS 3.13 */
+/* #include	<dbRecType.h>  tmm: EPICS 3.13 */
 #include	<dbDefs.h>
 #include	<dbAccess.h>
 #include	<dbCommon.h>
 #include	<dbScan.h>
+#include        <recGbl.h>
 #include	<recSup.h>
 #include	<devSup.h>
 #include	<drvSup.h>
 #include	<dbScan.h>
 #include	<special.h>
-#include	<module_types.h>
+#include        <callback.h>
+
 #include	"scalerRecord.h"
 #include	"devScaler.h"
 
@@ -64,8 +109,12 @@ Modification Log:
 #define STATIC
 #endif
 #ifdef NODEBUG
+#define Debug0(l,f) ;
 #define Debug(l,f,v) ;
 #else
+#define Debug0(l,FMT) {  if(l <= devScalerdebug) \
+			{ printf("%s(%d):",__FILE__,__LINE__); \
+			  printf(FMT); } }
 #define Debug(l,FMT,V) {  if(l <= devScalerdebug) \
 			{ printf("%s(%d):",__FILE__,__LINE__); \
 			  printf(FMT,V); } }
@@ -125,7 +174,7 @@ STATIC struct scaler_state {
 	IOSCANPVT ioscanpvt;
 	int done;
 	int preset[MAX_SCALER_CHANNELS];
-	struct callback *pcallback;
+	CALLBACK *pcallback;
 };
 STATIC struct scaler_state **scaler_state = 0;
 
@@ -141,7 +190,7 @@ STATIC long scaler_report(int level)
 	} else {
 		for (card = 0; card < vsc_num_cards; card++) {
 			if (scaler_state[card]) {
-				printf("    Joerger VSC%-2d card %d @ 0x%X, id: %d %s\n",
+				printf("    Joerger VSC%-2d card %d @ %p, id: %d %s\n",
 					scaler_state[card]->num_channels,
 					card, 
 					scaler_state[card]->localaddr, 
@@ -160,10 +209,62 @@ STATIC int scaler_shutdown()
 {
 	int i;
 	for (i=0; i<scaler_total_cards; i++) {
-		scaler_reset(i);
+		if (scaler_reset(i) <0) return(ERROR);
 	}
+        return(0);
 }
 
+static void writeReg16(volatile char *a16, int offset,uint16 value)
+{
+#ifdef HAS_IOOPS_H
+   out_be16((volatile void*)(a16+offset), value);
+#else
+   volatile uint16 *reg;
+
+    reg = (volatile uint16 *)(a16+offset);
+    *reg = value;
+#endif
+}
+
+static uint16 readReg16(volatile char *a16, int offset)
+{
+#ifdef HAS_IOOPS_H
+	return in_be16((volatile void*)(a16+offset));
+#else
+    volatile uint16 *reg;
+    uint16 value;
+
+    reg = (volatile uint16 *)(a16+offset);
+    value = *reg;
+    return(value);
+#endif
+}
+
+static void writeReg32(volatile char *a32, int offset,uint32 value)
+{
+#ifdef HAS_IOOPS_H
+   out_be32((volatile void*)(a32+offset), value);
+#else
+   volatile uint32 *reg;
+
+    reg = (volatile uint32 *)(a32+offset);
+    *reg = value;
+#endif
+}
+
+static uint32 readReg32(volatile char *a32, int offset)
+{
+#ifdef HAS_IOOPS_H
+	return in_be32((volatile void*)(a32+offset));
+#else
+    volatile uint32 *reg;
+    uint32 value;
+
+    reg = (volatile uint32 *)(a32+offset);
+    value = *reg;
+    return(value);
+#endif
+}
 
 /**************************************************
 * scalerISR()
@@ -171,18 +272,17 @@ STATIC int scaler_shutdown()
 STATIC int scalerISR(int card)
 {
 	volatile char *addr;
-	volatile unsigned short *p16;
+        uint16 value;	
 
 	if ((card+1) > scaler_total_cards) return(ERROR);
 
 	addr = scaler_state[card]->localaddr;
 	/* disable interrupts during processing */
-	p16 = (unsigned short *)(addr+IRQ_LEVEL_ENABLE_OFFSET);
-	*p16 &= (unsigned short) 0x7f;
+	value = readReg16(addr, IRQ_LEVEL_ENABLE_OFFSET) & 0x7f;
+        writeReg16(addr, IRQ_LEVEL_ENABLE_OFFSET, value);
 
 	/* clear interrupt */
-	p16 = (unsigned short *)(addr+IRQ_RESET_OFFSET);
-	*p16 = (unsigned short)0;
+        writeReg16(addr,IRQ_RESET_OFFSET, 0);
 
 	/* tell record support the hardware is done counting */
 	scaler_state[card]->done = 1;
@@ -192,8 +292,9 @@ STATIC int scalerISR(int card)
 	callbackRequest(scaler_state[card]->pcallback);
 
 	/* enable interrupts */
-	p16 = (unsigned short *)(addr+IRQ_LEVEL_ENABLE_OFFSET);
-	*p16 |= (unsigned short)0x80;
+	value = readReg16(addr, IRQ_LEVEL_ENABLE_OFFSET) | 0x80;
+        writeReg16(addr, IRQ_LEVEL_ENABLE_OFFSET, value);
+
 	return(0);
 }
 
@@ -223,8 +324,7 @@ STATIC int scalerISRSetup(int card)
 	}
 
 	/* get interrupt level from hardware, and enable that level in EPICS */
-	p16 = (unsigned short *)(addr+IRQ_LEVEL_ENABLE_OFFSET);
-	intLevel = (int) *p16 & 3;
+	intLevel = readReg16(addr,IRQ_LEVEL_ENABLE_OFFSET) & 3;
 	Debug(5, "scalerISRSetup: Interrupt level %d\n", intLevel);
 	status = devEnableInterruptLevel(intVME, intLevel);
 	if (!RTN_SUCCESS(status)) {
@@ -233,9 +333,7 @@ STATIC int scalerISRSetup(int card)
 		return (ERROR);
 	}
 	/* Write interrupt vector to hardware */
-	p16 = (unsigned short *)(addr+IRQ_VECTOR_OFFSET);
-	*p16 = (unsigned short) (vsc_InterruptVector + card);
-
+	writeReg16(addr,IRQ_VECTOR_OFFSET,(unsigned short) (vsc_InterruptVector + card));
 	Debug(5, "scalerISRSetup: Exit, card #%d\n", card);
 	return (OK);
 }
@@ -249,10 +347,11 @@ STATIC long scaler_init(int after)
 {
 	void *localaddr;
 	unsigned long status;
-	volatile unsigned short *p16;
-	void *baseAddr, *probeAddr;
+	void *baseAddr;
+	volatile char *addr;
 	int card, i;
-
+        uint32 probeValue = 0;
+ 
 	Debug(2,"scaler_init(): entry, after = %d\n", after);
 	if (after) return(0);
 
@@ -271,46 +370,44 @@ STATIC long scaler_init(int after)
 	/* Check out the hardware. */
 	for (card=0; card<vsc_num_cards; card++) {
 		baseAddr = (void *)(vsc_addrs + card*CARD_ADDRESS_SPACE);
-		probeAddr = baseAddr+DATA_0_OFFSET;
-
-		/* Can we read from scaler data bank? */
-		status = locationProbe(atVMEA32, probeAddr);
-		if (status != S_dev_addressOverlap) {
-			if (card==0) {
-				errPrintf(status, __FILE__, __LINE__,
-					"locationProbe failed: address 0x%x\n", probeAddr);
-			}
-			return(ERROR);
-		}
 
 		/* Can we reserve the required block of VME address space? */
-		status = devRegisterAddress(__FILE__, atVMEA32, baseAddr,
-			CARD_ADDRESS_SPACE, (void **)&localaddr);
+		status = devRegisterAddress(__FILE__, atVMEA32, (size_t)baseAddr,
+			CARD_ADDRESS_SPACE, &localaddr);
 		if (!RTN_SUCCESS(status)) {
 			errPrintf(status, __FILE__, __LINE__,
-				"Can't register 256-byte block at address 0x%x\n", baseAddr);
+				"Can't register 0x%x-byte block at address 0x%x\n", CARD_ADDRESS_SPACE, baseAddr);
 			return (ERROR);
 		}
 
 		/* Declare victory. */
-		Debug(2,"scaler_init: we own 256 bytes starting at 0x%x\n", localaddr);
+		Debug(2,"scaler_init: we own 256 bytes starting at %p\n",localaddr);
 		scaler_total_cards++;
 		scaler_state[card]->localaddr = localaddr;
+		addr = localaddr;
+
+#ifdef NOT_YET_OSI
+                if(vxMemProbe(addr+DATA_0_OFFSET,VX_READ,4,(char *)&probeValue)!=OK)
+#else
+	        if (devReadProbe(4,addr+DATA_0_OFFSET,(void*)&probeValue))
+#endif
+	        {
+                   printf("no VSC card at %p\n",addr);
+                   return(0);
+                }
 
 		/* reset this card */
-		p16 = (unsigned short *)(localaddr + RESET_OFFSET);
-		*p16 = 0; /* any write to this address causes reset */
+		writeReg16(addr,RESET_OFFSET,0);
 
 		/* get this card's identification */
-		p16 = (unsigned short *)(localaddr + REV_SERIAL_NO_OFFSET);
-		scaler_state[card]->ident = *p16;
+		scaler_state[card]->ident = readReg16(addr,REV_SERIAL_NO_OFFSET);
 		Debug(3,"scaler_init: Serial # = %d\n", scaler_state[card]->ident);
 		scaler_state[card]->card_exists = 1;
 
 		/* get this card's type (8 or 16 channels?) */
-		Debug(2,"scaler_init: Init Address=0x%8.8x\n",localaddr);
-		p16 = (unsigned short *)(localaddr + MODULE_TYPE_OFFSET);
-		scaler_state[card]->num_channels = *p16 & 0x18;
+		Debug(2,"scaler_init:Base Address=0x%8.8x\n",(int)baseAddr);
+		Debug(2,"scaler_init:Local Address=0x%8.8x\n",(int)localaddr);
+		scaler_state[card]->num_channels =  readReg16(addr,MODULE_TYPE_OFFSET) & 0x18;
 		Debug(3,"scaler_init: nchan = %d\n", scaler_state[card]->num_channels);
 
 		for (i=0; i<MAX_SCALER_CHANNELS; i++) {
@@ -320,9 +417,20 @@ STATIC long scaler_init(int after)
 
 	Debug(3,"scaler_init: Total cards = %d\n\n",scaler_total_cards);
 
+#ifdef __vxworks
     if (rebootHookAdd(scaler_shutdown) < 0)
-		epicsPrintf ("scaler_init: rebootHookAdd() failed\n");
-	Debug(3,"scaler_init: scalers initialized\n",0);
+		epicsPrintf ("scaler_init: rebootHookAdd() failed\n"); 
+#else
+    if (scaler_shutdown() < 0)
+		epicsPrintf ("scaler_init: scaler_shutdown() failed\n"); 
+#endif
+#ifndef  NOT_YET_OSI
+        scalerWdTimerQ=epicsTimerQueueAllocate(
+				1, /* ok to share queue */
+				epicsThreadPriorityLow);  
+ 	Debug0(3,"scalerWdTimerQ created\n");
+#endif
+	Debug0(3,"scaler_init: scalers initialized\n");
 	return(0);
 }
 
@@ -335,6 +443,8 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
 	int status;
 	struct callback *pcallbacks;
 
+	Debug(5,"scaler_init_record: card %d\n", card);
+
 	/* out must be an VME_IO */
 	switch (psr->out.type)
 	{
@@ -345,7 +455,7 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
 		return(S_dev_badBus);
 	}
 
-	Debug(5,"scaler_init_record: card %d\n", card);
+	Debug(5,"VME scaler: card %d\n", card);
 	if (!scaler_state[card]->card_exists)
 	{
 		recGblRecordError(S_dev_badCard,(void *)psr,
@@ -364,7 +474,7 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
 
 	/* setup interrupt handler */
 	pcallbacks = (struct callback *)psr->dpvt;
-	scaler_state[card]->pcallback = (struct callback *)&(pcallbacks[3]);
+	scaler_state[card]->pcallback = (CALLBACK *)&(pcallbacks[3]);
 	status = scalerISRSetup(card);
 
 	return(0);
@@ -395,18 +505,18 @@ STATIC long scaler_reset(int card)
 	volatile char *addr;
 	volatile unsigned short *pdata;
 	int i;
+	uint16 value;
 
 	Debug(5,"scaler_reset: card %d\n", card);
 	if ((card+1) > scaler_total_cards) return(ERROR);
 	addr = scaler_state[card]->localaddr;
 
 	/* disable interrupt */
-	pdata = (unsigned short *)(addr + IRQ_LEVEL_ENABLE_OFFSET);
-	*pdata &= (unsigned short) 0x7f;
+	value = readReg16(addr, IRQ_LEVEL_ENABLE_OFFSET) & 0x7f;
+        writeReg16(addr, IRQ_LEVEL_ENABLE_OFFSET, value);
 
 	/* reset board */
-	pdata = (unsigned short *)(addr + RESET_OFFSET);
-	*pdata = 0;
+        writeReg16(addr,RESET_OFFSET, 0);
 
 	/* zero local copy of scaler presets */
 	for (i=0; i<MAX_SCALER_CHANNELS; i++) {
@@ -425,24 +535,21 @@ STATIC long scaler_reset(int card)
 ****************************************************/
 STATIC long scaler_read(int card, long *val)
 {
-	volatile long *pdata;
 	long preset;
-	int i;
-	volatile unsigned short *pmask;
+	volatile char *addr= scaler_state[card]->localaddr;
+	int i, offset= DATA_0_OFFSET;
 	unsigned short mask;
 
 	Debug(8,"scaler_read: card %d\n", card);
 	if ((card+1) > scaler_total_cards) return(ERROR);
-	pdata = (long *) (scaler_state[card]->localaddr + DATA_0_OFFSET);
-	pmask = (unsigned short *) (scaler_state[card]->localaddr + DIRECTION_OFFSET);
-	mask = *pmask;
-	for (i=0; i < scaler_state[card]->num_channels; i++) {
-		preset = scaler_state[card]->preset[i];
-		val[i] = (mask & (1<<i)) ? preset-pdata[i] : pdata[i];
-		Debug(20,"scaler_read: ...(dir i = %s)\n", (mask & (1<<i)) ? "DN":"UP");
-		Debug(20,"scaler_read: ...(preset i = 0x%x)\n", preset);
-		Debug(20,"scaler_read: ...(data i = 0x%x)\n", pdata[i]);
-		Debug(10,"scaler_read: ...(chan i = 0x%x)\n\n", val[i]);
+	mask = readReg16(scaler_state[card]->localaddr,DIRECTION_OFFSET);
+	for (i=0; i < scaler_state[card]->num_channels; i++, offset+=4) {
+	    preset = scaler_state[card]->preset[i];
+	    val[i] = (mask & (1<<i)) ? preset-readReg32(addr,offset):readReg32(addr,offset);
+	    Debug(20,"scaler_read: ...(dir i = %s)\n", (mask & (1<<i)) ? "DN":"UP");
+	    Debug(20,"scaler_read: ...(preset i = 0x%x)\n", (unsigned int)preset);
+	    Debug(20,"scaler_read: ...(data i = 0x%x)\n",readReg32(addr,offset));
+	    Debug(10,"scaler_read: ...(chan i = 0x%x)\n\n", (unsigned int)val[i]);
 	}
 	return(0);
 }
@@ -452,37 +559,32 @@ STATIC long scaler_read(int card, long *val)
 ****************************************************/
 STATIC long scaler_write_preset(int card, int signal, long val)
 {
-	volatile char *addr;
-	volatile long *p32;
-	volatile unsigned short *p16;
+	volatile char *addr= scaler_state[card]->localaddr;
 	short mask;
+	int offset= PRESET_0_OFFSET+signal*4;
 
 	Debug(5,"scaler_write_preset: card %d\n", card);
 	Debug(5,"scaler_write_preset: signal %d\n", signal);
-	Debug(5,"scaler_write_preset: val = %d\n", val);
+	Debug(5,"scaler_write_preset: val = %d\n", (int)val);
 
 	if ((card+1) > scaler_total_cards) return(ERROR);
 	if ((signal+1) > MAX_SCALER_CHANNELS) return(ERROR);
 
-	addr = scaler_state[card]->localaddr;
-	p32 = (volatile long *) (addr + PRESET_0_OFFSET);
-
 	/* write preset; save a copy in scaler_state */
-	p32[signal] = scaler_state[card]->preset[signal] = val-1;
+        writeReg32(addr,offset,val-1);
+	scaler_state[card]->preset[signal] = val-1;
 
 	/* make the preset scaler count down */
-	p16 = (unsigned short *) (addr + DIRECTION_OFFSET);
-	mask = *p16;
+	mask = readReg16(addr,DIRECTION_OFFSET);
 	mask |= 1<<signal;
 	Debug(5,"scaler_write_preset: up/down mask = 0x%x\n", mask);
-	*p16 = mask;
+	writeReg16(addr,DIRECTION_OFFSET,mask);
 
 	/* enable IRQ from preset channel */
-	p16 = (unsigned short *) (addr + IRQ_MASK_OFFSET);
-	mask = *p16;
+	mask = readReg16(addr,IRQ_MASK_OFFSET);
 	mask |= 1<<signal;
 	Debug(5,"scaler_write_preset: IRQ mask = 0x%x\n", mask);
-	*p16 = mask;
+	writeReg16(addr,IRQ_MASK_OFFSET,mask);
 	return(0);
 }
 
@@ -494,38 +596,35 @@ STATIC long scaler_write_preset(int card, int signal, long val)
 ****************************************************/
 STATIC long scaler_arm(int card, int val)
 {
-	volatile char *addr;
-	volatile unsigned short *pdata;
+	volatile char *addr=scaler_state[card]->localaddr;
 	short ctrl_data;
+	uint16  value;
 
 	Debug(5,"scaler_arm: card %d\n", card);
 	Debug(5,"scaler_arm: val = %d\n", val);
 	if ((card+1) > scaler_total_cards) return(ERROR);
-	addr = scaler_state[card]->localaddr;
 
 	/* disable interrupt */
-	pdata = (unsigned short *) (addr + IRQ_LEVEL_ENABLE_OFFSET);
-	*pdata &= (unsigned short) 0x7f;
+	value = readReg16(addr,IRQ_LEVEL_ENABLE_OFFSET) & 0x7f;
+	writeReg16(addr,IRQ_LEVEL_ENABLE_OFFSET,value);
 
 	if (val) {
-		/* write the interrupt vector to the board */
-		pdata = (unsigned short *) (addr + IRQ_VECTOR_OFFSET);
-		*pdata = (unsigned short) (vsc_InterruptVector + card);
+	   /* write the interrupt vector to the board */
+	   writeReg16(addr,IRQ_VECTOR_OFFSET,(unsigned short)(vsc_InterruptVector+card));
 
-		/* enable interrupt-when-done */
-		pdata = (unsigned short *) (addr + IRQ_LEVEL_ENABLE_OFFSET);
-		*pdata |= (unsigned short) 0x80;
+	   /* enable interrupt-when-done */
+	   value = readReg16(addr,IRQ_LEVEL_ENABLE_OFFSET) | 0x80;
+	   writeReg16(addr,IRQ_LEVEL_ENABLE_OFFSET,value);
 	}
 
 	/* clear hardware-done flag */
 	scaler_state[card]->done = 0;
 
 	/* arm scaler */
-	pdata = (unsigned short *) (addr + CTRL_OFFSET);
-	ctrl_data = *pdata;
+	ctrl_data = readReg16(addr,CTRL_OFFSET);
 	if (val) ctrl_data |= 1; else ctrl_data &= 0x0E;
-	*pdata = ctrl_data;
-	Debug(5,"scaler_arm: ctrl reg => 0x%x\n", *pdata & 0xf);
+	writeReg16(addr,CTRL_OFFSET,ctrl_data);
+	Debug(5,"scaler_arm: ctrl reg => 0x%x\n",readReg16(addr,CTRL_OFFSET) & 0xf);
 	return(0);
 }
 
@@ -562,30 +661,21 @@ void VSCSetup(int num_cards,	/* maximum number of cards in crate */
 }
 
 /* debugging function */
-scaler_show(int card)
+void scaler_show(int card)
 {
 	char *addr = scaler_state[card]->localaddr;
-	volatile unsigned short *p16;
-	volatile unsigned long *p32;
-	int i;
+	int i, offset;
 
 	printf("scaler_show: card %d\n", card);
-	p16 = (unsigned short *) (addr+CTRL_OFFSET);
-	printf("scaler_show: ctrl reg = 0x%x\n", *p16&0xf);
-	p16 = (unsigned short *) (addr+DIRECTION_OFFSET);
-	printf("scaler_show: dir reg = 0x%x\n", *p16);
-	p16 = (unsigned short *) (addr+STATUS_ID_OFFSET);
-	printf("scaler_show: irq vector = 0x%x\n", *p16&0xff);
-	p16 = (unsigned short *) (addr+IRQ_LEVEL_ENABLE_OFFSET);
-	printf("scaler_show: irq level/enable = 0x%x\n", *p16&0xff);
-	p16 = (unsigned short *) (addr+IRQ_MASK_OFFSET);
-	printf("scaler_show: irq mask reg = 0x%x\n", *p16);
-	p16 = (unsigned short *) (addr+MODULE_TYPE_OFFSET);
-	printf("scaler_show: module type = 0x%x\n", *p16&0xff);
-	p32 = (unsigned long *) (addr + DATA_0_OFFSET);
-	for (i=0; i<scaler_state[card]->num_channels; i++) {
-		printf("    scaler_show: channel %d counts = %ld\n", i, p32[i]);
+	printf("scaler_show: ctrl reg = 0x%x\n", readReg16(addr,CTRL_OFFSET) &0xf);
+	printf("scaler_show: dir reg = 0x%x\n",readReg16(addr,DIRECTION_OFFSET) );
+	printf("scaler_show: irq vector = 0x%x\n",readReg16(addr,STATUS_ID_OFFSET) &0xff);
+	printf("scaler_show: irq level/enable = 0x%x\n",readReg16(addr,IRQ_LEVEL_ENABLE_OFFSET) &0xff);
+	printf("scaler_show: irq mask reg = 0x%x\n", readReg16(addr,IRQ_MASK_OFFSET));
+	printf("scaler_show: module type = 0x%x\n",readReg16(addr,MODULE_TYPE_OFFSET) &0xff);
+	offset = DATA_0_OFFSET;
+	for (i=0; i<scaler_state[card]->num_channels; i++, offset+=4 ) {
+		printf("    scaler_show: channel %d counts = %d\n", i,readReg32(addr,offset) );
 	}
 	printf("scaler_show: scaler_state[card]->done = %d\n", scaler_state[card]->done);
-	return(0);
 }
