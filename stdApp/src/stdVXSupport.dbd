@@ -3,60 +3,10 @@ include "stdSupport.dbd"
 ################
 # RECORD SUPPORT
 ################
-include "vmeRecord.dbd"
 
 ################
 # DEVICE SUPPORT
 ################
-device(scaler,VME_IO,devScaler,"Joerger VSC8/16")
-
-# GP307 GPIB
-device(ai,GPIB_IO,devAiGP307Gpib,"Vg307 GPIB Instrument")
-device(bi,GPIB_IO,devBiGP307Gpib,"Vg307 GPIB Instrument")
-device(bo,GPIB_IO,devBoGP307Gpib,"Vg307 GPIB Instrument")
-device(stringin,GPIB_IO,devSiGP307Gpib,"Vg307 GPIB Instrument")
-
-# Queensgate Piezo drive.
-device(ao,BBGPIB_IO,devAoAX301,"PZT Bug")
-device(ai,BBGPIB_IO,devAiAX301,"PZT Bug")
-device(bo,BBGPIB_IO,devBoAX301,"PZT Bug")
-device(longout,BBGPIB_IO,devLoAX301,"PZT Bug")
-
-# Varoc SSI encoder interface board
-device(ai,VME_IO,devAiVaroc,"ESRF Varoc SSI Encoder Iface")
-
-# HP 10895A Laser Axis (interferometer) board
-device(bi,VME_IO,devBiHP10895LaserAxis,"HP interferometer")
-device(bo,VME_IO,devBoHP10895LaserAxis,"HP interferometer")
-device(mbbi,VME_IO,devMbbiHP10895LaserAxis,"HP interferometer")
-device(mbbo,VME_IO,devMbboHP10895LaserAxis,"HP interferometer")
-device(longin,VME_IO,devLiHP10895LaserAxis,"HP interferometer")
-device(longout,VME_IO,devLoHP10895LaserAxis,"HP interferometer")
-
-# Bunch clock generator (Frank Lenkszus)
-#device(ai,VME_IO,devAiBunchClkGen,"APS Bunch Clock")
-#device(ao,VME_IO,devAoBunchClkGen,"APS Bunch Clock")
-#device(bi,VME_IO,devBiBunchClkGen,"APS Bunch Clock")
-#device(bo,VME_IO,devBoBunchClkGen,"APS Bunch Clock")
-#device(waveform,VME_IO,devWfBunchClkGen,"APS Bunch Clock")
-
-# Generic A32/D32 VME Access 
-device(ai,VME_IO,devAiA32Vme,"Generic A32 VME")
-device(ao,VME_IO,devAoA32Vme,"Generic A32 VME")
-device(bi,VME_IO,devBiA32Vme,"Generic A32 VME")
-device(bo,VME_IO,devBoA32Vme,"Generic A32 VME")
-device(mbbi,VME_IO,devMbbiA32Vme,"Generic A32 VME")
-device(mbbo,VME_IO,devMbboA32Vme,"Generic A32 VME")
-device(longin,VME_IO,devLiA32Vme,"Generic A32 VME")
-device(longout,VME_IO,devLoA32Vme,"Generic A32 VME")
-
-# Heidenhain IK320 VME counter/interpolator (Till Straumann/BESSY)
-device(mbbo,VME_IO,devIK320Funct,"Heidenhain IK320 Command")
-device(mbbo,VME_IO,devIK320Dir,"Heidenhain IK320 Sign")
-device(mbbo,VME_IO,devIK320ModeX3,"Heidenhain IK320 X3 Mode")
-device(stringout,VME_IO,devIK320Parm,"Heidenhain IK320 Parameter")
-device(ai,VME_IO,devIK320Ai,"Heidenhain IK320")
-device(ai,VME_IO,devIK320GroupAi,"Heidenhain IK320 Group")
 
 # GPIB Heidenhain encoder
 device(longin,GPIB_IO,devLiHeidAWE1024,"Heidenhein Encoder")
@@ -82,22 +32,6 @@ device(mbbi,GPIB_IO,devMbbiKeithleyDMM199,"KeithleyDMM199")
 device(stringin,GPIB_IO,devSiKeithleyDMM199,"KeithleyDMM199")
 device(stringout,GPIB_IO,devSoKeithleyDMM199,"KeithleyDMM199")
 
-# VMI4116 16-bit D/A converter
-#device(ao,VME_IO,devAoVMI4116,"VMIVME-4116")
-
 ################
 # DRIVER SUPPORT
 ################
-# Bunch clock generator (Frank Lenkszus)
-#driver(drvBunchClkGen)
-# Heidenhain IK320 (Till Straumann/BESSY)
-driver(drvIK320)
-
-registrar(stdVXRegister)
-registrar(saveDataRegister)
-variable("debug_saveData", int)
-variable("debug_saveDataMsg", int)
-variable("saveData_MessagePolicy", int)
-variable(debugSubAve)
-registrar(interpRegister)
-registrar(devHPLaserAxis_Register)

@@ -48,6 +48,7 @@
 #include	<special.h>
 #include	<callback.h>
 #include	<cvtFast.h>
+#include	<dbCa.h>
 
 #define GEN_SIZE_OFFSET
 #include	"sseqRecord.h"
@@ -399,8 +400,9 @@ asyncFinish(sseqRecord *pR)
 	return(0);
 }
 
-void putCallbackCB(struct link *plink)
+dbCaCallback putCallbackCB(void *arg)
 {
+        struct link *plink = (struct link *)arg;
 	sseqRecord			*pR = (sseqRecord *)(plink->value.pv_link.precord);
 	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
 	struct linkGroup	*plinkGroup;
@@ -507,7 +509,7 @@ processCallback(CALLBACK *pCallback)
 			if (sseqRecDebug >= 5)
 				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
 			status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_STRING,
-				&(plinkGroup->s),1,putCallbackCB);
+				&(plinkGroup->s), 1, putCallbackCB, (void *)(&(plinkGroup->lnk)));
 			did_putCallback = 1;
 		} else {
 			if (sseqRecDebug >= 5)
@@ -521,7 +523,7 @@ processCallback(CALLBACK *pCallback)
 			if (sseqRecDebug >= 5)
 				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
 			status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_DOUBLE,
-				&(plinkGroup->dov),1,putCallbackCB);
+				&(plinkGroup->dov), 1, putCallbackCB, (void *)(&(plinkGroup->lnk)));
 			did_putCallback = 1;
 		} else {
 			if (sseqRecDebug >= 5)
