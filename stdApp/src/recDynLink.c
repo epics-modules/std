@@ -40,7 +40,7 @@ of this distribution.
 #include "recDynLink.h"
 
 volatile int recDynINPCallPend = 1;
-volatile int recDynOUTCallPend = 0;
+volatile int recDynOUTCallPend = 1;
 
 /*Definitions to map between old and new database access*/
 /*because we are using CA must include db_access.h*/
