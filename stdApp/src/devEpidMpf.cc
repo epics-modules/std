@@ -71,7 +71,7 @@ private:
     float setPoint;
 };
 
-MAKE_DSET(devEpidMpf, (DEVSUPFUN) DevEpidMpf::dev_init)
+MAKE_DSET(devEpidMpf, DevEpidMpf::dev_init)
 
 DevEpidMpf::DevEpidMpf(dbCommon* pr,DBLINK* l) : DevMpf(pr,l,false)
 {
