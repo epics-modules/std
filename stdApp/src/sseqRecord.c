@@ -56,6 +56,7 @@
 #include        <epicsExport.h>
 
 volatile int sseqRecDebug = 0;
+epicsExportAddress(int, sseqRecDebug);
 
 /* Total number of link-groups in a sequence record */
 #define NUM_LINKS	10
