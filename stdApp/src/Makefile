@@ -44,7 +44,7 @@ DBDINSTALL += ../stdShare.dbd
 
 #=============================
 
-PROD_IOC_vxWorks = std
+#PROD_IOC_vxWorks = std
 
 LIBRARY_IOC_vxWorks += std
 
