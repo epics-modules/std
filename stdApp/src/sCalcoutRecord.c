@@ -44,6 +44,9 @@
  * .11  08-22-00    tmm    v3.62: changed message text.
  * .12  04-22-03    tmm    v3.7: RPC fields now allocated in dbd file, since
  *                         sCalcPostfix doesn't allocate them anymore
+ * .13  06-26-03    rls    Port to 3.14; alarm() conflicts with alarm declaration
+ *			   in unistd.h (sCalcoutRecord.h->epicsTime.h->osdTime.h->
+ *			   unistd.h) when compiled with SUNPro.
  *
  */
 
@@ -141,7 +144,7 @@ struct rpvtStruct {
 	short		outlink_field_type;
 };
 
-static void alarm();
+static void checkAlarms();
 static void monitor();
 static int fetch_values();
 static void execOutput();
@@ -299,7 +302,7 @@ static long process(pcalc)
 	}
 	recGblGetTimeStamp(pcalc);
 	/* check for alarms */
-	alarm(pcalc);
+	checkAlarms(pcalc);
 
 	/* check for output link execution */
 	switch (pcalc->oopt) {
@@ -590,7 +593,7 @@ static long get_alarm_double(paddr,pad)
 }
 
 
-static void alarm(pcalc)
+static void checkAlarms(pcalc)
 	struct scalcoutRecord	*pcalc;
 {
 	double		val;
