@@ -41,9 +41,8 @@ std_SRCS_vxWorks += aiCvtDouble.c
 
 std_SRCS += scalerRecord.c
 std_SRCS += epidRecord.c
-std_SRCS += fastPID.cc
 std_SRCS += devEpidSoft.c
-std_SRCS += devEpidMpf.cc
+std_SRCS += devEpidFast.c
 std_SRCS += sseqRecord.c
 #std_SRCS += devVXStats.c
 
@@ -53,12 +52,11 @@ std_SRCS += timestampRecord.c
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
 INC += devScaler.h
-INC += fastPID.h
 INC += aiCvtDouble.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
-std_LIBS += mpf
+std_LIBS += asyn
 std_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
@@ -75,7 +73,7 @@ stdApp_SRCS_vxWorks += -nil-
 stdApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 stdApp_LIBS += std
-stdApp_LIBS += mpf
+stdApp_LIBS += asyn
 stdApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
