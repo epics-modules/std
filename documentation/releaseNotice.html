@@ -40,6 +40,10 @@
 	roughly 40 ms to write the data, so the date storage time overlapped
 	completely with the detector dwell time, effectively removing it completely
 	from the scan overhead.)
+	
+	<P>There is no provision in the AWAIT handshake for more than one data-
+	storage client.  If other data-storage clients need to handshake, they
+	must use the WAIT handshake.
 
     </ul>
 <li> saveData v1.14.0
