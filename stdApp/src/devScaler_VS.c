@@ -280,9 +280,17 @@ STATIC int scalerEndOfGateISRSetup(int card)
 			  "Can't enable enterrupt level %d\n", vs_InterruptLevel);
 		return (ERROR);
 	}
+	Debug(5, "scalerEndOfGateISRSetup: Wrote interrupt level, %d, to hardware\n",
+	      vs_InterruptLevel);
+
 	/* Write interrupt vector to hardware */
 	p16 = (unsigned short *)(addr + IRQ_3_GATE_VECTOR_OFFSET);
 	*p16 = vs_InterruptVector + card;
+	Debug(5, "scalerEndOfGateISRSetup: Wrote interrupt vector, %d, to hardware\n",
+	      vs_InterruptVector + card);
+
+	Debug(5, "scalerEndOfGateISRSetup: Read interrupt vector, %d, from hardware\n",
+	      *p16&0xff);
 
 	Debug(5, "scalerEndOfGateISRSetup: Exit, card #%d\n", card);
 	return (OK);
@@ -440,10 +448,6 @@ STATIC long scalerVS_reset(int card)
 	/* clear hardware-done flag */
 	scalerVS_state[card]->done = 0;
 
-if (devScaler_VSDebug >= 1) {
-	int i, j;
-	for(i=0; i<10000; i++) j = i;
-}
 	return(0);
 }
 
@@ -468,17 +472,18 @@ STATIC long scalerVS_read(int card, long *val)
 
 	pdata = (long *) (addr + READ_XFER_REG_OFFSET);
 	for (i=0; i < scalerVS_state[card]->num_channels; i++) {
-		val[i] = pdata[i];
+       		val[i] = pdata[i];
 		if (i==0) {
 			Debug2(10,"scalerVS_read: ...(chan %d = %ld)\n", i, val[i]);
 		} else {
 			Debug2(20,"scalerVS_read: ...(chan %d = %ld)\n", i, val[i]);
 		}
 	}
+
 	p16 = (unsigned short *) (addr + STATUS_OFFSET);
 	status = *p16;
 
-	/* Write interrupt vector to hardware */
+	/* Read interrupt vector from hardware */
 	p16 = (unsigned short *)(addr + IRQ_3_GATE_VECTOR_OFFSET);
 
 	Debug2(10,"scalerVS_read: status=0x%x; irq vector=0x%x\n", status, *p16&0xff);
@@ -488,7 +493,7 @@ STATIC long scalerVS_read(int card, long *val)
 #define GATE_FREQ_TABLE_LENGTH 12
 
 double gate_freq_table[GATE_FREQ_TABLE_LENGTH] = {
-1e7, 5e6, 2.5e6, 1e6, 5e5, 2.5e5, 1e5, 5e4, 2.5e4, 11e4, 1e3, 100
+1e7, 5e6, 2.5e6, 1e6, 5e5, 2.5e5, 1e5, 5e4, 2.5e4, 1e4, 1e3, 100
 };
 
 int gate_freq_bits[GATE_FREQ_TABLE_LENGTH] = {
@@ -548,6 +553,9 @@ STATIC long scalerVS_write_preset(int card, int signal, long val)
 	do {
 		gate_freq = gate_freq_table[gate_freq_ix];
 		gate_periods =  gate_time * gate_freq;
+		if (devScaler_VSDebug >= 5)
+			printf("scalerVS_write_preset: try f=%.0f, n=%.0f, ix=%d\n",
+				gate_freq, gate_periods, gate_freq_ix);	
 	} while ((gate_periods > 65535) && (++gate_freq_ix < GATE_FREQ_TABLE_LENGTH));
 	p16 = (volatile unsigned short *) (addr + CLOCK_TRIG_MODE_OFFSET);
 	*p16 = gate_freq_bits[gate_freq_ix] | 0x10;	/* software triggers gate start */
@@ -582,9 +590,10 @@ STATIC long scalerVS_arm(int card, int val)
 	volatile char *addr;
 	volatile unsigned short *p16;
 	volatile unsigned char *p8;
-	unsigned short irq_setup;
+	unsigned short irq_setup, retry;
+	int i;
 
-	if (devScaler_VSDebug >= 5)
+	if (devScaler_VSDebug >= 1)
 		printf("scalerVS_arm: card %d, val %d\n", card, val);
 
 	if ((card+1) > scalerVS_total_cards) return(ERROR);
@@ -627,11 +636,22 @@ STATIC long scalerVS_arm(int card, int val)
 		*p16 |= 0x0010;
 
 		/* trigger gate */
-		p16 = (unsigned short *) (addr + TRIG_GATE_OFFSET);
-		*p16 = 1; /* any write triggers gate */
+		do {
+			p16 = (unsigned short *) (addr + TRIG_GATE_OFFSET);
+			*p16 = 1; /* any write triggers gate */
+			if ((scalerVS_state[card]->ident&0x3ff) < 8) {
+				/* Early version of the firmware didn't reliably accept gate trigger */
+				for (i=0; i<100; i++) *p16 = 1;
+			}
+			/* check status register to make sure internal gate is open */
+			p16 = (unsigned short *) (addr + STATUS_OFFSET);
+			retry = ((*p16 & 0x0200) == 0);
+			if ((devScaler_VSDebug && retry) || (devScaler_VSDebug>=5))
+				printf("scalerVS_arm: gate didn't open; SR=0x%x\n", *p16);
+		} while (retry);
 
 		p16 = (unsigned short *)(addr + IRQ_3_GATE_VECTOR_OFFSET);
-		Debug(10,"scalerVS_arm: irq vector=0x%x\n", *p16&0xff);
+		Debug(10,"scalerVS_arm: irq vector=%d\n", *p16&0xff);
 
 	} else {
 		/*** stop counting ***/
@@ -675,11 +695,11 @@ STATIC long scalerVS_done(int card)
 
 
 /*****************************************************
-* scalerVS_VS_Setup()
+* scalerVS_Setup()
 * User (startup file) calls this function to configure
 * us for the hardware.
 *****************************************************/
-void scalerVS_VS_Setup(int num_cards,	/* maximum number of cards in crate */
+void scalerVS_Setup(int num_cards,	/* maximum number of cards in crate */
 	int addrs,		/* Base Address(0x800-0xf800, 2048-byte boundary) */
 	int vector,	/* valid vectors(64-255) */
 	int intlevel
