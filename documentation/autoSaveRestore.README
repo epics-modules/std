@@ -15,11 +15,11 @@ is one part of autosave; it is the task that actually does the parameter
 saving.  'reboot_restore' is the name of the function that restores
 parameter values during reboot.
 
-In versions earlier than 3.0, autosave's job was simply to save
+In versions earlier than 3.3, autosave's job was simply to save
 parameters through a reboot.  The file server to which save files were
 written was assumed competent to protect those files, and when the
 server said a save file was safe, autosave believed it.  Beginning with
-3.0, the file server is viewed as the enemy: autosave expects it to lie
+3.3, the file server is viewed as the enemy: autosave expects it to lie
 about file status, to suddenly stop recognizing previously valid file
 handles, and to return error codes that don't make sense.  Autosave
 can now defend its NFS mount against a server reboot, defend parameter
@@ -111,7 +111,7 @@ errors have occurred, autosave will attempt to remount the file system.
 
 Previously, save_restore saved floats and doubles using an algorithm
 that was prone to failure, especially for PV's from another ioc.
-(Thanks to Mark Rivers)
+(Thanks to Mark Rivers for finding and fixing this bug.)
 
 Now use errlogPrintf() for all messages except those from callback
 routines, where logMsg() is used.
