@@ -1,9 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Scaler Record (v 3.2) and related software</TITLE>
+<TITLE>Scaler Record (v 3.16) and related software</TITLE>
 </HEAD>
 <BODY>
-<H1>Scaler Record (v 3.2) and related software</H1>
+<H1>Scaler Record (v 3.16) and related software</H1>
 
 <ADDRESS>Tim Mooney</ADDRESS>
 
@@ -19,28 +19,32 @@
 <A NAME="Overview">
 <H2>Overview</H2></A>
 
-<P>This documentation describes version 3.2 of the EPICS scaler record,
-and related EPICS software required to build and use it.  This version
-of the record is compatible with EPICS 3.13.0, and is incompatible with
-any earlier version of EPICS.
+<P>This documentation describes version 3.16 of the EPICS scaler record, and
+related EPICS software required to build and use it.  This version of the
+record is compatible with EPICS 3.14.5, and is incompatible with any 3.13.x
+version of EPICS.
 
-<P>The scaler record provides support for a bank of up to 16 32-bit
-counters (scaler channels) controlled by a common start/stop
-mechanism.  The record divides scaler channels into two groups according
-to the values of each channel's gate-control field (Gn): simple
-counters [Gn = "N" (0)], and preset counters [Gn = "Y" (1)].  Simple counters are zeroed immediately
-before counting begins, and count upwards.  Preset counters are simple
-counters that will not count higher than a preset value.  The first
-preset counter to reach its preset value stop all counters.  (The
-hardware may actually implement a preset counter by loading in the
-preset value, and counting down to zero.  If so, device support is
-expected to maintain the fiction that all counters count up from
-zero.)  Currently device support exists for the Joerger VSC8 and VSC16
-family of VME scalers (TTL, NIM, and ECL versions).
+<P>The scaler record provides support for a bank of up to 64 32-bit counters
+(scaler channels) controlled by a common start/stop mechanism.  If the
+hardware is capable of preset-counter operation, the record divides scaler
+channels into two groups according to the values of each channel's
+gate-control field (Gn): simple counters [Gn = "N" (0)], and preset counters
+[Gn = "Y" (1)].  Simple counters are zeroed immediately before counting
+begins, and count upwards.  Preset counters are simple counters that will not
+count higher than a preset value.  The first preset counter to reach its
+preset value stop all counters.  (The hardware may actually implement a
+preset counter by loading in the preset value, and counting down to zero.  If
+so, device support is expected to maintain the fiction that all counters
+count up from zero.)  Currently device support exists for the Joerger VSC
+8 and 16 channel VME scalers; Joerger VS64 fly-counting scalers; and the
+SIS3801 multichannel scaler, emulating a single scaler bank.  Joerger VS
+scalers do not support preset counting, so the software sets the Gn fields
+to 0 and keeps them there.
 
 <P>Scaler channel 1 receives special treatment: it is presumed to count a
-fixed-frequency clock signal, and its value is presumed to indicate the
-time interval during which counting was enabled.  The fields 
+reference-frequency clock signal and its value indicates the time interval
+during which counting was enabled.  The fields
+
 <UL>
 <LI>T (time)
 <LI>TP (time preset)
@@ -52,30 +56,60 @@ time interval during which counting was enabled.  The fields
 	T = S1 / FREQ
 	TP = PR1 / FREQ
 </PRE>
-It is the user's job to make sure that FREQ actually contains the
-frequency of the clock signal input to scaler channel 1.
 
-<P>Scaler channel 1 does not have to be used in this way: if FREQ, TP, and T are
-ignored, then this counter behaves like any other counter.
+The manner in which the time base is managed is different for different
+kinds of scaler hardware.
+
+<DL>
+
+<DT>Joerger VSC scalers <DD>It is the user's job to make sure that a
+clock signal is presented to the channel-1 input, and that FREQ actually
+contains the frequency of the clock signal.  The 10 MHz signal available on
+the front panel normally is used for this purpose.
+
+<DT>SIS3801 scalers <DD>Normally, the hardware is set up to connect an
+internally generated 25-MHz clock to channel 1, via an internal switch.
+(Thus, any external signal connected to SIS3801 channel 1 will be ignored.)
+It is possible to use an externally generated clock, and in any case it is
+still the user's responsibility to ensure that FREQ contains the correct
+value.  The SIS3801 has no actual preset-counter hardware, but software
+emulates preset counters by reading the scaler periodically and stopping
+it when a channel specified as a preset counter has reached or exceeded the
+preset count.
+
+<DT>Joerger VS scalers <DD>This hardware does not implement preset
+counters; an internal 16-bit gate-time counter is used to set the counting
+time.  The device-support software will choose a reference frequency for this
+counter, and cause the hardware to generate and use it.  Also, device-support
+will set and post the FREQ field according to the reference frequency it has
+chosen.  But the reference signal still must be connected by the user to the
+channel-1 input, so that the record and any clients can treat channel 1 as
+the time base.
+
+</DL>
 
 <P>This is how the scaler record is intended to be used:
 <OL>
 <LI>The user sets FREQ to the frequency of the clock signal input to
-   scaler channel 1.
-<LI>The user sets TP (time preset) and/or PRn (preset value for scaler channel n)
+    scaler channel 1. (Joerger VSC and SIS3801 only)
+<LI>The user sets TP (time preset) and/or PRn (preset value for scaler
+    channel n).  (For Joerger VS scalers, only TP or PR1 may be set.)
 <LI>The user sets CNT to "Count" (1), initiating counting.
-<LI>The counters count until one of them reaches its preset value, whereupon
-   the record resets CNT to "Done" (0), or the user manually resets CNT to
-   "Done" (0), causing couting to stop.
+<LI>For Joerger VSC and SIS3801 scalers, the counters count until any
+    preset counter reaches its preset value, whereupon the record resets
+    CNT to "Done" (0), or the user manually resets CNT to "Done" (0),
+    causing counting to stop.  For Joerger VS scalers, counters count
+    until the internal gate-time counter reaches its preset, or the user
+    manually resets CNT to "Done" (0).
 </OL>
 
-<P>This version of the scaler record maintains two counting modes:
-normal and background (also called AutoCount).  Normal counting is
-controlled by the CNT ("Count/Done") field, the time preset, and other
-presets, as described above.  Background counting is controlled by the
-CONT ("OneShot/AutoCount") field, normally ignores user preset values,
-and is intended to give the user continuous updates whenever the scaler
-would otherwise be idle.
+<P>This version of the scaler record maintains two counting modes: normal and
+background (also called AutoCount).  Normal counting is controlled by the CNT
+("Count/Done") field, the time preset, and possibly other presets, as
+described above.  Background counting is controlled by the CONT
+("OneShot/AutoCount") field, normally ignores user preset values, and is
+intended to give the user continuous updates whenever the scaler would
+otherwise be idle.
 
 <P>When CONT = "AutoCount" (1), and no normal counting operation is
 already in progress, the scaler waits for the AutoCount delay (DLY1);
@@ -86,15 +120,15 @@ Rate (RAT1) is greater than zero (Hz), then the scaler values are
 displayed at that rate while background counting is in progress.
 Background counting is interrupted immediately whenever a normal
 counting operation is started with the CNT field, and the results of a
-normal counting operation are held for one second after the scaler
-finishes that operation before background counting begins again.
+normal counting operation are held for ten seconds after the scaler
+finishes normal counting, before background counting begins again.
 Background counting never affects the state of the CNT field, so this
 field can always be used to determine when a normal counting operation
 has begun and finished.
 
 <P>The scaler record is unlike most other EPICS records in that its
 processing is neither "synchronous" nor "asynchronous", as these terms
-are used in the EPICS Record Reference Manual.  Currently, the PACT
+are used in the EPICS Application Developer' Guide.  Currently, the PACT
 field is always FALSE after record processing has completed, even
 though the scaler may be counting.  This means the record always
 responds to channel-access puts, and that counting can be stopped at
@@ -104,9 +138,8 @@ has stopped counting.
 
 <A NAME="Fields">
 <H2>Field Descriptions</H2></A>
-<P>In addition to fields common to all record types (see the <A
-HREF="http://www.atdiv.lanl.gov/aot8/epics/dbase/recref/rcrf-1.html">EPICS
-Record Reference Manual</A> for these) the scaler record has the fields
+<P>In addition to fields common to all record types (see the EPICS
+Record Reference Manual for these) the scaler record has the fields
 described below.
 <UL>
 <LI><A HREF="#Fields_alphabetical">Alphabetical listing of all fields</A>
@@ -130,21 +163,21 @@ find the actual item.</CAPTION></A>
 <TR><TD><A HREF="#Fields_misc">		CARD	</A> 	<TD>R		<TD>Card Number			<TD>SHORT		<TD>Which VME card
 <TR><TD><A HREF="#Fields_control">	CNT		</A>	<TD>R/W*	<TD>Count				<TD>RECCHOICE	<TD>(0:"Done", 1:"Count")
 <TR><TD><A HREF="#Fields_control">	CONT	</A>	<TD>R/W*	<TD>OneShot/AutoCount	<TD>RECCHOICE	<TD>(0:"OneShot", 1:"AutoCount")
-<TR><TD><A HREF="#Fields_private">	D1...D16</A>	<TD>R/W		<TD>Count Direction n	<TD>RECCHOICE	<TD>(0:"Up", 1:"Dn")
+<TR><TD><A HREF="#Fields_private">	D1...D64</A>	<TD>R/W		<TD>Count Direction n	<TD>RECCHOICE	<TD>(0:"Up", 1:"Dn")
 <TR><TD><A HREF="#Fields_control">	DLY		</A>	<TD>R/W		<TD>Delay				<TD>FLOAT		<TD>before counting
-<TR><TD><A HREF="#Fields_control">	DLY1		</A>	<TD>R/W		<TD>Auto-mode Delay				<TD>FLOAT		<TD>before counting
+<TR><TD><A HREF="#Fields_control">	DLY1	</A>	<TD>R/W		<TD>Auto-mode Delay		<TD>FLOAT		<TD>before counting
 <TR><TD><A HREF="#Fields_misc">		EGU		</A>	<TD>R/W		<TD>Units Name			<TD>STRING		<TD>8 characters
 <TR><TD><A HREF="#Fields_data">		FREQ	</A>	<TD>R/W		<TD>Time base freq		<TD>DOUBLE		<TD>e.g., 1e7
-<TR><TD><A HREF="#Fields_control">	G1...G16</A>	<TD>R/W		<TD>Gate Control n		<TD>RECCHOICE	<TD>preset? (0:"N", 1:"Y")
+<TR><TD><A HREF="#Fields_control">	G1...G64</A>	<TD>R/W		<TD>Gate Control n		<TD>RECCHOICE	<TD>preset? (0:"N", 1:"Y")
 <TR><TD><A HREF="#Fields_misc">		NCH		</A>	<TD>R		<TD>Number of Channels	<TD>SHORT		<TD>from device
-<TR><TD><A HREF="#Fields_misc">		NM1...NM16</A>	<TD>R/W		<TD>Scaler n name		<TD>STRING		<TD>user's field
+<TR><TD><A HREF="#Fields_misc">		NM1...NM64</A>	<TD>R/W		<TD>Scaler n name		<TD>STRING		<TD>user's field
 <TR><TD><A HREF="#Fields_link">		OUT		</A>	<TD>R		<TD>Output Specification<TD>OUTLINK		<TD>link to hardware
 <TR><TD><A HREF="#Fields_private">	PCNT	</A>	<TD>R		<TD>Prev Count			<TD>RECCHOICE	<TD>private
 <TR><TD><A HREF="#Fields_misc">		PREC	</A>	<TD>R/W		<TD>Display Precision	<TD>SHORT		<TD>num decimal places
-<TR><TD><A HREF="#Fields_control">	PR1...PR16</A>	<TD>R/W		<TD>Preset n			<TD>LONG		<TD>preset values
-<TR><TD><A HREF="#Fields_control">	RATE	</A>	<TD>R/W		<TD>Display Rate (Hz.)	<TD>FLOAT		<TD>in [0..60] Hz
-<TR><TD><A HREF="#Fields_control">	RAT1	</A>	<TD>R/W		<TD>Auto Display Rate (Hz.)	<TD>FLOAT		<TD>in [0..60] Hz
-<TR><TD><A HREF="#Fields_data">		S1...S16</A>	<TD>R		<TD>Scaler n			<TD>LONG		<TD>results
+<TR><TD><A HREF="#Fields_control">	PR1...PR64</A>	<TD>R/W		<TD>Preset n			<TD>LONG		<TD>preset values
+<TR><TD><A HREF="#Fields_control">	RATE	</A>	<TD>R/W		<TD>Display Rate (Hz)	<TD>FLOAT		<TD>in [0..60] Hz
+<TR><TD><A HREF="#Fields_control">	RAT1	</A>	<TD>R/W		<TD>Auto Display Rate	<TD>FLOAT		<TD>in [0..60] Hz
+<TR><TD><A HREF="#Fields_data">		S1...S64</A>	<TD>R		<TD>Scaler n			<TD>LONG		<TD>results
 <TR><TD><A HREF="#Fields_private">	SS</A>			<TD>r		<TD>Scaler state		<TD>SHORT		<TD>state of hardware
 <TR><TD><A HREF="#Fields_data">		T		</A>	<TD>R		<TD>Timer				<TD>DOUBLE		<TD>elapsed time
 <TR><TD><A HREF="#Fields_control">	TP		</A>	<TD>R/W		<TD>Time Preset			<TD>DOUBLE		<TD>preset time
@@ -198,16 +231,19 @@ and the forward link will be fired.
 User sets this field to "AutoCount" (1) to enable background counting.
 (See also autocount delay (DLY1), autocount display rate (RAT1), and autocount time presetTP1.)
 
-<TR VALIGN=TOP><TD>G1...G16	<TD>R/W	<TD>Gate control	<TD>RECCHOICE <TD>(0:"N", 1:"Y")
+<TR VALIGN=TOP><TD>G1...G64	<TD>R/W	<TD>Gate control	<TD>RECCHOICE <TD>(0:"N", 1:"Y")
 
 	<TR><TD COLSPAN=5>
-There are 16 of these fields, one per channel.  These fields determine
+There are 64 of these fields, one per channel.  These fields determine
 whether the associated scalers are to be used as simple scalers (Gn=0)
-or preset scalers (Gn=1).  When Gn is set to 1, the record will ensure
-than PRn is nonzero (will set it to 1000, if it was zero).  When PRn is
-set to any positive value, the record will set Gn to 1.
+or preset scalers (Gn=1), assuming the hardware is capable.  When Gn is
+set to 1, the record will ensure than PRn is nonzero (will set it to 1000,
+if it was zero).  When PRn is set to any positive value, the record will
+set Gn to 1.  If the hardware does not implement preset scalers, device
+support will set these fields to 0 whenever it notices that they have been
+set to 1.
 
-<TR VALIGN=TOP><TD>PR1...PR16	<TD>R/W	<TD>Preset n	<TD>LONG
+<TR VALIGN=TOP><TD>PR1...PR64	<TD>R/W	<TD>Preset n	<TD>LONG
 
 	<TR><TD COLSPAN=5>
 Preset values for the associated scalers.  If scaler n has been
@@ -242,21 +278,21 @@ CNT goes to 1 before actually causing counting to begin.
 	<TR><TD COLSPAN=5>
 The delay, in seconds, between successive background-counting periods.
 
-<TR VALIGN=TOP><TD>RATE	<TD>R/W	<TD>Display rate (Hz.)		<TD>FLOAT
+<TR VALIGN=TOP><TD>RATE	<TD>R/W	<TD>Display rate (Hz)		<TD>FLOAT
 
 	<TR><TD COLSPAN=5>
-This field specifies the rate in Hz. at which the scaler record posts
+This field specifies the rate in Hz at which the scaler record posts
 scaler information while counting is in progress.  If this field is
 zero, counts are displayed only after counting has stopped.  Max.
-rate:  60 Hz.
+rate:  60 Hz
 
-<TR VALIGN=TOP><TD>RAT1	<TD>R/W	<TD>AutoCount Display rate (Hz.)		<TD>FLOAT
+<TR VALIGN=TOP><TD>RAT1	<TD>R/W	<TD>AutoCount Display rate (Hz)		<TD>FLOAT
 
 	<TR><TD COLSPAN=5>
-This field specifies the rate in Hz. at which the scaler record posts
+This field specifies the rate in Hz at which the scaler record posts
 scaler information while background counting is in progress.  If this field is
 zero, counts are displayed only after background counting has stopped.  Max.
-rate:  60 Hz.
+rate:  60 Hz
 
 <TR VALIGN=TOP><TD><TD><TD><TD><TD>
 </TABLE>
@@ -277,10 +313,10 @@ seconds) and values associated with scaler 1 (S1 and PR1).  It is
 the user's responsibility to ensure that this field has the correct
 value.
 
-<TR VALIGN=TOP><TD>S1...S16	<TD>R	<TD>Scaler n value (EGU)		<TD>LONG
+<TR VALIGN=TOP><TD>S1...S64	<TD>R	<TD>Scaler n value (EGU)		<TD>LONG
 
 	<TR><TD COLSPAN=5>
-The counts accumulated by the scalers.  These are posted periodically (at RATE Hz.)
+The counts accumulated by the scalers.  These are posted periodically (at RATE Hz)
 while counting is in progress, and once after counting stops.
 
 <TR VALIGN=TOP><TD>T	<TD>R	<TD>Timer (EGU)		<TD>DOUBLE
@@ -313,7 +349,7 @@ This field is a proxy for the value field, S1, associated with scaler
 <CAPTION><H2>Miscellaneous fields</H2></CAPTION></A>
 <TR VALIGN=TOP><TH>Name	<TH>Access	<TH>Prompt				<TH>Data type		<TH>Comments
 
-<TR VALIGN=TOP><TD>NM1...NM16	<TD>R/W		<TD>Scaler n name		<TD>STRING
+<TR VALIGN=TOP><TD>NM1...NM64	<TD>R/W		<TD>Scaler n name		<TD>STRING
 
 	<TD>Names the user has given to individual scaler channels.
 
@@ -353,7 +389,7 @@ as reported by device support.
 <CAPTION><H2>Private fields</H2></CAPTION></A>
 <TR VALIGN=TOP><TH>Name	<TH>Access	<TH>Prompt				<TH>Data type		<TH>Comments
 
-<TR VALIGN=TOP><TD>D1...D16 	<TD>R/W	<TD>Count direction	<TD>RECCHOICE 		<TD>(0:"Up", 1:"Dn")
+<TR VALIGN=TOP><TD>D1...D64 	<TD>R/W	<TD>Count direction	<TD>RECCHOICE 		<TD>(0:"Up", 1:"Dn")
 
 	<TR><TD COLSPAN=5>
 These fields are intended for the private use of the record, and may
@@ -386,24 +422,16 @@ Previous value of CNT.
 <HR>
 <P>
 <A NAME="Files"><H2>Files, device support</H2></A> The following table
-briefly describes all of the files required to implement and use the
-scaler record.  The reader is assumed to be familiar with the <A
-HREF="http://www.aps.anl.gov/asd/controls/epics/EpicsDocumentation/AppDevManuals/iocAppBuildSRcontrol.html">
-IOC Applications: Building and Source/Release Control document</A> which describes
-how to build an EPICS application tree into which these files are to be
-placed, and how to run "gnumake" to build record and device
-support. These files can all be
-obtained from the <A HREF="http://www.aps.anl.gov/xfd/WWW/xfd/SoftDist/Welcome.html"> EPICS Software Distribution</A> (in the <A HREF="http://www.aps.anl.gov/xfd/WWW/xfd/SoftDist/Welcome.html#Custom_EPICS"> custom-software section</A>).
-
+briefly describes the files required to implement and use the
+scaler record.
 <P>
 <TABLE BORDER CELLPADDING=5>
-<TR><TH COLSPAN=2>
-SOURCE CODE<BR>
-files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/src/</CODE>
-</TH> </TR>
-<TR VALIGN=TOP><TD>scalerRecord.c	<TD>Record support for the scaler record</TR>
-<TR VALIGN=TOP><TD>devScaler.h		<TD>Header included by record and device support</TR>
-<TR VALIGN=TOP><TD>devScaler.c		<TD>Device support for Joerger VSC8 and VSC16</TR>
+<TR><TH COLSPAN=2>SOURCE CODE<BR></TH></TR>
+<TR VALIGN=TOP><TD>scalerRecord.c		<TD>Record support for the scaler record</TR>
+<TR VALIGN=TOP><TD>devScaler.h			<TD>Header included by record and device support</TR>
+<TR VALIGN=TOP><TD>devScaler.c			<TD>Device support for Joerger VSC scalers</TR>
+<TR VALIGN=TOP><TD>devScaler_VS.c		<TD>Device support for Joerger VS scalers</TR>
+<TR VALIGN=TOP><TD>devScalerSTR7201.c	<TD>Device support for Struck 7201 and SIS3801</TR>
 
 <TR VALIGN=TOP>
 <TD>scalerRecord.dbd</TD>
@@ -412,50 +440,52 @@ files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/src/</CODE>
 
 <TR VALIGN=TOP>
 <TD>*Include.dbd</TD>
-<TD>This file is not included in the distribution.  However, the user must edit
-this file and add the following lines:
+
+<TD>This file is loaded at ioc-boot time, and by database-configuration tools, and --
+for purposes here -- describes the scaler-record fields, and the kinds of devices that
+may be associated with the scaler record.  Normally the file contains the following
+scaler-related information:
+
 <PRE>
 # Database definition for scaler record
 include "scalerRecord.dbd"
 # Device support for scaler record
 device(scaler,VME_IO,devScaler,"Joerger VSC8/16")
-</PRE></TD>
-</TR>
-
-<TR VALIGN=TOP>
-<TD>Makefile.Vx</TD>
-<TD>This file is not included in the distribution.  However, the user must edit
-this file and add, for example, the following lines:
-<PRE>
-
-RECTYPES += scalerRecord.h
-SRCS.c += ../scalerRecord.c ../devScaler.c
-PROD += scalerRecord.o
-PROD += devScaler.o
-
+device(scaler,VME_IO,devScaler_VS,"Joerger VS")
+device(scaler,VME_IO,devScalerSTR7201,"Struck STR7201 Scaler")
+device(scaler,VME_IO,devScalerCamac,"CAMAC scaler")
 </PRE></TD>
 </TR>
 </TABLE>
 
-
-
+<P><TABLE BORDER CELLPADDING=5>
+<TR><TH COLSPAN=2>DATABASE and AUTOSAVE-REQUEST FILES<BR></TH></TR>
+<TR><TD>scaler.db<TD>database used for all device types.</TR>
+<TR><TD>scaler_settings.req<TD>copy of scaler_64ch_settings.req</TR>
+<TR><TD>scaler_8ch_settings.req<TD>settings for 8-channel scaler</TR>
+<TR><TD>scaler_16ch_settings.req<TD>settings for 16-channel scaler</TR>
+<TR><TD>scaler_32ch_settings.req<TD>settings for 32-channel scaler</TR>
+<TR><TD>scaler_64ch_settings.req<TD>settings for 64-channel scaler</TR>
+<TR><TD>scaler_channelN_settings.req<TD>included by other .req files</TR>
+</TABLE>
 
 <P><TABLE BORDER CELLPADDING=5>
-<TR><TH COLSPAN=2>MEDM DISPLAY SCREENS<BR>
-files to be placed in 
-<CODE>&lt;top&gt;/&lt;app&gt;App/op/adl/</CODE>
-</TH> </TR>
+<TR><TH COLSPAN=2>MEDM DISPLAY FILES<BR></TH></TR>
 <TR VALIGN=TOP><TD>scaler.adl		<TD>tiny operator screen for 8-channel scaler
 <TR VALIGN=TOP><TD>scaler16.adl		<TD>same, but for 16-channel scaler
+<TR VALIGN=TOP><TD>scaler32.adl		<TD>same, but for 32-channel scaler
 <TR VALIGN=TOP><TD>scaler_more.adl		<TD>medium operator screen
 <TR VALIGN=TOP><TD>scaler16_more.adl	<TD>same, but for 16-channel scaler
+<TR VALIGN=TOP><TD>scaler32_more.adl	<TD>same, but for 32-channel scaler
 <TR VALIGN=TOP><TD>scaler_full.adl		<TD>big operator screen
 <TR VALIGN=TOP><TD>scaler16_full.adl	<TD>same, but for 16-channel scaler
+<TR VALIGN=TOP><TD>scaler32_full.adl	<TD>same, but for 32-channel scaler
 <TR VALIGN=TOP><TD>scaler_full_calc.adl	<TD>big operator screen with user calculations
 <TR VALIGN=TOP><TD>scaler16_full_calc.adl	<TD>same, but for 16-channel scaler
+<TR VALIGN=TOP><TD>scaler32_full_calc.adl	<TD>same, but for 32-channel scaler
 
-<TR><TD COLSPAN=2>These files build <CODE>medm</CODE> screens to access the scaler record
-and related process variables in the database included with this distribution.
+<TR><TD COLSPAN=2>These files build <CODE>medm</CODE> screens to access the scaler
+record and related process variables.
 To use one of them from the command line, type, for example
 <PRE>
 medm -x -macro "P=XXX:,S=scaler1" scaler.adl
@@ -471,10 +501,7 @@ screens by passing the argument <CODE>"P=XXX:,S=scaler1"</CODE>.
 
 
 <P><TABLE BORDER CELLPADDING=5>
-<TR><TH COLSPAN=2>EPICS STARTUP FILES<BR>
-files to be placed in 
-<CODE>&lt;top&gt;/iocBoot/ioc&lt;name&gt;/</CODE>
-</TH> </TR>
+<TR><TH COLSPAN=2>EPICS STARTUP FILE<BR></TH> </TR>
 
 <TR VALIGN=TOP><TD>st.cmd		<TD>Startup script
 <TR><TD COLSPAN=2>
@@ -484,19 +511,6 @@ from a startup file that supports scalers:
 #######################################################################
 # vxWorks startup script to load and execute system (iocCore) software.
 </PRE>
-<B><FONT COLOR=#FFFFFF> Load standard EPICS software</FONT></B>
-<PRE>
-# Load EPICS base software
-ld < bin/iocCore
-</PRE>
-
-<B><FONT COLOR=#FFFFFF> Load custom EPICS software (including motor support) </FONT></B>
-<PRE>
-ld < bin/xxxApp.o
-# Load scaler record and device support (if they're not included in xxxApp.o)
-ld < bin/scalerRecord.o
-ld < bin/devScaler.o
-</PRE>
 
 <B><FONT COLOR=#FFFFFF> Scaler-related databases </FONT></B>
 <PRE>
@@ -505,18 +519,19 @@ ld < bin/devScaler.o
 dbLoadDatabase("dbd/xxxApp.dbd")
 
 # scalers
-dbLoadRecords("xxxApp/Db/Jscaler.db","P=xxx:,S=scaler1,C=0")
-dbLoadRecords("xxxApp/Db/Jscaler.db","P=xxx:,S=scaler2,C=1")
+dbLoadRecords("$(STD)/stdApp/Db/scaler.db","P=xxx:,S=scaler1,C=0,DTYP=Joerger VSC8/16,FREQ=10000000")
+dbLoadRecords("$(STD)/stdApp/Db/scaler.db","P=xxx:,S=scaler2,C=0,DTYP=Joerger VS,FREQ=10000000")
+dbLoadRecords("$(STD)/stdApp/Db/scaler.db","P=xxx:,S=scaler3,C=0,DTYP=Struck STR7201 Scaler,FREQ=25000000")
+dbLoadRecords("$(STD)/stdApp/Db/scaler.db","P=xxx:,S=scaler4,C=0,DTYP=CAMAC scaler,FREQ=10000000")
 </PRE>
-<FONT COLOR=#FFFFFF> <B>Specify scaler-controller board address, interrupt vector, etc.</B><BR>
-<TABLE BORDER CELLPADDING=5>
+
+<P><TABLE BORDER CELLPADDING=5>
 <TR><TH COLSPAN=2><PRE>
-#VSCSetup(nCards, baseAddress, intVectBase)
-VSCSetup(2, 0xD0000000, 200)
+VSCSetup(int nCards, char *baseAddress, unisgned intVectBase)
 </PRE>
 </TH>
 <TR VALIGN=TOP><TD>nCards</TD>
-<TD>the actual number of cards may be less, but not greater than this
+<TD>the actual number of cards may be less than, but not greater than this
 </TR>
 <TR VALIGN=TOP><TD>baseAddress</TD>
 <TD>the base address of the first card of a series.  This must agree
@@ -534,22 +549,87 @@ is read from the hardware.)</TD>
 </TR>
 </TABLE>
 </FONT>
+VSCSetup(2, 0xD0000000, 200)
 
-<B><FONT COLOR=#FFFFFF> Start EPICS </FONT></B>
-<PRE>
-iocInit
+<P><TABLE BORDER CELLPADDING=5>
+<TR><TH COLSPAN=2><PRE>
+scalerVS_Setup(int nCards, char *baseAddress, unsigned intVectBase, int intLevel)
 </PRE>
+</TH>
+<TR VALIGN=TOP><TD>nCards</TD>
+<TD>the actual number of cards may be less than, but not greater than this
+</TR>
+<TR VALIGN=TOP><TD>baseAddress</TD>
+<TD>the base address of the first card of a series.  This must agree
+with address jumpers on the actual card(s).
+<P>Joerger VS scalers have base addresses in the A16 address space,
+on a 2048-byte (0x800) boundary.  (I.e., these cards require 2048 bytes
+each, and must all be addressed contiguously as, e.g., 0x2000, 0x2800,...).
+</TD></TR>
+<TR VALIGN=TOP><TD>intVectBase</TD>
+<TD>the interrupt vector that will be loaded into the first card of a
+series.  Succeeding cards will be loaded with intVectBase+1,
+intVectBase+2, etc.  Stay in the range [64..255].
+<TR VALIGN=TOP><TD>intLevel</TD>
+<TD>the interrupt level this board should use.</TD>
+</TR>
+</TABLE>
+</FONT>
+scalerVS_Setup(1, 0x2000, 205, 5)
 
-</CODE>
+
+<P><TABLE BORDER CELLPADDING=5>
+<TR><TH>Setup for SIS3801 and Struck 7201 multichannel scalers</TH></TR>
+
+<TR><TD>
+	<TABLE BORDER CELLPADDING=5>
+	<TR><TH COLSPAN=2><PRE>STR7201Setup(int nCards, int baseAddress, int intVectBase, int intLevel)</PRE></TH></TR>
+	<TR VALIGN=TOP><TD>nCards</TD>
+	<TD>the actual number of cards may be less than, but not greater than this
+	</TR>
+	<TR VALIGN=TOP><TD>baseAddress</TD>
+	<TD>the base address of the first card of a series.  This must agree
+	with address jumpers on the actual card(s).
+	<P>SIS3801 scalers have base addresses in the A32 address space,
+	on a 2048-byte (0x800) boundary.  (I.e., these cards require 2048 bytes
+	each, and must all be addressed contiguously as, e.g., 0x90000000, 0x90000800,...).
+	</TD></TR>
+	<TR VALIGN=TOP><TD>intVectBase</TD>
+	<TD>the interrupt vector that will be loaded into the first card of a
+	series.  Succeeding cards will be loaded with intVectBase+1,
+	intVectBase+2, etc.  Stay in the range [64..255].
+	<TR VALIGN=TOP><TD>intLevel</TD>
+	<TD>the interrupt level this board should use.</TD>
+	</TR>
+	</TABLE>
+STR7201Setup(2, 0x90000000, 220, 6)
+</TD></TR>
+
+<TR><TD>
+	<TABLE BORDER CELLPADDING=5>
+	<TR><TH COLSPAN=2><PRE>STR7201Config(int card, int maxSignals, int maxChans, int enable25MHzClock)</PRE></TH>
+	<TR VALIGN=TOP><TD>card</TD>
+	<TD>card to which this setup command refers
+	</TR>
+	<TR VALIGN=TOP><TD>maxSignals</TD>
+	<TD>the number of scaler channels to use.
+	</TD></TR>
+	<TR VALIGN=TOP><TD>maxChans</TD>
+	<TD>number of samples per channel to save (for multichannel-scaler operation).
+	<TR VALIGN=TOP><TD>enable25MHzClock</TD>
+	<TD>if '1', the 25-MHz clock is routed to scaler channel 1</TD>
+	</TR>
+	</TABLE>
+STR7201Config(0, 8, 1000, 0)
+</TD></TR>
+</TABLE>
+
 </TD>
 </TR>
 </TABLE>
 
 <P><TABLE BORDER CELLPADDING=5>
-<TR><TH COLSPAN=2>BACKUP/RESTORE (BURT) REQUEST FILES<BR>
-files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/op/burt/</CODE>
-</TH></TR>
-
+<TR><TH COLSPAN=2>BACKUP/RESTORE (BURT) REQUEST FILES<BR></TH></TR>
 <TR VALIGN=TOP><TD>scalerSettings.req   <TD>sample request file to save
 settings of one scaler database.  Edit this file, supplying names of
 the scaler records whose settings you want saved.  (The sample file
@@ -582,7 +662,7 @@ time (DLY1), the scaler can swamp the network with data.<HR>
 Suggestions and comments to: 
 <BR><A HREF="mailto:mooney@aps.anl.gov">Tim Mooney</A> : (mooney@aps.anl.gov)
 <BR>
-Last modified: November 24, 1997
+Last modified: May 18, 2004
 </ADDRESS>
 
 </BODY>
