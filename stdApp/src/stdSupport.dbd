@@ -12,51 +12,11 @@ include "sCalcoutRecord.dbd"
 include "sseqRecord.dbd"
 include "epidRecord.dbd"
 include "genSubRecord.dbd"
+include "timestampRecord.dbd"
 
 ################
 # DEVICE SUPPORT
 ################
-# Queensgate Piezo drive.
-#device(ao,BBGPIB_IO,devAoAX301,"PZT Bug")
-#device(ai,BBGPIB_IO,devAiAX301,"PZT Bug")
-#device(bo,BBGPIB_IO,devBoAX301,"PZT Bug")
-#device(longout,BBGPIB_IO,devLoAX301,"PZT Bug")
-
-# GP307 GPIB
-#device(ai,GPIB_IO,devAiGP307Gpib,"Vg307 GPIB Instrument")
-#device(bi,GPIB_IO,devBiGP307Gpib,"Vg307 GPIB Instrument")
-#device(bo,GPIB_IO,devBoGP307Gpib,"Vg307 GPIB Instrument")
-#device(stringin,GPIB_IO,devSiGP307Gpib,"Vg307 GPIB Instrument")
-
-# Heidenhain ND261 and related serial interface boxes
-#device(ai,VME_IO,devAiHeidND261,"Hideos ai HeidND261")
-
-# Varoc SSI encoder interface board
-#device(ai,VME_IO,devAiVaroc,"ESRF Varoc SSI Encoder Iface")
-
-# GPIB Heidenhain encoder
-#device(longin,GPIB_IO,devLiHeidAWE1024,"Heidenhein Encoder")
-#device(bo,GPIB_IO,devBoHeidAWE1024,"Heidenhein Encoder")
-#device(ao,GPIB_IO,devAoHeidAWE1024,"Heidenhein Encoder")
-#device(ai,GPIB_IO,devAiHeidAWE1024,"Heidenhein Encoder")
-#device(bi,GPIB_IO,devBiHeidAWE1024,"Heidenhein Encoder")
-#device(longout,GPIB_IO,devLoHeidAWE1024,"Heidenhein Encoder")
-#device(mbbo,GPIB_IO,devMbboHeidAWE1024,"Heidenhein Encoder")
-#device(mbbi,GPIB_IO,devMbbiHeidAWE1024,"Heidenhein Encoder")
-#device(stringin,GPIB_IO,devSiHeidAWE1024,"Heidenhein Encoder")
-#device(stringout,GPIB_IO,devSoHeidAWE1024,"Heidenhein Encoder")
-
-# GPIB Keithley model 199 DMM
-#device(longin,GPIB_IO,devLiKeithleyDMM199,"KeithleyDMM199")
-#device(bo,GPIB_IO,devBoKeithleyDMM199,"KeithleyDMM199")
-#device(ao,GPIB_IO,devAoKeithleyDMM199,"KeithleyDMM199")
-#device(ai,GPIB_IO,devAiKeithleyDMM199,"KeithleyDMM199")
-#device(bi,GPIB_IO,devBiKeithleyDMM199,"KeithleyDMM199")
-#device(longout,GPIB_IO,devLoKeithleyDMM199,"KeithleyDMM199")
-#device(mbbo,GPIB_IO,devMbboKeithleyDMM199,"KeithleyDMM199")
-#device(mbbi,GPIB_IO,devMbbiKeithleyDMM199,"KeithleyDMM199")
-#device(stringin,GPIB_IO,devSiKeithleyDMM199,"KeithleyDMM199")
-#device(stringout,GPIB_IO,devSoKeithleyDMM199,"KeithleyDMM199")
 
 # Generic GPIB record
 #device(gpib,GPIB_IO,devGPIB,"GPIB (NI or HIDEOS)")
@@ -80,3 +40,8 @@ registrar(dbrestoreRegister)
 registrar(stdInitHooksRegister)
 registrar(stdRegister)
 variable("fastPIDDebug", int)
+registrar(kohzuCtlRegistrar)
+registrar(hrCtlRegistrar)
+registrar(getFillPatRegistrar)
+registrar(xiahscRegistrar)
+registrar(xia_slitRegistrar)
