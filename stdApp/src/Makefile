@@ -35,13 +35,13 @@ DBDINC += swaitRecord
 DBDINC += sseqRecord
 DBDINC += epidRecord
 DBDINC += genSubRecord
+DBDINC += timestampRecord
 
 # <name>.dbd will be created from <name>Include.dbd
 DBD += std.dbd
 DBD += stdVX.dbd
 DBD += stdSupport.dbd
 DBD += stdVXSupport.dbd
-DBD += vxStats.dbd
 DBD += shareBase.dbd
 
 #=============================
@@ -52,18 +52,18 @@ LIBRARY_IOC += std
 
 std_SRCS += dbrestore.c save_restore.c fGetDateStr.c
 std_SRCS  += initHooks.c
-#std_SRCS_vxWorks += devAiVaroc.c drvVarocB.c
-#std_SRCS_vxWorks += devXxHP10895LaserAxis.c
-#std_SRCS += devXxHeidenhainGpib.c
-#std_SRCS += devXxKeithleyDMM199Gpib.c
+std_SRCS_vxWorks += devAiVaroc.c drvVarocB.c
+std_SRCS_vxWorks += devXxHP10895LaserAxis.c
+std_SRCS_vxWorks += devXxHeidenhainGpib.c
+std_SRCS_vxWorks+= devXxKeithleyDMM199Gpib.c
 
 # Heidenhain IK320 support
-#std_SRCS_vxWorks += devIK320.c
-#std_SRCS_vxWorks += drvIK320.c
-#std_SRCS_vxWorks += drvIK320ErrStat.c
-std_SRCS_vxWorks  += aiCvtDouble.c
+std_SRCS_vxWorks += devIK320.c
+std_SRCS_vxWorks += drvIK320.c
+std_SRCS_vxWorks += drvIK320ErrStat.c
+std_SRCS_vxWorks += aiCvtDouble.c
 
-std_SRCS_vxWorks  += module_types.c
+#std_SRCS_vxWorks  += module_types.c
 std_SRCS  += scalerRecord.c
 std_SRCS_vxWorks  += devScaler.c
 std_SRCS += sscanRecord.c
@@ -81,14 +81,14 @@ std_SRCS  += fastPID.cc
 std_SRCS += devEpidSoft.c
 std_SRCS += devEpidMpf.cc
 std_SRCS  += swaitRecord.c
-#std_SRCS_vxWorks += devBunchClkGen.c
-#std_SRCS += devGP307gpib.c
-#std_SRCS += devXxAX301.c
+std_SRCS_vxWorks += devBunchClkGen.c
+std_SRCS += devGP307gpib.c
+std_SRCS += devXxAX301.c
 std_SRCS  += busyRecord.c
 std_SRCS  += sseqRecord.c
 std_SRCS += genSubRecord.c
-#std_SRCS_vxWorks += devAoVMI4116.c
-#std_SRCS_vxWorks += devAvme9440.c
+std_SRCS_vxWorks += devAoVMI4116.c
+std_SRCS_vxWorks += devAvme9440.c
 std_SRCS += recDynLink.c
 
 # save scan data stuff
@@ -101,12 +101,8 @@ std_SRCS_vxWorks  += req_file.c
 std_SRCS_vxWorks  += devA32Vme.c
 std_SRCS_vxWorks  += subAve.c
 
-# ioc status checking stuff
-std_SRCS_vxWorks   += iocCheck.c
-
-# temporary, until we locate a released version of the vxStats module
-# for 3.14.
-std_SRCS_vxWorks   += devVXStats.c
+# timestamp record
+std_SRCS += timestampRecord.c
 
 # gensub-based interpolation routines
 std_SRCS += interp.c
@@ -125,18 +121,17 @@ std_SRCS += std_registerRecordDeviceDriver.cpp
 
 ### The following builds SNL programs as components of std
 # NOTE: for suffix .st, code is run through cpp; for .stt, it's not
-#std_SRCS += kohzuCtl.st
-#std_SRCS += hrCtl.st
-#std_SRCS += getFilledBuckets.st
+std_SRCS += kohzuCtl.st
+std_SRCS += hrCtl.st
+std_SRCS += getFilledBuckets.st
 
 # Pete Jemian's support for X-ray Instrumentation Associates
 # HSC-1 slit controller (SNL program)
-std_SRCS_vxWorks   += xiahsc.st
+std_SRCS   += xiahsc.st
 # customized version that works with sscan record
-std_SRCS_vxWorks   += xia_slit.st
+std_SRCS   += xia_slit.st
 
-std_LIBS += seq
-std_LIBS += pv
+std_LIBS += seq pv
 seq_DIR    = $(SNCSEQ_LIB)
 pv_DIR     = $(SNCSEQ_LIB)
 
@@ -147,7 +142,7 @@ INC += fastPID.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
-std_LIBS += mpf mpfEpics
+std_LIBS += mpf mpfEpics gpib
 std_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
@@ -164,7 +159,7 @@ stdApp_SRCS_vxWorks += -nil-
 stdApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 stdApp_LIBS += std
-stdApp_LIBS += mpf mpfEpics
+stdApp_LIBS += mpf mpfEpics gpib
 stdApp_LIBS += seq pv
 stdApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
