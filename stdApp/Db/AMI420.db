@@ -1,0 +1,186 @@
+grecord(ai,"$(P)$(M)CoilConstRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @4")
+}
+grecord(ai,"$(P)$(M)CurrentRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @1")
+}
+grecord(ai,"$(P)$(M)FieldRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @2")
+}
+grecord(ai,"$(P)$(M)FieldRateRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @12")
+}
+grecord(ai,"$(P)$(M)ProgFieldRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @10")
+}
+grecord(ai,"$(P)$(M)VoltageLimitRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @14")
+}
+grecord(ai,"$(P)$(M)VoltageRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @0")
+}
+grecord(ao,"$(P)$(M)CoilConst") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"0")
+	field(OUT,"#L$(L) A$(A) @5")
+	field(DOL,"0.911")
+}
+grecord(ao,"$(P)$(M)FieldRate") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"0")
+	field(OUT,"#L$(L) A$(A) @13")
+}
+grecord(ao,"$(P)$(M)ProgField") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"0")
+	field(OUT,"#L$(L) A$(A) @11")
+}
+grecord(ao,"$(P)$(M)VoltageLimit") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"0")
+	field(OUT,"#L$(L) A$(A) @15")
+}
+grecord(bi,"$(P)$(M)FieldUnitsRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @6")
+	field(ZNAM,"kG")
+	field(ONAM,"T")
+}
+grecord(bi,"$(P)$(M)RateUnitsRBV") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @8")
+	field(ZNAM,"seconds")
+	field(ONAM,"minutes")
+}
+grecord(bo,"$(P)$(M)FieldUnits") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"0")
+	field(OUT,"#L$(L) A$(A) @7")
+	field(ZNAM,"kG")
+	field(ONAM,"T")
+}
+grecord(bo,"$(P)$(M)LocalRemote") {
+	field(DTYP,"AMI 420 interface")
+	field(OUT,"#L$(L) A$(A) @3")
+	field(ZNAM,"Local")
+	field(ONAM,"Remote")
+}
+grecord(bo,"$(P)$(M)Ramp") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"0")
+	field(OUT,"#L$(L) A$(A) @16")
+	field(ZNAM,"Local")
+	field(ONAM,"Remote")
+}
+grecord(bo,"$(P)$(M)RateUnits") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"0")
+	field(OUT,"#L$(L) A$(A) @9")
+	field(ZNAM,"seconds")
+	field(ONAM,"minutes")
+}
+grecord(bo,"$(P)$(M)SetBusy") {
+	field(DTYP,"Soft Channel")
+	field(DOL,"1")
+	field(OUT,"$(P)$(M)Busy.VAL  PP MS")
+}
+grecord(bo,"$(P)$(M)Zero") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"0")
+	field(OUT,"#L$(L) A$(A) @17")
+	field(ZNAM,"Local")
+	field(ONAM,"Remote")
+}
+grecord(bo,"$(P)$(M)newCommand") {
+	field(DTYP,"Soft Channel")
+	field(DOL,"0")
+}
+grecord(bo,"$(P)$(M)resetNewCommand1") {
+	field(DTYP,"Soft Channel")
+	field(FLNK,"$(P)$(M)ErrorBuffer.VAL  PP MS")
+	field(DOL,"0")
+	field(OUT,"$(P)$(M)newCommand.VAL  PP MS")
+}
+grecord(bo,"$(P)$(M)setNewCommand") {
+	field(DTYP,"Soft Channel")
+	field(DOL,"1")
+	field(OUT,"$(P)$(M)newCommand.VAL  PP MS")
+}
+grecord(fanout,"$(P)$(M)readAll") {
+	field(SCAN,"1 second")
+	field(FLNK,"$(P)$(M)readAll0.VAL  PP MS")
+	field(LNK1,"$(P)$(M)StateM.VAL  PP MS")
+	field(LNK2,"$(P)$(M)VoltageRBV.VAL  PP MS")
+	field(LNK3,"$(P)$(M)CurrentRBV.VAL  PP MS")
+	field(LNK4,"$(P)$(M)FieldRBV.VAL  PP MS")
+	field(LNK5,"$(P)$(M)ProgFieldRBV.VAL  PP MS")
+	field(LNK6,"$(P)$(M)CoilConstRBV.VAL  PP MS")
+}
+grecord(fanout,"$(P)$(M)readAll0") {
+	field(LNK1,"$(P)$(M)FieldRateRBV.VAL  PP MS")
+	field(LNK2,"$(P)$(M)FieldUnitsRBV.VAL  PP MS")
+	field(LNK3,"$(P)$(M)VoltageLimitRBV.VAL  PP MS")
+	field(LNK4,"$(P)$(M)RateUnitsRBV.VAL  PP MS")
+	field(LNK5,"$(P)$(M)Command.VAL  PP MS")
+	field(LNK6,"$(P)$(M)CoilConstRBV.VAL  PP MS")
+}
+grecord(fanout,"$(P)$(M)init") {
+	field(LNK1,"$(P)$(M)CoilConst.VAL  PP MS")
+	field(LNK2,"$(P)$(M)FieldUnitsRBV.VAL  PP MS")
+	field(LNK3,"$(P)$(M)VoltageLimitRBV.VAL  PP MS")
+	field(LNK4,"$(P)$(M)RateUnitsRBV.VAL  PP MS")
+	field(LNK5,"$(P)$(M)Command.VAL  PP MS")
+	field(LNK6,"$(P)$(M)CoilConstRBV.VAL  PP MS")
+}
+grecord(mbbi,"$(P)$(M)StateM") {
+	field(DTYP,"AMI 420 interface")
+	field(NOBT,"3")
+	field(INP,"#L$(L) A$(A) @20")
+	field(ONVL,"1")
+	field(TWVL,"2")
+	field(THVL,"3")
+	field(FRVL,"4")
+	field(FVVL,"5")
+	field(SXVL,"6")
+	field(SVVL,"7")
+	field(EIVL,"8")
+	field(ZRST,"Unknown")
+	field(ONST,"ramping")
+	field(TWST,"holding")
+	field(THST,"paused")
+	field(FRST,"manual up")
+	field(FVST,"manual down")
+	field(SXST,"zeroing")
+	field(SVST,"quench")
+	field(EIST,"heating pswitch")
+}
+grecord(stringin,"$(P)$(M)CommandReply") {
+	field(DTYP,"AMI 420 interface")
+	field(FLNK,"$(P)$(M)resetNewCommand1.VAL  PP MS")
+	field(INP,"#L$(L) A$(A) @19")
+}
+grecord(stringin,"$(P)$(M)ErrorBuffer") {
+	field(DTYP,"AMI 420 interface")
+	field(INP,"#L$(L) A$(A) @21")
+}
+grecord(stringout,"$(P)$(M)Command") {
+	field(DTYP,"AMI 420 interface")
+	field(DISV,"0")
+	field(SDIS,"$(P)$(M)newCommand.VAL  NPP NMS")
+	field(FLNK,"$(P)$(M)CommandReply.VAL  PP MS")
+	field(DOL,"$(P)$(M)cmd.VAL  NPP NMS")
+	field(OUT,"#L$(P) A$(A) @18")
+}
+grecord(stringout,"$(P)$(M)cmd") {
+	field(DTYP,"Soft Channel")
+	field(FLNK,"$(P)$(M)setNewCommand.VAL  PP MS")
+}
+grecord(busy,"$(P)$(M)Busy") {
+}
