@@ -31,3 +31,55 @@ grecord(transform,"$(P)$(PID)_calc") {
         field(DESC,"PID input calc")
         field(PREC,"$(PREC)")
 }
+
+# These records are for tweaking the output (if the feedback is off)
+grecord(ao,"$(P)$(PID)OUT_tweak") {
+        field(PREC,"3")
+}
+
+grecord(calcout,"$(P)$(PID)OUT_tweak_down") {
+        field(INPA,"$(P)$(PID)OUT_tweak.VAL NPP NMS")
+        field(INPB,"$(OUT) NPP NMS")
+        field(CALC,"B-A")
+        field(OUT, "$(OUT) PP NMS")
+}
+
+grecord(calcout,"$(P)$(PID)OUT_tweak_up") {
+        field(INPA,"$(P)$(PID)OUT_tweak.VAL NPP NMS")
+        field(INPB,"$(OUT) NPP NMS")
+        field(CALC,"B+A")
+        field(OUT, "$(OUT) PP NMS")
+}
+
+# These records are for tweaking the setpoint
+grecord(ao,"$(P)$(PID)SP_tweak") {
+        field(PREC,"3")
+}
+
+grecord(calcout,"$(P)$(PID)SP_tweak_down") {
+        field(INPA,"$(P)$(PID)SP_tweak.VAL NPP NMS")
+        field(INPB,"$(P)$(PID).VAL NPP NMS")
+        field(CALC,"B-A")
+        field(OUT, "$(P)$(PID).VAL PP NMS")
+}
+
+grecord(calcout,"$(P)$(PID)SP_tweak_up") {
+        field(INPA,"$(P)$(PID)SP_tweak.VAL NPP NMS")
+        field(INPB,"$(P)$(PID).VAL NPP NMS")
+        field(CALC,"B+A")
+        field(OUT, "$(P)$(PID).VAL PP NMS")
+}
+
+# STOP logic
+# This record turns off feedback
+grecord(ao,"$(P)$(PID)Stop") {
+        field(VAL,"0")
+        field(OUT, "$(P)$(PID).FBON PP NMS")
+        field(FLNK,"$(P)$(PID)Stop2")
+}
+
+# This record turns off the output
+grecord(ao,"$(P)$(PID)Stop2") {
+        field(VAL,"0.0")
+        field(OUT, "$(OUT) PP NMS")
+}
