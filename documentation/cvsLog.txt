@@ -3,6 +3,11 @@ everything split out of std into separate modules.
 
 =============================================================================
 
+support/std/Db/all_com_80.db
+
+New file
+=============================================================================
+
 support/std/configure/CONFIG_APP
 
 Changes for 3.14.7
@@ -249,6 +254,16 @@ support/std/stdApp/Db/Jscaler_settings.req
 moved to vme module
 =============================================================================
 
+support/std/stdApp/Db/scaler16.db
+
+Currently, identical to scaler.db, includes support for 16 channels.
+=============================================================================
+
+support/std/stdApp/Db/scaler32.db
+
+scaler16.db, plus calc support for 16 additional channels
+=============================================================================
+
 support/std/stdApp/Db/KeithleyDMM
 
 moved to ip module
@@ -474,10 +489,14 @@ moved to vme module
 
 support/std/stdApp/Db/pid_control.db
 
+Renamed _calc record to _incalc to be consistent with adl file
+
 New features
 =============================================================================
 
 support/std/stdApp/Db/pid_control_settings.req
+
+Renamed _calc record to _incalc to be consistent with adl file
 
 Added tweak fields
 =============================================================================
