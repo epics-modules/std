@@ -65,6 +65,7 @@ typedef unsigned short uint16;
 #include	<stdio.h>
 #include        <epicsTimer.h>
 #include        <epicsThread.h>
+#include        <epicsExport.h>
 
 epicsTimerQueueId	scalerWdTimerQ=0;
 
@@ -162,6 +163,7 @@ SCALERDSET devScaler = {
 	scaler_arm,
 	scaler_done
 };
+epicsExportAddress(SCALERDSET, devScaler);
 
 STATIC int scaler_total_cards;
 STATIC struct scaler_state {

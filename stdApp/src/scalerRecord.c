@@ -95,6 +95,7 @@ extern epicsTimerQueueId	scalerWdTimerQ;
 #include	"scalerRecord.h"
 #undef GEN_SIZE_OFFSET
 #include	"devScaler.h"
+#include        <epicsExport.h>
 
 #define SCALER_STATE_IDLE 0
 #define SCALER_STATE_WAITING 1
@@ -158,6 +159,7 @@ struct rset scalerRSET = {
 	get_control_double,
 	get_alarm_double
 };
+epicsExportAddress(rset, scalerRSET);
 
 static void do_alarm();
 static void monitor();

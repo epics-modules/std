@@ -30,14 +30,9 @@
  * -----------------
  *  .01 05-17-99  tmm  Created from seq record (by John Winans)
  */
-#ifdef vxWorks
-#include	<vxWorks.h>
-#endif
 #include	<stdlib.h>
 #include	<stdio.h>
 #include	<string.h>
-#include	<memLib.h>
-#include	<sysLib.h>
 
 #include	<dbDefs.h>
 #include	<epicsPrint.h>
@@ -57,6 +52,7 @@
 #define GEN_SIZE_OFFSET
 #include	"sseqRecord.h"
 #undef  GEN_SIZE_OFFSET
+#include        <epicsExport.h>
 
 int	sseqRecDebug = 0;
 
@@ -121,6 +117,7 @@ struct rset sseqRSET={
 	NULL 			/* get_alarm_double */
 
 };
+epicsExportAddress(rset, sseqRSET);
 /*****************************************************************************
  *
  * Initialize a sequence record.
