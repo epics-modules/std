@@ -282,7 +282,7 @@
 
 #define NUM_POS         4
 #define NUM_RDKS        4
-#define NUM_DET         85
+#define NUM_DET         70
 #define NUM_TRGS        4
 #define NUM_MISC        2	/* Before Scan PV, After Scan PV */
 #define NUM_PVS         (NUM_POS + NUM_RDKS + NUM_DET + NUM_TRGS + NUM_MISC)
