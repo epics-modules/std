@@ -1,7 +1,7 @@
 
 file {
-	name="/home/sricat/BCDA/epics/synApps_R3.13.1.1_R4.1/share/stdApp/op/adl/table_setup_SRI_5.1.adl"
-	version=020305
+	name="/home/beams/BCDA/epics/synApps_T202_R3_13_5_R4_4/support/std/stdApp/op/adl/table_setup_SRI.adl"
+	version=030003
 }
 display {
 	object {
@@ -95,8 +95,6 @@ composite {
 		height=10
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polyline {
 			object {
@@ -254,8 +252,6 @@ composite {
 		height=20
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -319,6 +315,8 @@ text {
 		chan="$(P)$(T).YANG"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 text {
@@ -485,8 +483,6 @@ composite {
 		height=110
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -692,6 +688,8 @@ polyline {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -706,6 +704,8 @@ polyline {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 text {
 	object {
@@ -732,6 +732,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -746,6 +748,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 text {
 	object {
@@ -772,6 +776,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -786,6 +792,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 text {
 	object {
@@ -839,6 +847,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -853,6 +863,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -867,6 +879,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -881,6 +895,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -895,6 +911,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -909,6 +927,8 @@ text {
 		bclr=51
 	}
 	format="compact"
+	limits {
+	}
 }
 text {
 	object {
@@ -962,6 +982,8 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -976,6 +998,8 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 composite {
 	object {
@@ -985,8 +1009,6 @@ composite {
 		height=53
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polyline {
 			object {
@@ -1124,8 +1146,6 @@ composite {
 		height=5
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polyline {
 			object {
@@ -1171,8 +1191,6 @@ composite {
 		height=5
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polyline {
 			object {
@@ -1218,8 +1236,6 @@ composite {
 		height=15
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polyline {
 			object {
@@ -1282,8 +1298,6 @@ composite {
 		height=57
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -1387,8 +1401,6 @@ composite {
 		height=204
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polyline {
 			object {
@@ -1430,8 +1442,6 @@ composite {
 				height=203
 			}
 			"composite name"=""
-			vis="static"
-			chan=""
 			children {
 				polyline {
 					object {
@@ -1500,8 +1510,6 @@ composite {
 		height=11
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		rectangle {
 			object {
@@ -1572,6 +1580,8 @@ composite {
 		chan="$(P)$(T).LZ"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 polyline {
@@ -1716,8 +1726,6 @@ composite {
 		height=11
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		rectangle {
 			object {
@@ -1824,30 +1832,19 @@ text {
 	}
 	textix="'FIXED' POINT"
 }
-composite {
+"text entry" {
 	object {
 		x=495
-		y=131
+		y=92
 		width=60
 		height=18
 	}
-	"composite name"=""
-	vis="static"
-	chan="$(P)$(T).RZ"
-	children {
-		"text entry" {
-			object {
-				x=495
-				y=92
-				width=60
-				height=18
-			}
-			control {
-				chan="$(P)$(T).RX"
-				clr=14
-				bclr=51
-			}
-		}
+	control {
+		chan="$(P)$(T).RX"
+		clr=14
+		bclr=51
+	}
+	limits {
 	}
 }
 "text entry" {
@@ -1862,6 +1859,8 @@ composite {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -1874,6 +1873,8 @@ composite {
 		chan="$(P)$(T).SX"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "text entry" {
@@ -1888,6 +1889,8 @@ composite {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -1901,6 +1904,8 @@ composite {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 composite {
 	object {
@@ -1910,8 +1915,6 @@ composite {
 		height=60
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -2043,6 +2046,8 @@ polyline {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 polyline {
 	object {
@@ -2131,8 +2136,6 @@ composite {
 		height=11
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		rectangle {
 			object {
@@ -2200,8 +2203,6 @@ composite {
 		height=30
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		rectangle {
 			object {
@@ -2258,6 +2259,23 @@ composite {
 				clr=54
 				bclr=1
 			}
+			limits {
+			}
 		}
+	}
+}
+"text entry" {
+	object {
+		x=495
+		y=131
+		width=60
+		height=18
+	}
+	control {
+		chan="$(P)$(T).RZ"
+		clr=14
+		bclr=51
+	}
+	limits {
 	}
 }
