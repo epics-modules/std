@@ -4,6 +4,10 @@ menu(transformIAV) {
         choice(transformIAV_LOC,"Local PV")
         choice(transformIAV_CON,"Constant")
 }
+menu(transformIVLA) {
+        choice(transformIVLA_IGNORE,"Ignore error")
+        choice(transformIVLA_DO_NOTHING,"Do Nothing")
+}
 recordtype(transform) {
 	include "dbCommon.dbd" 
 	field(VERS,DBF_FLOAT) {
@@ -17,6 +21,13 @@ recordtype(transform) {
 		interest(4)
 		size(4)
 		extra("void *         rpvt")
+	}
+	field(IVLA,DBF_MENU) {
+		prompt("Invalid link action")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		menu(transformIVLA)
+		initial("0")
 	}
 	field(VAL,DBF_DOUBLE) {
 		prompt("Result")
@@ -544,85 +555,101 @@ recordtype(transform) {
 		special(SPC_NOMOD)
 		interest(3)
 	}
-	field(RPCA,DBF_LONG) {
+	field(RPCA,DBF_NOACCESS) {
 		prompt("Postfix Calc A")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpca[240]")
 	}
-	field(RPCB,DBF_LONG) {
+	field(RPCB,DBF_NOACCESS) {
 		prompt("Postfix Calc B")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcb[240]")
 	}
-	field(RPCC,DBF_LONG) {
+	field(RPCC,DBF_NOACCESS) {
 		prompt("Postfix Calc C")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcc[240]")
 	}
-	field(RPCD,DBF_LONG) {
+	field(RPCD,DBF_NOACCESS) {
 		prompt("Postfix Calc D")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcd[240]")
 	}
-	field(RPCE,DBF_LONG) {
+	field(RPCE,DBF_NOACCESS) {
 		prompt("Postfix Calc E")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpce[240]")
 	}
-	field(RPCF,DBF_LONG) {
+	field(RPCF,DBF_NOACCESS) {
 		prompt("Postfix Calc F")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcf[240]")
 	}
-	field(RPCG,DBF_LONG) {
+	field(RPCG,DBF_NOACCESS) {
 		prompt("Postfix Calc G")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcg[240]")
 	}
-	field(RPCH,DBF_LONG) {
+	field(RPCH,DBF_NOACCESS) {
 		prompt("Postfix Calc H")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpch[240]")
 	}
-	field(RPCI,DBF_LONG) {
+	field(RPCI,DBF_NOACCESS) {
 		prompt("Postfix Calc I")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpci[240]")
 	}
-	field(RPCJ,DBF_LONG) {
+	field(RPCJ,DBF_NOACCESS) {
 		prompt("Postfix Calc J")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcj[240]")
 	}
-	field(RPCK,DBF_LONG) {
+	field(RPCK,DBF_NOACCESS) {
 		prompt("Postfix Calc K")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpck[240]")
 	}
-	field(RPCL,DBF_LONG) {
+	field(RPCL,DBF_NOACCESS) {
 		prompt("Postfix Calc L")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcl[240]")
 	}
-	field(RPCM,DBF_LONG) {
+	field(RPCM,DBF_NOACCESS) {
 		prompt("Postfix Calc M")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcm[240]")
 	}
-	field(RPCN,DBF_LONG) {
+	field(RPCN,DBF_NOACCESS) {
 		prompt("Postfix Calc N")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcn[240]")
 	}
-	field(RPCO,DBF_LONG) {
+	field(RPCO,DBF_NOACCESS) {
 		prompt("Postfix Calc O")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpco[240]")
 	}
-	field(RPCP,DBF_LONG) {
+	field(RPCP,DBF_NOACCESS) {
 		prompt("Postfix Calc P")
 		special(SPC_NOMOD)
-		interest(1)
+		interest(4)
+		extra("char	rpcp[240]")
 	}
 	field(CMTA,DBF_STRING) {
 		prompt("Comment A")
