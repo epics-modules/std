@@ -92,10 +92,14 @@
  *                    when the scan posts data.  This is specified with the volatile
  *                    variable saveData_HandshakeOnDATAHigh.
  *                    Also, fixes for a few inconsequential compiler warnings.
+ * .28 05-20-04  tmm  Ignore handshake PV in saveData.req, and remove the variable
+ *                    saveData_HandshakeOnDATAHigh.  Handshake now always writes 1 to
+ *                    <sscanRecord>.AWAIT when <sscanRecord>.DATA goes to 1, and 0
+ *                    when the data have been written.
  */
 
 #define FILE_FORMAT_VERSION (float)1.3
-#define SAVE_DATA_VERSION   "1.13.0"
+#define SAVE_DATA_VERSION   "1.14.0"
 
 
 #include "req_file.h"
@@ -127,7 +131,8 @@
 /************************************************************************/
 /*                           MACROS                                     */
 
-#define PRIORITY 150	/* The saveTask priority			*/
+#define ALLOC_ALL_DETS 0
+#define PRIORITY 150	/* The saveTask priority */
 
 /*#define NODEBUG*/
 
@@ -136,7 +141,6 @@
 volatile int debug_saveData = 0;
 volatile int debug_saveDataMsg = 0;
 volatile int saveData_MessagePolicy = 0;
-volatile int saveData_HandshakeOnDATAHigh = 0;
 
 #ifdef NODEBUG 
 #define Debug0(d,s) ;
@@ -398,6 +402,7 @@ typedef struct scan {
 #define MSG_FILE_SYSTEM	20
 #define MSG_FILE_SUBDIR	21
 #define MSG_REALTIME1D  22
+
 
 
 /* Message structures							*/
@@ -768,7 +773,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.4.2.3 2004-04-26 15:47:14 mooney Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.4.2.4 2004-05-27 21:25:00 mooney Exp $\n");
 }
 
 void saveData_Info() {
@@ -837,7 +842,7 @@ LOCAL int connectScan(char* name, char* handShake)
 
   /* try to connect to the hand shake variable				*/
   pscan->chandShake= NULL;
-  if(handShake && (*handShake!='\0')) {
+  if (handShake && (*handShake!='\0')) {
     ca_search(handShake, &(pscan->chandShake));
     ca_pend_io(1.0);
   }
@@ -1009,9 +1014,16 @@ LOCAL int connectScan(char* name, char* handShake)
   }
 
   for(i=0; ok && i<SCAN_NBD; i++) {
+#if ALLOC_ALL_DETS
     if(pscan->cdxda[i]!=NULL) {
       ok= (pscan->dxda[i]= (float*) calloc(pscan->mpts, sizeof(float)))!= NULL;
     }
+#else
+    /* Don't allocate array space until sscan record has valid link for det */
+    if ((pscan->cdxda[i]!=NULL) && (pscan->dxnv[i]==XXNV_OK)) {
+      ok = (pscan->dxda[i] = (float*)calloc(pscan->mpts, sizeof(float)))!= NULL;
+    }
+#endif
   }
 
   if(!ok) {
@@ -1349,7 +1361,7 @@ LOCAL void infoScan(SCAN* pscan)
     }
   }
   for(i=0; i<SCAN_NBD; i++)
-    if(pscan->cdxda[i]!=NULL) printf("%s.%s[%s]= %d\n", pscan->name, dxda[i], cs[ca_state(pscan->cdxda[i])], (int)pscan->dxda[i]);
+    if(pscan->cdxda[i]!=NULL) printf("%s.%s[%s] (%s)\n", pscan->name, dxda[i], cs[ca_state(pscan->cdxda[i])], pscan->dxda[i]?"allocated":"not allocated");
   for(i=0; i<SCAN_NBD; i++)
     if(pscan->cdxcv[i]!=NULL) printf("%s.%s[%s]= %f\n", pscan->name, dxcv[i], cs[ca_state(pscan->cdxcv[i])], pscan->dxcv[i]);
   
@@ -1376,15 +1388,13 @@ LOCAL void dataMonitor(struct event_handler_args eha)
   pval = (struct dbr_time_short *) eha.dbr;
   sval= pval->value;
   if (pscan->data != -1) {
-	if (sval == saveData_HandshakeOnDATAHigh) {
-	    if (pscan->chandShake) {
-	      if ((save_status != STATUS_INACTIVE) && (save_status != STATUS_ACTIVE_FS_ERROR)) {
-	        /* hand shake busy */
-	        newData= HANDSHAKE_BUSY;
-	        ca_array_put(DBR_SHORT, 1, pscan->chandShake, &newData);
-	      }
-	    }
-	}
+    if (sval == 1) {
+      /* hand shaking notify */
+      if (pscan->chandShake) {
+        newData = HANDSHAKE_BUSY;
+        ca_array_put(DBR_SHORT, 1, pscan->chandShake, &newData);
+      }
+    }
     if ((sval==0) && (nb_scan_running++ == 0)) {
       /* new scan started: disable put to filesystem and subdir */
       disp=(char)1;
@@ -1407,6 +1417,7 @@ LOCAL void dataMonitor(struct event_handler_args eha)
                    pval->value, WAIT_FOREVER);
 }
 
+/**** NOTE NPTS, CPT will have to use sendScanLongMsg for 3.14 *****************************************/
 /*----------------------------------------------------------------------*/
 /* NPTS field monitor.                                        		*/
 /*                                                			*/
@@ -1907,12 +1918,16 @@ LOCAL int initSaveDataTask()
   if(req_gotoSection(rf, "scanRecord")==0) {
     while(!eos(rf)) {
       req_readMacId(rf, buff1, 40);
-      if(current(rf)==',') {
+      if (current(rf)==',') {
         req_readChar(rf);
         req_readMacId(rf, buff2, 40);
+		printf("saveData: handshake PV '%s' ignored.  Using '%s%s'\n",
+			buff2, buff1, ".AWAIT");
       } else {
         buff2[0]= '\0';
       }
+	  strcpy(buff2, buff1);
+	  strcat(buff2, ".AWAIT");
       connectScan(buff1, buff2);
     }
   }
@@ -2433,10 +2448,28 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
       }
       if(pscan->nb_det) {
         for(i= 0; i<SCAN_NBD; i++) {
+#if ALLOC_ALL_DETS
           if(pscan->dxnv[i]==XXNV_OK) {
-            ca_array_get(DBR_FLOAT, pscan->cpt, 
-                         pscan->cdxda[i], pscan->dxda[i]);
+            ca_array_get(DBR_FLOAT, pscan->cpt, pscan->cdxda[i], pscan->dxda[i]);
           }
+#else
+          if (pscan->dxnv[i]==XXNV_OK) {
+		    if (pscan->dxda[i]) {
+              ca_array_get(DBR_FLOAT, pscan->cpt, pscan->cdxda[i], pscan->dxda[i]);
+			} else if ((pscan->dxda[i] = (float*)calloc(pscan->mpts, sizeof(float))) != NULL) {
+              ca_array_get(DBR_FLOAT, pscan->cpt, pscan->cdxda[i], pscan->dxda[i]);
+              printf("saveData: Allocated array for det %s.%s\n", pscan->name, dxda[i]);
+              sprintf(msg, "Allocated mem for %s.%s", pscan->name, dxda[i]);
+              msg[39]= '\0';
+              sendUserMessage(msg);
+            } else {
+              printf("saveData: Can't alloc array for det %s.%s\n", pscan->name, dxda[i]);
+              sprintf(msg, "WARNING no mem for %s.%s", pscan->name, dxda[i]);
+              msg[39]= '\0';
+              sendUserMessage(msg);
+            }
+          }
+#endif
         }
       }
       if(ca_pend_io(1.0)!=ECA_NORMAL) {
@@ -2466,7 +2499,7 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
       /* Save the detectors arrays					*/
       if(pscan->nb_det) {
         for(i=0; i<SCAN_NBD; i++) {
-          if(pscan->dxnv[i]==XXNV_OK) {
+          if ((pscan->dxnv[i]==XXNV_OK) && pscan->dxda[i]) {
             xdr_setpos(&xdrs, pscan->dxda_fpos[i]);
             xdr_vector(&xdrs, (char*)pscan->dxda[i], pscan->npts,
                        sizeof(float), xdr_float);
@@ -2502,8 +2535,8 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
       pscan->nxt->first_scan=TRUE;
     }
 
-    /* hand shaking notify						*/
-    if(pscan->chandShake) {
+    /* hand shaking notify */
+    if (pscan->chandShake) {
       sval= HANDSHAKE_DONE;
       ca_array_put(DBR_SHORT, 1, pscan->chandShake, &sval);
     }
@@ -2769,6 +2802,7 @@ LOCAL void proc_scan_dxnv(SCAN_INDEX_MSG* pmsg)
   short val;
   char  buff[40];
   int   len;
+  char  msg[200];
 
   pscan= pmsg->pscan;
   i= pmsg->index;
@@ -2791,6 +2825,15 @@ LOCAL void proc_scan_dxnv(SCAN_INDEX_MSG* pmsg)
   }
 
   if(val==XXNV_OK) {
+#if (ALLOC_ALL_DETS == 0)
+    if (pscan->dxda[i] == NULL) pscan->dxda[i]=(float*)calloc(pscan->mpts, sizeof(float));
+    if (pscan->dxda[i] == NULL) {
+      printf("saveData: Can't alloc array for det %s.%s\n", pscan->name, dxda[i]);
+      sprintf(msg, "WARNING no mem for %s.%s", pscan->name, dxda[i]);
+      msg[39]= '\0';
+      sendUserMessage(msg);
+	}
+#endif
     ca_array_get(DBR_STRING, 1, pscan->cdxpv[i], pscan->dxpv[i]);
     if(ca_pend_io(1.0)!=ECA_NORMAL) {
       Debug2(2, "Unable to get %s.%s\n", pscan->name, dxpv[i]);
@@ -3081,77 +3124,87 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
       /*--------------------------------------------------------------*/
       /* DATA changed							*/
     case MSG_SCAN_DATA:
-      Debug0(1, "saveDataTask: message MSG_SCAN_DATA\n");
+      Debug1(2, "saveDataTask: MSG_SCAN_DATA, val=%d\n", ((SCAN_SHORT_MSG*)pmsg)->val);
       proc_scan_data((SCAN_SHORT_MSG*)pmsg);
       break;
       /*--------------------------------------------------------------*/
       /* NPTS has changed						*/
     case MSG_SCAN_NPTS:
+      Debug1(2, "saveDataTask: MSG_SCAN_NPTS, val=%d\n", ((SCAN_SHORT_MSG*)pmsg)->val);
       proc_scan_npts((SCAN_SHORT_MSG*)pmsg);
       break;
       /*--------------------------------------------------------------*/
       /* CPT has changed						*/
     case MSG_SCAN_CPT:
+      Debug1(2, "saveDataTask: MSG_SCAN_CPT, val=%d\n", ((SCAN_SHORT_MSG*)pmsg)->val);
       proc_scan_cpt((SCAN_SHORT_MSG*)pmsg);
       break;
       /*--------------------------------------------------------------*/
       /* PxNV has changed						*/
     case MSG_SCAN_PXNV:
+      Debug2(2, "saveDataTask: MSG_SCAN_PXNV, ix=%d, val=%f\n", ((SCAN_INDEX_MSG*)pmsg)->index, ((SCAN_INDEX_MSG*)pmsg)->val);
       proc_scan_pxnv((SCAN_INDEX_MSG*)pmsg);
       break;
       /*--------------------------------------------------------------*/
       /* PxSM has changed						*/
     case MSG_SCAN_PXSM:
+      Debug1(2, "saveDataTask: MSG_SCAN_PXSM, val=%s\n", ((STRING_MSG*)pmsg)->string);
       proc_scan_pxsm((STRING_MSG*)pmsg);
       break;
 
       /*--------------------------------------------------------------*/
       /* RxNV has changed						*/
     case MSG_SCAN_RXNV:
+      Debug2(2, "saveDataTask: MSG_SCAN_RXNV, ix=%d, val=%f\n", ((SCAN_INDEX_MSG*)pmsg)->index, ((SCAN_INDEX_MSG*)pmsg)->val);
       proc_scan_rxnv((SCAN_INDEX_MSG*)pmsg);
       break;
 
       /*--------------------------------------------------------------*/
       /* DxNV has changed						*/
     case MSG_SCAN_DXNV:
+      Debug2(2, "saveDataTask: MSG_SCAN_DXNV, ix=%d, val=%f\n", ((SCAN_INDEX_MSG*)pmsg)->index, ((SCAN_INDEX_MSG*)pmsg)->val);
       proc_scan_dxnv((SCAN_INDEX_MSG*)pmsg);
       break;
 
       /*--------------------------------------------------------------*/
       /* TxNV has changed						*/
     case MSG_SCAN_TXNV:
+      Debug2(2, "saveDataTask: MSG_SCAN_TXNV, ix=%d, val=%f\n", ((SCAN_INDEX_MSG*)pmsg)->index, ((SCAN_INDEX_MSG*)pmsg)->val);
       proc_scan_txnv((SCAN_INDEX_MSG*)pmsg);
       break;
       /*--------------------------------------------------------------*/
       /* TxCD has changed						*/
     case MSG_SCAN_TXCD:
-      Debug1(1, "saveDataTask: MSG_SCAN_TXCD, val=%f\n", ((SCAN_INDEX_MSG*)pmsg)->val);
+      Debug2(2, "saveDataTask: MSG_SCAN_TXCD, ix=%d, val=%f\n", ((SCAN_INDEX_MSG*)pmsg)->index, ((SCAN_INDEX_MSG*)pmsg)->val);
       proc_scan_txcd((SCAN_INDEX_MSG*)pmsg);
       break;
 
     case MSG_DESC:
+      Debug1(2, "saveDataTask: MSG_DESC, val=%s\n", ((STRING_MSG*)pmsg)->string);
       proc_desc((STRING_MSG*)pmsg);
       break;
     case MSG_EGU:
+      Debug1(2, "saveDataTask: MSG_EGU, val=%s\n", ((STRING_MSG*)pmsg)->string);
       proc_egu((STRING_MSG*)pmsg);
       break;
 
-
     case MSG_FILE_SYSTEM:
+      Debug1(2, "saveDataTask: MSG_FILE_SYSTEM, val=%s\n", ((STRING_MSG*)pmsg)->string);
       proc_file_system((STRING_MSG*)pmsg);
       break;
 
     case MSG_FILE_SUBDIR:
+      Debug1(2, "saveDataTask: MSG_FILE_SUBDIR, val=%s\n", ((STRING_MSG*)pmsg)->string);
       proc_file_subdir((STRING_MSG*)pmsg);
       break;
 
     case MSG_REALTIME1D:
-      Debug0(2, "saveDataTask: message MSG_REALTIME1D\n");
+      Debug1(2, "saveDataTask: MSG_REALTIME1D, val=%d\n", ((INTEGER_MSG*)pmsg)->val);
       proc_realTime1D((INTEGER_MSG*)pmsg);
       break;
 
     default: 
-      Debug1(2, "Unknow message: #%d", *ptype);
+      Debug1(2, "Unknown message: #%d", *ptype);
     }
   }
   return 0;
