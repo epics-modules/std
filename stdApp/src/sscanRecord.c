@@ -554,7 +554,9 @@ static int isBlank(char *name)
 static void safeDoubleToFloat(double *pd,float *pf)
 {
     double abs = fabs(*pd);
-    if(abs>=FLT_MAX) {
+    if(*pd==0.0) {
+        *pf = 0.0;
+    } else if(abs>=FLT_MAX) {
         if(*pd>0.0) *pf = FLT_MAX; else *pf = -FLT_MAX;
     } else if(abs<=FLT_MIN) {
         if(*pd>0.0) *pf = FLT_MIN; else *pf = -FLT_MIN;
@@ -1367,6 +1369,8 @@ cvt_dbaddr(struct dbAddr *paddr)
 	detFields	*pDet = (detFields *) & psscan->d01hr;
     int			i, fieldIndex = dbGetFieldIndex(paddr);
 
+	if (sscanRecordDebug > 5)
+		printf("sscanRecord:cvt_dbaddr: fieldIndex=%d\n", fieldIndex);
 	i = (fieldIndex - sscanRecordD01HR) / NUM_DET_FIELDS;
 	if ((i >= 0) && (i < NUM_DET)) {
 		pDet += i;
@@ -1375,6 +1379,8 @@ cvt_dbaddr(struct dbAddr *paddr)
 		paddr->field_type = DBF_FLOAT;
 		paddr->field_size = sizeof(float);
 		paddr->dbr_field_type = DBF_FLOAT;
+		if (sscanRecordDebug > 5)
+			printf("sscanRecord:cvt_dbaddr: field_type=%d\n", paddr->field_type);
 		return (0);
 	}
 
