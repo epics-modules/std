@@ -1,13 +1,13 @@
 
 file {
-	name="/home/sricat/BCDA/epics/3.13.1/baseR3.13.1.1_shareR4.0/stdApp/op/adl/yySseq.adl"
-	version=020305
+	name="/home/oxygen4/MOONEY/epics/synApps_4_6/support/std/stdApp/op/adl/yySseq.adl"
+	version=030003
 }
 display {
 	object {
-		x=32
-		y=222
-		width=675
+		x=50
+		y=236
+		width=750
 		height=190
 	}
 	clr=14
@@ -91,7 +91,7 @@ rectangle {
 	object {
 		x=0
 		y=0
-		width=660
+		width=750
 		height=26
 	}
 	"basic attribute" {
@@ -138,6 +138,8 @@ menu {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 text {
 	object {
@@ -156,7 +158,7 @@ polyline {
 	object {
 		x=-1
 		y=27
-		width=665
+		width=749
 		height=3
 	}
 	"basic attribute" {
@@ -166,7 +168,7 @@ polyline {
 	}
 	points {
 		(0,28)
-		(662,28)
+		(746,28)
 	}
 }
 "text entry" {
@@ -180,6 +182,8 @@ polyline {
 		chan="$(P)$(S).DESC"
 		clr=54
 		bclr=1
+	}
+	limits {
 	}
 }
 text {
@@ -288,6 +292,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -302,6 +308,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -316,6 +324,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -330,6 +340,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 text {
 	object {
@@ -369,6 +381,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -381,6 +395,8 @@ text {
 		chan="$(P)$(S).STR2"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "text entry" {
@@ -395,6 +411,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -407,6 +425,8 @@ text {
 		chan="$(P)$(S).STR4"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "text entry" {
@@ -421,6 +441,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -433,6 +455,8 @@ text {
 		chan="$(P)$(S).DO4"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "text entry" {
@@ -447,6 +471,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -459,6 +485,8 @@ text {
 		chan="$(P)$(S).DO3"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 text {
@@ -487,6 +515,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -501,6 +531,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -515,6 +547,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -529,6 +563,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 text {
 	object {
@@ -571,6 +607,8 @@ text {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 composite {
 	object {
@@ -580,8 +618,6 @@ composite {
 		height=107
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		"text entry" {
 			object {
@@ -594,6 +630,8 @@ composite {
 				chan="$(P)$(S).DLY1"
 				clr=14
 				bclr=51
+			}
+			limits {
 			}
 		}
 		"text entry" {
@@ -608,6 +646,8 @@ composite {
 				clr=14
 				bclr=51
 			}
+			limits {
+			}
 		}
 		"text entry" {
 			object {
@@ -621,6 +661,8 @@ composite {
 				clr=14
 				bclr=51
 			}
+			limits {
+			}
 		}
 		"text entry" {
 			object {
@@ -633,6 +675,8 @@ composite {
 				chan="$(P)$(S).DLY3"
 				clr=14
 				bclr=51
+			}
+			limits {
 			}
 		}
 		text {
@@ -662,4 +706,56 @@ text {
 	}
 	textix="FORWARD LINK"
 	align="horiz. centered"
+}
+menu {
+	object {
+		x=680
+		y=67
+		width=65
+		height=20
+	}
+	control {
+		chan="$(P)$(S).WAIT1"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=680
+		y=92
+		width=65
+		height=20
+	}
+	control {
+		chan="$(P)$(S).WAIT2"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=680
+		y=117
+		width=65
+		height=20
+	}
+	control {
+		chan="$(P)$(S).WAIT3"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=680
+		y=142
+		width=65
+		height=20
+	}
+	control {
+		chan="$(P)$(S).WAIT4"
+		clr=14
+		bclr=51
+	}
 }
