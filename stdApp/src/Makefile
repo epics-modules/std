@@ -24,7 +24,6 @@ Com_DIR          = $(EPICS_BASE_LIB)
 
 DBDINC += scalerRecord
 DBDINC += scanparmRecord
-#DBDINC += serialRecord
 DBDINC += tableRecord
 DBDINC += transformRecord
 DBDINC += vmeRecord
@@ -67,9 +66,8 @@ std_SRCS_vxWorks  += aiCvtDouble.c
 
 std_SRCS_vxWorks  += module_types.c
 std_SRCS_vxWorks  += scalerRecord.c devScaler.c
-std_SRCS   += sscanRecord.c
-std_SRCS   += scanparmRecord.c
-#std_SRCS += serialRecord.c
+std_SRCS += sscanRecord.c
+std_SRCS += scanparmRecord.c
 std_SRCS_vxWorks   += tableRecord.c
 std_SRCS += transformRecord.c
 std_SRCS += sCalcPostfix.c sCalcPerform.c
