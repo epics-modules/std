@@ -119,6 +119,8 @@
 #include <tsDefs.h>
 #include <epicsMutex.h>
 #include <epicsMessageQueue.h>
+#include <epicsThread.h>
+
 #include "req_file.h"
 #include "xdr_lib.h"
 #include "xdr_stdio.h"
@@ -126,7 +128,8 @@
 /************************************************************************/
 /*                           MACROS                                     */
 
-#define PRIORITY 150	/* The saveTask priority			*/
+/* This seeems approximately where saveData was in 3.13 (priority was 150) */
+#define PRIORITY epicsThreadPriorityCAServerHigh+4	/* The saveDataTask priority			*/
 
 /*#define NODEBUG*/
 
@@ -252,7 +255,6 @@ LOCAL char *txcd[SCAN_NBT]= {
 /************************************************************************/
 /*----- STRUCT TO CONNECT A SCAN RECORD AND RETRIEVE DATA FROM IT ------*/
 
-LOCAL const float file_format_version=FILE_FORMAT_VERSION;
 LOCAL const char  save_data_version[]=SAVE_DATA_VERSION;
 
 #define NOT_CONNECTED	0	/* SCAN not connected			*/
@@ -543,8 +545,8 @@ LOCAL long  counter;		/* data file counter			*/
 LOCAL chid  counter_chid;
 LOCAL char  ioc_prefix[10];
 
-LOCAL int          task_id     =ERROR;/* saveScan task id		*/
-LOCAL epicsMessageQueueId     msg_queue   =NULL; /* saveScan task's message queue	*/
+LOCAL epicsThreadId          threadId     =NULL;/* saveDataTask thread id		*/
+LOCAL epicsMessageQueueId     msg_queue   =NULL; /* saveDataTask's message queue	*/
 
 LOCAL double       cpt_wait_time;
 LOCAL int          nb_scan_running=0; /* # of scan currently running	*/
@@ -644,7 +646,7 @@ LOCAL void txcdMonitor(struct event_handler_args eha);
 /*----------------------------------------------------------------------*/
 /* The task in charge of updating and saving scans           		*/
 /*                                                			*/
-LOCAL int saveDataTask(int itd,int p1,int p2,int p3,int p4,int p5,int p6,int p7,int p8,int p9);
+LOCAL int saveDataTask(void *parm);
 
 
 
@@ -717,13 +719,16 @@ void saveData_Init(char* fname, char* macros)
       return;
     }
     printf("saveData: message queue created\n");
-    if(taskSpawn("saveDataTask", PRIORITY, VX_FP_TASK, 10000, (FUNCPTR)saveDataTask, 
-                       taskIdSelf(),0,0,0,0,0,0,0,0,0)==ERROR) {
+
+	threadId = epicsThreadCreate("saveDataTask", PRIORITY, 10000, (EPICSTHREADFUNC)saveDataTask,
+		(void *)epicsThreadGetIdSelf());
+
+    if (threadId==NULL) {
       Debug0(1, "Unable to create saveDataTask\n");
       epicsMessageQueueDestroy(msg_queue);
       return;
     } else {
-      taskSuspend(0);
+      epicsThreadSuspendSelf();
     }
   }
   return;
@@ -741,7 +746,7 @@ void saveData_PrintScanInfo(char* name)
 
 void saveData_Priority(int p)
 {
-  taskPrioritySet(task_id, p);
+  epicsThreadSetPriority(threadId, p);
 }
 
 void saveData_SetCptWait_ms(int ms)
@@ -756,7 +761,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.7 2003-11-05 19:39:12 mooney Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.8 2003-12-11 21:42:10 mooney Exp $\n");
 }
 
 void saveData_Info() {
@@ -1611,7 +1616,7 @@ LOCAL void extraValCallback(struct event_handler_args eha)
   PV_NODE * pnode = eha.usr;
   long type = eha.type;
   long count = eha.count;
-  DBR_VAL * pval = eha.dbr;
+  READONLY DBR_VAL * pval = eha.dbr;
   char *string;
 
   size_t size=0;
@@ -1658,7 +1663,7 @@ LOCAL void extraValCallback(struct event_handler_args eha)
 LOCAL void extraDescCallback(struct event_handler_args eha)
 { 
   PV_NODE * pnode = eha.usr;
-  DBR_VAL * pval = eha.dbr;
+  READONLY DBR_VAL * pval = eha.dbr;
 
   epicsMutexLock(pnode->lock);
 
@@ -2074,6 +2079,7 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
   long  scan_offset;
   long  data_size;
   epicsTimeStamp  openTime, now;
+  static float fileFormatVersion = FILE_FORMAT_VERSION;
 
   pscan= pmsg->pscan;  
 
@@ -2225,7 +2231,7 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
       /*----------------------------------------------------------------*/
       /* Write the file header */
       Debug0(3, "Writing file header\n");
-      xdr_float(&xdrs, &file_format_version);       /* file version	*/
+      xdr_float(&xdrs, &fileFormatVersion);       /* file version	*/
       xdr_long(&xdrs, &pscan->counter); /* scan number */
       xdr_short(&xdrs, &pscan->scan_dim);/* rank of the data */
       pscan->dims_offset= xdr_getpos(&xdrs);
@@ -3077,8 +3083,9 @@ LOCAL void proc_realTime1D(INTEGER_MSG* pmsg)
 /*----------------------------------------------------------------------*/
 /* The task in charge of updating and saving scans           		*/
 /*                                                			*/
-LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,int p8,int p9)
+LOCAL int saveDataTask(void *parm)
 {
+  epicsThreadId Mommy = (epicsThreadId)parm; 
   char*    pmsg;
   int*     ptype;
 
@@ -3086,9 +3093,12 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
 
   cpt_wait_time = 0.1; /* seconds */
 
+  SEVCHK(ca_context_create(ca_enable_preemptive_callback),"ca_context_create");
+
   if(initSaveDataTask()==-1) {
     printf("saveData: Unable to configure saveDataTask\n");
-    if(taskIsSuspended(tid)) taskResume(tid);
+    if(epicsThreadIsSuspended(Mommy)) epicsThreadResume(Mommy);
+    ca_context_destroy();
     return -1;
   }
 
@@ -3096,12 +3106,13 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
   ptype= (int*)pmsg;
   if(!pmsg) {
     printf("saveData: Not enough memory to allocate message buffer\n");
-    if(taskIsSuspended(tid)) taskResume(tid);
+    if(epicsThreadIsSuspended(Mommy)) epicsThreadResume(Mommy);
+    ca_context_destroy();
     return -1;
   }
 
   Debug0(1, "saveDataTask waiting for messages\n");
-  if(taskIsSuspended(tid)) taskResume(tid);
+  if (epicsThreadIsSuspended(Mommy)) epicsThreadResume(Mommy);
 
   while(1) {
     
