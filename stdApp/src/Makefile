@@ -34,7 +34,7 @@ DBDINC += busyRecord
 DBDINC += swaitRecord
 DBDINC += sseqRecord
 DBDINC += epidRecord
-#DBDINC += genSubRecord
+DBDINC += genSubRecord
 
 # <name>.dbd will be created from <name>Include.dbd
 DBD += std.dbd
@@ -52,19 +52,20 @@ LIBRARY_IOC += std
 
 std_SRCS += dbrestore.c save_restore.c fGetDateStr.c
 std_SRCS  += initHooks.c
-#std_SRCS += devAiVaroc.c drvVarocB.c
-#std_SRCS += devXxHP10895LaserAxis.c
+#std_SRCS_vxWorks += devAiVaroc.c drvVarocB.c
+#std_SRCS_vxWorks += devXxHP10895LaserAxis.c
 #std_SRCS += devXxHeidenhainGpib.c
 #std_SRCS += devXxKeithleyDMM199Gpib.c
 
 # Heidenhain IK320 support
-#std_SRCS += devIK320.c
-#std_SRCS += drvIK320.c
-#std_SRCS += drvIK320ErrStat.c
+#std_SRCS_vxWorks += devIK320.c
+#std_SRCS_vxWorks += drvIK320.c
+#std_SRCS_vxWorks += drvIK320ErrStat.c
 std_SRCS_vxWorks  += aiCvtDouble.c
 
 std_SRCS_vxWorks  += module_types.c
-std_SRCS_vxWorks  += scalerRecord.c devScaler.c
+std_SRCS  += scalerRecord.c
+std_SRCS_vxWorks  += devScaler.c
 std_SRCS += sscanRecord.c
 std_SRCS += scanparmRecord.c
 std_SRCS += tableRecord.c
@@ -80,14 +81,14 @@ std_SRCS  += fastPID.cc
 std_SRCS += devEpidSoft.c
 std_SRCS += devEpidMpf.cc
 std_SRCS  += swaitRecord.c
-#std_SRCS += devBunchClkGen.c
+#std_SRCS_vxWorks += devBunchClkGen.c
 #std_SRCS += devGP307gpib.c
 #std_SRCS += devXxAX301.c
 std_SRCS  += busyRecord.c
 std_SRCS  += sseqRecord.c
-#std_SRCS += genSubRecord.c
-#std_SRCS += devAoVMI4116.c
-#std_SRCS += devAvme9440.c
+std_SRCS += genSubRecord.c
+#std_SRCS_vxWorks += devAoVMI4116.c
+#std_SRCS_vxWorks += devAvme9440.c
 std_SRCS += recDynLink.c
 
 # save scan data stuff
@@ -106,13 +107,6 @@ std_SRCS_vxWorks   += iocCheck.c
 # Register stuff
 std_SRCS += stdRegister.c
 std_SRCS_vxWorks += stdVXRegister.c
-
-# Override dbLoadTemplate from base with new version
-# that works around the lack of soft links since 3.13.1
-#YACCOPT = -l
-#LEXOPT = -L
-#std_SRCS_vxWorks += dbLoadTemplate.c
-HTMLS += dbLoadTemplate.html
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 std_SRCS += std_registerRecordDeviceDriver.cpp
@@ -173,7 +167,3 @@ include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
 
-dbLoadTemplate.c: dbLoadTemplate_lex.c 
-
-clean::
-	@$(RM) dbLoadTemplate_lex.c dbLoadTemplate.c 
