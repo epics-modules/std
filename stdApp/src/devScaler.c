@@ -32,12 +32,12 @@ Modification Log:
 .08  3/03/97    tmm     v1.6 add reboot hook (disable interrupts & reset)
 .09  4/24/98    tmm     v1.7 use callbackRequest instead of scanIoReq
 .10  3/20/03    skf     OSI
+.11  10/22/03	tmm		v1.8 Removed 3.13 compatibility; scalerWdTimerQ moved
+                        to scaler record
 *******************************************************************************/
-#include        <epicsVersion.h>
+/* version 1.8 */
 
-#if EPICS_VERSION < 3 || (EPICS_VERSION==3 && EPICS_REVISION < 14)
-#define NOT_YET_OSI
-#endif
+#include        <epicsVersion.h>
 
 #ifdef HAS_IOOPS_H
 #include        <basicIoOps.h>
@@ -46,58 +46,47 @@ Modification Log:
 typedef unsigned int uint32;
 typedef unsigned short uint16;
 
-#if defined(NOT_YET_OSI) || defined(VXWORKSTARGET)
-/* version 1.5 */
+#if defined(VXWORKSTARGET)
 #include	<vxWorks.h>
-#ifndef __vxworks
-#define __vxworks 1
-#endif
 #include	<vme.h>
 #include	<types.h>
 #include	<stdioLib.h>
 #include	<iv.h>
 #include	<wdLib.h>
 #include	<module_types.h>
-#include        <rebootLib.h>
-#else
+#include	<rebootLib.h>
+#endif
 
-#include	<stdlib.h>
-#include	<stdio.h>
-#include        <epicsTimer.h>
-#include        <epicsThread.h>
-#include        <epicsExport.h>
-
-epicsTimerQueueId	scalerWdTimerQ=0;
-
-
-#ifndef         ERROR
+#ifndef	ERROR
 #define ERROR   -1
 #endif
 
-#ifndef         OK
+#ifndef	OK
 #define OK      0
 #endif
 
-#endif
 
-#include        <devLib.h>
- 
+#include	<stdlib.h>
+#include	<stdio.h>
 #include	<string.h>
 #include	<math.h>
 
+#include	<epicsTimer.h>
+#include	<epicsThread.h>
+#include	<epicsExport.h>
+#include	<devLib.h>
 #include	<alarm.h>
-/* #include	<dbRecType.h>  tmm: EPICS 3.13 */
 #include	<dbDefs.h>
 #include	<dbAccess.h>
 #include	<dbCommon.h>
 #include	<dbScan.h>
-#include        <recGbl.h>
+#include	<recGbl.h>
 #include	<recSup.h>
 #include	<devSup.h>
 #include	<drvSup.h>
 #include	<dbScan.h>
 #include	<special.h>
-#include        <callback.h>
+#include	<callback.h>
 
 #include	"scalerRecord.h"
 #include	"devScaler.h"
@@ -388,15 +377,10 @@ STATIC long scaler_init(int after)
 		scaler_state[card]->localaddr = localaddr;
 		addr = localaddr;
 
-#ifdef NOT_YET_OSI
-                if(vxMemProbe(addr+DATA_0_OFFSET,VX_READ,4,(char *)&probeValue)!=OK)
-#else
-	        if (devReadProbe(4,addr+DATA_0_OFFSET,(void*)&probeValue))
-#endif
-	        {
-                   printf("no VSC card at %p\n",addr);
-                   return(0);
-                }
+		if (devReadProbe(4,addr+DATA_0_OFFSET,(void*)&probeValue)) {
+			printf("no VSC card at %p\n",addr);
+			return(0);
+		}
 
 		/* reset this card */
 		writeReg16(addr,RESET_OFFSET,0);
@@ -426,12 +410,7 @@ STATIC long scaler_init(int after)
     if (scaler_shutdown() < 0)
 		epicsPrintf ("scaler_init: scaler_shutdown() failed\n"); 
 #endif
-#ifndef  NOT_YET_OSI
-        scalerWdTimerQ=epicsTimerQueueAllocate(
-				1, /* ok to share queue */
-				epicsThreadPriorityLow);  
- 	Debug0(3,"scalerWdTimerQ created\n");
-#endif
+
 	Debug0(3,"scaler_init: scalers initialized\n");
 	return(0);
 }
