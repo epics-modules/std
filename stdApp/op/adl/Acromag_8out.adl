@@ -1,13 +1,13 @@
 
 file {
-	name="/home/sricat/S1BM/epics/3.13.1/1bmApp/op/adl/Acromag_8out.adl"
-	version=020305
+	name="/home/oxygen3/GOETZE/epics/synApps_4_5/ioc/kag/kagApp/op/adl/Acromag_8out.adl"
+	version=030000
 }
 display {
 	object {
 		x=151
 		y=65
-		width=470
+		width=473
 		height=95
 	}
 	clr=14
@@ -115,104 +115,104 @@ text {
 }
 "choice button" {
 	object {
-		x=4
-		y=64
+		x=3
+		y=62
 		width=50
 		height=30
 	}
 	control {
-		chan="$(P)$(A):raw_out_$(CH0).VAL"
+		chan="$(P)9440:$(A):bo_$(CH0).VAL"
 		clr=14
 		bclr=3
 	}
 }
 "choice button" {
 	object {
-		x=63
-		y=64
+		x=62
+		y=62
 		width=50
 		height=30
 	}
 	control {
-		chan="$(P)$(A):raw_out_$(CH1).VAL"
+		chan="$(P)9440:$(A):bo_$(CH1).VAL"
 		clr=14
 		bclr=3
 	}
 }
 "choice button" {
 	object {
-		x=122
-		y=64
+		x=121
+		y=62
 		width=50
 		height=30
 	}
 	control {
-		chan="$(P)$(A):raw_out_$(CH2).VAL"
+		chan="$(P)9440:$(A):bo_$(CH2).VAL"
 		clr=14
 		bclr=3
 	}
 }
 "choice button" {
 	object {
-		x=181
-		y=64
+		x=180
+		y=62
 		width=50
 		height=30
 	}
 	control {
-		chan="$(P)$(A):raw_out_$(CH3).VAL"
+		chan="$(P)9440:$(A):bo_$(CH3).VAL"
 		clr=14
 		bclr=3
 	}
 }
 "choice button" {
 	object {
-		x=240
-		y=64
+		x=239
+		y=62
 		width=50
 		height=30
 	}
 	control {
-		chan="$(P)$(A):raw_out_$(CH4).VAL"
+		chan="$(P)9440:$(A):bo_$(CH4).VAL"
 		clr=14
 		bclr=3
 	}
 }
 "choice button" {
 	object {
-		x=299
-		y=64
+		x=298
+		y=62
 		width=50
 		height=30
 	}
 	control {
-		chan="$(P)$(A):raw_out_$(CH5).VAL"
+		chan="$(P)9440:$(A):bo_$(CH5).VAL"
 		clr=14
 		bclr=3
 	}
 }
 "choice button" {
 	object {
-		x=358
-		y=64
+		x=357
+		y=62
 		width=50
 		height=30
 	}
 	control {
-		chan="$(P)$(A):raw_out_$(CH6).VAL"
+		chan="$(P)9440:$(A):bo_$(CH6).VAL"
 		clr=14
 		bclr=3
 	}
 }
 "choice button" {
 	object {
-		x=417
-		y=64
+		x=416
+		y=62
 		width=50
 		height=30
 	}
 	control {
-		chan="$(P)$(A):raw_out_$(CH7).VAL"
+		chan="$(P)9440:$(A):bo_$(CH7).VAL"
 		clr=14
 		bclr=3
 	}
@@ -324,7 +324,7 @@ text {
 oval {
 	object {
 		x=23
-		y=52
+		y=51
 		width=8
 		height=8
 	}
@@ -332,14 +332,14 @@ oval {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):raw_out_$(CH0).VAL"
+		vis="if not zero"
+		chan="$(P)9440:$(A):bo_$(CH0).VAL"
 	}
 }
 oval {
 	object {
 		x=82
-		y=52
+		y=51
 		width=8
 		height=8
 	}
@@ -347,14 +347,14 @@ oval {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):raw_out_$(CH1).VAL"
+		vis="if not zero"
+		chan="$(P)9440:$(A):bo_$(CH1).VAL"
 	}
 }
 oval {
 	object {
 		x=141
-		y=52
+		y=51
 		width=8
 		height=8
 	}
@@ -362,14 +362,14 @@ oval {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):raw_out_$(CH2).VAL"
+		vis="if not zero"
+		chan="$(P)9440:$(A):bo_$(CH2).VAL"
 	}
 }
 oval {
 	object {
 		x=200
-		y=52
+		y=51
 		width=8
 		height=8
 	}
@@ -377,14 +377,14 @@ oval {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):raw_out_$(CH3).VAL"
+		vis="if not zero"
+		chan="$(P)9440:$(A):bo_$(CH3).VAL"
 	}
 }
 oval {
 	object {
 		x=259
-		y=52
+		y=51
 		width=8
 		height=8
 	}
@@ -392,14 +392,14 @@ oval {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):raw_out_$(CH4).VAL"
+		vis="if not zero"
+		chan="$(P)9440:$(A):bo_$(CH4).VAL"
 	}
 }
 oval {
 	object {
 		x=318
-		y=52
+		y=51
 		width=8
 		height=8
 	}
@@ -407,14 +407,14 @@ oval {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):raw_out_$(CH5).VAL"
+		vis="if not zero"
+		chan="$(P)9440:$(A):bo_$(CH5).VAL"
 	}
 }
 oval {
 	object {
 		x=377
-		y=52
+		y=51
 		width=8
 		height=8
 	}
@@ -422,14 +422,14 @@ oval {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):raw_out_$(CH6).VAL"
+		vis="if not zero"
+		chan="$(P)9440:$(A):bo_$(CH6).VAL"
 	}
 }
 oval {
 	object {
 		x=436
-		y=52
+		y=51
 		width=8
 		height=8
 	}
@@ -437,8 +437,8 @@ oval {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):raw_out_$(CH7).VAL"
+		vis="if not zero"
+		chan="$(P)9440:$(A):bo_$(CH7).VAL"
 	}
 }
 "related display" {
@@ -451,120 +451,137 @@ oval {
 	display[0] {
 		name="Acromag_8out_names.adl"
 		args="P=$(P),A=$(A),CH0=$(CH0),CH1=$(CH1),CH2=$(CH2),CH3=$(CH3),CH4=$(CH4),CH5=$(CH5),CH6=$(CH6),CH7=$(CH7)"
+		policy="replace display"
 	}
-	clr=14
+	clr=1
 	bclr=17
 	label="-Set Names"
 }
 "text update" {
 	object {
 		x=2
-		y=41
+		y=39
 		width=55
 		height=10
 	}
 	monitor {
-		chan="$(P)$(A):raw_out_$(CH0).DESC"
+		chan="$(P)9440:$(A):bo_$(CH0).DESC"
 		clr=14
 		bclr=55
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "text update" {
 	object {
 		x=61
-		y=41
+		y=39
 		width=55
 		height=10
 	}
 	monitor {
-		chan="$(P)$(A):raw_out_$(CH1).DESC"
+		chan="$(P)9440:$(A):bo_$(CH1).DESC"
 		clr=14
 		bclr=55
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "text update" {
 	object {
 		x=120
-		y=41
+		y=39
 		width=55
 		height=10
 	}
 	monitor {
-		chan="$(P)$(A):raw_out_$(CH2).DESC"
+		chan="$(P)9440:$(A):bo_$(CH2).DESC"
 		clr=14
 		bclr=55
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "text update" {
 	object {
 		x=179
-		y=41
+		y=39
 		width=55
 		height=10
 	}
 	monitor {
-		chan="$(P)$(A):raw_out_$(CH3).DESC"
+		chan="$(P)9440:$(A):bo_$(CH3).DESC"
 		clr=14
 		bclr=55
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "text update" {
 	object {
 		x=238
-		y=41
+		y=39
 		width=55
 		height=10
 	}
 	monitor {
-		chan="$(P)$(A):raw_out_$(CH4).DESC"
+		chan="$(P)9440:$(A):bo_$(CH4).DESC"
 		clr=14
 		bclr=55
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "text update" {
 	object {
 		x=297
-		y=41
+		y=39
 		width=55
 		height=10
 	}
 	monitor {
-		chan="$(P)$(A):raw_out_$(CH5).DESC"
+		chan="$(P)9440:$(A):bo_$(CH5).DESC"
 		clr=14
 		bclr=55
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "text update" {
 	object {
 		x=356
-		y=41
+		y=39
 		width=55
 		height=10
 	}
 	monitor {
-		chan="$(P)$(A):raw_out_$(CH6).DESC"
+		chan="$(P)9440:$(A):bo_$(CH6).DESC"
 		clr=14
 		bclr=55
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "text update" {
 	object {
 		x=415
-		y=41
+		y=39
 		width=55
 		height=10
 	}
 	monitor {
-		chan="$(P)$(A):raw_out_$(CH7).DESC"
+		chan="$(P)9440:$(A):bo_$(CH7).DESC"
 		clr=14
 		bclr=55
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
