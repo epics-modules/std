@@ -35,15 +35,18 @@ of this distribution.
 #include "fastPID.h"
 #include <epicsExport.h>
 
-extern "C"
-{
-#ifdef NODEBUG
-#define DEBUG(l,f,v) ;
+/*----------------debugging-----------------*/
+
+#ifdef __GNUG__
+    #ifdef	DEBUG
+	volatile int devEpidMpfDebug = 0;
+	#define DEBUG(l, f, args...) {if (l <= devEpidMpfDebug) printf(f, ## args);}
+    #else
+	#define DEBUG(l, f, args...)
+    #endif
 #else
-#define DEBUG(l,f,v...) { if(l<devEpidMpfDebug) printf(f,## v); }
+    #define DEBUG()
 #endif
-volatile int devEpidMpfDebug = 0;
-}
 
 class DevEpidMpf : public DevMpf
 {
@@ -68,7 +71,7 @@ private:
     float setPoint;
 };
 
-MAKE_DSET(devEpidMpf,DevEpidMpf::dev_init)
+MAKE_DSET(devEpidMpf, (DEVSUPFUN) DevEpidMpf::dev_init)
 
 DevEpidMpf::DevEpidMpf(dbCommon* pr,DBLINK* l) : DevMpf(pr,l,false)
 {
@@ -89,8 +92,7 @@ void DevEpidMpf::connectIO(dbCommon *pr, Message* message)
     // Set the PID parameters when the server connects
     epidRecord* pepid = (epidRecord*)pr;
     ConnectMessage *pConnectMessage = (ConnectMessage *)message;
-    DEBUG(5,"DevEpidMpf::connectIO, enter, record=%s, status=%d\n", 
-                            pepid->name, pConnectMessage->status);
+    DEBUG(5,"DevEpidMpf::connectIO, enter, record=%s, status=%d\n", pepid->name, pConnectMessage->status);
     if (pConnectMessage->status != connectYes) goto finish;
 
     sendParams(pepid, TRUE);
@@ -128,8 +130,7 @@ long DevEpidMpf::completeIO(dbCommon* pr,Message* m)
     }
     Float64ArrayMessage *pam = (Float64ArrayMessage *)m;
     if(pam->status) {
-        DEBUG(1,"DevEpidMpf::completeIO, record=%s, status=%d\n", 
-                            pepid->name, pam->status);
+        DEBUG(1,"DevEpidMpf::completeIO, record=%s, status=%d\n", pepid->name, pam->status);
         recGblSetSevr(pepid,READ_ALARM,INVALID_ALARM);
         delete m;
         return(MPF_NoConvert);
@@ -142,10 +143,8 @@ long DevEpidMpf::completeIO(dbCommon* pr,Message* m)
     pepid->i    = pam->value[offsetI];
     pepid->d    = pam->value[offsetD];
     pepid->dt   = pam->value[offsetSecondsPerScan];
-    DEBUG(5,"DevEpidMpf::completeIO, record=%s, cval=%f, err=%f, oval=%f,\n", 
-                            pepid->name, pepid->cval, pepid->err, pepid->oval);
-    DEBUG(5,"         p=%f, i=%f, d=%f, dt=%f\n", 
-                            pepid->p, pepid->i, pepid->d, pepid->dt);
+    DEBUG(5,"DevEpidMpf::completeIO, record=%s, cval=%f, err=%f, oval=%f,\n", pepid->name, pepid->cval, pepid->err, pepid->oval);
+    DEBUG(5,"         p=%f, i=%f, d=%f, dt=%f\n", pepid->p, pepid->i, pepid->d, pepid->dt);
     pepid->udf=0;
     delete m;
     return(MPF_OK);
