@@ -10,7 +10,7 @@ SRCS.c += ../devXxHP10895LaserAxis.c
 SRCS.c += ../devXxHeidenhainGpib.c
 SRCS.c += ../devXxKeithleyDMM199Gpib.c
 SRCS.c += ../initHooks.c ../initHooks_debug.c
-SRCS.c += ../scalerRecord.c ../devScaler.c
+SRCS.c += ../scalerRecord.c ../devScaler.c ../devScaler_VS.c
 SRCS.c += ../scanparmRecord.c
 SRCS.c += ../serialRecord.c
 SRCS.c += ../tableRecord.c
@@ -58,10 +58,6 @@ SRCS.c += ../devIK320.c
 SRCS.c += ../drvIK320.c
 SRCS.c += ../drvIK320ErrStat.c
 SRCS.c += ../aiCvtDouble.c
-
-# Override calcout record in base (3.13.0.beta12 and earlier) with
-# bug-fixed version
-#SRCS.c += ../calcoutRecord.c
 
 # Override dbLoadRecords, dbLoadDatabase from base with new versions
 # that work around the lack of soft links in 3.13.1
