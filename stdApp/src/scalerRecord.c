@@ -132,7 +132,7 @@ volatile int scaler_wait_time = 10;
 
 #define MIN(a,b) (a)<(b)?(a):(b)
 #define MAX(a,b) (a)>(b)?(a):(b)
-
+#define NINT(f) (long)((f)>0 ? (f)+0.5 : (f)-0.5)
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -406,8 +406,8 @@ scalerRecord *pscal;
 				old_pr1 = pscal->pr1;
 				old_freq = pscal->freq;
 				/* Make sure channel-1 preset count agrees with time preset and freq */
-				if (pscal->pr1 != (long) (pscal->tp * pscal->freq)) {
-					pscal->pr1 = (long) (pscal->tp * pscal->freq);
+				if (pscal->pr1 != (long) NINT(pscal->tp * pscal->freq)) {
+					pscal->pr1 = (long) NINT(pscal->tp * pscal->freq);
 				}
 				save_pr1 = pscal->pr1;
 				for (i=0; i<pscal->nch; i++) {
@@ -418,7 +418,7 @@ scalerRecord *pscal;
 					}
 				}
 				if (save_pr1 != pscal->pr1) {
-					pscal->pr1 = (long) (pscal->tp * pscal->freq);
+					pscal->pr1 = (long) NINT(pscal->tp * pscal->freq);
 					(*pdset->write_preset)(card, 0, pscal->pr1);
 				}
 				if (old_pr1 != pscal->pr1) db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
