@@ -1,24 +1,15 @@
 /* stdRegister.c */
 
-#include <stdlib.h>
-#include <stddef.h>
-#include <string.h>
-#include <stdio.h>
-#include "iocsh.h"
-#include "epicsExport.h"
+#include <iocsh.h>
+#include <epicsExport.h>
 
-extern int fastPIDDebug;
-static const iocshArg fastPIDDebugArg0 = { "debugLevel",iocshArgInt};
-static const iocshArg * const fastPIDDebugArgs[1] = {&fastPIDDebugArg0};
-static const iocshFuncDef fastPIDDebugFuncDef = {"setFastPIDDebug",1,fastPIDDebugArgs};
-static void fastPIDDebugCallFunc(const iocshArgBuf *args)
+/* This is where any registration calls for vxWorks only code that are not in 
+   their respective source code modules should be placed
+ */
+void stdVXRegister(void)
 {
-    fastPIDDebug = (int)args[0].sval;
 }
 
-void stdRegister(void)
-{
-    iocshRegister(&fastPIDDebugFuncDef,fastPIDDebugCallFunc);
-}
+epicsExportRegistrar(stdVXRegister);
 
-epicsExportRegistrar(stdRegister);
+

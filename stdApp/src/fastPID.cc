@@ -25,8 +25,6 @@
                    moved to this file.
 */
 
-#include <vxWorks.h>
-#include <iv.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -34,6 +32,10 @@
 #include "Float64Message.h"
 #include "Float64ArrayMessage.h"
 #include "mpfType.h"
+
+#include "epicsTypes.h"
+#include "epicsExport.h"
+#include "symTable.h"
 
 #include "fastPID.h"
 
@@ -200,3 +202,10 @@ void fastPIDServer::fastServer(fastPIDServer *pFastPIDServer)
         }
     }
 }
+
+void fastPIDRegister(void)
+{
+    addSymbol("fastPIDDebug", (epicsInt32 *)&fastPIDDebug, epicsInt32T);
+}
+epicsExportRegistrar(fastPIDRegister);
+

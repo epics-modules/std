@@ -50,6 +50,8 @@ DBDINSTALL += ../stdShare.dbd
 
 LIBRARY_IOC += std
 
+std_SRCS += symTable.c
+std_SRCS += symTableTest.c
 std_SRCS_vxWorks += dbrestore.c save_restore.c fGetDateStr.c
 std_SRCS_vxWorks  += initHooks.c
 #std_SRCS += devAiVaroc.c drvVarocB.c
@@ -77,7 +79,7 @@ std_SRCS_vxWorks += vmeRecord.c
 #std_SRCS += gpibRecord.c
 #std_SRCS += camacRecord.c
 std_SRCS   += epidRecord.c
-std_SRCS_vxWorks  += fastPID.cc
+std_SRCS  += fastPID.cc
 std_SRCS += devEpidSoft.c
 std_SRCS += devEpidMpf.cc
 std_SRCS  += swaitRecord.c
@@ -105,7 +107,8 @@ std_SRCS_vxWorks  += subAve.c
 std_SRCS_vxWorks   += iocCheck.c
 
 # Register stuff
-std_SRCS_vxWorks   += stdVXRegister.c
+std_SRCS += stdRegister.c
+std_SRCS_vxWorks += stdVXRegister.c
 
 # Override dbLoadTemplate from base with new version
 # that works around the lack of soft links since 3.13.1
@@ -143,6 +146,7 @@ pv_DIR     = $(SNCSEQ_LIB)
 # built in the MCA module
 INC += devScaler.h
 INC += fastPID.h
+INC += symTable.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
