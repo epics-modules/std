@@ -668,19 +668,16 @@ state waitForCmnd {
 		efSet(thetaMotRdbkPseudo_mon);
 	} state updateRdbk
 
-	when (efTest(E_mon)) {
+	when (efTestAndClear(E_mon)) {
 		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:E_mon\n");
-		efClear(E_mon);
 	} state eChanged
 
-	when (efTest(lambda_mon)) {
+	when (efTestAndClear(lambda_mon)) {
 		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:lambda_mon\n");
-		efClear(lambda_mon);
 	} state lChanged
 
-	when (efTest(theta_mon)) {
+	when (efTestAndClear(theta_mon)) {
 		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:theta_mon\n");
-		efClear(theta_mon);
 	} state thChanged
 
 	when (putVals && delay(.1)) {
@@ -691,9 +688,8 @@ state waitForCmnd {
 		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:Tweak\n");
 	} state tweak
 
-	when (efTest(yOffset_mon)) {
+	when (efTestAndClear(yOffset_mon)) {
 		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:yOffset_mon\n");
-		efClear(yOffset_mon);
 		autoMode = 0;
 		pvPut(autoMode);
 		sprintf(seqMsg1, "y offset changed to %f", yOffset);
@@ -714,9 +710,9 @@ state waitForCmnd {
 }
 
 state tweak {
-	when (ETweakInc) {
+	when (ETweakInc || ETweakDec) {
 		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:E+\n");
-		temp = E + ETweakVal;
+		temp = E + ETweakVal * (ETweakInc?1:-1);
 		if ((temp>=ELo) && (temp<=EHi)) {
 			E = temp;
 			pvPut(E);
@@ -726,29 +722,18 @@ state tweak {
 			opAlert = 1;
 			pvPut(opAlert);
 		}
-		ETweakInc = 0;
-		pvPut(ETweakInc);
-	} state eChanged
-
-	when (ETweakDec) {
-		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:E-\n");
-		temp = E - ETweakVal;
-		if ((temp>=ELo) && (temp<=EHi)) {
-			E = temp;
-			pvPut(E);
+		if (ETweakInc) {
+			ETweakInc = 0;
+			pvPut(ETweakInc);
 		} else {
-			sprintf(seqMsg1, "E tweak exceeds limit");
-			pvPut(seqMsg1);
-			opAlert = 1;
-			pvPut(opAlert);
+			ETweakDec = 0;
+			pvPut(ETweakDec);
 		}
-		ETweakDec = 0;
-		pvPut(ETweakDec);
 	} state eChanged
 
-	when (LTweakInc) {
-		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:L+\n");
-		temp = lambda + LTweakVal;
+	when (LTweakInc || LTweakDec) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:L\n");
+		temp = lambda + LTweakVal * (LTweakInc?1:-1);
 		if ((temp>=lambdaLo) && (temp<=lambdaHi)) {
 			lambda = temp;
 			pvPut(lambda);
@@ -758,29 +743,18 @@ state tweak {
 			opAlert = 1;
 			pvPut(opAlert);
 		}
-		LTweakInc = 0;
-		pvPut(LTweakInc);
-	} state lChanged
-
-	when (LTweakDec) {
-		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:L-\n");
-		temp = lambda - LTweakVal;
-		if ((temp>=lambdaLo) && (temp<=lambdaHi)) {
-			lambda = temp;
-			pvPut(lambda);
+		if (LTweakInc) {
+			LTweakInc = 0;
+			pvPut(LTweakInc);
 		} else {
-			sprintf(seqMsg1, "Lambda tweak exceeds limit");
-			pvPut(seqMsg1);
-			opAlert = 1;
-			pvPut(opAlert);
+			LTweakDec = 0;
+			pvPut(LTweakDec);
 		}
-		LTweakDec = 0;
-		pvPut(LTweakDec);
 	} state lChanged
 
-	when (thTweakInc) {
-		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:th+\n");
-		temp = theta + thTweakVal;
+	when (thTweakInc || thTweakDec) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:th\n");
+		temp = theta + thTweakVal * (thTweakInc?1:-1);
 		if ((temp>=thetaLo) && (temp<=thetaHi)) {
 			theta = temp;
 			pvPut(theta);
@@ -790,24 +764,13 @@ state tweak {
 			opAlert = 1;
 			pvPut(opAlert);
 		}
-		thTweakInc = 0;
-		pvPut(thTweakInc);
-	} state thChanged
-
-	when (thTweakDec) {
-		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:th-\n");
-		temp = theta - thTweakVal;
-		if ((temp>=thetaLo) && (temp<=thetaHi)) {
-			theta = temp;
-			pvPut(theta);
+		if (thTweakInc) {
+			thTweakInc = 0;
+			pvPut(thTweakInc);
 		} else {
-			sprintf(seqMsg1, "Theta tweak exceeds limit");
-			pvPut(seqMsg1);
-			opAlert = 1;
-			pvPut(opAlert);
+			thTweakDec = 0;
+			pvPut(thTweakDec);
 		}
-		thTweakDec = 0;
-		pvPut(thTweakDec);
 	} state thChanged
 }
 
@@ -1033,7 +996,8 @@ state checkDone {
 		kohzuDone = 1;
 	} state waitForCmndEnter
 
-	when (1) {
+	when (!thetaDmov || !yDmov || !zDmov) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:checkDone: not done\n");
 	} state updateRdbk
 
 }
@@ -1049,16 +1013,17 @@ state updateRdbk {
 		pvPut(opAlert);
 	} state waitForCmndEnter
 
-	when ((thetaDmov && yDmov && zDmov) && delay(.02)) {
-		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk:*Dmov\n");
+	when (thetaDmov && yDmov && zDmov) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk:*Dmov (done=%d,moving=%d)\n", kohzuDone, kohzuMoving);
 		thetaRdbk = thetaMotRdbk;
 		lambdaRdbk = D * sin(thetaRdbk/radConv);
 		ERdbk = hc/lambdaRdbk;
 		pvPut(thetaRdbk);
 		pvPut(lambdaRdbk);
 		pvPut(ERdbk);
-
 		kohzuDone = 1;
+		efSet(thetaMotRdbkPseudo_mon);
+		efClear(thetaMotRdbk_mon);
 		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk: done\n");
 	} state thetaMotStopped
 
@@ -1110,12 +1075,11 @@ state updateRdbk {
 		pvPut(lambdaRdbk);
 		pvPut(ERdbk);
 	} state updateRdbk
-
 }
 
 state thetaMotStopped {
 	when (causedMove) {
-		if (kohzuCtlDebug) %%printf("kohzuCtl:thetaMotStopped:causedMove\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:thetaMotStopped:causedMove (done=%d,moving=%d)\n", kohzuDone, kohzuMoving);
 		thSpeed = oldThSpeed;
 		ySpeed = oldYSpeed;
 		zSpeed = oldZSpeed;
@@ -1128,7 +1092,7 @@ state thetaMotStopped {
 
 	/* Someone moved the Theta motor directly */
 	when (!causedMove) {
-		if (kohzuCtlDebug) %%printf("kohzuCtl:thetaMotStopped:!causedMove\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:thetaMotStopped:!causedMove (done=%d,moving=%d)\n", kohzuDone, kohzuMoving);
 		if (initSeqDone) {
 			opAlert = 1;
 			pvPut(opAlert);
@@ -1230,6 +1194,7 @@ state stopKohzu {
 
 state stoppedKohzuWait {
 	when(delay(1.)) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:stoppedKohzuWait\n");
 	} state updateRdbk
 }
 
@@ -1253,70 +1218,59 @@ state update {
 		pvPut(thetaMotRdbkEcho);
 	} state update
 
-	when (efTest(yMotRdbk_mon)) {
+	when (efTestAndClear(yMotRdbk_mon)) {
 		yMotRdbkEcho = yMotRdbk;
 		pvPut(yMotRdbkEcho);
-		efClear(yMotRdbk_mon);
 	} state update
 
-	when (efTest(zMotRdbk_mon)) {
+	when (efTestAndClear(zMotRdbk_mon)) {
 		zMotRdbkEcho = zMotRdbk;
 		pvPut(zMotRdbkEcho);
-		efClear(zMotRdbk_mon);
 	} state update
 
-	when (efTest(thetaMotVel_mon)) {
+	when (efTestAndClear(thetaMotVel_mon)) {
 		thetaMotVelEcho = thSpeed;
 		pvPut(thetaMotVelEcho);
-		efClear(thetaMotVel_mon);
 	} state update
 
-	when (efTest(yMotVel_mon)) {
+	when (efTestAndClear(yMotVel_mon)) {
 		yMotVelEcho = ySpeed;
 		pvPut(yMotVelEcho);
-		efClear(yMotVel_mon);
 	} state update
 
-	when (efTest(zMotVel_mon)) {
+	when (efTestAndClear(zMotVel_mon)) {
 		zMotVelEcho = zSpeed;
 		pvPut(zMotVelEcho);
-		efClear(zMotVel_mon);
 	} state update
 
-	when (efTest(thetaMotCmdMon_mon)) {
+	when (efTestAndClear(thetaMotCmdMon_mon)) {
 		thetaMotCmdEcho = thetaMotCmdMon;
 		pvPut(thetaMotCmdEcho);
-		efClear(thetaMotCmdMon_mon);
 	} state update
 
-	when (efTest(yMotCmdMon_mon)) {
+	when (efTestAndClear(yMotCmdMon_mon)) {
 		yMotCmdEcho = yMotCmdMon;
 		pvPut(yMotCmdEcho);
-		efClear(yMotCmdMon_mon);
 	} state update
 
-	when (efTest(zMotCmdMon_mon)) {
+	when (efTestAndClear(zMotCmdMon_mon)) {
 		zMotCmdEcho = zMotCmdMon;
 		pvPut(zMotCmdEcho);
-		efClear(zMotCmdMon_mon);
 	} state update
 
-	when (efTest(thetaDmov_mon)) {
+	when (efTestAndClear(thetaDmov_mon)) {
 		thetaDmovEcho = thetaDmov;
 		pvPut(thetaDmovEcho);
-		efClear(thetaDmov_mon);
 	} state update
 
-	when (efTest(yDmov_mon)) {
+	when (efTestAndClear(yDmov_mon)) {
 		yDmovEcho = yDmov;
 		pvPut(yDmovEcho);
-		efClear(yDmov_mon);
 	} state update
 
-	when (efTest(zDmov_mon)) {
+	when (efTestAndClear(zDmov_mon)) {
 		zDmovEcho = zDmov;
 		pvPut(zDmovEcho);
-		efClear(zDmov_mon);
 	} state update
 }
 }
@@ -1334,7 +1288,7 @@ state init {
 }
 
 state update {
-	when (efTest(useSetMode_mon)) {
+	when (efTestAndClear(useSetMode_mon)) {
 		if (thetaMotSet != useSetMode) {
 			thetaMotSet = useSetMode;
 			pvPut(thetaMotSet);
@@ -1347,31 +1301,27 @@ state update {
 			zMotSet = useSetMode;
 			pvPut(zMotSet);
 		}
-		efClear(useSetMode_mon);
 	} state update
 
-	when (efTest(thetaMotSet_mon)) {
+	when (efTestAndClear(thetaMotSet_mon)) {
 		if (useSetMode != thetaMotSet) {
 			useSetMode = thetaMotSet;
 			pvPut(useSetMode);
 		}
-		efClear(thetaMotSet_mon);
 	} state update
 
-	when (efTest(yMotSet_mon)) {
+	when (efTestAndClear(yMotSet_mon)) {
 		if (useSetMode != yMotSet) {
 			useSetMode = yMotSet;
 			pvPut(useSetMode);
 		}
-		efClear(yMotSet_mon);
 	} state update
 
-	when (efTest(zMotSet_mon)) {
+	when (efTestAndClear(zMotSet_mon)) {
 		if (useSetMode != zMotSet) {
 			useSetMode = zMotSet;
 			pvPut(useSetMode);
 		}
-		efClear(zMotSet_mon);
 	} state update
 }
 }
@@ -1390,7 +1340,7 @@ double kohzuCtl_calc2dSpacing()
 
 	result = (2*A)/sqrt(H*H + K*K + L*L);
 
-	/* determine validity of H, K, L) */
+	/* determine validity of (H, K, L) */
 	opAlert = 0;
 	if (((fmod(H,2)) != (fmod(K,2))) || ((fmod(H,2)) != (fmod(L,2))))
 		opAlert = 1;
@@ -1399,9 +1349,10 @@ double kohzuCtl_calc2dSpacing()
 	if ((fabs(avg-nint) <= .25) && (fmod(nint,2)))
 		opAlert = 1;
 	if (opAlert) {
-		sprintf(seqMsg1, "Invalid HKL combination");
+		sprintf(seqMsg1, "(H,K,L) is 'forbidden' reflection");
+	} else {
+		sprintf(seqMsg1, "New d spacing");
 	}
-
 	return(result);
 }
 
