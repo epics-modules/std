@@ -2,7 +2,8 @@ program kohzuCtl  ("P=nda, M_THETA=m9, M_Y=m10, M_Z=m11, GEOM=1")
 
 
 %%volatile short kohzuCtlDebug;
-%%volatile short kohzuCtlCalibYZ;
+%%volatile short set_kohzuCtlCalibYZ = 0;
+short kohzuCtlCalibYZ;
 
 /* arguments on the command line  :
  * 
@@ -493,7 +494,7 @@ state initSequence {
 %%		if (kohzuCtlDebug) printf("kohzuCtl:initSequence:initSeq=0\n");
 		hc = 12.3984244;
 		radConv = 57.2958;
-		kohzuCtlCalibYZ = 0;
+		kohzuCtlCalibYZ = set_kohzuCtlCalibYZ;
 		thetaMotStop = 1;
 		yStop = 1;
 		zStop = 1;
@@ -1363,23 +1364,21 @@ state update {
 		efClear(thetaMotSet_mon);
 	} state update
 
-	if (kohzuCtlCalibYZ) {
-		when (efTest(yMotSet_mon)) {
-			if (useSetMode != yMotSet) {
-				useSetMode = yMotSet;
-				pvPut(useSetMode);
-			}
-			efClear(yMotSet_mon);
-		} state update
+	when (efTest(yMotSet_mon)) {
+		if (kohzuCtlCalibYZ && (useSetMode != yMotSet)) {
+			useSetMode = yMotSet;
+			pvPut(useSetMode);
+		}
+		efClear(yMotSet_mon);
+	} state update
 
-		when (efTest(zMotSet_mon)) {
-			if (useSetMode != zMotSet) {
-				useSetMode = zMotSet;
-				pvPut(useSetMode);
-			}
-			efClear(zMotSet_mon);
-		} state update
-	}
+	when (efTest(zMotSet_mon)) {
+		if (kohzuCtlCalibYZ && (useSetMode != zMotSet)) {
+			useSetMode = zMotSet;
+			pvPut(useSetMode);
+		}
+		efClear(zMotSet_mon);
+	} state update
 }
 }
 
