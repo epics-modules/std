@@ -1,14 +1,14 @@
 
 file {
-	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/interp.adl"
+	name="/home/oxygen4/MOONEY/epics/3.13.2/tmm/tmmApp/op/adl/interp.adl"
 	version=020306
 }
 display {
 	object {
-		x=915
-		y=51
+		x=814
+		y=171
 		width=460
-		height=85
+		height=105
 	}
 	clr=14
 	bclr=2
@@ -138,6 +138,7 @@ text {
 		clr=14
 		bclr=51
 	}
+	format="string"
 	limits {
 	}
 }
@@ -153,6 +154,7 @@ text {
 		clr=14
 		bclr=51
 	}
+	format="string"
 	limits {
 	}
 }
@@ -191,7 +193,7 @@ text {
 "text entry" {
 	object {
 		x=5
-		y=45
+		y=55
 		width=80
 		height=20
 	}
@@ -202,44 +204,6 @@ text {
 	}
 	limits {
 	}
-}
-"shell command" {
-	object {
-		x=5
-		y=65
-		width=20
-		height=20
-	}
-	command[0] {
-		label="Load lookup tables"
-		name="cd ../burt; burtwb -f interp.load"
-	}
-	clr=14
-	bclr=51
-}
-text {
-	object {
-		x=25
-		y=65
-		width=55
-		height=10
-	}
-	"basic attribute" {
-		clr=64
-	}
-	textix="LOAD X,Yi"
-}
-text {
-	object {
-		x=25
-		y=75
-		width=55
-		height=10
-	}
-	"basic attribute" {
-		clr=64
-	}
-	textix="ARRAYS"
 }
 composite {
 	object {
@@ -292,60 +256,49 @@ composite {
 		}
 	}
 }
-composite {
+text {
 	object {
 		x=305
 		y=30
 		width=150
-		height=55
+		height=14
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=305
-				y=30
-				width=150
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Output Link"
-			align="horiz. centered"
-		}
-		"text entry" {
-			object {
-				x=305
-				y=45
-				width=150
-				height=20
-			}
-			control {
-				chan="$(P)interp_y1.OUT"
-				clr=14
-				bclr=40
-			}
-			format="string"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=305
-				y=65
-				width=150
-				height=20
-			}
-			control {
-				chan="$(P)interp_y2.OUT"
-				clr=14
-				bclr=40
-			}
-			format="string"
-			limits {
-			}
-		}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Output Link"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=305
+		y=45
+		width=150
+		height=20
+	}
+	control {
+		chan="$(P)interp_y1.OUT"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=305
+		y=65
+		width=150
+		height=20
+	}
+	control {
+		chan="$(P)interp_y2.OUT"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
 	}
 }
 "text update" {
@@ -361,7 +314,6 @@ composite {
 		bclr=2
 	}
 	align="horiz. centered"
-	format="string"
 	limits {
 	}
 }
@@ -378,7 +330,6 @@ composite {
 		bclr=2
 	}
 	align="horiz. centered"
-	format="string"
 	limits {
 	}
 }
@@ -394,4 +345,118 @@ text {
 	}
 	textix="Y (output)"
 	align="horiz. centered"
+}
+"shell command" {
+	object {
+		x=5
+		y=87
+		width=15
+		height=15
+	}
+	command[0] {
+		label="Load lookup tables"
+		name="cd ../burt; burtwb -f interp.load"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=25
+		y=90
+		width=100
+		height=10
+	}
+	"basic attribute" {
+		clr=64
+	}
+	textix="LOAD X,Yi ARRAYS ("
+}
+"text update" {
+	object {
+		x=5
+		y=45
+		width=80
+		height=10
+	}
+	monitor {
+		chan="$(P)interp_x.DRVH"
+		clr=54
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=5
+		y=75
+		width=80
+		height=10
+	}
+	monitor {
+		chan="$(P)interp_x.DRVL"
+		clr=54
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=135
+		y=90
+		width=40
+		height=10
+	}
+	monitor {
+		chan="$(P)interp.E"
+		clr=54
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=180
+		y=90
+		width=50
+		height=10
+	}
+	"basic attribute" {
+		clr=64
+	}
+	textix=" VALUES)"
+}
+"text entry" {
+	object {
+		x=360
+		y=85
+		width=30
+		height=16
+	}
+	control {
+		chan="$(P)interp.F"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=250
+		y=90
+		width=100
+		height=10
+	}
+	"basic attribute" {
+		clr=64
+	}
+	textix="POLYNOMIAL ORDER:"
 }

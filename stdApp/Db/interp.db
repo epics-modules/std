@@ -1,13 +1,18 @@
-grecord(ao,"$(P)interp_y1") {
+grecord(ao,"$(P)interp_x") {
+	field(DTYP,"Soft Channel")
 	field(FLNK,"$(P)interp.VAL  PP MS")
 	field(PREC,"5")
 }
-grecord(ao,"$(P)interp_x") {
-	field(FLNK,"$(P)interp.VAL  PP MS")
+grecord(ao,"$(P)interp_y1") {
+	field(DTYP,"Soft Channel")
+	field(DISV,"0")
+	field(SDIS,"$(P)interp_x.PACT  NPP MS")
 	field(PREC,"5")
 }
 grecord(ao,"$(P)interp_y2") {
-	field(FLNK,"$(P)interp.VAL  PP MS")
+	field(DTYP,"Soft Channel")
+	field(DISV,"0")
+	field(SDIS,"$(P)interp_x.PACT  NPP MS")
 	field(PREC,"5")
 }
 grecord(genSub,"$(P)interp") {
@@ -20,11 +25,15 @@ grecord(genSub,"$(P)interp") {
 	field(FTC,"DOUBLE")
 	field(FTD,"DOUBLE")
 	field(FTE,"LONG")
+	field(FTF,"LONG")
+	field(FTG,"DOUBLE")
 	field(NOA,"2000")
 	field(NOB,"2000")
 	field(NOC,"2000")
 	field(OUTB,"$(P)interp_y1.VAL  PP MS")
 	field(OUTC,"$(P)interp_y2.VAL  PP MS")
+	field(OUTF,"$(P)interp_x.DRVL  NPP MS")
+	field(OUTG,"$(P)interp_x.DRVH  NPP MS")
 	field(FTVA,"DOUBLE")
 	field(FTVB,"DOUBLE")
 	field(FTVC,"DOUBLE")
