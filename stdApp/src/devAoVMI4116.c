@@ -37,11 +37,14 @@
 #include	<stdioLib.h>
 #include	<stdlib.h>
 #include	<string.h>
+#include	<sysLib.h>
+#include	<vxLib.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
 #include    <recSup.h>
+#include    <recGbl.h>
 #include	<devSup.h>
 #include	<special.h>
 #include	<module_types.h>

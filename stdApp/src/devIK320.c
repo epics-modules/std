@@ -1,4 +1,4 @@
-/* $Id: devIK320.c,v 1.1.1.1 2001-07-03 20:05:27 sluiter Exp $ */
+/* $Id: devIK320.c,v 1.2 2003-12-10 21:41:17 mooney Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,9 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1  2001/07/03 20:05:27  sluiter
+ * Creating
+ *
  * Revision 1.8  1999/05/05 16:25:16  strauman
  *  - added doc: README
  *
@@ -74,6 +77,9 @@
 #include <semLib.h>
 #include <dbAccess.h>
 #include <dbEvent.h>
+#include <callback.h>
+#include <alarm.h>
+#include <recGbl.h>
 
 #include <drvIK320.h>
 
@@ -82,9 +88,11 @@
 #include <stringoutRecord.h>
 
 #include <aiCvtDouble.h>
+#include <epicsExport.h>
 
 #ifndef NODEBUG
 int devIK320Debug=0;
+epicsExportAddress(int, devIK320Debug);
 #define STATIC
 #define DM(LEVEL,FMT,ARGS...) {if (LEVEL<=devIK320Debug) \
             errPrintf(-1,__FILE__,__LINE__,FMT,## ARGS); }
@@ -155,14 +163,15 @@ STATIC long ik320WriteMbboSync();
 STATIC long ik320InitMbbo();
 STATIC long get_ioint_info();
 
-struct {
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
 	DEVSUPFUN	init_record;
 	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	write_mbbo;
-} devIK320Funct = {
+} devIK320Funct_dset;
+devIK320Funct_dset devIK320Funct = {
 	5,
 	NULL,
 	NULL,
@@ -170,15 +179,17 @@ struct {
 	NULL,
 	ik320WriteFunct
 };
+epicsExportAddress(devIK320Funct_dset, devIK320Funct);
 
-struct {
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
 	DEVSUPFUN	init_record;
 	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	write_mbbo;
-} devIK320Dir = {
+} devIK320Dir_dset;
+devIK320Dir_dset devIK320Dir = {
 	5,
 	NULL,
 	NULL,
@@ -186,15 +197,17 @@ struct {
 	NULL,
 	ik320WriteMbboSync,
 };
+epicsExportAddress(devIK320Dir_dset, devIK320Dir);
 
-struct {
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
 	DEVSUPFUN	init_record;
 	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	write_mbbo;
-} devIK320ModeX3 = {
+} devIK320ModeX3_dset;
+devIK320ModeX3_dset devIK320ModeX3 = {
 	5,
 	NULL,
 	NULL,
@@ -202,6 +215,7 @@ struct {
 	NULL,
 	ik320WriteMbboSync,
 };
+epicsExportAddress(devIK320ModeX3_dset, devIK320ModeX3);
 
 typedef struct DevIK320AiRec_ {
 	IK320Driver	drv;
@@ -213,7 +227,7 @@ typedef struct DevIK320AiRec_ {
 STATIC long ik320InitAiRec();
 STATIC long ik320ReadAi();
 
-struct {
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
@@ -221,7 +235,8 @@ struct {
 	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	read_ai;
 	DEVSUPFUN	special_linconv;
-} devIK320Ai = {
+} devIK320Ai_dset;
+devIK320Ai_dset devIK320Ai = {
 	6,
 	NULL,
 	NULL,
@@ -230,6 +245,7 @@ struct {
 	ik320ReadAi,
 	NULL
 };
+epicsExportAddress(devIK320Ai_dset, devIK320Ai);
 
 typedef struct DevIK320GroupAiRec_ {
 	CALLBACK cbk;
@@ -248,7 +264,7 @@ STATIC long ik320ReadGroupAi();
 
 STATIC void ik320GroupPost(DevIK320GroupAi grp);
 
-struct {
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
@@ -256,7 +272,8 @@ struct {
 	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	read_ai;
 	DEVSUPFUN	special_linconv;
-} devIK320GroupAi = {
+} devIK320GroupAi_dset;
+devIK320GroupAi_dset devIK320GroupAi = {
 	6,
 	NULL,
 	ik320InitGroupAi,
@@ -265,6 +282,7 @@ struct {
 	ik320ReadGroupAi,
 	NULL
 };
+epicsExportAddress(devIK320GroupAi_dset, devIK320GroupAi);
 
 /*
  * type definitions for the stringout that supports
@@ -334,14 +352,15 @@ STATIC IK320ParmRec parmTable[]={
 STATIC long ik320InitParm();
 STATIC long ik320WriteParm();
 
-struct {
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
 	DEVSUPFUN	init_record;
 	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	write_stringout;
-} devIK320Parm = {
+} devIK320Parm_dset;
+devIK320Parm_dset devIK320Parm = {
 	5,
 	NULL,
 	NULL,
@@ -349,6 +368,7 @@ struct {
 	NULL,
 	ik320WriteParm,
 };
+epicsExportAddress(devIK320Parm_dset, devIK320Parm);
 
 /* table of all groups; since there are few,
  * we keep a static table.
@@ -792,7 +812,7 @@ cleanup:
 	if (status) {
 		prec->val = prec->mlst;
 		recGblRecordError(status,prec,"ik320WriteMbboSync()");
-		epicsPrintf("status = %x",status);
+		epicsPrintf("status = %lx",status);
 		recGblSetSevr(prec,
 					  WRITE_ALARM,
 					  (S_drvIK320_cardBusy==status) ? MINOR_ALARM : INVALID_ALARM);
@@ -945,7 +965,7 @@ int				cmd;
 		}
 	}
 cleanup:
-	DM(1,"ik320ReadAi() exit (status %x).\n",status);
+	DM(1,"ik320ReadAi() exit (status %lx).\n",status);
 	
 	if (status) {
 		recGblRecordError(status,prec,"ik320ReadAi()");

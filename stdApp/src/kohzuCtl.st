@@ -455,12 +455,8 @@ assign  yOffsetHi to "{P}Kohzu_yOffsetAO.DRVH";
 double  yOffsetLo;
 assign  yOffsetLo to "{P}Kohzu_yOffsetAO.DRVL";
 
-
-%%#include <vxWorks.h>
-%%#include <stdioLib.h>
+%%#include <string.h>
 %%#include <math.h>
-%%#include <strLib.h>
-%%#include <taskLib.h>
 
 %%double kohzuCtl_calc2dSpacing();
 %%char *kohzuCtl_pmacP;
@@ -631,7 +627,7 @@ state waitForCmndEnter {
 			kohzuMoving=0; kohzuDone = 0;
 			pvPut(kohzuMoving);
 		}
-%%		taskDelay(20);
+		delay(.33);
 	} state waitForCmnd  
 
 	when () {
@@ -682,7 +678,7 @@ state waitForCmnd {
 
 	when (putVals) {
 %%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:putVals\n");
-%%		taskDelay(6);
+		delay(.1);
 	} state moveKohzu
 
 	when (ETweakInc||ETweakDec||LTweakInc||LTweakDec||thTweakInc||thTweakDec) {
@@ -726,7 +722,7 @@ state tweak {
 		}
 		ETweakInc = 0;
 		pvPut(ETweakInc);
-%%		taskDelay(5);
+		delay(.1);
 	} state eChanged
 
 	when (ETweakDec) {
@@ -743,7 +739,7 @@ state tweak {
 		}
 		ETweakDec = 0;
 		pvPut(ETweakDec);
-%%		taskDelay(5);
+		delay(.1);
 	} state eChanged
 
 	when (LTweakInc) {
@@ -760,7 +756,7 @@ state tweak {
 		}
 		LTweakInc = 0;
 		pvPut(LTweakInc);
-%%		taskDelay(5);
+		delay(.1);
 	} state lChanged
 
 	when (LTweakDec) {
@@ -777,7 +773,7 @@ state tweak {
 		}
 		LTweakDec = 0;
 		pvPut(LTweakDec);
-%%		taskDelay(5);
+		delay(.1);
 	} state lChanged
 
 	when (thTweakInc) {
@@ -794,7 +790,7 @@ state tweak {
 		}
 		thTweakInc = 0;
 		pvPut(thTweakInc);
-%%		taskDelay(5);
+		delay(.1);
 	} state thChanged
 
 	when (thTweakDec) {
@@ -811,7 +807,7 @@ state tweak {
 		}
 		thTweakDec = 0;
 		pvPut(thTweakDec);
-%%          taskDelay(5);
+		delay(.1);
 	} state thChanged
 }
 
@@ -1024,7 +1020,7 @@ state moveKohzu {
 		putVals = 0;
 		pvPut(putVals);
 		causedMove = 1;
-%%		taskDelay(6);
+		delay(.5);
 	} state updateRdbk
 
 	when (1) {
@@ -1217,7 +1213,7 @@ state chkMotorLimitsExit {
 		pvPut(opAlert);
 		sprintf(seqMsg2, "Modify Motor Positions/Limits");
 		pvPut(seqMsg2);          
-%%		taskDelay(120);
+		delay(2.);
 	} state chkMotorLimits
 }
 
@@ -1227,7 +1223,7 @@ state stopKohzu {
 		pvPut(thetaMotStop);
 		pvPut(yStop);
 		pvPut(zStop);
-%%		taskDelay(60);
+		delay(1.);
 	} state updateRdbk
 
 }

@@ -51,11 +51,10 @@
 #define	DSET_AO		devAoAX301
 #define DSET_BO		devBoAX301
 #define DSET_LO		devLoAX301
-#include	<vxWorks.h>
-#include	<taskLib.h>
-#include	<rngLib.h>
-#include	<types.h>
-#include	<stdioLib.h>
+
+#include	<stdlib.h>
+#include	<string.h>
+#include	<stdio.h>
 
 #include	<alarm.h>
 #include	<cvtTable.h>
@@ -65,7 +64,6 @@
 #include	<recSup.h>
 #include	<drvSup.h>
 #include	<link.h>
-#include	<module_types.h>
 #include	<dbCommon.h>
 #include	<aiRecord.h>
 #include	<aoRecord.h>
@@ -80,72 +78,13 @@
 
 #include	<drvGpibInterface.h>
 #include	<devCommonGpib.h>
-
+#include	<devGpib.h>	/* needed to exportAddress the DSETS defined above */
 
 #ifndef VALID_ALARM
 #define VALID_ALARM INVALID_ALARM
 #endif
-static long	init_dev_sup();
-int	srqHandler();
-int	aiGpibSrq(), liGpibSrq(), biGpibSrq(), mbbiGpibSrq(), stringinGpibSrq();
-extern	struct  devGpibParmBlock devXxAX301_Parms;
 
-
-/******************************************************************************
- *
- * Define all the dset's.
- *
- * Note that the dset names are provided via the #define lines at the top of
- * this file.
- *
- * Other than for the debugging flag(s), these DSETs are the only items that
- * will appear in the global name space within the IOC.
- *
- * The last 3 items in the DSET structure are used to point to the parm 
- * structure, the  work functions used for each record type, and the srq 
- * handler for each record type.
- *
- ******************************************************************************/
-
-gDset DSET_AI   = {6, {NULL, init_dev_sup, devGpibLib_initAi, NULL,
-        devGpibLib_readAi, NULL, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_aiGpibWork, (DRVSUPFUN)devGpibLib_aiGpibSrq}};
-
-gDset DSET_AO   = {6, {NULL, NULL, devGpibLib_initAo, NULL,
-        devGpibLib_writeAo, NULL, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_aoGpibWork, NULL}};
-
-gDset DSET_BI   = {5, {NULL, NULL, devGpibLib_initBi, NULL,
-        devGpibLib_readBi, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_biGpibWork,(DRVSUPFUN)devGpibLib_biGpibSrq}};
-
-gDset DSET_BO   = {5, {NULL, NULL, devGpibLib_initBo, NULL,
-        devGpibLib_writeBo, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_boGpibWork, NULL}};
-
-gDset DSET_MBBI = {5, {NULL, NULL, devGpibLib_initMbbi, NULL,
-        devGpibLib_readMbbi, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_mbbiGpibWork,(DRVSUPFUN)devGpibLib_mbbiGpibSrq}};
-
-gDset DSET_MBBO = {5, {NULL, NULL, devGpibLib_initMbbo, NULL,
-        devGpibLib_writeMbbo, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_mbboGpibWork, NULL}};
-
-gDset DSET_SI   = {5, {NULL, NULL, devGpibLib_initSi, NULL,
-        devGpibLib_readSi, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)&devGpibLib_stringinGpibWork,(DRVSUPFUN)devGpibLib_stringinGpibSrq}};
-
-gDset DSET_SO   = {5, {NULL, NULL, devGpibLib_initSo, NULL,
-        devGpibLib_writeSo, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_stringoutGpibWork, NULL}};
-
-gDset DSET_LI   = {5, {NULL, NULL, devGpibLib_initLi, NULL,
-        devGpibLib_readLi, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_liGpibWork, (DRVSUPFUN)devGpibLib_liGpibSrq}};
-
-gDset DSET_LO   = {5, {NULL, NULL, devGpibLib_initLo, NULL,
-        devGpibLib_writeLo, (DRVSUPFUN)&devXxAX301_Parms,
-        (DRVSUPFUN)devGpibLib_loGpibWork, NULL}};
+static struct devGpibParmBlock devXxAX301_Parms;
 
 
 /******************************************************************************
@@ -191,8 +130,6 @@ extern int ibSrqDebug;		/* declared in the GPIB driver */
  *
  ******************************************************************************/
 
-static char	*(userOffOn[]) = {"USER OFF;", "USER ON;", NULL};
-
 /******************************************************************************
  *
  * Array of structures that define all GPIB messages
@@ -205,7 +142,6 @@ static char	*(userOffOn[]) = {"USER OFF;", "USER ON;", NULL};
 
 /* forward declarations of some custom convert routines */
 static int readconvert();
-static int writeconvert();
 static int writeconverta();
 static int writeconvertb();
 
@@ -315,53 +251,25 @@ static struct  devGpibParmBlock devXxAX301_Parms = {
  *
  *
  ***************************************************************************/
-static int readconvert(pdpvt, p1, p2, p3)
-struct gpibDpvt *pdpvt;
-int	p1;
-int	p2;
-char	**p3;
+static int readconvert(struct gpibDpvt *pdpvt, int	p1, int	p2, char **p3)
 {
-unsigned int holdingInt = 0;
-int value = 0;
+	unsigned int holdingInt = 0;
+	int value = 0;
 
-struct aiRecord *pairec = (struct aiRecord *) (pdpvt->precord);
-unsigned char*msg=(unsigned char *)(pdpvt->msg);
+	aiRecord *pairec = (struct aiRecord *) (pdpvt->precord);
+	char *msg=(char *)(pdpvt->msg);
 
-/*
-msg[2] = msg[0];
-msg[3] = msg[1];
-msg[4] = msg[2];
-msg[5] = msg[3];
-msg[0] = '0';
-msg[1] = 'x';
+	sscanf (msg, "%x", &holdingInt);
 
-
-printf("msg[0] = %x\n", msg[0]);
-printf("msg[1] = %x\n", msg[1]);
-printf("msg[2] = %x\n", msg[2]);
-printf("msg[3] = %x\n", msg[3]);
-
-
-printf("msg[4] = %x\n", msg[4]);
-printf("msg[5] = %x\n", msg[5]);
-*/
-
-sscanf (msg, "%x", &holdingInt);
-
-if(holdingInt & 0x8000)
-	{
-	value = (~holdingInt);
-	value = (0x0000FFF0 & value);
+	if (holdingInt & 0x8000) {
+		value = (~holdingInt);
+		value = (0x0000FFF0 & value);
+	} else {
+		value = -holdingInt;
 	}
-else
-	value = -holdingInt;
-/*
-printf("hex value = 0x%x\n", value);
-printf("decimal value = %d\n", value);
-*/
 	pairec->val = (value);
 
-return(OK);
+	return(0);
 }
 /****************************************************************************
  *
@@ -371,30 +279,21 @@ return(OK);
  *
  *
  ***************************************************************************/
-static int writeconverta(pdpvt, p1, p2, p3)
-struct gpibDpvt *pdpvt;
-int     p1;
-int     p2;
-char    **p3;
+static int writeconverta(struct gpibDpvt *pdpvt, int p1, int p2, char **p3)
 {
-long value = 0;
+	long value = 0;
 
-struct longoutRecord *plorec = (struct longoutRecord *) (pdpvt->precord);
-unsigned char*msg=(unsigned char *)(pdpvt->msg);
+	longoutRecord *plorec = (struct longoutRecord *) (pdpvt->precord);
+	char *msg = (char *)(pdpvt->msg);
 
+	value = plorec->val ;
 
-value = 
-    plorec->
-          val ;
-
-if (value < 0)
-	{
-	sprintf(msg, "I!%4.4X", ((~(-value))&0x3FFF));
+	if (value < 0) {
+		sprintf(msg, "I!%4.4lX", ((~(-value))&0x3FFF));
+	} else {
+		sprintf(msg, "I!%4.4lX", value);
 	}
-else
-	sprintf(msg, "I!%4.4X",value);
-
-return(OK);
+	return(0);
 }
 
 /****************************************************************************
@@ -405,31 +304,22 @@ return(OK);
  *                  mod: 10-17-94 ddr
  *
 ***************************************************************************/
-static int writeconvertb(pdpvt, p1, p2, p3)
-struct gpibDpvt *pdpvt;
-int     p1;
-int     p2;
-char    **p3;
+static int writeconvertb(struct gpibDpvt *pdpvt, int p1, int p2, char **p3)
 {
-long value = 0;
+	long value = 0;
 
-struct longoutRecord *plorec = (struct longoutRecord *)
-(pdpvt->precord);
-unsigned char*msg=(unsigned char *)(pdpvt->msg);
+	longoutRecord *plorec = (struct longoutRecord *)(pdpvt->precord);
+	char*msg=(char *)(pdpvt->msg);
 
+	value = plorec->val ;
 
-value =
-    plorec->
-          val ;
+	if (value < 0) {
+		sprintf(msg, "M!24\nN!3\nI!%4.4lX", ((~(-value))&0x3FFF));
+	} else {
+		sprintf(msg, "M!24\nN!3\nI!%4.4lX",value);
+	}
 
-if (value < 0)
-        {
-        sprintf(msg, "M!24\nN!3\nI!%4.4X", ((~(-value))&0x3FFF));
-        }
-else
-        sprintf(msg, "M!24\nN!3\nI!%4.4X",value);
-
-return(OK);
+	return(0);
 }
 
 /******************************************************************************
@@ -440,11 +330,8 @@ return(OK);
  * with a param value of 1.
  *
  ******************************************************************************/
-static long 
-init_dev_sup(parm)
-int	parm;
+
+static long init_ai(int parm)
 {
-  return(devGpibLib_initDevSup(parm,&DSET_AI));
+  return(devGpibLib_initDevSup(parm, &DSET_AI));
 }
-
-

@@ -466,13 +466,8 @@ short   th2TweakDec;
 assign  th2TweakDec to "{P}HR{N}_Theta2DecBO";
 monitor th2TweakDec;
 
-
-
-%%#include <vxWorks.h>
-%%#include <stdioLib.h>
+%%#include <string.h>
 %%#include <math.h>
-%%#include <strLib.h>
-%%#include <taskLib.h>
 
 %%double hrCtl_calc2dSpacing(struct UserVar *pVar, int xtal, double A, double H, double K, double L);
 %%void hrCtl_calcReadback(struct UserVar *pVar);
@@ -661,7 +656,7 @@ state waitForCmndEnter
 				pvPut(hr_Moving);
 			}
 
-%%			taskDelay(20);
+			delay(.33);
 
 		} state waitForCmnd  
 
@@ -745,7 +740,7 @@ state waitForCmnd
 		} state phiLimits
 
 		when (putVals) {
-%%			taskDelay(6);
+			delay(.1);
 		} state calcMovements
 
 		when (efTest(useSetMode_mon) && useSetMode) {
@@ -762,13 +757,13 @@ state waitForCmnd
 			theta2Lo=0; pvPut(theta2Lo);
 			phi2Hi=0; pvPut(phi2Hi);
 			phi2Lo=0; pvPut(phi2Lo);
-%%			taskDelay(6);
+			delay(.1);
 		/* } state calcMovements */
 		} state eChanged
 
 		when (efTest(useSetMode_mon) && !useSetMode) {
 			efClear(useSetMode_mon);
-%%			taskDelay(6);
+			delay(.1);
 		} state phiLimits
 
 		when (efTest(opMode_mon)) {
@@ -778,7 +773,7 @@ state waitForCmnd
 			pvPut(autoMode);
 			sprintf(seqMsg2, "Set to Manual Mode");
 			pvPut(seqMsg2);
-%%			taskDelay(6);
+			delay(.1);
 		} state calcMovements
 
 		when (efTest(Geom_mon)) {
@@ -792,7 +787,7 @@ state waitForCmnd
 			pvPut(seqMsg2);
 			opAlert = 1;
 			pvPut(opAlert);
-%%			taskDelay(6);
+			delay(.1);
 		} state calcMovements
 
 		when (ETweakInc||ETweakDec||LTweakInc||LTweakDec||th1TweakInc||
@@ -970,7 +965,7 @@ state tweak
 			} else {
 				ETweakDec = 0; pvPut(ETweakDec);
 			}
-%%			taskDelay(5);
+			delay(.1);
 		} state eChanged
 
         when (LTweakInc || LTweakDec) {
@@ -996,7 +991,7 @@ state tweak
 			} else {
 				LTweakDec = 0; pvPut(LTweakDec);
 			}
-%%			taskDelay(5);
+			delay(.1);
 		} state lChanged
 
 		when (th1TweakInc || th1TweakInc) {
@@ -1021,7 +1016,7 @@ state tweak
 			} else {
 				th1TweakDec = 0; pvPut(th1TweakDec);
 			}
-%%			taskDelay(5);
+			delay(.1);
 		} state thChanged
 
 		when (th2TweakInc || th2TweakDec) {
@@ -1046,7 +1041,7 @@ state tweak
 			} else {
 				th2TweakDec = 0; pvPut(th2TweakDec);
 			}
-%%			taskDelay(5);
+			delay(.1);
 		} state thChanged
 
         when (worldTweakInc || worldTweakDec) {
@@ -1063,7 +1058,7 @@ state tweak
 			} else {
 				worldTweakDec = 0; pvPut(worldTweakDec);
 			}
-%%			taskDelay(5);
+			delay(.1);
 		} state calcMovements
 
     }
@@ -1277,7 +1272,7 @@ state moveHR
 			putVals = 0;
 			pvPut(putVals);
 			causedMove = 1;
-%%			taskDelay(6);
+			delay(.1);
 		} state updateRdbk
 
 		when (1) {
@@ -1420,7 +1415,7 @@ state chkMotorLimitsExit
 			pvPut(opAlert);
 			sprintf(seqMsg2, "Modify motor positions and/or limits");
 			pvPut(seqMsg2);          
-%%			taskDelay(120);
+			delay(2.0);
 		} state chkMotorLimits
 	}
 
@@ -1429,7 +1424,7 @@ state stopHR
 		when () {
 			pvPut(phi1MotStop);
 			if (opMode != 0) pvPut(phi2MotStop);
-%%			taskDelay(60);
+			delay(1.0);
 		} state updateRdbk
 	}
 } /* end of state set hr_Ctl  */

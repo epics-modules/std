@@ -63,6 +63,8 @@ DEVELOPMENT CENTER AT ARGONNE NATIONAL LABORATORY (708-252-2000).
 #include     <stdlib.h>
 #include     <stdio.h>
 #include     <string.h>
+#include     <sysLib.h>
+#include     <vxLib.h>
 
 #include <vme.h>
 #include <iv.h>
@@ -75,7 +77,8 @@ DEVELOPMENT CENTER AT ARGONNE NATIONAL LABORATORY (708-252-2000).
 #include <dbAccess.h>
 #include <dbScan.h>
 #include <link.h>
-#include <fast_lock.h>
+#include <epicsMutex.h>
+#include <recGbl.h>
 
 #define MAX_NUM_CARDS	4
 #define NO_ERR_RPT	-1
@@ -145,7 +148,7 @@ struct drvCard  {
  */
 struct drvPrivate {
 	volatile struct	drvCard  *dptr;
-	FAST_LOCK	lock;
+	epicsMutexId	lock;
 	int		init_hw;
 	unsigned short	ramW[1296];
 	unsigned short  ramR[1296];
@@ -178,7 +181,7 @@ unsigned long CardAddress)
    }
    if (CardAddress > 0xffff)  {
 	errPrintf(NO_ERR_RPT, __FILE__, __LINE__,
-	"%s: Card (%d)  address 0x%x invalid -- must be 0 to 0xffff", xname,
+	"%s: Card (%d)  address 0x%lx invalid -- must be 0 to 0xffff", xname,
 		 Card, CardAddress); 
 	return(ERROR);
    }
@@ -215,6 +218,7 @@ static long drvInitCard()
 
   for(i = 0; i < NumCards; i++) {
 	   if(check_card(i, 0) == OK) {
+		dio[i].lock = epicsMutexMustCreate();
 		val = dio[i].dptr->reg.r.csr;
 		if( (val & PWR_CYCLED_BIT) != 0) {
 			dio[i].init_hw = 1;	/* not power cycled */
@@ -379,11 +383,11 @@ unsigned short	mask)		/* value */
 
 	switch(funct) {
 		case (FREG_WRITEBITS) :
-			FASTLOCK(&dio[card].lock);
+			epicsMutexMustLock(dio[card].lock);
 			tmp = *((unsigned short *)dio[card].dptr + signal); 
 			 tmp = (tmp & ~(mask)) | value;
 			*((unsigned short *)dio[card].dptr + signal) = tmp;
-			FASTUNLOCK(&dio[card].lock);
+			epicsMutexUnlock(dio[card].lock);
 			break;
 		default :
 			if(*drvDebug) 
@@ -421,11 +425,11 @@ unsigned short *prbval)		/* place to put readback */
 		return(status);
 
 
-	FASTLOCK(&dio[card].lock);
+	epicsMutexMustLock(dio[card].lock);
 	 val = *((unsigned short *)dio[card].dptr + signal);
 	 val = (val & ~(mask)) | (value << shift);
 	*((unsigned short *)dio[card].dptr + signal) = val;
-	FASTUNLOCK(&dio[card].lock);
+	epicsMutexUnlock(dio[card].lock);
 	*prbval =
 	     ((*((unsigned short *)dio[card].dptr + signal)) & mask) >> shift;
 	return(OK);
@@ -455,13 +459,13 @@ unsigned short val)
 {
 	unsigned short csr;
 
-	FASTLOCK(&dio[card].lock);
+	epicsMutexMustLock(dio[card].lock);
 	csr = dio[card].dptr->reg.r.csr;
 	dio[card].dptr->reg.w.csr = csr | BCGDisable;
 	dio[card].dptr->reg.w.address = location;
 	dio[card].dptr->reg.w.data = val;
 	dio[card].dptr->reg.w.csr = csr;
-	FASTUNLOCK(&dio[card].lock);
+	epicsMutexUnlock(dio[card].lock);
 	
 	if(*drvDebug > 10)
 		errPrintf(NO_ERR_RPT, __FILE__, __LINE__, 
@@ -484,7 +488,7 @@ short	card)
         if ( (status=check_card(card, 0)) != OK)
                 return(status);
 
-	FASTLOCK(&dio[card].lock);
+	epicsMutexMustLock(dio[card].lock);
 	csr = dio[card].dptr->reg.r.csr;
 	dio[card].dptr->reg.w.csr = csr | BCGDisable;
 	dio[card].dptr->reg.w.address = 0;
@@ -492,7 +496,7 @@ short	card)
 		dio[card].dptr->reg.w.data = dio[card].ramW[i];
 	}
 	dio[card].dptr->reg.w.csr = csr;
-	FASTUNLOCK(&dio[card].lock);
+	epicsMutexUnlock(dio[card].lock);
 	return(OK);
 }
 
@@ -511,7 +515,7 @@ short	card)
         if ( (status=check_card(card, 0)) != OK)
                 return(status);
 
-	FASTLOCK(&dio[card].lock);
+	epicsMutexMustLock(dio[card].lock);
 	csr = dio[card].dptr->reg.r.csr;
 	dio[card].dptr->reg.w.csr = csr | BCGDisable;
 	dio[card].dptr->reg.w.address = 0;
@@ -519,7 +523,7 @@ short	card)
 		dio[card].ramR[i] = dio[card].dptr->reg.r.data;
 	}
 	dio[card].dptr->reg.w.csr = csr;
-	FASTUNLOCK(&dio[card].lock);
+	epicsMutexUnlock(dio[card].lock);
 	return(OK);
 }
 /***********************************************************************
@@ -557,7 +561,7 @@ short	card)
         if ( (status=check_card(card, 0)) != OK)
                 return(status);
 
-	FASTLOCK(&dio[card].lock);
+	epicsMutexMustLock(dio[card].lock);
 	csr = dio[card].dptr->reg.r.csr;
 	dio[card].dptr->reg.w.csr = csr | BCGDisable;
 	dio[card].dptr->reg.w.address = 0;
@@ -567,7 +571,7 @@ short	card)
 		dio[card].dptr->reg.w.data = 0;
 	}
 	dio[card].dptr->reg.w.csr = csr;
-	FASTUNLOCK(&dio[card].lock);
+	epicsMutexUnlock(dio[card].lock);
 	return(OK);
 }
 
@@ -741,7 +745,9 @@ short	value)
 	else
 		val = 0;
 	tmp = (dio[card].ramW[ramloc] & ~mask) | val;
-	printf("value = %d, val = %d tmp = 0x%x\n", value, val, tmp);
+	if (*drvDebug) {
+		printf("value = %d, val = %d tmp = 0x%x\n", value, val, tmp);
+	}
 	dio[card].ramW[ramloc] = tmp;
 	drvWriteRamLoc(card, ramloc, dio[card].ramW[ramloc]);
 	return(0);
@@ -844,12 +850,12 @@ static struct	paramEntrys{
 	short	special;
 	unsigned long	mask;
 }  paramEntry[] = {
-"Running", PARAM_BIT, PARAM_RO, 0, 0, 0, 0, 0x0,
-"P0_Detect", PARAM_BIT, PARAM_RO, 0, 1, 0, 0, 0x0,
-"Disable", PARAM_BIT, PARAM_RW, 0, 2, 0, 0, 0xfff4,
-"PwrCycle", PARAM_BIT, PARAM_RW, 0, 3, 0, 0, 0xfff8,
-"InitRam", PARAM_BIT, PARAM_WO, 1, 0, 0, 0, 0x1,
-"WriteRam", PARAM_BIT, PARAM_WO, 2, 0, 0, 0, 0x1
+	{"Running", PARAM_BIT, PARAM_RO, 0, 0, 0, 0, 0x0},
+	{"P0_Detect", PARAM_BIT, PARAM_RO, 0, 1, 0, 0, 0x0},
+	{"Disable", PARAM_BIT, PARAM_RW, 0, 2, 0, 0, 0xfff4},
+	{"PwrCycle", PARAM_BIT, PARAM_RW, 0, 3, 0, 0, 0xfff8},
+	{"InitRam", PARAM_BIT, PARAM_WO, 1, 0, 0, 0, 0x1},
+	{"WriteRam", PARAM_BIT, PARAM_WO, 2, 0, 0, 0, 0x1}
 };
 static struct paramTbls{
 	int	num;
@@ -1058,7 +1064,7 @@ static long readBi(
   
   pbi->rval = ((unsigned long)value) & pbi->mask;
       if (*devDebug >= 10) {
-       printf("devBunchClkGen: card = %d, signal = %d, raw read value = 0x%x\n",
+       printf("devBunchClkGen: card = %d, signal = %d, raw read value = 0x%lx\n",
 			pvmeio->card, ptr->signal,  pbi->rval);
       }
   return(0);
@@ -1110,7 +1116,7 @@ static long initBoRecord(
    pbo->mask = (lval1 << paramTbl.pentry[lval].bit);
       if (*devDebug) {
      	errPrintf(NO_ERR_RPT, __FILE__, __LINE__,
-    		"devBoBunchClkGen: card = %d sig = %d  PARM = %s mask = %d",
+    		"devBoBunchClkGen: card = %d sig = %d  PARM = %s mask = %ld",
         	   pvmeio->card, pvmeio->signal,  pvmeio->parm, pbo->mask);
       }
   if(( pbo->dpvt = malloc(sizeof( struct PvtBo))) == NULL ) {
@@ -1191,7 +1197,7 @@ static long writeBo(
    value = *pReg;
    pbo->rbv = (unsigned long)value & pbo->mask;
       if (*devDebug >= 10) {
-	printf("devBoBunchClkGen: card = %d, signal = %d,  write value = 0x%x\n",
+	printf("devBoBunchClkGen: card = %d, signal = %d,  write value = 0x%lx\n",
 			pvmeio->card, ptr->signal,  pbo->rval);
       }
   return(0);
