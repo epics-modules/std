@@ -1,14 +1,14 @@
 
 file {
-	name="/home/beams/BCDA/epics/synApps_R3.13.1.1_R4.2/share/stdApp/op/adl/scanAux_0.0.adl"
-	version=020306
+	name="/home/oxygen4/MOONEY/epics/3.14.2/synApps/support/std/stdApp/op/adl/scanAux1.adl"
+	version=030003
 }
 display {
 	object {
-		x=28
-		y=290
+		x=895
+		y=54
 		width=370
-		height=255
+		height=260
 	}
 	clr=31
 	bclr=3
@@ -186,37 +186,6 @@ text {
 	textix="#PTS"
 	align="horiz. centered"
 }
-"text update" {
-	object {
-		x=335
-		y=0
-		width=30
-		height=13
-	}
-	monitor {
-		chan="$(P)ScanDim.VAL"
-		clr=50
-		bclr=6
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=280
-		y=2
-		width=60
-		height=10
-	}
-	"basic attribute" {
-		clr=14
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(S).DISA"
-	}
-	textix="SCAN DIM:"
-}
 rectangle {
 	object {
 		x=41
@@ -280,18 +249,6 @@ rectangle {
 	limits {
 	}
 }
-text {
-	object {
-		x=5
-		y=55
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Positioners"
-}
 polyline {
 	object {
 		x=0
@@ -309,10 +266,26 @@ polyline {
 		(378,51)
 	}
 }
+"related display" {
+	object {
+		x=0
+		y=53
+		width=120
+		height=27
+	}
+	display[0] {
+		label="Positioners 1-4"
+		name="scan_positioners.adl"
+		args="P=$(P),S=$(S)"
+	}
+	clr=0
+	bclr=17
+	label="-Positioners"
+}
 text {
 	object {
 		x=120
-		y=58
+		y=64
 		width=80
 		height=15
 	}
@@ -324,7 +297,7 @@ text {
 text {
 	object {
 		x=120
-		y=58
+		y=64
 		width=80
 		height=15
 	}
@@ -332,7 +305,8 @@ text {
 		clr=30
 	}
 	"dynamic attribute" {
-		vis="if zero"
+		vis="calc"
+		calc="A#1"
 		chan="$(P)$(S).P2NV"
 	}
 	textix="   2"
@@ -340,7 +314,7 @@ text {
 text {
 	object {
 		x=120
-		y=58
+		y=64
 		width=80
 		height=15
 	}
@@ -348,7 +322,8 @@ text {
 		clr=30
 	}
 	"dynamic attribute" {
-		vis="if zero"
+		vis="calc"
+		calc="A#1"
 		chan="$(P)$(S).P1NV"
 	}
 	textix=" 1"
@@ -356,7 +331,7 @@ text {
 text {
 	object {
 		x=120
-		y=58
+		y=64
 		width=80
 		height=15
 	}
@@ -364,7 +339,8 @@ text {
 		clr=30
 	}
 	"dynamic attribute" {
-		vis="if zero"
+		vis="calc"
+		calc="A#1"
 		chan="$(P)$(S).P3NV"
 	}
 	textix="     3"
@@ -372,7 +348,7 @@ text {
 text {
 	object {
 		x=120
-		y=58
+		y=64
 		width=80
 		height=15
 	}
@@ -380,133 +356,16 @@ text {
 		clr=30
 	}
 	"dynamic attribute" {
-		vis="if zero"
+		vis="calc"
+		calc="A#1"
 		chan="$(P)$(S).P4NV"
 	}
 	textix="       4"
 }
-"related display" {
-	object {
-		x=205
-		y=55
-		width=35
-		height=18
-	}
-	display[0] {
-		label="Positioners 1-4"
-		name="scan_positioners.adl"
-		args="P=$(P),S=$(S)"
-	}
-	clr=0
-	bclr=17
-	label="-MORE"
-}
-polyline {
-	object {
-		x=-1
-		y=150
-		width=378
-		height=2
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-		width=2
-	}
-	points {
-		(0,151)
-		(376,151)
-	}
-}
-rectangle {
-	object {
-		x=282
-		y=152
-		width=88
-		height=82
-	}
-	"basic attribute" {
-		clr=15
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(S).BUSY"
-	}
-}
-"message button" {
-	object {
-		x=285
-		y=152
-		width=80
-		height=27
-	}
-	control {
-		chan="$(P)$(S).EXSC"
-		clr=14
-		bclr=51
-	}
-	label="SCAN"
-	press_msg="1"
-}
-"message button" {
-	object {
-		x=285
-		y=216
-		width=80
-		height=16
-	}
-	control {
-		chan="$(P)$(S).EXSC"
-		clr=30
-		bclr=20
-	}
-	label="ABORT SCAN"
-	press_msg="0"
-}
-polyline {
-	object {
-		x=280
-		y=150
-		width=2
-		height=106
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-		width=2
-	}
-	points {
-		(281,151)
-		(281,255)
-	}
-}
-"related display" {
-	object {
-		x=285
-		y=233
-		width=50
-		height=20
-	}
-	display[0] {
-		label="Fix numbers"
-		name="scanAux.adl"
-		args="P=$(P),S=$(S)"
-		policy="replace display"
-	}
-	display[1] {
-		label="More scan-record fields"
-		name="scanAux_more.adl"
-		args="P=$(P),S=$(S)"
-		policy="replace display"
-	}
-	clr=0
-	bclr=17
-	label="-More"
-}
 text {
 	object {
 		x=5
-		y=97
+		y=103
 		width=35
 		height=14
 	}
@@ -514,7 +373,8 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="A>1"
 		chan="$(P)$(S).P1NV"
 	}
 	textix="Drive"
@@ -523,7 +383,7 @@ text {
 text {
 	object {
 		x=5
-		y=97
+		y=103
 		width=35
 		height=14
 	}
@@ -536,7 +396,7 @@ text {
 text {
 	object {
 		x=5
-		y=78
+		y=84
 		width=35
 		height=14
 	}
@@ -544,7 +404,8 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="A>1"
 		chan="$(P)$(S).R1NV"
 	}
 	textix="Read"
@@ -553,7 +414,7 @@ text {
 text {
 	object {
 		x=5
-		y=78
+		y=84
 		width=35
 		height=14
 	}
@@ -566,7 +427,7 @@ text {
 text {
 	object {
 		x=250
-		y=94
+		y=100
 		width=10
 		height=20
 	}
@@ -574,7 +435,8 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="A>1"
 		chan="$(P)$(S).P1NV"
 	}
 	textix="X"
@@ -582,7 +444,7 @@ text {
 "text update" {
 	object {
 		x=260
-		y=94
+		y=100
 		width=80
 		height=20
 	}
@@ -597,7 +459,7 @@ text {
 "text entry" {
 	object {
 		x=40
-		y=94
+		y=100
 		width=210
 		height=20
 	}
@@ -613,7 +475,7 @@ text {
 "text entry" {
 	object {
 		x=40
-		y=74
+		y=80
 		width=210
 		height=20
 	}
@@ -629,7 +491,7 @@ text {
 "text update" {
 	object {
 		x=260
-		y=74
+		y=80
 		width=80
 		height=20
 	}
@@ -644,7 +506,7 @@ text {
 text {
 	object {
 		x=250
-		y=74
+		y=80
 		width=10
 		height=20
 	}
@@ -652,7 +514,8 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="A>1"
 		chan="$(P)$(S).R1NV"
 	}
 	textix="X"
@@ -661,7 +524,7 @@ text {
 "text update" {
 	object {
 		x=305
-		y=60
+		y=66
 		width=60
 		height=12
 	}
@@ -673,50 +536,10 @@ text {
 	limits {
 	}
 }
-"shell command" {
-	object {
-		x=350
-		y=235
-		width=20
-		height=20
-	}
-	command[0] {
-		label="Help"
-		name="medm_help.sh &T"
-	}
-	clr=14
-	bclr=30
-}
-text {
-	object {
-		x=25
-		y=154
-		width=145
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Detectors"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=0
-		y=160
-		width=25
-		height=10
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="PLOT"
-	align="horiz. centered"
-}
 "text entry" {
 	object {
 		x=5
-		y=125
+		y=131
 		width=70
 		height=20
 	}
@@ -731,7 +554,7 @@ text {
 text {
 	object {
 		x=5
-		y=115
+		y=121
 		width=70
 		height=10
 	}
@@ -744,7 +567,7 @@ text {
 "text entry" {
 	object {
 		x=155
-		y=125
+		y=131
 		width=70
 		height=20
 	}
@@ -759,7 +582,7 @@ text {
 text {
 	object {
 		x=155
-		y=115
+		y=121
 		width=70
 		height=10
 	}
@@ -772,7 +595,7 @@ text {
 "text entry" {
 	object {
 		x=80
-		y=125
+		y=131
 		width=70
 		height=20
 	}
@@ -787,7 +610,7 @@ text {
 text {
 	object {
 		x=80
-		y=115
+		y=121
 		width=70
 		height=10
 	}
@@ -800,7 +623,7 @@ text {
 text {
 	object {
 		x=270
-		y=60
+		y=66
 		width=35
 		height=10
 	}
@@ -813,7 +636,7 @@ text {
 menu {
 	object {
 		x=230
-		y=125
+		y=131
 		width=65
 		height=14
 	}
@@ -826,7 +649,7 @@ menu {
 text {
 	object {
 		x=230
-		y=115
+		y=121
 		width=65
 		height=10
 	}
@@ -839,7 +662,7 @@ text {
 text {
 	object {
 		x=298
-		y=115
+		y=121
 		width=70
 		height=10
 	}
@@ -852,7 +675,7 @@ text {
 menu {
 	object {
 		x=298
-		y=125
+		y=131
 		width=70
 		height=14
 	}
@@ -862,264 +685,103 @@ menu {
 		bclr=51
 	}
 }
-"related display" {
+polyline {
 	object {
-		x=0
-		y=175
-		width=30
-		height=20
-	}
-	display[0] {
-		name="scanDetPlot.adl"
-		args="P=$(P),S=$(S),D=D01,N=01"
-	}
-	clr=0
-	bclr=17
-	label="-01"
-}
-"text entry" {
-	object {
-		x=30
-		y=175
-		width=180
-		height=20
-	}
-	control {
-		chan="$(P)$(S).D01PV"
-		clr=14
-		bclr=35
-	}
-	format="string"
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=220
-		y=175
-		width=60
-		height=20
-	}
-	monitor {
-		chan="$(P)$(S).D01CV"
-		clr=53
-		bclr=3
-	}
-	align="horiz. centered"
-	limits {
-	}
-}
-text {
-	object {
-		x=210
-		y=178
-		width=10
-		height=14
+		x=-1
+		y=153
+		width=378
+		height=2
 	}
 	"basic attribute" {
-		clr=21
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(0,154)
+		(376,154)
+	}
+}
+rectangle {
+	object {
+		x=282
+		y=156
+		width=88
+		height=82
+	}
+	"basic attribute" {
+		clr=15
 	}
 	"dynamic attribute" {
 		vis="if not zero"
-		chan="$(P)$(S).D01NV"
+		chan="$(P)$(S).BUSY"
 	}
-	textix="X"
 }
-"related display" {
+"message button" {
 	object {
-		x=0
-		y=195
-		width=30
-		height=20
-	}
-	display[0] {
-		name="scanDetPlot.adl"
-		args="P=$(P),S=$(S),N=02"
-	}
-	clr=0
-	bclr=17
-	label="-02"
-}
-"text entry" {
-	object {
-		x=30
-		y=195
-		width=180
-		height=20
+		x=285
+		y=156
+		width=80
+		height=27
 	}
 	control {
-		chan="$(P)$(S).D02PV"
+		chan="$(P)$(S).EXSC"
 		clr=14
-		bclr=35
+		bclr=51
 	}
-	format="string"
-	limits {
+	label="SCAN"
+	press_msg="1"
+}
+polyline {
+	object {
+		x=280
+		y=154
+		width=2
+		height=106
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(281,155)
+		(281,259)
 	}
 }
-"text update" {
+"shell command" {
 	object {
-		x=220
-		y=195
-		width=60
+		x=350
+		y=239
+		width=20
 		height=20
 	}
-	monitor {
-		chan="$(P)$(S).D02CV"
-		clr=53
-		bclr=3
+	command[0] {
+		label="Help"
+		name="medm_help.sh &T"
 	}
-	align="horiz. centered"
-	limits {
-	}
+	clr=14
+	bclr=30
 }
 text {
 	object {
-		x=210
-		y=198
-		width=10
-		height=14
-	}
-	"basic attribute" {
-		clr=21
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(S).D02NV"
-	}
-	textix="X"
-}
-"related display" {
-	object {
 		x=0
-		y=235
-		width=30
-		height=20
-	}
-	display[0] {
-		name="scanDetPlot.adl"
-		args="P=$(P),S=$(S),N=04"
-	}
-	clr=0
-	bclr=17
-	label="-04"
-}
-"text entry" {
-	object {
-		x=30
-		y=235
-		width=180
-		height=20
-	}
-	control {
-		chan="$(P)$(S).D04PV"
-		clr=14
-		bclr=35
-	}
-	format="string"
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=220
-		y=235
-		width=60
-		height=20
-	}
-	monitor {
-		chan="$(P)$(S).D04CV"
-		clr=53
-		bclr=3
-	}
-	align="horiz. centered"
-	limits {
-	}
-}
-text {
-	object {
-		x=210
-		y=238
-		width=10
-		height=14
+		y=174
+		width=25
+		height=10
 	}
 	"basic attribute" {
-		clr=21
+		clr=14
 	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(S).D04NV"
-	}
-	textix="X"
+	textix="PLOT"
+	align="horiz. centered"
 }
 "related display" {
 	object {
-		x=0
-		y=215
-		width=30
-		height=20
-	}
-	display[0] {
-		name="scanDetPlot.adl"
-		args="P=$(P),S=$(S),N=03"
-	}
-	clr=0
-	bclr=17
-	label="-03"
-}
-"text entry" {
-	object {
-		x=30
-		y=215
-		width=180
-		height=20
-	}
-	control {
-		chan="$(P)$(S).D03PV"
-		clr=14
-		bclr=35
-	}
-	format="string"
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=220
-		y=215
-		width=60
-		height=20
-	}
-	monitor {
-		chan="$(P)$(S).D03CV"
-		clr=53
-		bclr=3
-	}
-	align="horiz. centered"
-	limits {
-	}
-}
-text {
-	object {
-		x=210
-		y=218
-		width=10
-		height=14
-	}
-	"basic attribute" {
-		clr=21
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(S).D03NV"
-	}
-	textix="X"
-}
-"related display" {
-	object {
-		x=170
-		y=155
-		width=35
-		height=18
+		x=28
+		y=156
+		width=100
+		height=27
 	}
 	display[0] {
 		label="Detectors 01-10"
@@ -1156,12 +818,398 @@ text {
 		name="scan_detectors10.adl"
 		args="P=$(P),S=$(S),N1=61,N2=62,N3=63,N4=64,N5=65,N6=66,N7=67,N8=68,N9=69,N10=70"
 	}
-	display[7] {
-		label="Old Detectors 1-F"
-		name="scan_detectorsOld.adl"
+	clr=0
+	bclr=17
+	label="-Detectors"
+}
+menu {
+	object {
+		x=198
+		y=168
+		width=80
+		height=14
+	}
+	control {
+		chan="$(P)$(S).ACQM"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=198
+		y=156
+		width=80
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ACQ MODE"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=128
+		y=168
+		width=70
+		height=14
+	}
+	control {
+		chan="$(P)$(S).ACQT"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=128
+		y=156
+		width=70
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DIMENSION"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=220
+		y=184
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D01CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=187
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="A>1"
+		chan="$(P)$(S).D01NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=204
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D02CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=207
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="A>1"
+		chan="$(P)$(S).D02NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=244
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D04CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=247
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="A>1"
+		chan="$(P)$(S).D04NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=224
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D03CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=227
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="A>1"
+		chan="$(P)$(S).D03NV"
+	}
+	textix="X"
+}
+"text entry" {
+	object {
+		x=25
+		y=184
+		width=185
+		height=20
+	}
+	control {
+		chan="$(P)$(S).D01PV"
+		clr=14
+		bclr=35
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=25
+		y=204
+		width=185
+		height=20
+	}
+	control {
+		chan="$(P)$(S).D02PV"
+		clr=14
+		bclr=35
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=25
+		y=244
+		width=185
+		height=20
+	}
+	control {
+		chan="$(P)$(S).D04PV"
+		clr=14
+		bclr=35
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=25
+		y=224
+		width=185
+		height=20
+	}
+	control {
+		chan="$(P)$(S).D03PV"
+		clr=14
+		bclr=35
+	}
+	format="string"
+	limits {
+	}
+}
+composite {
+	object {
+		x=0
+		y=184
+		width=25
+		height=80
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=0
+				y=204
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D02,N=02"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=02"
+			}
+			clr=0
+			bclr=17
+			label="-02"
+		}
+		"related display" {
+			object {
+				x=0
+				y=244
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D04,N=04"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=04"
+			}
+			clr=0
+			bclr=17
+			label="-04"
+		}
+		"related display" {
+			object {
+				x=0
+				y=224
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D03,N=03"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=03"
+			}
+			clr=0
+			bclr=17
+			label="-03"
+		}
+		"related display" {
+			object {
+				x=0
+				y=184
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D01,N=01"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=01"
+			}
+			display[2] {
+				label="Real-time dets 1-8"
+				name="scanDetPlot8RT.adl"
+				args="P=$(P),S=$(S),N1=01,N2=02,N3=03,N4=04,N5=05,N6=06,N7=07,N8=08"
+			}
+			display[3] {
+				label="After-scan deta 1-8"
+				name="scanDetPlot8.adl"
+				args="P=$(P),S=$(S),N1=01,N2=02,N3=03,N4=04,N5=05,N6=06,N7=07,N8=08"
+			}
+			clr=0
+			bclr=17
+			label="-01"
+		}
+	}
+}
+"message button" {
+	object {
+		x=285
+		y=220
+		width=80
+		height=16
+	}
+	control {
+		chan="$(P)$(S).EXSC"
+		clr=30
+		bclr=20
+	}
+	label="ABORT SCAN"
+	press_msg="0"
+}
+"related display" {
+	object {
+		x=285
+		y=237
+		width=50
+		height=20
+	}
+	display[0] {
+		label="Fix numbers"
+		name="scanAux.adl"
 		args="P=$(P),S=$(S)"
+		policy="replace display"
+	}
+	display[1] {
+		label="More scan-record fields"
+		name="scanAux_more.adl"
+		args="P=$(P),S=$(S)"
+		policy="replace display"
 	}
 	clr=0
 	bclr=17
-	label="-MORE"
+	label="-More"
 }
