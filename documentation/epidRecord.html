@@ -33,7 +33,6 @@ content="text/html; charset=iso-8859-1">
         Routines</a></li>
     <li><a href="#Record Processing">Record Processing</a></li>
     <li><a href="#Device Support">Device Support</a></li>
-    <li><a href="#Problems">Problems with the Standard EPICS PID Record</a></li>
 </ul>
 
 <p>&nbsp;</p>
@@ -88,9 +87,6 @@ its output to the output link.</p>
 the integral, and the derivative. Using the gain that exists for
 each of these terms, the user can weight each contribution
 according to the characteristics of the controlled variable.</p>
-<P>
-The source code is available in a
-<a href="pub/epidRecord.tar">tar file.</a>
 
 <p>&nbsp;</p>
 
@@ -245,7 +241,7 @@ just like the OMSL and DOL fields found in many output records
 When <code>supervisory</code>, the setpoint, i.e., VAL, can be
 set via database access. When <code>closed_loop</code>, the
 setpoint value is retrieved from the link specified in STPL,
-which must be a database link. STPL can also be a constant in
+which must be a database link. STML can also be a constant in
 which case VAL is set equal to the constant value when the record
 is initialized, and the value can be modified at run-time via
 database access or channel access.</p>
@@ -1217,163 +1213,12 @@ for the MPF Ip330PID server.</p>
 </ol>
 
 <hr>
-<h2 align="center"><a name=Problems>
-Problems with the Standard EPICS PID Record</a></h2>
-<P>
-There are two serious problems with the standard PID record in EPICS.
-<OL>
-<LI> The most serious problem concerns the difficulty of using the record to
-control a device within a "proportional band".  Consider a hypothetical
-temperature control system using a digital-to-analog converter (DAC) to drive a
-power supply with the following parameters:
-<UL>
-<LI>DAC range is 0 to 10 volts
-<LI>DAC drives a current-mode power supply.  0-10V control input equals
-0-10A output.
-<LI>The power supply drives a furnace.
-<LI>The steady state temperature of the furnace is 100 times the power
-supply current, i.e. maximum output (10A) is 1000 degrees, while 50%
-output (5A) is 500 degrees.
-</UL>
-<P>
-Conventional temperature controllers (e.g. Omega, Lakeshore, etc.) use the
-concept of a "proportional band", which might typically be 10%.  This means
-that if the setpoint is 500 degrees, and the actual temperature is less than
-450 degrees (setpoint minus proportional band) then the controller applies
-maximum power (10A in our example).  Conversely if the actual temperature is
-more than 550 degrees then the controller applies minimum power (0A in our
-example).
-<P>
-In order to implement a 10% deadband at 500 degrees in our example the 
-proportional gain (KP) in the PID equation must be 10V/50 degrees = .2V/deg
-For the purposes of this discussion we will assume the integral and
-derivative gains (KI, KD) are zero.  Setting KI=0 will cause a "droop" in 
-the output, since the PID equation will only result in power to the
-controller when there is a non-zero error if only the proportional term is
-used.  If the setpoint is 500 degrees and KP is 0.2V/deg then we can 
-calculate the steady state temperature as:
-<PRE>
-     Current = Control voltage = Temperature/100 = KP*Error = 0.2V/deg*Error
-</PRE>
-But <CODE>Error</CODE> is <CODE>(500 - Temperature)</CODE>, thus
-<PRE>
-     Temperature/100 = 0.2V/deg * (500 - Temperature)
-     0.21*Temperature = 100
-</PRE>
-So Temperature = 476.2 degrees, or a droop of 23.8 degrees.  In practice one 
-would use a non-zero value for KI to correct for this, but for this
-discussion it is not necessary.
-<P>
-For the purposes of this simulation consider the time response of the
-furnace to be:
-<PRE>
-Actual temperature = 0.95 * previous temperature + 
-                                        0.05 * (100 * control input)
-</PRE>
-i.e. there is a delay in the system response, but at steady state the
-temperature is equal to 100 * output current = 100 * control input, as was
-supposed above.
-<P>
-Consider the system to be currently at 0 degrees, and the setpoint is raised
-to 500 degrees at step N=1.  Here are the first 20 steps in the absolute 
-value of the output of the PID equation (M), and also the output of a DAC
-if it were set to the value of M but limited by DRVH=10, DRVL=0.
-<PRE>
-   N    Setpoint   Actual       Error     M      DM  Correct DAC
-                    Temp                                Output
-   0         0       0.000       0.000   0.000   0.000    0.000
-   1       500       0.000     500.000 100.000 100.000   10.000
-   2       500      50.000     450.000  90.000 -10.000   10.000
-   3       500      97.500     402.500  80.500  -9.500   10.000
-   4       500     142.625     357.375  71.475  -9.025   10.000
-   5       500     185.494     314.506  62.901  -8.574   10.000
-   6       500     226.219     273.781  54.756  -8.145   10.000
-   7       500     264.908     235.092  47.018  -7.738   10.000
-   8       500     301.663     198.337  39.667  -7.351   10.000
-   9       500     336.580     163.420  32.684  -6.983   10.000
-  10       500     369.751     130.249  26.050  -6.634   10.000
-  11       500     401.263      98.737  19.747  -6.302   10.000
-  12       500     431.200      68.800  13.760  -5.987   10.000
-  13       500     459.640      40.360   8.072  -5.688    8.072
-  14       500     477.018      22.982   4.596  -3.476    4.596
-  15       500     476.149      23.851   4.770   0.174    4.770
-  16       500     476.193      23.807   4.761  -0.009    4.761
-  17       500     476.190      23.810   4.762   0.000    4.762
-  18       500     476.190      23.810   4.762  -0.000    4.762
-  19       500     476.190      23.810   4.762   0.000    4.762
-  20       500     476.190      23.810   4.762   0.000    4.762
-</PRE>
-This table lists the correct response of PID system with these parameters.
-Note that the steady state temperature (476.2) agrees with the previous
-calculation for the temperature droop.
-<P>
-Now consider an actual standard EPICS PID record whose output (DM) is used
-directly as the input to an analog output (ao) record which drives the DAC. 
-The ao record is used in incremental mode, as the documentation for the PID
-suggests. The DRHV value for the ao record is 10V, since this is the full
-scale range of the power supply.
-<PRE>
-   N    Setpoint   Actual       Error     M      DM    Actual DAC
-                    Temp                (unused)         Output
-   0         0       0.000       0.000   0.000   0.000    0.000
-   1       500       0.000     500.000   0.000 100.000   10.000
-   2       500      50.000     450.000   0.000 -10.000    0.000
-   3       500      47.500     452.500   0.000   0.500    0.500
-   4       500      47.625     452.375   0.000  -0.025    0.475
-   5       500      47.619     452.381   0.000   0.001    0.476
-   6       500      47.619     452.381   0.000  -0.000    0.476
-   7       500      47.619     452.381   0.000   0.000    0.476
-   8       500      47.619     452.381   0.000  -0.000    0.476
-   9       500      47.619     452.381   0.000   0.000    0.476
-  10       500      47.619     452.381   0.000   0.000    0.476
-  11       500      47.619     452.381   0.000   0.000    0.476
-  12       500      47.619     452.381   0.000   0.000    0.476
-  13       500      47.619     452.381   0.000   0.000    0.476
-  14       500      47.619     452.381   0.000   0.000    0.476
-  15       500      47.619     452.381   0.000   0.000    0.476
-  16       500      47.619     452.381   0.000   0.000    0.476
-  17       500      47.619     452.381   0.000   0.000    0.476
-  18       500      47.619     452.381   0.000   0.000    0.476
-  19       500      47.619     452.381   0.000   0.000    0.476
-  20       500      47.619     452.381   0.000   0.000    0.476
-</PRE>
-NOTE:  These DAC output values are completely incorrect!!!!!  The reason for
-this is simple.  The PID record is calculating a change in output (DM), but is
-writing this to an output location (the ao record) which <b>saturates</b>
-at the DRHV
-value.  When N=1 above DM=100, so the ao record should go to 100.  However, it
-is limited to 10.  When N=2, DM=-10, so the ao should go to 90 (100-10), but it
-actually goes to 0 (10-10), because the ao clipped the previous value to 10.
-This will always happen when driving an output beyond the proportional band. 
-Since the next change (DM) is applied to the CLIPPED value of the output,
-rather than the <it>theoretical</it> value of the output (see first table), all
-subsequent DAC values are incorrect.
-<P>
-The bottom line is that the PID record can only work correctly when the DM
-value is used to drive a non-saturable value, i.e. not a real output.  This
-means that it is necessary to create a database with another record in between
-the PID record and the actual DAC which is being controlled.  This is a
-needless complication, and is not mentioned anywhere in the PID record
-documentation.
-<P>
-<LI> If one does put another soft ao record in between the PID record and
-the actual device being controlled, then one encounters the second serious
-problem with the PID record. This problem concerns the integral term in the PID
-equation.  The problem is that the integral term continues to grow without
-bound whenever something is configured wrong (for example, a power supply is
-turned off overnight).  When the device is turned back on the integral term
-will cause large compensating errors for a long time.  It is desirable for the
-PID record to put some sanity checks on the integral term.
-</OL>
-
-
-<hr>
 
 <address>
     Suggestions and Comments to: <br>
     <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers </a>:
     (rivers@cars.uchicago.edu) <br>
-    Last modified: June 5, 2000
+    Last modified: November 25, 1999 
 </address>
 </body>
 </html>

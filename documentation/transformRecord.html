@@ -19,7 +19,7 @@
 <A NAME="Overview">
 <H2>Overview</H2></A>
 
-This documentation describes version 5.5 of the EPICS transform record,
+This documentation describes version 5.4 of the EPICS transform record,
 and related EPICS software recommended for building and using it.  This
 version of the record is compatible with EPICS Release 3.13, and it may
 be compatible with later releases, but it is not compatible with any
@@ -39,21 +39,19 @@ applications (i.e., in synApps), the transform record was modified to
 remove the &lt;x&gt;<tt>PP</tt> fields, and the fields <tt>A..P</tt> were
 made process passive in transformRecord.dbd.
 
-NOTE:  Versions of the transform record earlier than 5.5 ignored link errors.
-Beginning with version 5.5, you can choose to ignore link errors (the default)
-or to quit processing (after all input link values have been fetched and
-transferred to their respective value fields).
-
 <P>The TRANSFORM record combines features of the CALC and SEQUENCE records,
 with 16 sets of the following fields:<BR>
-<DL compact>
-<DT>input link <DD><tt>INPA...INPP</tt></DD>
-<DT>input-link status <DD><tt>IAV...IPV</tt></DD>
-<DT>input/output value <DD><tt>A...P</tt>
-<DT>expression <DD><tt>CLCA...CLCP</tt>
-<DT>output link <DD><tt>OUTA...OUTP</tt>
-<DT>output-link status <DD><tt>OAV...OAP</tt>
-<DT>comment <DD><tt>CMTA...CMTP</tt>
+<DL>
+<DT>input link (<tt>INPA...INPP</tt>) and status (<tt>IAV...IPV</tt>)
+<DD>
+<DT>input/output value (<tt>A...P</tt>)
+<DD>
+<DT>expression (<tt>CLCA...CLCP</tt>)
+<DD>
+<DT>output link (<tt>OUTA...OUTP</tt>) and status (<tt>OAV...OAP</tt>)
+<DD>
+<DT>comment (<tt>CMTA...CMTP</tt>)
+<DD>
 </DL>
 
 <P>There are guaranteed rules governing the sequence and conditions under
@@ -63,39 +61,34 @@ following sequence occurs:
 <LI>Values are fetched, in order <tt>A</tt> through <tt>P</tt>, from
 all valid input links.  That is, if <tt>INPA</tt> is a valid input
 link, the value of the field pointed to by <tt>INPA</tt> will be placed
-into the field <tt>A</tt>, and so on.
-
-<blockquote><em>Note: If the record is in link alarm (.NSEV >= INVALID_ALARM) after all
-input-link values have been fetched, and if .IVLA == "Do Nothing", then
-the record will quit processing at this point.  It will do some clean up,
-but it will not fire its forward link.</em></blockquote>
+into the field <tt>A</tt>, and so on.  Note that all inputs are fetched
+before any calculations are performed.
 
 <LI>Valid expressions are evaluated in order <tt>CLCA</tt> through
 <tt>CLCP</tt>, but expression <tt>CLC</tt>&lt;x&gt; is evaluated only
-if &lt;x&gt; has the same value it had after the last time the record
-was processed, and the field has not been marked "new" as the result of
-a put from some client.  In other words, new values are regarded as
-independent variables in the set of equations <tt>CLCA...CLCP</tt>, and
-unchanged values are regarded as dependent variables.  (In versions earlier
-than 5.2, the test for old values did not correctly handle NaN values, which
-would always appear to be new, and would therefore never go away.)
+if &lt;x&gt; is "old": if &lt;x&gt; has the same value it had after the
+last time the record was processed, and &lt;x&gt; was not written to
+since the last time the record was processed.  In other words, new values
+are regarded as independent variables in the set of equations
+<tt>CLCA...CLCP</tt>, and unchanged/unwritten values are regarded as
+dependent variables.  (Note that writes received while PACT==1 are special:
+they will change the field they write to, but they will not be regarded as
+writes for the purpose of determining whether a value is "new".  This rule allows a transform record to write to itself (using database links) without
+messing up its notion of which values are new. 
 
-<LI>Valid output links are triggered in order OUTA through OUTP---regardless
-of whether the corresponding values have changed.  That is, if OUTA is a
-valid link, the value in field A is poked into the field pointed to by
-OUTA, and so on.
+<LI>Valid output links are triggered in order OUTA through OUTP---
+regardless of whether the corresponding values have changed.  That is,
+if OUTA is a valid link, the value in field A is poked into the field
+pointed to by OUTA, and so on.  Note that output links are not
+processed until after all calculations have been performed.
 </OL>
 
 <P>The transform record uses the expression-evaluation software
-sCalcPostFix.c and sCalcPerform.c, originally developed for the <a
-href="http://www.aps.anl.gov/xfd/bcda/medm_help/sCalcoutRecord.html">
-sCalcout record</a>.  An expression may contain any of the functions
-and constants that are valid for the sCalcout record (including string
-functions, though a final string result will of course be converted to
-double); any of the letters A-P, which stand for the values of the
-corresponding fields in the instant before the expression is evaluated;
-the expression @n, where n is an integer in [0-15], or an expression
-that yields such an integer, stands for a value A-P; and any of the
+sCalcPostFix.c and sCalcPerform.c, originally developed for the
+sCalcout record.  An expression may contain any of the functions
+and constants that are valid for the sCalcout record; any of the
+letters A-P, which stand for the values of the corresponding fields in
+the instant before the expression is evaluated; and any of the
 constants PI (3.14159265), R2D (180/PI), D2R (PI/180), S2R (D2R/3600),
 and R2S (R2D*3600).
 
@@ -113,7 +106,7 @@ slit system.  You can implement a bidirectional coordinate transformation
 with the following expressions (where position values are assumed to
 increase as we go from left to right):
 
-<TABLE CELLPADDING=0>
+<TABLE CELLPADDING=10>
 <TR VALIGN=TOP><TH>value <TH>expression <TH>comment
 <TR VALIGN=TOP><TD>A <TD>C-D/2 <TD>position of left edge of slit
 <TR VALIGN=TOP><TD>B <TD>C+D/2 <TD>position of right edge of slit
@@ -121,7 +114,7 @@ increase as we go from left to right):
 <TR VALIGN=TOP><TD>D <TD>B-A <TD>width of slit
 </TABLE>
 
-<P>Now, if a user command moves the left side of the slit (A changes) and
+<P>Now, if a user command moves the left side of the slit (writes to A) and
 causes the record to process, A will not be recalculated because it's value
 is new, the right side of the slit will remain
 still (B is unnecessarily recalculated from old values of C and D), the
@@ -213,27 +206,19 @@ Reference Manual for these) the transform record has the fields described below.
 <TR><TD>G    <TD>R/W(*)	<TD>Value G				<TD>DOUBLE		<TD>
 <TR><TD>H    <TD>R/W(*)	<TD>Value H				<TD>DOUBLE		<TD>
 <TR><TD>I    <TD>R/W(*)	<TD>Value I				<TD>DOUBLE		<TD>
-<TR><TD>IAV	 <TD>R		<TD>Link Valid			<TD>MENU:<DL compact>
-
-<DT>0<DD>Ext PV NC
-<DT>1<DD>Ext PV OK
-<DT>2<DD>Local PV
-<DT>3<DD>Constant
-</DL>
-
-		<TD>Link INPA Valid if nonzero
-<TR><TD>IBV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPB Valid if nonzero
-<TR><TD>ICV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPC Valid if nonzero
-<TR><TD>IDV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPD Valid if nonzero
-<TR><TD>IEV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPE Valid if nonzero
-<TR><TD>IFV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPF Valid if nonzero
-<TR><TD>IGV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPG Valid if nonzero
-<TR><TD>IHV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPH Valid if nonzero
-<TR><TD>IIV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPI Valid if nonzero
-<TR><TD>IJV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPJ Valid if nonzero
-<TR><TD>IKV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPK Valid if nonzero
-<TR><TD>ILV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPL Valid if nonzero
-<TR><TD>IMV	 <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPM Valid if nonzero
+<TR><TD>IAV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPA Valid if nonzero
+<TR><TD>IBV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPB Valid if nonzero
+<TR><TD>ICV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPC Valid if nonzero
+<TR><TD>IDV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPD Valid if nonzero
+<TR><TD>IEV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPE Valid if nonzero
+<TR><TD>IFV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPF Valid if nonzero
+<TR><TD>IGV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPG Valid if nonzero
+<TR><TD>IHV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPH Valid if nonzero
+<TR><TD>IIV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPI Valid if nonzero
+<TR><TD>IJV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPJ Valid if nonzero
+<TR><TD>IKV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPK Valid if nonzero
+<TR><TD>ILV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPL Valid if nonzero
+<TR><TD>IMV	 <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPM Valid if nonzero
 <TR><TD>INPA <TD>R/W		<TD>Input Link			<TD>LINK		<TD>
 <TR><TD>INPB <TD>R/W		<TD>Input Link			<TD>LINK		<TD>
 <TR><TD>INPC <TD>R/W		<TD>Input Link			<TD>LINK		<TD>
@@ -250,14 +235,9 @@ Reference Manual for these) the transform record has the fields described below.
 <TR><TD>INPN <TD>R/W		<TD>Input Link			<TD>LINK		<TD>
 <TR><TD>INPO <TD>R/W		<TD>Input Link			<TD>LINK		<TD>
 <TR><TD>INPP <TD>R/W		<TD>Input Link			<TD>LINK		<TD>
-<TR><TD>INV  <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPN Valid if nonzero
-<TR><TD>IOV  <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link INPO Valid if nonzero
-<TR><TD>IPV  <TD>R		<TD>Link Valid			<TD>MENU (see IAV) 		<TD>Link INPP Valid if nonzero
-<TR><TD>IVLA  <TD>R             <TD>Invalid Link Action <TD>MENU: <DL
-compact><DT>0<DD>Ignore error<DT>1<DD>Do Nothing</DL>
-<TD>Selects what to do if the record is in link alarm.  "Do Nothing"
-means quit wrap up and quit executing after input values have been
-fetched.  The forward link will not be processed in this case.
+<TR><TD>INV  <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPN Valid if nonzero
+<TR><TD>IOV  <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPO Valid if nonzero
+<TR><TD>IPV  <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link INPP Valid if nonzero
 <TR><TD>J    <TD>R/W(*)	<TD>Value J				<TD>DOUBLE		<TD>
 <TR><TD>K    <TD>R/W(*)	<TD>Value K				<TD>DOUBLE		<TD>
 <TR><TD>L    <TD>R/W(*)	<TD>Value L				<TD>DOUBLE		<TD>
@@ -281,22 +261,22 @@ fetched.  The forward link will not be processed in this case.
 <TR><TD>MAP  <TD>R		<TD>Input bitmap		<TD>SHORT		<TD>
 <TR><TD>N    <TD>R/W(*)	<TD>Value N				<TD>DOUBLE		<TD>
 <TR><TD>O    <TD>R/W(*)	<TD>Value O				<TD>DOUBLE		<TD>
-<TR><TD>OAV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OBV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OCV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>ODV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OEV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OFV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OGV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OHV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OIV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OJV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OKV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OLV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OMV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>ONV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OOV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
-<TR><TD>OPV   <TD>R		<TD>Link Valid			<TD>MENU (see IAV)		<TD>Link Valid if nonzero
+<TR><TD>OAV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OBV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OCV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>ODV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OEV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OFV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OGV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OHV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OIV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OJV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OKV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OLV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OMV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>ONV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OOV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
+<TR><TD>OPV   <TD>R		<TD>Link Valid			<TD>MENU		<TD>Link Valid if nonzero
 <TR><TD>OUTA  <TD>R/W		<TD>Output Link			<TD>LINK		<TD>
 <TR><TD>OUTB  <TD>R/W		<TD>Output Link			<TD>LINK		<TD>
 <TR><TD>OUTC  <TD>R/W		<TD>Output Link			<TD>LINK		<TD>
@@ -358,10 +338,10 @@ processing if the corresponding trigger field (.xPP) is nonzero and record's SCA
 </TR>
 <TD COLSPAN=3> Note: Link Valid fields IxV and OxV actually take the following values:
 <UL>
-<LI>0: "Ext PV NC" Link is to an external PV.  Channel-access connection does not exist (yet?)
-<LI>1: "Ext PV OK" Link is to an external PV.  Channel-access onnection exists.
-<LI>2: "Local PV" Link is to a local PV.
-<LI>3: "Constant" No PV name has been given for this link.
+<LI>0:"Ext PV NC" Link is to an external PV.  Channel-access connection does not exist (yet?)
+<LI>1:"Ext PV OK" Link is to an external PV.  Channel-access connection exists.
+<LI>2:"Local PV" Link is to a local PV.
+<LI>3:"Constant" No PV name has been given for this link.
 </UL>
 </TABLE>
 
@@ -399,11 +379,10 @@ files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/src/</CODE>
 <TD>This file is not included in the distribution.  If you're upgrading
 an application or share directory that has an earlier version of the
 transform record, you don't need to do anything with this file.  Otherwise,
-add the following lines:
-<P><PRE>
+verify that the following line exists:
+<P><CODE>
 SRCS.c += ../transformRecord.c
-LIBOBJS += transformRecord.o
-</PRE></TD>
+</CODE></TD>
 </TR>
 
 <TR VALIGN=TOP>
@@ -411,19 +390,20 @@ LIBOBJS += transformRecord.o
 <TD>This file is not included in the distribution.  If you're upgrading
 an application or share directory that has an earlier version of the
 transform record, you don't need to do anything with this file.  Otherwise,
-add the following line:
+verify that the following line exists:
 <P><PRE>
 RECTYPES += transformRecord.h
 </PRE></TD>
 </TR>
 
+<TR><TD><TD>
 <TR VALIGN=TOP>
 <TD>&lt;app&gt;Include.dbd</TD>
 <TD>(I'm just guessing what the filename might be in your case.
 The real filename is whatever appears after "<CODE>DBDEXPAND = </CODE>" in
-Makefile.Host.)  This file is not included in the distribution.  If you're upgrading
-an application or share directory that has an earlier version of the
-transform record, you don't need to do anything with this file.  Otherwise,
+Makefile.Host.)  This file is not included in the distribution.  If you're
+upgrading an application or share directory that has an earlier version of
+the transform record, you don't need to do anything with this file.  Otherwise,
 add the following line:
 <PRE>
 include "transformRecord.dbd"
@@ -440,7 +420,7 @@ files to be placed in
 </TH> </TR>
 
 <TR VALIGN=TOP><TD>userTransform.db		<TD>Sample transform-record database
-<TR><TD COLSPAN=2>This database file contains nothing but a transform record.</TD>
+<TR><TD COLSPAN=2>This database file contains one transform record.</TD>
 </TR>
 </TABLE>
 
@@ -452,7 +432,7 @@ files to be placed in
 </TH> </TR>
 
 <TR VALIGN=TOP><TD>yyTransform_full.adl		<TD>Small control display
-<TR VALIGN=TOP><TD>linkHelp.adl	<TD>A little help for end users
+<TR VALIGN=TOP><TD>linkHelp.adl	<TD>Setup display for SRI geometry
 <TR><TD COLSPAN=2>These files build <CODE>medm</CODE> screens to access the transform record.
 To use one of them from the command line, type, for example
 <PRE>
@@ -484,26 +464,12 @@ dbLoadRecords("xxxApp/Db/userTransform.db","P=xxx:,N=1")
 
 <!--------------------------------------------------------------------->
 <P><TABLE BORDER CELLPADDING=1>
-<TR><TH COLSPAN=2>BACKUP/RESTORE (BURT) REQUEST FILE<BR>
+<TR><TH COLSPAN=2>BACKUP/RESTORE (BURT) REQUEST FILES<BR>
 files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/op/burt/</CODE>
 </TH></TR>
 
 <TR VALIGN=TOP><TD>yyTransformSettings.req	<TD>save settings of a specified transform record.
 This file is normally <CODE>#include</CODE>'d (once for each transform record) by other request files.
-</TR>
-</TABLE>
-
-
-<!--------------------------------------------------------------------->
-<P><TABLE BORDER CELLPADDING=1>
-<TR><TH COLSPAN=2>AUTOSAVE/RESTORE REQUEST FILE<BR>
-file to be placed in your autosave search path
-</TH></TR>
-
-<TR VALIGN=TOP><TD>xx_auto_transform_settings.req	<TD>save settings of a specified transform record.
-This file is normally included once for each transform record by other request files, with a line of the following form:<br>
-file xx_auto_transform_settings.req P=tmm:,T=userTran1
-.
 </TR>
 </TABLE>
 
@@ -516,7 +482,7 @@ file xx_auto_transform_settings.req P=tmm:,T=userTran1
 Suggestions and comments to: 
 <BR><A HREF="mailto:mooney@aps.anl.gov">Tim Mooney</A> : (mooney@aps.anl.gov)
 <BR>
-Last modified: December 17, 2002
+Last modified: May 3, 2002
 </ADDRESS>
 
 </BODY>
