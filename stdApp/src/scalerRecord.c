@@ -65,6 +65,7 @@ Modification Log:
 #include	<lstLib.h>
 #include	<string.h>
 #include	<wdLib.h>
+#include	<semLib.h>
 
 #include	<alarm.h>
 #include	<callback.h>
@@ -143,6 +144,9 @@ struct rset scalerRSET = {
 	get_alarm_double
 };
 
+struct rpvtStruct {
+	SEM_ID updateMutex;
+};
 static void alarm();
 static void monitor();
 static void updateCounts(scalerRecord *pscal);
@@ -161,11 +165,12 @@ static void deviceCallbackFunc(struct callback *pcb)
 
 static void updateCallbackFunc(struct callback *pcb)
 {
-    struct dbCommon *precord=pcb->precord;
+	scalerRecord *pscal = (scalerRecord *)(pcb->precord);
+	struct rpvtStruct *prpvt=pscal->rpvt;
 
-    dbScanLock(precord);
-    updateCounts((scalerRecord *)precord);
-    dbScanUnlock(precord);
+	semTake(prpvt->updateMutex, WAIT_FOREVER);
+    updateCounts(pscal);
+	semGive(prpvt->updateMutex);
 }
 
 static void userCallbackFunc(struct callback *pcb)
@@ -197,13 +202,21 @@ int pass;
 	long status;
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
 	struct callback *pcallbacks, *pupdateCallback, *puserCallback, *pautoCallback, *pdeviceCallback;
+    struct rpvtStruct *prpvt;
 
 	Debug(5, "init_record: pass = %d\n", pass);
 	Debug(5, "init_record: .PR1 = %ld\n", pscal->pr1);
 	if (pass == 0) {
 		pscal->vers = VERSION;
+        pscal->rpvt = (void *)calloc(1, sizeof(struct rpvtStruct));
+	    prpvt = (struct rpvtStruct *)pscal->rpvt;
+		if ((prpvt->updateMutex = semMCreate(SEM_Q_FIFO)) == 0) {
+			logMsg("scalerRecord:init_record: could not create mutex.\n");
+			return(-1);
+		}
 		return (0);
 	}
+    prpvt = (struct rpvtStruct *)pscal->rpvt;
 
 	/* Gotta have a .val field.  Make its value reproducible. */
 	pscal->val = 0;
@@ -291,7 +304,8 @@ int pass;
 static long process(pscal)
 scalerRecord *pscal;
 {
-	int i, status, prev_scaler_state, save_pr1, old_pr1, old_freq;
+	int i, status, prev_scaler_state, save_pr1, old_pr1;
+	double old_freq;
 	int card = pscal->out.value.vmeio.card;
 	int justFinishedUserCount=0, justStartedUserCount=0, putNotifyOperation=0;
 	long *ppreset = &(pscal->pr1);
@@ -302,8 +316,11 @@ scalerRecord *pscal;
 	struct callback *pupdateCallback = (struct callback *)&(pcallbacks[0]);
 	struct callback *puserCallback = (struct callback *)&(pcallbacks[1]);
 	struct callback *pautoCallback = (struct callback *)&(pcallbacks[2]);
+    struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
 
 	Debug(5, "process: entry\n", 0);
+	semTake(prpvt->updateMutex, WAIT_FOREVER);	/* should never have to wait for more than a few us */
+	
 	pscal->pact = TRUE;
 	pscal->udf = FALSE;
 	prev_scaler_state = pscal->ss;
@@ -349,7 +366,7 @@ scalerRecord *pscal;
 				 * set by device support, and call write_preset again.
 				 */
 				old_pr1 = pscal->pr1;
-				old_freq = (int)(pscal->freq);
+				old_freq = pscal->freq;
 				/* Make sure channel-1 preset count agrees with time preset and freq */
 				if (pscal->pr1 != (long) (pscal->tp * pscal->freq)) {
 					pscal->pr1 = (long) (pscal->tp * pscal->freq);
@@ -367,7 +384,9 @@ scalerRecord *pscal;
 					(*pdset->write_preset)(card, 0, pscal->pr1);
 				}
 				if (old_pr1 != pscal->pr1) db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
-				if (old_freq != (int)(pscal->freq)) db_post_events(pscal,&(pscal->freq),DBE_VALUE);
+				if (old_freq != pscal->freq) {
+					db_post_events(pscal,&(pscal->freq),DBE_VALUE);
+				}
 
 				(*pdset->arm)(card, 1);
 				pscal->ss = SCALER_STATE_COUNTING;
@@ -446,7 +465,7 @@ scalerRecord *pscal;
 			 * If (.TP1 >= .001 s) we count .TP1 seconds, regardless of any
 			 * presets the user may have set.
 			 */
-			 old_freq = (int)(pscal->freq);
+			 old_freq = pscal->freq;
 			(*pdset->reset)(card);
 			if (pscal->tp1 >= 1.e-3) {
 				(*pdset->write_preset)(card, 0, (long)(pscal->tp1*pscal->freq));
@@ -456,7 +475,7 @@ scalerRecord *pscal;
 					if (pgate[i]) (*pdset->write_preset)(card, i, ppreset[i]);
 				}
 			}
-			if (old_freq != (int)(pscal->freq)) db_post_events(pscal,&(pscal->freq),DBE_VALUE);
+			if (old_freq != pscal->freq) db_post_events(pscal,&(pscal->freq),DBE_VALUE);
 			(*pdset->arm)(card, 1);
 			pscal->ss = SCALER_STATE_COUNTING;
 
@@ -471,6 +490,7 @@ scalerRecord *pscal;
 	}
 
 	pscal->pact = FALSE;
+	semGive(prpvt->updateMutex);
 	return(0);
 }
 
@@ -507,13 +527,11 @@ static void updateCounts(scalerRecord *pscal)
 		if (counts[i] != pscaler[i]) {
 			pscaler[i] = counts[i];
 			db_post_events(pscal,&(pscaler[i]),DBE_VALUE);
-			if (i==0) {
-				/* convert clock ticks to time */
-				pscal->t = pscaler[i] / pscal->freq;
-				db_post_events(pscal,&(pscal->t),DBE_VALUE);
-			}
 		}
 	}
+	/* convert clock ticks to time. Note device support may have changed freq. */
+	pscal->t = pscaler[0] / pscal->freq;
+	db_post_events(pscal,&(pscal->t),DBE_VALUE);
 
 	if (pscal->ss == SCALER_STATE_COUNTING) {
 		/* arrange to call this routine again after user-specified time */
