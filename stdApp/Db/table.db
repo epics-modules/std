@@ -65,7 +65,7 @@ grecord(calc,"$(P)$(Q):geomIsSRI") {
 	field(CALC,"a=0")
 	field(INPA,"$(P)$(T).GEOM  CP MS")
 }
-grecord(calcout,"$(P)$(Q):dmov") {
+grecord(transform,"$(P)$(Q):dmov") {
 	field(DESC,"Get DMOV and check links")
 	field(INPA,"$(P)$(M0X).DMOV  CP MS")
 	field(INPB,"$(P)$(M0Y).DMOV  CP MS")
@@ -78,22 +78,22 @@ grecord(calcout,"$(P)$(Q):done") {
 	field(CALC,"A&(I||!J)&(K||!L)")
 	field(INPA,"$(P)$(Q):done1.VAL  CP MS")
 	field(INPI,"$(P)$(Q):dmov.E  CP MS")
-	field(INPJ,"$(P)$(Q):dmov.INEV  CP MS")
+	field(INPJ,"$(P)$(Q):dmov.IEV  CP MS")
 	field(INPK,"$(P)$(Q):dmov.F  CP MS")
-	field(INPL,"$(P)$(Q):dmov.INFV  CP MS")
+	field(INPL,"$(P)$(Q):dmov.IFV  CP MS")
 	field(OUT,"$(P)$(T).READ  PP MS")
 	field(OOPT,"Transition To Non-zero")
 }
 grecord(calcout,"$(P)$(Q):done1") {
 	field(CALC,"(A||!B)&(C||!D)&(E||!F)&(G||!H)")
 	field(INPA,"$(P)$(Q):dmov.A  CP MS")
-	field(INPB,"$(P)$(Q):dmov.INAV  CP MS")
+	field(INPB,"$(P)$(Q):dmov.IAV  CP MS")
 	field(INPC,"$(P)$(Q):dmov.B  CP MS")
-	field(INPD,"$(P)$(Q):dmov.INBV  CP MS")
+	field(INPD,"$(P)$(Q):dmov.IBV  CP MS")
 	field(INPE,"$(P)$(Q):dmov.C  CP MS")
-	field(INPF,"$(P)$(Q):dmov.INCV  CP MS")
+	field(INPF,"$(P)$(Q):dmov.ICV  CP MS")
 	field(INPG,"$(P)$(Q):dmov.D  CP MS")
-	field(INPH,"$(P)$(Q):dmov.INDV  CP MS")
+	field(INPH,"$(P)$(Q):dmov.IDV  CP MS")
 }
 grecord(table,"$(P)$(T)") {
 	field(DESC,"Optical Table")
