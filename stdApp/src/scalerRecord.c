@@ -18,6 +18,8 @@ Initial development by:
 	Advanced Photon Source
 	Argonne National Laboratory
 
+OSI by S. Kate Feng, NSLS, BNL 3/03
+
 Modification Log:
 -----------------
 .01  6/26/93	tmm     Lecroy-scaler record
@@ -54,20 +56,39 @@ Modification Log:
 *******************************************************************************/
 #define VERSION 3.12
 
+#include        <epicsVersion.h>
+
+#if EPICS_VERSION < 3 || (EPICS_VERSION==3 && EPICS_REVISION < 14)
+#define NOT_YET_OSI
+#endif
+
+#if defined(NOT_YET_OSI) || defined(VXWORKSTARGET)
 #include	<vxWorks.h>
+#ifndef __vxworks
+#define __vxworks 1
+#endif
 #include	<types.h>
 #include	<stdioLib.h>
 #include	<lstLib.h>
 #include	<string.h>
 #include	<wdLib.h>
+#else
+#include        <epicsTimer.h>
+
+extern epicsTimerQueueId	scalerWdTimerQ;
+
+#endif
 
 #include	<alarm.h>
 #include	<callback.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
+#include        <dbScan.h>
+#include        <dbEvent.h>
 #include	<dbFldTypes.h>
 #include	<errMdef.h>
 #include	<recSup.h>
+#include        <recGbl.h>
 #include	<devSup.h>
 #include	<special.h>
 #define GEN_SIZE_OFFSET
@@ -138,7 +159,7 @@ struct rset scalerRSET = {
 	get_alarm_double
 };
 
-static void alarm();
+static void do_alarm();
 static void monitor();
 static void updateCounts(scalerRecord *pscal);
 
@@ -191,7 +212,7 @@ int pass;
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
 	struct callback *pcallbacks, *pupdateCallback, *puserCallback, *pautoCallback, *pdeviceCallback;
 
-	Debug(5, "init_record: pass = %d\n", pass);
+	Debug(5, "scaler init_record: pass = %d\n", pass);
 	Debug(5, "init_record: .PR1 = %ld\n", pscal->pr1);
 	if (pass == 0) {
 		pscal->vers = VERSION;
@@ -210,21 +231,33 @@ int pass;
 	callbackSetCallback(updateCallbackFunc,&pupdateCallback->callback);
 	callbackSetPriority(pscal->prio,&pupdateCallback->callback);
 	pupdateCallback->precord = (struct dbCommon *)pscal;
+
+#ifdef NOT_YET_OSI
 	pupdateCallback->wd_id = wdCreate();
+#else
+ 	pupdateCallback->wd_id = epicsTimerQueueCreateTimer( scalerWdTimerQ, (void(*)())callbackRequest,pupdateCallback );
+#endif
 
 	/* second callback to implement delay */
 	puserCallback = (struct callback *)&(pcallbacks[1]);
 	callbackSetCallback(userCallbackFunc,&puserCallback->callback);
 	callbackSetPriority(pscal->prio,&puserCallback->callback);
 	puserCallback->precord = (struct dbCommon *)pscal;
+#ifdef NOT_YET_OSI
 	puserCallback->wd_id = wdCreate();
-
+#else
+ 	puserCallback->wd_id = epicsTimerQueueCreateTimer( scalerWdTimerQ, (void(*)())callbackRequest,puserCallback );
+#endif
 	/* third callback to implement auto-count */
 	pautoCallback = (struct callback *)&(pcallbacks[2]);
 	callbackSetCallback(autoCallbackFunc,&pautoCallback->callback);
 	callbackSetPriority(pscal->prio,&pautoCallback->callback);
 	pautoCallback->precord = (struct dbCommon *)pscal;
+#ifdef NOT_YET_OSI
 	pautoCallback->wd_id = wdCreate();
+#else
+ 	pautoCallback->wd_id = epicsTimerQueueCreateTimer( scalerWdTimerQ, (void(*)())callbackRequest,pautoCallback );
+#endif
 
 	/* fourth callback for device support */
 	pdeviceCallback = (struct callback *)&(pcallbacks[3]);
@@ -371,8 +404,9 @@ scalerRecord *pscal;
 	/* done counting? */
 	if (pscal->ss == SCALER_STATE_IDLE) {
 		recGblGetTimeStamp(pscal);
-		alarm(pscal);
+		do_alarm(pscal);
 		monitor(pscal);
+		
 		if ((pscal->pcnt==0) && (pscal->us == USER_STATE_IDLE)) {
 			if (prev_scaler_state == SCALER_STATE_COUNTING) {
 				pscal->val = pscal->t;
@@ -385,6 +419,7 @@ scalerRecord *pscal;
 	/* Are we in auto-count mode and not already counting? */
 	if (pscal->us == USER_STATE_IDLE && pscal->cont &&
 		pscal->ss != SCALER_STATE_COUNTING) {
+#ifdef NOT_YET_OSI
 		int ticks; /* ticks to delay */
 
 		/* If we just finished normal counting, display the result for at
@@ -403,9 +438,25 @@ scalerRecord *pscal;
 			 */
 			pscal->ss = SCALER_STATE_WAITING;  /* tell ourselves to start next time */
 			status = wdStart(pautoCallback->wd_id, ticks, (FUNCPTR)callbackRequest,
-					(int)pautoCallback);
 			if (status != OK) printf("process: wdStart(autoCallback) returns ERROR\n");
-		} else {
+					(int)pautoCallback);
+		}
+#else
+	        double dly_sec=0.0;  /* seconds to delay */
+
+		if (justFinishedUserCount) dly_sec = MAX(pscal->dly1, scaler_wait_time);
+		if (putNotifyOperation) dly_sec = MAX(pscal->dly1, scaler_wait_time);
+		/* if (we-have-to-wait && we-haven't-already-waited) { */
+		if ( dly_sec > 0 && pscal->ss != SCALER_STATE_WAITING) {
+			Debug(5, "process: scheduling autocount restart\n", 0);
+			/* Schedule a callback, and make a note that counting should start
+			 * the next time we process (if pscal->ss is still 1 at that time).
+			 */
+			pscal->ss = SCALER_STATE_WAITING;  /* tell ourselves to start next time */
+			epicsTimerStartDelay(pautoCallback->wd_id, dly_sec);
+		}
+#endif
+	       else {
 			Debug(5, "process: restarting autocount\n", 0);
 			/* Either the delay time is zero, or pscal->ss = SCALER_STATE_WAITING
 			 * (we've already waited), so start auto-count counting.
@@ -428,9 +479,16 @@ scalerRecord *pscal;
 			/* schedule first update callback */
 			callbackSetPriority(pscal->prio,&pupdateCallback->callback);
 			if (pscal->rat1 > .1) {
+#ifdef NOT_YET_OSI
 				i = MAX(1, vxTicksPerSecond/pscal->rat1); /* ticks between updates */
 				status = wdStart(pupdateCallback->wd_id,i,(FUNCPTR)callbackRequest,(int)pupdateCallback);
 				if (status != OK) printf("process: wdStart(updateCallback) returns ERROR\n");
+#else
+				double dly_sec;
+
+				dly_sec = 1.0/pscal->rat1; /* delay in seconds between updates */
+			        epicsTimerStartDelay(pupdateCallback->wd_id, dly_sec);
+#endif
 			}
 		}
 	}
@@ -486,8 +544,17 @@ static void updateCounts(scalerRecord *pscal)
 		callbackSetPriority(pscal->prio,&pupdateCallback->callback);
 		rate = ((pscal->us == USER_STATE_COUNTING) ? pscal->rate : pscal->rat1);
 		if (rate > .1) {
+#ifdef NOT_YET_OSI
 			i = MAX(1, vxTicksPerSecond/rate); /* ticks between updates */
 			wdStart(pupdateCallback->wd_id,i,(FUNCPTR)callbackRequest,(int)pupdateCallback);
+#else
+			{
+			  double dly_sec;
+
+			 dly_sec = 1.0/rate; /* delay in seconds between updates */
+			epicsTimerStartDelay(pupdateCallback->wd_id, dly_sec);
+			}
+#endif
 		}
 	}
 
@@ -520,7 +587,11 @@ int	after;
 		/* scanned automatically, since .cnt is a Process-Passive field.) */
 		/* Arrange to process after user-specified delay time */
 		callbackSetPriority(pscal->prio,&puserCallback->callback);
+#ifdef NOT_YET_OSI
 		i = vxTicksPerSecond * pscal->dly; /* ticks to delay */
+#else
+                i = pscal->dly;   /* seconds to delay */
+#endif
 		if (i<0) i = 0;
 		if (i == 0 || pscal->cnt == 0) {
 			/*** handle request now ***/
@@ -532,7 +603,11 @@ int	after;
 				switch (pscal->us) {
 				case USER_STATE_WAITING:
 					/* We may have a watchdog timer going.  Cancel it. */
+#ifdef NOT_YET_OSI
 					(void)wdCancel(puserCallback->wd_id);
+#else
+					epicsTimerCancel(puserCallback->wd_id);
+#endif
 					pscal->us = USER_STATE_IDLE;
 					break;
 				case USER_STATE_REQSTART:
@@ -547,8 +622,13 @@ int	after;
 		else {
 			/* schedule callback to handle request */
 			pscal->us = USER_STATE_WAITING;
+
+#ifdef NOT_YET_OSI
 			wdStart(puserCallback->wd_id,i,(FUNCPTR)callbackRequest,
 				(int)puserCallback);
+#else
+			epicsTimerStartDelay(puserCallback->wd_id, pscal->dly);
+#endif
 		}
 		break;
 
@@ -635,7 +715,7 @@ long          *precision;
 }
 
 
-static void alarm(pscal)
+static void do_alarm(pscal)
 scalerRecord *pscal;
 {
 	if(pscal->udf == TRUE ){
