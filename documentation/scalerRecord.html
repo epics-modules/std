@@ -1,9 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Scaler Record (v 3.2) and related software</TITLE>
+<TITLE>Scaler Record (v 3.15) and related software</TITLE>
 </HEAD>
 <BODY>
-<H1>Scaler Record (v 3.2) and related software</H1>
+<H1>Scaler Record (v 3.15) and related software</H1>
 
 <ADDRESS>Tim Mooney</ADDRESS>
 
@@ -19,94 +19,124 @@
 <A NAME="Overview">
 <H2>Overview</H2></A>
 
-<P>This documentation describes version 3.2 of the EPICS scaler record,
-and related EPICS software required to build and use it.  This version
-of the record is compatible with EPICS 3.13.0, and is incompatible with
-any earlier version of EPICS.
+<P>This documentation describes version 3.15 of the EPICS scaler record, and
+related EPICS software required to build and use it.  This version of the
+record is compatible with EPICS 3.13.9, and has not been tested with any
+earlier version of EPICS.  Currently device support exists for the Joerger VSC  family of VME scalers,
+the Joerger VSxx scalers (but VSxxD have not been tried yet), and for the
+Struck STR7201 and 380x multichannel scaler.
 
-<P>The scaler record provides support for a bank of up to 16 32-bit
-counters (scaler channels) controlled by a common start/stop
-mechanism.  The record divides scaler channels into two groups according
-to the values of each channel's gate-control field (Gn): simple
-counters [Gn = "N" (0)], and preset counters [Gn = "Y" (1)].  Simple counters are zeroed immediately
-before counting begins, and count upwards.  Preset counters are simple
-counters that will not count higher than a preset value.  The first
-preset counter to reach its preset value stop all counters.  (The
-hardware may actually implement a preset counter by loading in the
-preset value, and counting down to zero.  If so, device support is
-expected to maintain the fiction that all counters count up from
-zero.)  Currently device support exists for the Joerger VSC8 and VSC16
-family of VME scalers (TTL, NIM, and ECL versions).
+<P>The scaler record provides support for a bank of up to 64 32-bit counters
+(scaler channels) controlled by a common start/stop mechanism.  The record
+divides scaler channels into two groups according to the values of each
+channel's gate-control field, <b>G<em>n</em></b>: simple counters [<b>G<em>n</em></b> = "N" (0)], and preset
+counters [<b>G<em>n</em></b> = "Y" (1)].  (The Joerger VS does not support preset counters.)
+Simple counters are zeroed immediately before counting begins, and count
+upwards.  Preset counters are simple counters that will not count higher than
+a preset value.  The first preset counter to reach its preset value will stop all
+counters.  (The hardware may actually implement a preset counter by loading
+in the preset value, and counting down to zero.  If so, device support is
+expected to maintain the fiction that all counters count up from zero.) 
 
-<P>Scaler channel 1 receives special treatment: it is presumed to count a
-fixed-frequency clock signal, and its value is presumed to indicate the
-time interval during which counting was enabled.  The fields 
+
+<P>Scaler channel 1 receives special treatment, which depends on the
+capabilities of the hardware: for Joerger VSC and Struck scalers, channel 1
+is presumed to count a fixed-frequency clock signal, and its value is
+presumed to indicate the time interval during which counting was enabled; for
+Joerger VS scalers, the software selects the clock frequency.  The fields 
 <UL>
-<LI>T (time)
-<LI>TP (time preset)
-<LI>S1 (scaler channel 1 value)
-<LI>PR1 (scaler channel 1 preset value), and
-<LI>FREQ (clock frequency)
+<LI><b>T</b> (time)
+<LI><b>TP</b> (time preset)
+<LI><b>S1</b> (scaler channel 1 value)
+<LI><b>PR1</b> (scaler channel 1 preset value), and
+<LI><b>FREQ</b> (clock frequency)
 </UL> satisfy the following equations:
 <PRE>
-	T = S1 / FREQ
-	TP = PR1 / FREQ
+	<b>T</b> = <b>S1</b> / <b>FREQ</b>
+	<b>TP</b> = <b>PR1</b> / <b>FREQ</b>
 </PRE>
-It is the user's job to make sure that FREQ actually contains the
-frequency of the clock signal input to scaler channel 1.
+For all but the Joerger VS scalers, it is the user's job to make sure that
+<b>FREQ</b> actually contains the frequency of the clock signal input to scaler
+channel 1.
 
-<P>Scaler channel 1 does not have to be used in this way: if FREQ, TP, and T are
-ignored, then this counter behaves like any other counter.
+<P>For all but the Joerger VS scalers, channel 1 does not have to be used
+in this way: if <b>FREQ</b>, <b>TP</b>, and <b>T</b> are ignored, then this counter behaves like
+any other counter.
 
-<P>This is how the scaler record is intended to be used:
+
+<P>This is how the scaler record is intended to be used with Joerger VSC
+and Struck scalers:
 <OL>
-<LI>The user sets FREQ to the frequency of the clock signal input to
+<LI>The user sets <b>FREQ</b> to the frequency of the clock signal input to
    scaler channel 1.
-<LI>The user sets TP (time preset) and/or PRn (preset value for scaler channel n)
-<LI>The user sets CNT to "Count" (1), initiating counting.
+<LI>The user sets <b>TP</b> (time preset) and/or <b>PR<em>n</em></b> (preset value for scaler channel n)
+<LI>The user sets <b>CNT</b> to "Count" (1), initiating counting.
 <LI>The counters count until one of them reaches its preset value, whereupon
-   the record resets CNT to "Done" (0), or the user manually resets CNT to
+   the record resets <b>CNT</b> to "Done" (0), or the user manually resets <b>CNT</b> to
    "Done" (0), causing couting to stop.
 </OL>
 
-<P>This version of the scaler record maintains two counting modes:
-normal and background (also called AutoCount).  Normal counting is
-controlled by the CNT ("Count/Done") field, the time preset, and other
+<P>This is how the scaler record is intended to be used with Joerger VS
+scalers:
+<OL>
+<LI>The user sets <b>TP</b> (time preset).  The software will select the clock frequency
+and preset value that will best approximate the time preset.  (The user may
+also specify a counting time by setting <b>PR1</b>, and the software will attempt
+to count for <b>PR1</b>/<b>FREQ</b>, using <b>FREQ</b>'s value at the time the scaler actually
+starts.  The software may change <b>FREQ</b> and <b>PR1</b> to achieve the desired counting
+time using values that the hardware will accept.)
+<LI>The user sets <b>CNT</b> to "Count" (1), initiating counting.
+<LI>The counters count until one of them reaches its preset value, whereupon
+   the record resets <b>CNT</b> to "Done" (0), or the user manually resets <b>CNT</b> to
+   "Done" (0), causing counting to stop.
+</OL>
+<P>The scaler record maintains two counting modes:
+<em>normal</em> and <em>background</em> (also called AutoCount).  Normal counting is
+controlled by the <b>CNT</b> ("Count/Done") field, the time preset, and other
 presets, as described above.  Background counting is controlled by the
-CONT ("OneShot/AutoCount") field, normally ignores user preset values,
+<b>CONT</b> ("OneShot/AutoCount") field, normally ignores user preset values,
 and is intended to give the user continuous updates whenever the scaler
-would otherwise be idle.
+would otherwise be idle. 
 
-<P>When CONT = "AutoCount" (1), and no normal counting operation is
-already in progress, the scaler waits for the AutoCount delay (DLY1);
-counts for the AutoCount period (TP1); and displays the result.  If the
-AutoCount period (TP1) is less than .001 s, we default to the normal
-criteria for determining the count period.  If the AutoCount Display
-Rate (RAT1) is greater than zero (Hz), then the scaler values are
-displayed at that rate while background counting is in progress.
-Background counting is interrupted immediately whenever a normal
-counting operation is started with the CNT field, and the results of a
-normal counting operation are held for one second after the scaler
-finishes that operation before background counting begins again.
-Background counting never affects the state of the CNT field, so this
-field can always be used to determine when a normal counting operation
-has begun and finished.
+<P>Normal counting always takes precedence over background counting. If a
+background count is in progress when a normal count is requested, the
+background count will be aborted, and the normal count started.  After a
+normal count has completed, the scaler values will be held for some time, to
+allow clients to collect them, before background counting is resumed.
+(However, if <b>CONT</b> is set to one after a normal count has finished, background
+counting begins without this hold period.)  The hold period defaults to 10
+seconds, and can be changed at any time by setting the variable
+'<b>scaler_wait_time</b>' to the period, in seconds, for which normal-count values
+are to be held.
+
+<P>When <b>CONT</b> = "AutoCount" (1), and no normal counting operation is in
+progress, the scaler waits for the AutoCount delay, <b>DLY1</b>; counts
+for the AutoCount period, <b>TP1</b>; and displays the result.  If the
+AutoCount period <b>TP1</b>, is less than .001 s, the software presumes
+you neglected to set it, and uses the normal-count period, <b>TP</b>,
+instead.  If the AutoCount Display Rate, <b>RAT1</b>, is greater than
+zero (Hz), accumulating scaler values are displayed at that rate while
+background counting is in progress.  Background counting never affects the
+state of the <b>CNT</b> field, so this field can always be used to determine when a
+normal counting operation has begun and finished.
 
 <P>The scaler record is unlike most other EPICS records in that its
-processing is neither "synchronous" nor "asynchronous", as these terms
-are used in the EPICS Record Reference Manual.  Currently, the PACT
-field is always FALSE after record processing has completed, even
-though the scaler may be counting.  This means the record always
-responds to channel-access puts, and that counting can be stopped at
-any time.  The record's forward link is not executed until the scaler
-has stopped counting.
+processing is neither "synchronous" nor "asynchronous", as these terms are
+used in EPICS documentation.  Currently, the <b>PACT</b> field is always FALSE after
+record processing has completed, even though the scaler may be counting. 
+This means the record always responds to channel-access puts, and that
+counting can be stopped at any time.
+
+<P>The scaler record's forward link is executed only and always when a
+normal-count operation has finished, either by reaching a preset, or by being
+stopped manually.  (Background counting never causes the record's forward
+link to fire.)  This means that a channel-access <b>ca_put_callback()</b>
+operation will not perform the callback until the scaler has finished.
 
 
 <A NAME="Fields">
 <H2>Field Descriptions</H2></A>
-<P>In addition to fields common to all record types (see the <A
-HREF="http://www.atdiv.lanl.gov/aot8/epics/dbase/recref/rcrf-1.html">EPICS
-Record Reference Manual</A> for these) the scaler record has the fields
+<P>In addition to fields common to all record types, the scaler record has the fields
 described below.
 <UL>
 <LI><A HREF="#Fields_alphabetical">Alphabetical listing of all fields</A>
@@ -127,31 +157,33 @@ find the actual item.</CAPTION></A>
 
 <TR>								<TH>Name		<TH>Access	<TH>Prompt				<TH>Data type	<TH>Comment
 
-<TR><TD><A HREF="#Fields_misc">		CARD	</A> 	<TD>R		<TD>Card Number			<TD>SHORT		<TD>Which VME card
-<TR><TD><A HREF="#Fields_control">	CNT		</A>	<TD>R/W*	<TD>Count				<TD>RECCHOICE	<TD>(0:"Done", 1:"Count")
-<TR><TD><A HREF="#Fields_control">	CONT	</A>	<TD>R/W*	<TD>OneShot/AutoCount	<TD>RECCHOICE	<TD>(0:"OneShot", 1:"AutoCount")
-<TR><TD><A HREF="#Fields_private">	D1...D16</A>	<TD>R/W		<TD>Count Direction n	<TD>RECCHOICE	<TD>(0:"Up", 1:"Dn")
-<TR><TD><A HREF="#Fields_control">	DLY		</A>	<TD>R/W		<TD>Delay				<TD>FLOAT		<TD>before counting
-<TR><TD><A HREF="#Fields_control">	DLY1		</A>	<TD>R/W		<TD>Auto-mode Delay				<TD>FLOAT		<TD>before counting
-<TR><TD><A HREF="#Fields_misc">		EGU		</A>	<TD>R/W		<TD>Units Name			<TD>STRING		<TD>8 characters
-<TR><TD><A HREF="#Fields_data">		FREQ	</A>	<TD>R/W		<TD>Time base freq		<TD>DOUBLE		<TD>e.g., 1e7
-<TR><TD><A HREF="#Fields_control">	G1...G16</A>	<TD>R/W		<TD>Gate Control n		<TD>RECCHOICE	<TD>preset? (0:"N", 1:"Y")
-<TR><TD><A HREF="#Fields_misc">		NCH		</A>	<TD>R		<TD>Number of Channels	<TD>SHORT		<TD>from device
-<TR><TD><A HREF="#Fields_misc">		NM1...NM16</A>	<TD>R/W		<TD>Scaler n name		<TD>STRING		<TD>user's field
-<TR><TD><A HREF="#Fields_link">		OUT		</A>	<TD>R		<TD>Output Specification<TD>OUTLINK		<TD>link to hardware
-<TR><TD><A HREF="#Fields_private">	PCNT	</A>	<TD>R		<TD>Prev Count			<TD>RECCHOICE	<TD>private
-<TR><TD><A HREF="#Fields_misc">		PREC	</A>	<TD>R/W		<TD>Display Precision	<TD>SHORT		<TD>num decimal places
-<TR><TD><A HREF="#Fields_control">	PR1...PR16</A>	<TD>R/W		<TD>Preset n			<TD>LONG		<TD>preset values
-<TR><TD><A HREF="#Fields_control">	RATE	</A>	<TD>R/W		<TD>Display Rate (Hz.)	<TD>FLOAT		<TD>in [0..60] Hz
-<TR><TD><A HREF="#Fields_control">	RAT1	</A>	<TD>R/W		<TD>Auto Display Rate (Hz.)	<TD>FLOAT		<TD>in [0..60] Hz
-<TR><TD><A HREF="#Fields_data">		S1...S16</A>	<TD>R		<TD>Scaler n			<TD>LONG		<TD>results
-<TR><TD><A HREF="#Fields_private">	SS</A>			<TD>r		<TD>Scaler state		<TD>SHORT		<TD>state of hardware
-<TR><TD><A HREF="#Fields_data">		T		</A>	<TD>R		<TD>Timer				<TD>DOUBLE		<TD>elapsed time
-<TR><TD><A HREF="#Fields_control">	TP		</A>	<TD>R/W		<TD>Time Preset			<TD>DOUBLE		<TD>preset time
-<TR><TD><A HREF="#Fields_control">	TP1		</A>	<TD>R/W		<TD>Time Preset			<TD>DOUBLE		<TD>preset time (auto mode)
-<TR><TD><A HREF="#Fields_private">	US</A>			<TD>r		<TD>User state			<TD>SHORT		<TD>state of user request
-<TR><TD><A HREF="#Fields_private">	VAL		</A>	<TD>R/W		<TD>Result				<TD>DOUBLE		<TD>not used
-<TR><TD><A HREF="#Fields_misc">		VERS	</A>	<TD>R		<TD>Code Version		<TD>FLOAT		<TD>code version
+<TR><TD><A HREF="#Fields_misc">		CARD	</A> 	<TD>R		<TD>Card Number				<TD>SHORT	<TD>Which VME card
+<TR><TD><A HREF="#Fields_control">	CNT		</A>	<TD>R/W*	<TD>Count					<TD>MENU	<TD>(0:"Done", 1:"Count")
+<TR><TD><A HREF="#Fields_control">	CONT	</A>	<TD>R/W*	<TD>OneShot/AutoCount		<TD>MENU	<TD>(0:"OneShot", 1:"AutoCount")
+<TR><TD><A HREF="#Fields_link">		COUT	</A>	<TD>R/W		<TD>CNT output				<TD>OUTLINK	<TD>To synchronize another record
+<TR><TD><A HREF="#Fields_private">	D1...D64</A>	<TD>R/W		<TD>Count Direction n		<TD>MENU	<TD>(0:"Up", 1:"Dn")
+<TR><TD><A HREF="#Fields_control">	DLY		</A>	<TD>R/W		<TD>Delay					<TD>FLOAT	<TD>before counting
+<TR><TD><A HREF="#Fields_control">	DLY1	</A>	<TD>R/W		<TD>Auto-mode Delay			<TD>FLOAT	<TD>before counting
+<TR><TD><A HREF="#Fields_misc">		EGU		</A>	<TD>R/W		<TD>Units Name				<TD>STRING	<TD>8 characters
+<TR><TD><A HREF="#Fields_data">		FREQ	</A>	<TD>R/W		<TD>Time base freq			<TD>DOUBLE	<TD>e.g., 1e7
+<TR><TD><A HREF="#Fields_control">	G1...G64</A>	<TD>R/W		<TD>Gate Control n			<TD>MENU	<TD>preset? (0:"N", 1:"Y")
+<TR><TD><A HREF="#Fields_misc">		NCH		</A>	<TD>R		<TD>Number of Channels		<TD>SHORT	<TD>from device
+<TR><TD><A HREF="#Fields_misc">		NM1...NM64</A>	<TD>R/W		<TD>Scaler n name			<TD>STRING	<TD>user's field
+<TR><TD><A HREF="#Fields_link">		OUT		</A>	<TD>R		<TD>Output Specification	<TD>OUTLINK	<TD>link to hardware
+<TR><TD><A HREF="#Fields_private">	PCNT	</A>	<TD>R		<TD>Prev Count				<TD>MENU	<TD>private
+<TR><TD><A HREF="#Fields_misc">		PREC	</A>	<TD>R/W		<TD>Display Precision		<TD>SHORT	<TD>num decimal places
+<TR><TD><A HREF="#Fields_control">	PR1...PR64</A>	<TD>R/W		<TD>Preset n				<TD>LONG	<TD>preset values
+<TR><TD><A HREF="#Fields_control">	RATE	</A>	<TD>R/W		<TD>Display Rate (Hz.)		<TD>FLOAT	<TD>in [0..60] Hz
+<TR><TD><A HREF="#Fields_control">	RAT1	</A>	<TD>R/W		<TD>Auto Display Rate (Hz.)	<TD>FLOAT	<TD>in [0..60] Hz
+<TR><TD><A HREF="#Fields_private">	RPVT	</A>	<TD>r		<TD>structure pointer		<TD>void *	<TD>private
+<TR><TD><A HREF="#Fields_data">		S1...S64</A>	<TD>R		<TD>Scaler n				<TD>LONG	<TD>results
+<TR><TD><A HREF="#Fields_private">	SS</A>			<TD>r		<TD>Scaler state			<TD>SHORT	<TD>state of hardware
+<TR><TD><A HREF="#Fields_data">		T		</A>	<TD>R		<TD>Timer					<TD>DOUBLE	<TD>elapsed time
+<TR><TD><A HREF="#Fields_control">	TP		</A>	<TD>R/W		<TD>Time Preset				<TD>DOUBLE	<TD>preset time
+<TR><TD><A HREF="#Fields_control">	TP1		</A>	<TD>R/W		<TD>Time Preset				<TD>DOUBLE	<TD>preset time (auto mode)
+<TR><TD><A HREF="#Fields_private">	US</A>			<TD>r		<TD>User state				<TD>SHORT	<TD>state of user request
+<TR><TD><A HREF="#Fields_private">	VAL		</A>	<TD>R/W		<TD>Result					<TD>DOUBLE	<TD>not used
+<TR><TD><A HREF="#Fields_misc">		VERS	</A>	<TD>R		<TD>Code Version			<TD>FLOAT	<TD>code version
 
 <TR VALIGN=TOP>
 <TD COLSPAN=5, ALIGN=LEFT>
@@ -168,7 +200,7 @@ find the actual item.</CAPTION></A>
 </TR>
 <TR VALIGN=TOP>
 <TD>R/W*</TD> <TD>Read and write are allowed; write triggers record 
-processing if the record's SCAN field is set to "Passive."</TD>
+processing if the record's <b>SCAN</b> field is set to "Passive" (as it should <em>always</em> be).</TD>
 </TR>
 <TR VALIGN=TOP>
 <TD>N</TD>    <TD>No access allowed</TD>
@@ -185,7 +217,7 @@ processing if the record's SCAN field is set to "Passive."</TD>
 <CAPTION><H2>Control/status fields</H2></CAPTION></A>
 <TR VALIGN=TOP><TH>Name	<TH>Access	<TH>Prompt				<TH>Data type		<TH>Comments
 
-<TR VALIGN=TOP><TD>CNT	<TD>R/W*	<TD>Count	<TD>RECCHOICE <TD>(0:"Done", 1:"Count")
+<TR VALIGN=TOP><TD>CNT	<TD>R/W*	<TD>Count	<TD>MENU <TD>0:"Done", 1:"Count"
 	<TR><TD COLSPAN=5>
 User sets this field to "Count" (1) to start counting.  When a preset is reached,
 counting will stop, this field will be reset to "Done" (0), and the forward
@@ -193,49 +225,53 @@ link will be fired.  If this field is set to "Done" (0) while counting is in
 progress, counting will be stopped, the accumulated counts will be reported,
 and the forward link will be fired.
 
-<TR VALIGN=TOP><TD>CONT	<TD>R/W*	<TD>OneShot/AutoCount	<TD>RECCHOICE <TD>(0:"OneShot", 1:"AutoCount")
+<TR VALIGN=TOP><TD>CONT	<TD>R/W*	<TD>OneShot/AutoCount	<TD>MENU <TD>0:"OneShot", 1:"AutoCount"
 	<TR><TD COLSPAN=5>
 User sets this field to "AutoCount" (1) to enable background counting.
-(See also autocount delay (DLY1), autocount display rate (RAT1), and autocount time presetTP1.)
+(See also autocount delay, <b>DLY1</b>, autocount display rate, <b>RAT1</b>, and autocount time preset, <b>TP1</b>.)
 
-<TR VALIGN=TOP><TD>G1...G16	<TD>R/W	<TD>Gate control	<TD>RECCHOICE <TD>(0:"N", 1:"Y")
+<TR VALIGN=TOP><TD>G1...G64	<TD>R/W	<TD>Gate control	<TD>MENU <TD>0:"N", 1:"Y"
 
 	<TR><TD COLSPAN=5>
-There are 16 of these fields, one per channel.  These fields determine
-whether the associated scalers are to be used as simple scalers (Gn=0)
-or preset scalers (Gn=1).  When Gn is set to 1, the record will ensure
-than PRn is nonzero (will set it to 1000, if it was zero).  When PRn is
-set to any positive value, the record will set Gn to 1.
+There are 64 of these fields, one per channel.  These fields determine
+whether the associated scalers are to be used as simple scalers (<b>G<em>n</em></b>=0)
+or preset scalers (<b>G<em>n</em></b>=1).  When <b>G<em>n</em></b> is set to 1, the record will ensure
+than <b>PR<em>n</em></b> is nonzero (will set it to 1000, if it was zero).  When <b>PR<em>n</em></b> is
+set to any positive value, the record will set <b>G<em>n</em></b> to 1.
 
-<TR VALIGN=TOP><TD>PR1...PR16	<TD>R/W	<TD>Preset n	<TD>LONG
+<TR VALIGN=TOP><TD>PR1...PR64	<TD>R/W	<TD>Preset n	<TD>LONG
 
 	<TR><TD COLSPAN=5>
 Preset values for the associated scalers.  If scaler n has been
-designated as a preset scaler (i.e., if Gn=1), then when the scaler
-reaches the count PRn, all scalers will be disabled, and the record
-will report counting has completed by setting CNT=0.  If scaler n has
-not been designated as a preset scaler, the PRn is ignored.  When PRn
-changes to any positive value, the record will set Gn to 1.
+designated as a preset scaler (i.e., if <b>G<em>n</em></b>=1), then when the scaler
+reaches the count <b>PR<em>n</em></b>, all scalers will be disabled, and the record
+will report counting has completed by setting <b>CNT</b>=0.  If scaler <em>n</em> has
+not been designated as a preset scaler, the <b>PR<em>n</em></b> is ignored.  When <b>PR<em>n</em></b>
+changes to any positive value, the record will set <b>G<em>n</em></b> to 1.
 
 <TR VALIGN=TOP><TD>TP	<TD>R/W	<TD>Time preset	<TD>DOUBLE
 
 	<TR><TD COLSPAN=5>
 This field specifies for how long, in seconds, the scaler is to count
-if no other preset stops it.  TP is effectively a proxy for the preset
-field, PR1, associated with scaler 1.  Whenever TP changes, the record
-will set PR1 = TP*FREQ, and otherwise behave as though the user had
-changed PR1.
+if no other preset stops it.  <b>TP</b> is effectively a proxy for the preset
+field, <b>PR1</b>, associated with scaler 1.  Whenever <b>TP</b> changes, the record
+will set <b>PR1</b> = <b>TP</b> * <b>FREQ</b>, and otherwise behave as though the user had
+changed <b>PR1</b>.
 
 <TR VALIGN=TOP><TD>TP1	<TD>R/W	<TD>AutoCount Time preset	<TD>DOUBLE
 
 	<TR><TD COLSPAN=5>
-This field specifies the background-counting period in seconds.
+This field specifies the background-counting period in seconds.  If <b>TP1</b> is less
+than .001, the record presumes someone neglected to set it, and uses <b>TP</b> instead.
+This is important because, if the autocount delay <b>DLY1</b>is zero, the scaler will
+acquire and post values at the rate 1/<b>TP1</b> while background counting is enabled,
+which could use all of the available CPU cycles and/or network bandwidth.
 
 <TR VALIGN=TOP><TD>DLY	<TD>R/W	<TD>Delay (sec)		<TD>FLOAT
 
 	<TR><TD COLSPAN=5>
 The delay, in seconds, that the record is to wait after
-CNT goes to 1 before actually causing counting to begin.
+<b>CNT</b> goes to 1 before actually causing counting to begin.
 
 <TR VALIGN=TOP><TD>DLY1	<TD>R/W	<TD>AutoCount Delay (sec)		<TD>FLOAT
 
@@ -271,23 +307,23 @@ rate:  60 Hz.
 <TR VALIGN=TOP><TD>FREQ	<TD>R/W	<TD>Time base freq. (EGU)		<TD>DOUBLE
 
 	<TR><TD COLSPAN=5>
-The frequency (in Hz) of the clock signal counted by scaler 1.  The
-record uses this field to convert between time values (T and TP, in
-seconds) and values associated with scaler 1 (S1 and PR1).  It is
-the user's responsibility to ensure that this field has the correct
-value.
+The frequency (in Hz) of the clock signal counted by scaler 1.  The record uses this field to
+convert between time values (<b>T</b> and <b>TP</b>, in seconds) and values associated with
+scaler 1 (<b>S1</b> and <b>PR1</b>). For the Joerger VSC and Struck scalers, it is the user's
+responsibility to ensure that this field has the correct value; for the Joerger VS scaler, the
+software will select and post a value for this field.
 
-<TR VALIGN=TOP><TD>S1...S16	<TD>R	<TD>Scaler n value (EGU)		<TD>LONG
+<TR VALIGN=TOP><TD>S1...S64	<TD>R	<TD>Scaler n value (EGU)		<TD>LONG
 
 	<TR><TD COLSPAN=5>
-The counts accumulated by the scalers.  These are posted periodically (at RATE Hz.)
+The counts accumulated by the scalers.  These are posted periodically (at <b>RATE</b> Hz.)
 while counting is in progress, and once after counting stops.
 
 <TR VALIGN=TOP><TD>T	<TD>R	<TD>Timer (EGU)		<TD>DOUBLE
 
 	<TR><TD COLSPAN=5>
-This field is a proxy for the value field, S1, associated with scaler
-1.  Whenever S1 changes, the record will set T = S1/FREQ.
+This field is a proxy for the value field, <b>S1</b>, associated with scaler
+1.  Whenever <b>S1</b> changes, the record will set <b>T</b> =  <b>S1</b> / <b>FREQ</b>.
 
 
 </TABLE>
@@ -298,6 +334,19 @@ This field is a proxy for the value field, S1, associated with scaler
 <A NAME="Fields_link">
 <CAPTION><H2>Link fields</H2></CAPTION></A>
 <TR VALIGN=TOP><TH>Name	<TH>Access	<TH>Prompt				<TH>Data type		<TH>Comments
+
+<TR VALIGN=TOP><TD>COUT	<TD>R/W		<TD>CNT Output	<TD>OUTLINK <TD>To synchronize scaler with some other record
+	<TR><TD COLSPAN=5>
+	
+If this field contains the name of an EPICS PV, whenever <b>CNT</b> changes, its value will be
+written to that PV.  This field is an EPICS output link; in addition to the PV name, you can
+specify the manner in which the value is to be written.  The following choices are possible:
+<DL>
+<DT>NPP<DD>Just write the value.  If the record named in the link is hosted by another IOC
+(read: "VME crate"), then the "NPP" attribute will behave as if "CA" had been specified.
+<DT>PP<DD>Write the value and cause the record named in the link to process
+<DT>CA<DD>Write the value, and let the record decide if it wants to process.
+</DL>
 
 <TR VALIGN=TOP><TD>OUT	<TD>R	<TD>Output Specification	<TD>OUTLINK
 
@@ -313,7 +362,7 @@ This field is a proxy for the value field, S1, associated with scaler
 <CAPTION><H2>Miscellaneous fields</H2></CAPTION></A>
 <TR VALIGN=TOP><TH>Name	<TH>Access	<TH>Prompt				<TH>Data type		<TH>Comments
 
-<TR VALIGN=TOP><TD>NM1...NM16	<TD>R/W		<TD>Scaler n name		<TD>STRING
+<TR VALIGN=TOP><TD>NM1...NM64	<TD>R/W		<TD>Scaler n name		<TD>STRING
 
 	<TD>Names the user has given to individual scaler channels.
 
@@ -328,7 +377,7 @@ This field is a proxy for the value field, S1, associated with scaler
 
 <TR VALIGN=TOP><TD>VERS	<TD>R		<TD>Code Version			<TD>FLOAT
 
-	<TD>Version number of the recScaler.c code.
+	<TD>Version number of the scalerRecord.c code.
 
 <TR VALIGN=TOP><TD>CARD	<TD>R		<TD>Card Number				<TD>SHORT
 
@@ -353,17 +402,19 @@ as reported by device support.
 <CAPTION><H2>Private fields</H2></CAPTION></A>
 <TR VALIGN=TOP><TH>Name	<TH>Access	<TH>Prompt				<TH>Data type		<TH>Comments
 
-<TR VALIGN=TOP><TD>D1...D16 	<TD>R/W	<TD>Count direction	<TD>RECCHOICE 		<TD>(0:"Up", 1:"Dn")
+<TR VALIGN=TOP><TD>D1...D64 	<TD>R/W	<TD>Count direction	<TD>MENU 		<TD>0:"Up", 1:"Dn"
 
 	<TR><TD COLSPAN=5>
 These fields are intended for the private use of the record, and may
-disappear or become read-only in the future.  For scaler n, Dn is
+disappear or become read-only in the future.  For scaler <em>n</em>, <b>D<em>n</em></b> is
 direction in which the hardware actually counts.
 
-<TR VALIGN=TOP><TD>PCNT 		<TD>R/W	<TD>Previous count	<TD>RECCHOICE 		<TD>(0:"Done", 1:"Count")
+<TR VALIGN=TOP><TD>PCNT 		<TD>R/W	<TD>Previous count	<TD>MENU 		<TD>0:"Done", 1:"Count"
 
 	<TR><TD COLSPAN=5>
 Previous value of CNT.
+
+<TR VALIGN=TOP><TD>RPVT		<TD>r	<TD>structure pointer		<TD>void *	<TD>For use by code
 
 <TR VALIGN=TOP><TD>SS 		<TD>r	<TD>Scaler state	<TD>SHORT		<TD>state of hardware
 
@@ -387,14 +438,9 @@ Previous value of CNT.
 <P>
 <A NAME="Files"><H2>Files, device support</H2></A> The following table
 briefly describes all of the files required to implement and use the
-scaler record.  The reader is assumed to be familiar with the <A
-HREF="http://www.aps.anl.gov/asd/controls/epics/EpicsDocumentation/AppDevManuals/iocAppBuildSRcontrol.html">
-IOC Applications: Building and Source/Release Control document</A> which describes
-how to build an EPICS application tree into which these files are to be
-placed, and how to run "gnumake" to build record and device
-support. These files can all be
-obtained from the <A HREF="http://www.aps.anl.gov/xfd/WWW/xfd/SoftDist/Welcome.html"> EPICS Software Distribution</A> (in the <A HREF="http://www.aps.anl.gov/xfd/WWW/xfd/SoftDist/Welcome.html#Custom_EPICS"> custom-software section</A>).
-
+scaler record.  The reader is assumed to be familiar with building an EPICS application.
+These files are part of the
+<A HREF="http://www.aps.anl.gov/aod/bcda/synApps/index.php">synApps</A> distribution.
 <P>
 <TABLE BORDER CELLPADDING=5>
 <TR><TH COLSPAN=2>
@@ -403,8 +449,9 @@ files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/src/</CODE>
 </TH> </TR>
 <TR VALIGN=TOP><TD>scalerRecord.c	<TD>Record support for the scaler record</TR>
 <TR VALIGN=TOP><TD>devScaler.h		<TD>Header included by record and device support</TR>
-<TR VALIGN=TOP><TD>devScaler.c		<TD>Device support for Joerger VSC8 and VSC16</TR>
-
+<TR VALIGN=TOP><TD>devScaler.c		<TD>Device support for Joerger VSC scalers</TR>
+<TR VALIGN=TOP><TD>devScaler_VS.c	<TD>Device support for Joerger VS scalers</TR>
+<TR VALIGN=TOP><TD>devScalerSTR7201.c	<TD>Device support for Struck scalers</TR>
 <TR VALIGN=TOP>
 <TD>scalerRecord.dbd</TD>
 <TD>This file defines all of the fields menus, etc. for the scaler record.</TD>
@@ -419,6 +466,17 @@ this file and add the following lines:
 include "scalerRecord.dbd"
 # Device support for scaler record
 device(scaler,VME_IO,devScaler,"Joerger VSC8/16")
+device(scaler,VME_IO,devScaler_VS,"Joerger VS")
+device(scaler,VME_IO,devScalerSTR7201,"Struck STR7201 Scaler")
+</PRE></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>Makefile.Host</TD>
+<TD>This file is not included in the distribution.  However, the user must edit
+this file and add, for example, the following lines:
+<PRE>
+RECTYPES += scalerRecord.h
 </PRE></TD>
 </TR>
 
@@ -427,15 +485,36 @@ device(scaler,VME_IO,devScaler,"Joerger VSC8/16")
 <TD>This file is not included in the distribution.  However, the user must edit
 this file and add, for example, the following lines:
 <PRE>
-
-RECTYPES += scalerRecord.h
-SRCS.c += ../scalerRecord.c ../devScaler.c
-PROD += scalerRecord.o
-PROD += devScaler.o
-
+SRCS.c += ../scalerRecord.c ../devScaler.c ../devScaler_VS.c
 </PRE></TD>
-</TR>
+</TR></TABLE>
+
+
+
+
+
+
+
+
+
+
+<P>
+<TABLE BORDER CELLPADDING=5>
+<TR><TH COLSPAN=2>
+DATABASES AND SAVE-RESTORE REQUEST FILES<BR>
+files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/Db/</CODE>
+</TH> </TR>
+<TR VALIGN=TOP><TD>scaler.db	<TD>device-independent database</TR>
+<TR VALIGN=TOP><TD>scaler_16ch_settings.req	<TD>save_restore request file for scaler.db</TR>
+<TR VALIGN=TOP><TD>scaler_32ch_settings.req	<TD>save_restore request file for scaler.db</TR>
+<TR VALIGN=TOP><TD>scaler_8ch_settings.req	<TD>save_restore request file for scaler.db</TR>
+<TR VALIGN=TOP><TD>scaler_channelN_settings.req	<TD>save_restore request file included by scaler_*_settings.req</TR>
+<TR VALIGN=TOP><TD>Jscaler.db	<TD>Old Joerger VSC-specific database</TR>
+<TR VALIGN=TOP><TD>Jscaler_channelN_settings.req	<TD>save_restore request file included by Jscaler_settings.req</TR>
+<TR VALIGN=TOP><TD>Jscaler_settings.req	<TD>save_restore request file for scaler.db</TR>
 </TABLE>
+
+
 
 
 
@@ -447,12 +526,16 @@ files to be placed in
 </TH> </TR>
 <TR VALIGN=TOP><TD>scaler.adl		<TD>tiny operator screen for 8-channel scaler
 <TR VALIGN=TOP><TD>scaler16.adl		<TD>same, but for 16-channel scaler
+<TR VALIGN=TOP><TD>scaler32.adl		<TD>same, but for 32-channel scaler
 <TR VALIGN=TOP><TD>scaler_more.adl		<TD>medium operator screen
 <TR VALIGN=TOP><TD>scaler16_more.adl	<TD>same, but for 16-channel scaler
+<TR VALIGN=TOP><TD>scaler32_more.adl	<TD>same, but for 32-channel scaler
 <TR VALIGN=TOP><TD>scaler_full.adl		<TD>big operator screen
 <TR VALIGN=TOP><TD>scaler16_full.adl	<TD>same, but for 16-channel scaler
+<TR VALIGN=TOP><TD>scaler32_full.adl	<TD>same, but for 32-channel scaler
 <TR VALIGN=TOP><TD>scaler_full_calc.adl	<TD>big operator screen with user calculations
 <TR VALIGN=TOP><TD>scaler16_full_calc.adl	<TD>same, but for 16-channel scaler
+<TR VALIGN=TOP><TD>scaler32_full_calc.adl	<TD>same, but for 32-channel scaler
 
 <TR><TD COLSPAN=2>These files build <CODE>medm</CODE> screens to access the scaler record
 and related process variables in the database included with this distribution.
@@ -484,63 +567,27 @@ from a startup file that supports scalers:
 #######################################################################
 # vxWorks startup script to load and execute system (iocCore) software.
 </PRE>
-<B><FONT COLOR=#FFFFFF> Load standard EPICS software</FONT></B>
-<PRE>
-# Load EPICS base software
-ld < bin/iocCore
-</PRE>
+...
+<pre>
+### Scalers: Joerger VSC8/16
+#scalerRecordDebug=20
+#devScalerDebug=20
+dbLoadRecords("stdApp/Db/scaler.db","P=xxx:,DTYP=Joerger VSC8/16,S=scaler1,C=0", std)
+# Joerger VSC setup parameters: 
+#     (1)cards, (2)base address(ext, 256-byte boundary), 
+#     (3)interrupt vector (0=disable or  64 - 255)
+VSCSetup(1, 0xB0000000, 200)
 
-<B><FONT COLOR=#FFFFFF> Load custom EPICS software (including motor support) </FONT></B>
-<PRE>
-ld < bin/xxxApp.o
-# Load scaler record and device support (if they're not included in xxxApp.o)
-ld < bin/scalerRecord.o
-ld < bin/devScaler.o
-</PRE>
+# Joerger VS
+# scalerVS_Setup(int num_cards,	/* maximum number of cards in crate */
+#	char *addrs,		/* address (0x800-0xf800, 2048-byte (0x800) boundary) */
+#	unsigned vector,	/* valid vectors(64-255) */
+#	int intlevel)	
+scalerVS_Setup(1, 0x2000, 205, 5)
+#devScaler_VSDebug=20
+dbLoadRecords("stdApp/Db/scaler.db","P=xxx:,DTYP=Joerger VS,S=scaler2,C=0", std)
+</pre>
 
-<B><FONT COLOR=#FFFFFF> Scaler-related databases </FONT></B>
-<PRE>
-# Tell EPICS all about the record types, device-support modules, drivers,
-# etc. in the software we just loaded (xxxApp)
-dbLoadDatabase("dbd/xxxApp.dbd")
-
-# scalers
-dbLoadRecords("xxxApp/Db/Jscaler.db","P=xxx:,S=scaler1,C=0")
-dbLoadRecords("xxxApp/Db/Jscaler.db","P=xxx:,S=scaler2,C=1")
-</PRE>
-<FONT COLOR=#FFFFFF> <B>Specify scaler-controller board address, interrupt vector, etc.</B><BR>
-<TABLE BORDER CELLPADDING=5>
-<TR><TH COLSPAN=2><PRE>
-#VSCSetup(nCards, baseAddress, intVectBase)
-VSCSetup(2, 0xD0000000, 200)
-</PRE>
-</TH>
-<TR VALIGN=TOP><TD>nCards</TD>
-<TD>the actual number of cards may be less, but not greater than this
-</TR>
-<TR VALIGN=TOP><TD>baseAddress</TD>
-<TD>the base address of the first card of a series.  This must agree
-with address jumpers on the actual card(s).
-<P>Joerger VSC8 and VSC16 have base addresses in the A32 address space,
-on a 256-byte (0x100) boundary.  (I.e., these cards require 256 bytes
-each, and must all be addressed contiguously as, e.g., 0xD0000000,
-0xD0000100,...).
-</TD></TR>
-<TR VALIGN=TOP><TD>intVectBase</TD>
-<TD>the interrupt vector that will be loaded into the first card of a
-series.  Succeeding cards will be loaded with intVectBase+1,
-intVectBase+2, etc.  Stay in the range [64..255].  (The interrupt <EM>level</EM>
-is read from the hardware.)</TD>
-</TR>
-</TABLE>
-</FONT>
-
-<B><FONT COLOR=#FFFFFF> Start EPICS </FONT></B>
-<PRE>
-iocInit
-</PRE>
-
-</CODE>
 </TD>
 </TR>
 </TABLE>
@@ -550,12 +597,7 @@ iocInit
 files to be placed in <CODE>&lt;top&gt;/&lt;app&gt;App/op/burt/</CODE>
 </TH></TR>
 
-<TR VALIGN=TOP><TD>scalerSettings.req   <TD>sample request file to save
-settings of one scaler database.  Edit this file, supplying names of
-the scaler records whose settings you want saved.  (The sample file
-also saves the states of other records in the sample database,
-Jscaler.db, that control calculations done when the scaler finishes
-counting.)
+
 <TR VALIGN=TOP><TD>yyScalerSettings.req	<TD>save settings of a specified scaler record.  This file is <CODE>#include</CODE>'d (once for each scaler) by scalerSettings.req.
 
 <TR><TD COLSPAN=2>These files tell the backup/restore tool how to save scaler
@@ -575,14 +617,14 @@ burtwb -f myScalerSettings.snap<BR>
 
 <HR>
 <A NAME="Restrictions"><H2>Restrictions</H2></A>
-When AutoCount is enabled, with a very short counting time (TP1) and delay
-time (DLY1), the scaler can swamp the network with data.<HR>
+None.
+<HR>
 
 <ADDRESS>
 Suggestions and comments to: 
 <BR><A HREF="mailto:mooney@aps.anl.gov">Tim Mooney</A> : (mooney@aps.anl.gov)
 <BR>
-Last modified: November 24, 1997
+Last modified: February 19, 2004
 </ADDRESS>
 
 </BODY>
