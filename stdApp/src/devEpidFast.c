@@ -66,7 +66,6 @@ typedef struct {
     char *outputName;
     asynUser *pcallbackDataAsynUser;
     asynUser *pcallbackIntervalAsynUser;
-    asynUser *pfloat64InputAsynUser;
     asynUser *pfloat64OutputAsynUser;
     double averageStore;
     int numAverage;
@@ -112,7 +111,7 @@ static long init_record(epidRecord *pepid)
     epidFastPvt *pPvt;
     char *tok_save;
     char *p;
-    char *drvUserName;
+    const char *drvUserName;
     size_t drvUserSize;
     char temp[100];
 
@@ -151,6 +150,17 @@ static long init_record(epidRecord *pepid)
         goto bad;
     }
     pasynInterface = pasynManager->findInterface(pasynUser,
+                                                 asynFloat64Type, 1);
+    if (!pasynInterface) {
+        errlogPrintf("devEpidFast::init_record, cannot find "
+                     "asynFloat64 interface %s\n",
+                     pasynUser->errorMessage);
+        goto bad;
+    }
+    pPvt->pfloat64Input = (asynFloat64 *) pasynInterface->pinterface;
+    pPvt->float64InputPvt = pasynInterface->drvPvt;
+
+    pasynInterface = pasynManager->findInterface(pasynUser,
                                                  asynFloat64CallbackType, 1);
     if (!pasynInterface) {
         errlogPrintf("devEpidFast::init_record, cannot find "
@@ -159,10 +169,8 @@ static long init_record(epidRecord *pepid)
         goto bad;
     }
     pPvt->pfloat64Callback = (asynFloat64Callback *) pasynInterface->pinterface;
-    pPvt->float64InputPvt = pasynInterface->drvPvt;
+    pPvt->float64CallbackPvt = pasynInterface->drvPvt;
 
-    pPvt->pcallbackIntervalAsynUser = pasynManager->duplicateAsynUser(
-                                           pPvt->pcallbackDataAsynUser, 0, 0);
     pasynInterface = pasynManager->findInterface(pasynUser,
                                                  asynDrvUserType, 1);
     if (!pasynInterface) {
@@ -196,7 +204,7 @@ static long init_record(epidRecord *pepid)
     pPvt->float64OutputPvt = pasynInterface->drvPvt;
 
     pPvt->pdrvUser->create(pPvt->drvUserPvt, pPvt->pcallbackDataAsynUser, 
-                           "data", drvUserName, &drvUserSize);
+                           "data", &drvUserName, &drvUserSize);
     if (!drvUserSize) {
         errlogPrintf("devEpidFast::init_record, asynDrvUser->create "
                      "failed for data %s\n",
@@ -206,19 +214,22 @@ static long init_record(epidRecord *pepid)
     pPvt->pfloat64Callback->registerCallback(pPvt->float64CallbackPvt, 
                                              pPvt->pcallbackDataAsynUser,
                                              dataCallback, pPvt);
+
+    pPvt->pcallbackIntervalAsynUser = pasynManager->duplicateAsynUser(
+                                           pPvt->pcallbackDataAsynUser, 0, 0);
     pPvt->pdrvUser->create(pPvt->drvUserPvt, pPvt->pcallbackIntervalAsynUser, 
-                           "interval", &drvUserName, &drvUserSize);
+                           "SCAN_PERIOD", &drvUserName, &drvUserSize);
     if (!drvUserSize) {
         errlogPrintf("devEpidFast::init_record, asynDrvUser->create "
-                     "failed for interval %s\n",
+                     "failed for SCAN_PERIOD %s\n",
                      pPvt->pcallbackIntervalAsynUser->errorMessage);
         goto bad;
     }
     pPvt->pfloat64Callback->registerCallback(pPvt->float64CallbackPvt, 
-                                             pPvt->pcallbackDataAsynUser,
+                                             pPvt->pcallbackIntervalAsynUser,
                                              intervalCallback, pPvt);
-    status = pPvt->pfloat64Input->read(pPvt->float64InputPvt,
-                                       pPvt->pfloat64InputAsynUser,
+    status = pPvt->pfloat64Input->read(pPvt->float64CallbackPvt,
+                                       pPvt->pcallbackIntervalAsynUser,
                                        &pPvt->callbackInterval);
     update_params(pepid);
     return(0);
