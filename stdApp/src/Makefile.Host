@@ -35,9 +35,9 @@ ca_DIR  = $(EPICS_BASE_LIB)
 Db_DIR  = $(EPICS_BASE_LIB)
 Com_DIR = $(EPICS_BASE_LIB)
 
-# publich this file so it can be included by device support for scaler
-# built in the MCA module
+# publish these file so they can be included by other apps.
 INC += devScaler.h
+INC += fastPID.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
