@@ -29,7 +29,6 @@
 #include <asynDriver.h>
 #include <asynDrvUser.h>
 #include <asynFloat64.h>
-#include <asynFloat64Callback.h>
 
 #include "epidRecord.h"
 
@@ -54,8 +53,6 @@ typedef struct {
     double timePerPointActual;
     asynFloat64 *pfloat64Input;
     void *float64InputPvt;
-    asynFloat64Callback *pfloat64Callback;
-    void *float64CallbackPvt;
     asynDrvUser *pdrvUser;
     void *drvUserPvt;
     asynFloat64 *pfloat64Output;
@@ -114,6 +111,7 @@ static long init_record(epidRecord *pepid)
     const char *drvUserName;
     size_t drvUserSize;
     char temp[100];
+    void *registrarPvt;
 
     pPvt = callocMustSucceed(1, sizeof(*pPvt), "devEpidFast::init_record");
     pepid->dpvt = pPvt;
@@ -159,17 +157,6 @@ static long init_record(epidRecord *pepid)
     pPvt->float64InputPvt = pasynInterface->drvPvt;
 
     pasynInterface = pasynManager->findInterface(pasynUser,
-                                                 asynFloat64CallbackType, 1);
-    if (!pasynInterface) {
-        errlogPrintf("devEpidFast::init_record %s, cannot find "
-                     "asynFloat64Callback interface %s\n",
-                     pepid->name, pasynUser->errorMessage);
-        goto bad;
-    }
-    pPvt->pfloat64Callback = (asynFloat64Callback *) pasynInterface->pinterface;
-    pPvt->float64CallbackPvt = pasynInterface->drvPvt;
-
-    pasynInterface = pasynManager->findInterface(pasynUser,
                                                  asynDrvUserType, 1);
     if (!pasynInterface) {
         errlogPrintf("devEpidFast::init_record %s, cannot find "
@@ -209,9 +196,9 @@ static long init_record(epidRecord *pepid)
                      pepid->name, pPvt->pcallbackDataAsynUser->errorMessage);
         goto bad;
     }
-    pPvt->pfloat64Callback->registerCallback(pPvt->float64CallbackPvt, 
-                                             pPvt->pcallbackDataAsynUser,
-                                             dataCallback, pPvt);
+    pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
+                                               pPvt->pcallbackDataAsynUser,
+                                               dataCallback, pPvt, &registrarPvt);
 
     pPvt->pcallbackIntervalAsynUser = pasynManager->duplicateAsynUser(
                                            pPvt->pcallbackDataAsynUser, 0, 0);
@@ -223,10 +210,11 @@ static long init_record(epidRecord *pepid)
                      pepid->name, pPvt->pcallbackIntervalAsynUser->errorMessage);
         goto bad;
     }
-    pPvt->pfloat64Callback->registerCallback(pPvt->float64CallbackPvt, 
-                                             pPvt->pcallbackIntervalAsynUser,
-                                             intervalCallback, pPvt);
-    status = pPvt->pfloat64Input->read(pPvt->float64CallbackPvt,
+    pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
+                                               pPvt->pcallbackIntervalAsynUser,
+                                               intervalCallback, pPvt, 
+                                               &registrarPvt);
+    status = pPvt->pfloat64Input->read(pPvt->float64InputPvt,
                                        pPvt->pcallbackIntervalAsynUser,
                                        &pPvt->callbackInterval);
     update_params(pepid);
