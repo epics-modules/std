@@ -65,7 +65,9 @@
  * 4.04  08-24-99  tmm   Fix special treatment of link fields for new dbd file
  * 4.05  10-04-01  tmm   In earlier versions, watchdog interrupt was running
  *                       code directly that should not run at interrupt level.
- *                       Changed to use callback task for delayed output.  
+ *                       Changed to use callback task for delayed output.
+ * 4.06  11-30-01  tmm   If PV name is all blank, reset to empty string.  Fix
+ *                       ppvn pointer problem.
  */
 
 #define VERSION 4.5
@@ -83,6 +85,7 @@
 #include	<taskLib.h>
 #include	<wdLib.h>
 #include	<sysLib.h>
+#include	<ctype.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
@@ -243,6 +246,16 @@ STATIC void pvSearchCallback(recDynLink *precDynLink);
 STATIC void inputChanged(recDynLink *precDynLink);
 
 
+static int isBlank(char *name)
+{
+	int i;
+
+	for(i=0; name[i]; i++) {
+		if (!(isspace(name[i]))) return(0);
+	}
+	return((i>0));
+}
+
 STATIC long init_record(pwait,pass)
     swaitRecord	*pwait;
     int pass;
@@ -251,7 +264,7 @@ STATIC long init_record(pwait,pass)
     long    status = 0;
     int i;
 
-    char            *ppvn[PVN_SIZE];
+    char            *ppvn;
     unsigned short  *pPvStat;
 
     recDynLinkPvt   *puserPvt;
@@ -312,19 +325,23 @@ STATIC long init_record(pwait,pass)
 
     /* Do initial lookup of PV Names using recDynLink lib */
 
-    *ppvn = &pwait->inan[0];
+    ppvn = &pwait->inan[0];
     pPvStat = &pwait->inav;
 
     /* check all dynLinks for non-NULL  */
-    for(i=0;i<NUM_LINKS; i++, pPvStat++, *ppvn += PVN_SIZE) {
-        if (*ppvn[0] != NULL) {
+    for(i=0;i<NUM_LINKS; i++, pPvStat++, ppvn += PVN_SIZE) {
+		if (isBlank(ppvn)) {
+			ppvn[0] = '\0';
+			db_post_events(pwait, ppvn, DBE_VALUE);
+			*pPvStat = NO_PV;
+		} else if (ppvn[0] != NULL) {
             *pPvStat = PV_NC;
             if (i<OUT_INDEX) {
-                recDynLinkAddInput(&pcbst->caLinkStruct[i], *ppvn, 
+                recDynLinkAddInput(&pcbst->caLinkStruct[i], ppvn, 
                  DBR_DOUBLE, rdlSCALAR, pvSearchCallback, inputChanged);
             }
             else {
-                recDynLinkAddOutput(&pcbst->caLinkStruct[i], *ppvn,
+                recDynLinkAddOutput(&pcbst->caLinkStruct[i], ppvn,
                 DBR_DOUBLE, rdlSCALAR, pvSearchCallback);
             }
             if (swaitRecordDebug > 5) printf("%s:Search during init\n", pwait->name);
@@ -449,7 +466,7 @@ STATIC long special(paddr,after)
     swaitRecord  	*pwait = (swaitRecord *)(paddr->precord);
     struct cbStruct     *pcbst = (struct cbStruct *)pwait->cbst;
     int           	special_type = paddr->special;
-    char                *ppvn[PVN_SIZE];
+    char                *ppvn;
     unsigned short      *pPvStat;
     unsigned short       oldStat;
     int  index;
@@ -472,8 +489,12 @@ STATIC long special(paddr,after)
         index = fieldIndex - swaitRecordINAN; /* array index of input */
         pPvStat = &pwait->inav + index; /* pointer arithmetic */
         oldStat = *pPvStat;
-        *ppvn = &pwait->inan[0] + (index*PVN_SIZE); 
-        if (*ppvn[0] != NULL) {
+        ppvn = &pwait->inan[0] + (index*PVN_SIZE); 
+		if (isBlank(ppvn)) {
+			ppvn[0] = '\0';
+			db_post_events(pwait, ppvn, DBE_VALUE);
+		} 
+        if (ppvn[0] != NULL) {
             if (swaitRecordDebug > 5) printf("Search during special \n");
             *pPvStat = PV_NC;
             /* need to post_event before recDynLinkAddXxx because
@@ -482,11 +503,11 @@ STATIC long special(paddr,after)
                 db_post_events(pwait,pPvStat,DBE_VALUE);
             }
             if (index<OUT_INDEX) {
-                recDynLinkAddInput(&pcbst->caLinkStruct[index], *ppvn, 
+                recDynLinkAddInput(&pcbst->caLinkStruct[index], ppvn, 
                 DBR_DOUBLE, rdlSCALAR, pvSearchCallback, inputChanged);
             }
             else {
-                recDynLinkAddOutput(&pcbst->caLinkStruct[index], *ppvn,
+                recDynLinkAddOutput(&pcbst->caLinkStruct[index], ppvn,
                 DBR_DOUBLE, rdlSCALAR, pvSearchCallback);
             }
         }
@@ -796,7 +817,7 @@ STATIC void inputChanged(recDynLink *precDynLink)
         != sizeof(double)) errMessage(0,"recWait rngBufPut error");
 	if (swaitRecordDebug>5) {
 		printf("swaitRecord(%s)inputChanged: %d entries left in monitorQ\n", pwait->name,
-			rngFreeBytes(pcbst->monitorQ)/sizeof(struct qStruct));
+			(int)(rngFreeBytes(pcbst->monitorQ)/sizeof(struct qStruct)));
 	}
     callbackRequest(&pcbst->ioProcCb);
 }
