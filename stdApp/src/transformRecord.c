@@ -375,7 +375,7 @@ process(transformRecord *ptran)
 		/* if value is same as last time, and bitmap is unmarked, don't calc */
 		pu = (int *)pval;
 		plu = (int *)plval;
-		same = (*pval==0. && *pval==0.) || ((pu[0] == plu[0]) && (pu[1] == plu[1]));
+		same = (*pval==0. && *plval==0.) || ((pu[0] == plu[0]) && (pu[1] == plu[1]));
 		if (DEBUG_LEVEL >= 15) {
 			printf("transform(%s.%1s): same=%d, (*pval==*plval) = %d, map=0x%x\n", ptran->name,
 				Fldnames[i], same, *pval == *plval, ptran->map);
