@@ -46,6 +46,7 @@
 #define VERSION 5.13
 
 #include	<stdlib.h>
+#include	<stdio.h>
 #include	<string.h>
 #include	<math.h>
 
