@@ -18,31 +18,6 @@ of this distribution.
  *               callback
  *
  */
-/*#ifdef vxWorks */
-#if 0
-#include <vxWorks.h>
-#include <taskLib.h>
-#include <stddef.h>
-#include <vxLib.h>
-#include <semLib.h>
-#include <sysLib.h>
-#endif
-
-#ifdef vxWorks
-#include <vxWorks.h>
-#include <taskLib.h>
-#include <semLib.h>
-#include <fast_lock.h>
-#include <task_params.h>
-#else
-#define FAST_LOCK epicsMutexId
-#define FASTLOCKINIT(PFAST_LOCK) (*(PFAST_LOCK) = epicsMutexCreate())
-#define FASTLOCK(PFAST_LOCK)    epicsMutexLock(*(PFAST_LOCK));
-#define FASTUNLOCK(PFAST_LOCK)  epicsMutexUnlock(*(PFAST_LOCK))
-
-#define ERROR (-1)
-#endif
-
 
 #include <epicsRingBytes.h>
 #include <epicsMutex.h>
@@ -112,7 +87,7 @@ typedef enum{ioInput,ioOutput}ioType;
 typedef enum{stateStarting,stateSearching,stateGetting,stateConnected}stateType;
 
 typedef struct dynLinkPvt{
-    FAST_LOCK	lock;
+    epicsMutexId	lock;
     char		*pvname;
     chid		chid;
     evid		evid;
@@ -169,7 +144,7 @@ long recDynLinkAddInput(recDynLink *precDynLink,char *pvname,
 	    printf("recDynLinkAddInput can't allocate storage");
 		epicsThreadSuspendSelf();
     }
-    FASTLOCKINIT(&pdynLinkPvt->lock);
+    pdynLinkPvt->lock = epicsMutexMustCreate();
     precDynLink->pdynLinkPvt = pdynLinkPvt;
     pdynLinkPvt->pvname = pvname;
     pdynLinkPvt->dbrType = dbrType;
@@ -201,7 +176,7 @@ long recDynLinkAddOutput(recDynLink *precDynLink,char *pvname,
 		epicsThreadSuspendSelf();
     }
 	/* FIXME remove printfs */
-    FASTLOCKINIT(&pdynLinkPvt->lock);
+    pdynLinkPvt->lock = epicsMutexMustCreate();
     precDynLink->pdynLinkPvt = pdynLinkPvt;
     pdynLinkPvt->pvname = pvname;
     pdynLinkPvt->dbrType = dbrType;
@@ -322,13 +297,13 @@ long recDynLinkGet(recDynLink *precDynLink,void *pbuffer,size_t *nRequest,
     if(*nRequest > pdynLinkPvt->nRequest) {
 	*nRequest = pdynLinkPvt->nRequest;
     }
-    FASTLOCK(&pdynLinkPvt->lock);
+    epicsMutexMustLock(pdynLinkPvt->lock);
     memcpy(pbuffer,pdynLinkPvt->pbuffer,
 	(*nRequest * dbr_size[mapNewToOld[pdynLinkPvt->dbrType]]));
     if(timestamp) *timestamp = pdynLinkPvt->timestamp; /*array copy*/
     if(status) *status = pdynLinkPvt->status;
     if(severity) *severity = pdynLinkPvt->severity;
-    FASTUNLOCK(&pdynLinkPvt->lock);
+    epicsMutexUnlock(pdynLinkPvt->lock);
 all_done:
     return(caStatus);
 }
@@ -472,7 +447,7 @@ LOCAL void monitorCallback(struct event_handler_args eha)
     if(!precDynLink) return;
     pdynLinkPvt = precDynLink->pdynLinkPvt;
     if(pdynLinkPvt->pbuffer) {
-	FASTLOCK(&pdynLinkPvt->lock);
+        epicsMutexMustLock(pdynLinkPvt->lock);
 	if(count>=pdynLinkPvt->nRequest)
 		count = pdynLinkPvt->nRequest;
 	pdbr_time_string = (struct dbr_time_string *)pbuffer;
@@ -483,7 +458,7 @@ LOCAL void monitorCallback(struct event_handler_args eha)
 	pdynLinkPvt->severity = pdbr_time_string->severity;
         memcpy(pdynLinkPvt->pbuffer,pdata,
 	    (count * dbr_size[mapNewToOld[pdynLinkPvt->dbrType]]));
-	FASTUNLOCK(&pdynLinkPvt->lock);
+        epicsMutexUnlock(pdynLinkPvt->lock);
     }
     if(pdynLinkPvt->monitorCallback)
 	(*pdynLinkPvt->monitorCallback)(precDynLink);

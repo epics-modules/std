@@ -124,7 +124,7 @@
 #include	<devSup.h>
 #include	<module_types.h>
 #include	<link.h>
-#include	<fast_lock.h>
+
 #include	<epicsPrint.h>
 
 #include        <aoRecord.h>
@@ -137,6 +137,8 @@
 #include        <mbbiRecord.h>
 
 #include        <dbScan.h>
+
+#define ERROR (-1)
 
 static long init_ai(), read_ai();
 static long init_ao(), write_ao();
@@ -184,7 +186,7 @@ typedef struct a32Reg {
 typedef struct ioCard {  /* Unique for each card */
   volatile a32Reg  *base;    /* address of this card's registers */
   int               nReg;    /* Number of registers on this card */
-  FAST_LOCK         lock;    /* semaphore */
+  epicsMutexId      lock;    /* semaphore */
   IOSCANPVT         ioscanpvt; /* records to process upon interrupt */
 }ioCard;
 
@@ -285,8 +287,7 @@ int	      iLevel;
   }
   else {
       cards[card].nReg = nregs;
-      FASTLOCKINIT(&(cards[card].lock));
-      FASTUNLOCK(&(cards[card].lock));  /* Init the board lock */
+      cards[card].lock = epicsMutexMustCreate();
   }
  
   if(iVector) {
@@ -1254,10 +1255,10 @@ unsigned long   value;
   if (checkCard(card) == ERROR)
     return(ERROR);
 
-  FASTLOCK(&(cards[card].lock));
+  epicsMutexMustLock(cards[card].lock);
   cards[card].base->reg[reg] = ((cards[card].base->reg[reg] & ~mask) | 
                               (value & mask));
-  FASTUNLOCK(&(cards[card].lock));
+  epicsMutexUnlock(cards[card].lock);
 
   if (devA32VmeDebug >= 15)
     printf("devA32Vme: wrote 0x%4.4X to card %d\n",
