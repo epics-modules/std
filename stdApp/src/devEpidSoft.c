@@ -172,9 +172,7 @@ static long do_pid(epidRecord *pepid)
                }
             }
          }
-          if (ki == 0) {
-             if (kp > 0.) i = pepid->drvl; else i = pepid->drvh;
-         }
+          if (ki == 0) i=0.;
           if(dt>0.0) d = kp*kd*(de/dt); else d = 0.0;
           oval = p + i + d;
           break;
