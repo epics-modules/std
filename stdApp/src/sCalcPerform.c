@@ -1,4 +1,4 @@
-/* $Id: sCalcPerform.c,v 1.3 2003-05-28 21:56:32 bcda Exp $ */
+/* $Id: sCalcPerform.c,v 1.4 2003-05-28 22:11:57 bcda Exp $ */
 /*
  *	Author: Julie Sander and Bob Dalesio
  *	Date:	07-27-87
@@ -30,6 +30,15 @@
  * 05-21-98 tmm fixed ?: operator
  * 11-12-98 tmm v4.3 added array operators @, @@ 
  * 10-27-01 mlr added BYTE operator
+ * 05-13-03 tmm extensive modifications to improve performance, decrease
+ *              threat of memory fragmentation, and add new operator type.
+ *              Fixed-size strings are allocated in place on the value
+ *              stack, rather than continually being allocated and freed.
+ *              Added FETCH_A..FETCH_L symbols, in addition to FETCH followed
+ *              by an argument.  Variable-argument operators (MAX, MIN) put
+ *              NaN on the value stack to indicate end of args.  Use isnan
+ *              from EPICS base.  Added checkXxxElement(), which compile to
+ *              nothing if DEBUG=0.
  */
 
 /* This module contains the code for processing the arithmetic
