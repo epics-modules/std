@@ -194,9 +194,12 @@
  *                      happens when you abort a scan that was paused during a detector wait. 
  * 5.14 06-27-01  tmm   Macro for db_post_events.  If we can't get current positioner values in 
  *                      initScan(), abort.
+ * 5.15 10-01-01  tmm   Looking for PPC problems involving floating-point exceptions.  Try to
+ *                      allow npts == 1, for fly scans.  Fix ppvn pointer problems.  If PV name
+ *                      is all whitespace, reset it to an empty string.
  */
 
-#define VERSION 5.14
+#define VERSION 5.15
 
 
 
@@ -212,6 +215,7 @@
 #include	<wdLib.h>
 #include	<sysLib.h>
 #include	<float.h>
+#include	<ctype.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
@@ -251,6 +255,8 @@
 /************ end special values *********/
 
 #define NINT(f)	(long)((f)>0 ? (f)+0.5 : (f)-0.5)
+#define MAX(a,b) ((a)>(b)?(a):(b))
+#define MIN(a,b) ((a)<(b)?(a):(b))
 
 /***************************
   Declare constants
@@ -363,6 +369,12 @@ typedef struct recDynLinkPvt {
 	unsigned long       lookupTicks;	/* used to determine time of last lookupPv */
 } recDynLinkPvt;
 
+/* Note that the following structure must exactly match the data returned by
+ * dbGet(paddr, DBR_FLOAT, buf, &options, ...), with 'options' =
+ * DBR_UNITS | DBR_PRECISION | DBR_GR_DOUBLE | DBR_CTRL_DOUBLE
+ * The structure is used only in calls to dbGet(), and only to get the information
+ * indicated in 'options'.
+ */
 typedef struct dynLinkInfo {
 	DBRunits
 	DBRprecision
@@ -520,16 +532,38 @@ volatile int	cycles_to_wait=60;
 volatile unsigned long sscanRecordLookupTicks = 60;
 int             ticsPerSecond;
 
+
+static int isBlank(char *name)
+{
+	int i;
+
+	for(i=0; name[i]; i++) {
+		if (!(isspace(name[i]))) return(0);
+	}
+	return((i>0));
+}
+
+/* safe double to float conversion -- stolen from dbConvert.c */
+static void safeDoubleToFloat(double *pd,float *pf)
+{
+    double abs = fabs(*pd);
+    if(abs>=FLT_MAX) {
+        if(*pd>0.0) *pf = FLT_MAX; else *pf = -FLT_MAX;
+    } else if(abs<=FLT_MIN) {
+        if(*pd>0.0) *pf = FLT_MIN; else *pf = -FLT_MIN;
+    } else {
+        *pf = *pd;
+    }
+}
+
 static long 
-init_record(psscan, pass)
-	sscanRecord *psscan;
-	int             pass;
+init_record(sscanRecord *psscan, int pass)
 {
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
 	posFields      *pPos;
 	detFields      *pDet;
 
-	char           *ppvn[PVN_SIZE];
+	char           *ppvn;
 	unsigned short *pPvStat;
 	unsigned short  i;
 
@@ -539,6 +573,8 @@ init_record(psscan, pass)
 	if (pass == 0) {
 		psscan->vers = VERSION;
 		ticsPerSecond = sysClkRateGet();
+		/* we're going to be dividing by this a lot */
+		if (ticsPerSecond < 1) ticsPerSecond = 1;
 		if (psscan->mpts < DEF_WF_SIZE)
 			psscan->mpts = DEF_WF_SIZE;
 
@@ -668,16 +704,22 @@ init_record(psscan, pass)
 	psscan->pxsc = 0;
 	psscan->data = 0;
 
-	*ppvn = &psscan->p1pv[0];
+	ppvn = &psscan->p1pv[0];
 	pPvStat = &psscan->p1nv;
 
 	/* check all dynLink PV's for non-NULL  */
-	for (i = 0; i < NUM_PVS; i++, pPvStat++, *ppvn += PVN_SIZE) {
-		if (*ppvn[0] != NULL) {
-			*pPvStat = PV_NC;
-			lookupPV(psscan, i);
-		} else {
+	for (i = 0; i < NUM_PVS; i++, pPvStat++, ppvn += PVN_SIZE) {
+		if (isBlank(ppvn)) {
+			ppvn[0] = '\0';
+			POST(ppvn);
 			*pPvStat = NO_PV;
+		} else {
+			if (ppvn[0] != NULL) {
+				*pPvStat = PV_NC;
+				lookupPV(psscan, i);
+			} else {
+				*pPvStat = NO_PV;
+			}
 		}
 	}
 
@@ -687,8 +729,7 @@ init_record(psscan, pass)
 }
 
 static long 
-process(psscan)
-	sscanRecord *psscan;
+process(sscanRecord *psscan)
 {
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
 	long            status = 0;
@@ -861,7 +902,7 @@ process(psscan)
 		recGblFwdLink(psscan);
 		if (sscanRecordDebug) {
 			printf("%s:Scan Time = %.2f ms\n\n", psscan->name, 
-			       (float) ((tickGet() - (precPvt->tickStart)) * 16.67));
+			       (double) ((tickGet() - (precPvt->tickStart)) * 16.67));
 		}
 	}
 	psscan->pxsc = psscan->xsc;
@@ -872,22 +913,20 @@ process(psscan)
 }
 
 static long 
-special(paddr, after)
-	struct dbAddr  *paddr;
-	int             after;
+special(struct dbAddr *paddr, int after)
 {
-	sscanRecord *psscan = (sscanRecord *) (paddr->precord);
+	sscanRecord    *psscan = (sscanRecord *) (paddr->precord);
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
 	recDynLinkPvt  *puserPvt;
 	posFields      *pPos;
 	int             special_type = paddr->special;
-	char           *ppvn[PVN_SIZE];
+	char           *ppvn;
 	unsigned short *pPvStat;
 	unsigned short  oldStat;
 	short           i = -1;
 	unsigned char   prevAlrt;
-    int fieldIndex = dbGetFieldIndex(paddr);
-	double tics;
+    int             fieldIndex = dbGetFieldIndex(paddr);
+	int             tics;
 
 	if (!after) {
 		precPvt->pffo = psscan->ffo;	/* save previous ffo flag */
@@ -946,8 +985,8 @@ special(paddr, after)
 					for (i=0; i<NUM_POS; i++) {
 						puserPvt = (recDynLinkPvt *) precPvt->caLinkStruct[i].puserPvt;
 						if ((tickGet() - puserPvt->lookupTicks) >= sscanRecordLookupTicks) {
-							*ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
-							if (*ppvn[0] != NULL) {
+							ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
+							if (ppvn[0] != NULL) {
 								if (sscanRecordDebug > 5)
 									printf("%s:special: renewing link %d\n", psscan->name, i);
 								/* force flags to indicate PV_NC until callback happens */
@@ -1000,14 +1039,17 @@ special(paddr, after)
 			}
 			break;
 		case sscanRecordDDLY:
+			if (psscan->ddly < 0.0) psscan->ddly = 0.0;
 			psscan->ddly = NINT(psscan->ddly * ticsPerSecond) / (double) ticsPerSecond;
 			POST(&psscan->ddly);
 			break;
 		case sscanRecordPDLY:
+			if (psscan->pdly < 0.0) psscan->pdly = 0.0;
 			psscan->pdly = NINT(psscan->pdly * ticsPerSecond) / (double) ticsPerSecond;
 			POST(&psscan->pdly);
 			break;
 		case sscanRecordRDLY:
+			if (psscan->rdly < 0.0) psscan->rdly = 0.0;
 			psscan->rdly = NINT(psscan->rdly * ticsPerSecond) / (double) ticsPerSecond;
 			POST(&psscan->pdly);
 			break;
@@ -1025,12 +1067,11 @@ special(paddr, after)
 							sprintf(psscan->smsg, "Waiting for client");
 							POST(&psscan->smsg);
 						} else {
-							if (psscan->rdly == 0.) {
+							if (psscan->rdly < .001) {
 								scanOnce(psscan);
 							} else {
-								tics = psscan->rdly * ticsPerSecond;
-								tics = NINT(tics)+1.e-6;
-								wdStart(precPvt->wd1_id, (int) tics,
+								tics = (int) NINT(psscan->rdly * ticsPerSecond);
+								wdStart(precPvt->wd1_id, tics,
 									(FUNCPTR) callbackRequest, (int) (&precPvt->dlyCallback));
 							}
 						}
@@ -1089,8 +1130,8 @@ special(paddr, after)
 						semTake(precPvt->pvStatSem, WAIT_FOREVER);
 						pPvStat = &psscan->p1nv + i;	/* pointer arithmetic */
 						oldStat = *pPvStat;
-						*ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
-						*ppvn[0] = NULL; POST(*ppvn);
+						ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
+						ppvn[0] = NULL; POST(ppvn);
 						if (*pPvStat != NO_PV) {
 							/* PV is now NULL but didn't used to be */
 							*pPvStat = NO_PV;
@@ -1164,8 +1205,13 @@ special(paddr, after)
 				puserPvt = (recDynLinkPvt *) precPvt->caLinkStruct[i].puserPvt;
 				pPvStat = &psscan->p1nv + i;	/* pointer arithmetic */
 				oldStat = *pPvStat;
-				*ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
-				if (*ppvn[0] != NULL) {
+				ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
+				/* If we got a blank (but not empty) PV, make it empty */
+				if (isBlank(ppvn)) {
+					ppvn[0] = '\0';
+					POST(ppvn);
+				} 
+				if (ppvn[0] != NULL) {
 					if (sscanRecordDebug > 5)
 						printf("%s:Search during special \n", psscan->name);
 					*pPvStat = PV_NC;
@@ -1260,15 +1306,15 @@ special(paddr, after)
 		adjLinParms(paddr);
 		POST(&psscan->smsg);
 		if (psscan->alrt != prevAlrt) POST(&psscan->alrt);
-		if (sscanRecordViewPos) {
-			previewScan(psscan);
-		}
+		if (sscanRecordViewPos) previewScan(psscan);
 		break;
 
 	case (SPC_SC_N):
 		/* adjust all linear scan parameters per new # of steps */
 		if (psscan->npts > psscan->mpts) {
 			psscan->npts = psscan->mpts; POST(&psscan->npts);
+		} else if (psscan->npts < 1) {
+			psscan->npts = 1; POST(&psscan->npts);
 		}
 		prevAlrt = psscan->alrt;
 		psscan->alrt = 0;
@@ -1277,9 +1323,7 @@ special(paddr, after)
 		changedNpts(psscan);
 		POST(&psscan->smsg);
 		if (psscan->alrt != prevAlrt) POST(&psscan->alrt);
-		if (sscanRecordViewPos) {
-			previewScan(psscan);
-		}
+		if (sscanRecordViewPos) previewScan(psscan);
 		break;
 
 	case (SPC_SC_FFO):
@@ -1306,8 +1350,7 @@ special(paddr, after)
 }
 
 static long 
-cvt_dbaddr(paddr)
-	struct dbAddr  *paddr;
+cvt_dbaddr(struct dbAddr *paddr)
 {
 	sscanRecord	*psscan = (sscanRecord *) paddr->precord;
 	posFields	*pPos = (posFields *) & psscan->p1pp;
@@ -1347,10 +1390,7 @@ cvt_dbaddr(paddr)
 }
 
 static long 
-get_array_info(paddr, no_elements, offset)
-	struct dbAddr  *paddr;
-	long           *no_elements;
-	long           *offset;
+get_array_info(struct dbAddr *paddr, long *no_elements, long *offset)
 {
 	sscanRecord *psscan = (sscanRecord *) paddr->precord;
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
@@ -1407,9 +1447,7 @@ get_array_info(paddr, no_elements, offset)
 }
 
 static long 
-put_array_info(paddr, nNew)
-	struct dbAddr  *paddr;
-	long            nNew;
+put_array_info(struct dbAddr *paddr, long nNew)
 {
 	sscanRecord *psscan = (sscanRecord *) paddr->precord;
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
@@ -1449,9 +1487,7 @@ put_array_info(paddr, nNew)
 
 
 static long 
-get_enum_str(paddr, pstring)
-	struct dbAddr  *paddr;
-	char           *pstring;
+get_enum_str(struct dbAddr *paddr, char *pstring)
 {
 	sscanRecord *psscan = (sscanRecord *) paddr->precord;
 
@@ -1462,10 +1498,9 @@ get_enum_str(paddr, pstring)
 	}
 	return (0);
 }
+
 static long 
-get_enum_strs(paddr, pes)
-	struct dbAddr  *paddr;
-	struct dbr_enumStrs *pes;
+get_enum_strs(struct dbAddr *paddr, struct dbr_enumStrs *pes)
 {
 	sscanRecord *psscan = (sscanRecord *) paddr->precord;
 
@@ -1486,9 +1521,7 @@ get_enum_strs(paddr, pes)
 }
 
 static long 
-put_enum_str(paddr, pstring)
-	struct dbAddr  *paddr;
-	char           *pstring;
+put_enum_str(struct dbAddr *paddr, char *pstring)
 {
 	sscanRecord *psscan = (sscanRecord *) paddr->precord;
 
@@ -1503,14 +1536,12 @@ put_enum_str(paddr, pstring)
 }
 
 static long 
-get_units(paddr, units)
-	struct dbAddr  *paddr;
-	char           *units;
+get_units(struct dbAddr *paddr, char *units)
 {
 	sscanRecord *psscan = (sscanRecord *) paddr->precord;
-	posFields      *pPos = (posFields *) & psscan->p1pp;
-	detFields      *pDet = (detFields *) & psscan->d01hr;
-    int				i, fieldIndex = dbGetFieldIndex(paddr);
+	posFields   *pPos = (posFields *) & psscan->p1pp;
+	detFields   *pDet = (detFields *) & psscan->d01hr;
+    int          i, fieldIndex = dbGetFieldIndex(paddr);
 
 	if (fieldIndex >= sscanRecordP1PP) {
 		i = (fieldIndex - sscanRecordP1PP) / (sscanRecordP2PP - sscanRecordP1PP);
@@ -1531,25 +1562,23 @@ get_units(paddr, units)
 }
 
 static long 
-get_precision(paddr, precision)
-	struct dbAddr  *paddr;
-	long           *precision;
+get_precision(struct dbAddr *paddr, long *precision)
 {
 	sscanRecord *psscan = (sscanRecord *) paddr->precord;
-	posFields      *pPos = (posFields *) & psscan->p1pp;
-	detFields      *pDet = (detFields *) & psscan->d01hr;
-    int				i, fieldIndex = dbGetFieldIndex(paddr);
+	posFields   *pPos = (posFields *) & psscan->p1pp;
+	detFields   *pDet = (detFields *) & psscan->d01hr;
+    int          i, fieldIndex = dbGetFieldIndex(paddr);
 
 	if (fieldIndex >= sscanRecordP1PP) {
 		i = (fieldIndex - sscanRecordP1PP) / (sscanRecordP2PP - sscanRecordP1PP);
 		if (i>=0 && i<NUM_POS) {
-			*precision = pPos[i].p_pr;
+			*precision = MIN(10, MAX(0, pPos[i].p_pr));
 			return(0);
 		}
 	} else if (fieldIndex >= sscanRecordD01HR) {
 		i = (fieldIndex - sscanRecordD01HR) / (sscanRecordD02HR - sscanRecordD01HR);
 		if (i>=0 && i<NUM_DET) {
-			*precision = pDet[i].d_pr;
+			*precision = MIN(10, MAX(0, pDet[i].d_pr));
 			return(0);
 		}
 	}
@@ -1558,14 +1587,12 @@ get_precision(paddr, precision)
 }
 
 static long 
-get_graphic_double(paddr, pgd)
-	struct dbAddr  *paddr;
-	struct dbr_grDouble *pgd;
+get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd)
 {
 	sscanRecord *psscan = (sscanRecord *) paddr->precord;
-	posFields      *pPos = (posFields *) & psscan->p1pp;
-	detFields      *pDet = (detFields *) & psscan->d01hr;
-    int				i, fieldIndex = dbGetFieldIndex(paddr);
+	posFields   *pPos = (posFields *) & psscan->p1pp;
+	detFields   *pDet = (detFields *) & psscan->d01hr;
+    int          i, fieldIndex = dbGetFieldIndex(paddr);
 
 	if (fieldIndex >= sscanRecordP1PP) {
 		i = (fieldIndex - sscanRecordP1PP) / (sscanRecordP2PP - sscanRecordP1PP);
@@ -1588,9 +1615,7 @@ get_graphic_double(paddr, pgd)
 }
 
 static long 
-get_control_double(paddr, pcd)
-	struct dbAddr  *paddr;
-	struct dbr_ctrlDouble *pcd;
+get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd)
 {
 	/* for testing .... */
 	/* return upper_disp_limit and lower_disp_limit as control limits */
@@ -1605,9 +1630,7 @@ get_control_double(paddr, pcd)
 }
 
 static long 
-get_alarm_double(paddr, pad)
-	struct dbAddr  *paddr;
-	struct dbr_alDouble *pad;
+get_alarm_double(struct dbAddr *paddr, struct dbr_alDouble *pad)
 {
 	recGblGetAlarmDouble(paddr, pad);
 	return (0);
@@ -1729,7 +1752,7 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
 	recDynLinkPvt  *puserPvt;
 	posFields      *pPos;
-	char           *ppvn[PVN_SIZE];
+	char           *ppvn;
 	char           *pdesc = ".DESC";
 	char           *pval = ".VAL";
 	char           *pTIME = "TIME";
@@ -1738,39 +1761,39 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 	unsigned short *pPvStat;
 
 	/* Point to correct places by using index i */
-	*ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
+	ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
 	pPvStat = &psscan->p1nv + i;	/* pointer arithmetic */
 	puserPvt = (recDynLinkPvt *) precPvt->caLinkStruct[i].puserPvt;
 	pPos = (posFields *) &psscan->p1pp + i;
 
 
 	/* If PV field name = DESC, change to VAL */
-	pdot = strrchr(*ppvn, '.');
+	pdot = strrchr(ppvn, '.');
 	if (pdot != NULL) {
 		if (strncmp(pdot, pdesc, 5) == 0) {
 			strcpy(pdot, pval);
-			POST(*ppvn);
+			POST(ppvn);
 		}
 	}
 	/* See if it's a local PV */
-	puserPvt->dbAddrNv = dbNameToAddr(*ppvn, puserPvt->pAddr);
+	puserPvt->dbAddrNv = dbNameToAddr(ppvn, puserPvt->pAddr);
 	if (sscanRecordDebug) {
-		printf("%s:PV: '%s' ,dbNameToAddr returned %lx\n", psscan->name, *ppvn, puserPvt->dbAddrNv);
+		printf("%s:PV: '%s' ,dbNameToAddr returned %lx\n", psscan->name, ppvn, puserPvt->dbAddrNv);
 	}
 	switch (puserPvt->linkType) {
 	case POSITIONER:	/* setup both inlink and outlink */
 		/* Init p_cv so we can use it's value to know if the first monitor callback
 		 * has come in. */
 		pPos->p_cv = -HUGE_VAL;
-		recDynLinkAddOutput(&precPvt->caLinkStruct[i + NUM_PVS], *ppvn,
+		recDynLinkAddOutput(&precPvt->caLinkStruct[i + NUM_PVS], ppvn,
 			  DBR_DOUBLE, rdlSCALAR, pvSearchCallback);
-		recDynLinkAddInput(&precPvt->caLinkStruct[i], *ppvn,
+		recDynLinkAddInput(&precPvt->caLinkStruct[i], ppvn,
 			   DBR_DOUBLE, rdlSCALAR, pvSearchCallback, posMonCallback);
 		break;
 
 	case READBACK:
 		/* Check to see if it equals "time" */
-		if ((strncmp(*ppvn, pTIME, 4) == 0) || (strncmp(*ppvn, ptime, 4) == 0)) {
+		if ((strncmp(ppvn, pTIME, 4) == 0) || (strncmp(ppvn, ptime, 4) == 0)) {
 			puserPvt->ts = 1;
 			*pPvStat = NO_PV; POST(pPvStat);
 			break;	/* don't do lookups or pvSearchCallback */
@@ -1778,7 +1801,7 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 			puserPvt->ts = 0;
 		}
 		if (puserPvt->dbAddrNv || puserPvt->useDynLinkAlways) {
-			recDynLinkAddInput(&precPvt->caLinkStruct[i], *ppvn,
+			recDynLinkAddInput(&precPvt->caLinkStruct[i], ppvn,
 			     DBR_DOUBLE, rdlSCALAR, pvSearchCallback, NULL);
 		} else {
 			pvSearchCallback(&precPvt->caLinkStruct[i]);
@@ -1787,7 +1810,7 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 
 	case DETECTOR:
 		if (puserPvt->dbAddrNv || puserPvt->useDynLinkAlways) {
-			recDynLinkAddInput(&precPvt->caLinkStruct[i], *ppvn,
+			recDynLinkAddInput(&precPvt->caLinkStruct[i], ppvn,
 			      DBR_FLOAT, 0 /*rdlSCALAR*/, pvSearchCallback, NULL);
 		} else {
 			pvSearchCallback(&precPvt->caLinkStruct[i]);
@@ -1796,7 +1819,7 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 
 	case TRIGGER:
 	case BS_AS_LINK:
-		recDynLinkAddOutput(&precPvt->caLinkStruct[i], *ppvn,
+		recDynLinkAddOutput(&precPvt->caLinkStruct[i], ppvn,
 			      DBR_FLOAT, rdlSCALAR, pvSearchCallback);
 		break;
 
@@ -1826,10 +1849,10 @@ delayCallback(CALLBACK *pCB)
 LOCAL void 
 notifyCallback(recDynLink * precDynLink)
 {
-	recDynLinkPvt  *puserPvt = (recDynLinkPvt *) precDynLink->puserPvt;
-	sscanRecord *psscan = puserPvt->psscan;
-	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
-	double tics;
+	recDynLinkPvt *puserPvt = (recDynLinkPvt *) precDynLink->puserPvt;
+	sscanRecord   *psscan = puserPvt->psscan;
+	recPvtStruct  *precPvt = (recPvtStruct *) psscan->rpvt;
+	int tics;
 
 	if (sscanRecordDebug >= 10)
 		printf("%s: notifyCallback: num{P,T}Callbacks = %d, %d\n", psscan->name, 
@@ -1853,7 +1876,7 @@ notifyCallback(recDynLink * precDynLink)
 				POST(&psscan->smsg);
 				return;
 			}
-			if (psscan->ddly == 0.) {
+			if (psscan->ddly < .001) {
 				if (psscan->wcnt) {
 					psscan->wtng = 1; POST(&psscan->wtng);
 					sprintf(psscan->smsg, "Waiting for client");
@@ -1862,8 +1885,8 @@ notifyCallback(recDynLink * precDynLink)
 					(void) scanOnce((void *)psscan);
 				}
 			} else {
-				tics = psscan->ddly * ticsPerSecond; tics = NINT(tics)+1.e-6;
-				wdStart(precPvt->wd1_id, (int) tics,
+				tics = (int) NINT(psscan->ddly * ticsPerSecond);
+				wdStart(precPvt->wd1_id, tics,
 					(FUNCPTR) callbackRequest, (int) (&precPvt->dlyCallback));
 			}
 		}
@@ -1878,8 +1901,8 @@ notifyCallback(recDynLink * precDynLink)
 			if ((psscan->faze != sscanFAZE_CHECK_MOTORS) || (psscan->pdly == 0.)) {
 				scanOnce(psscan);
 			} else {
-				tics = psscan->pdly * ticsPerSecond; tics = NINT(tics)+1.e-6;
-				wdStart(precPvt->wd1_id, (int) tics,
+				tics = (int) NINT(psscan->pdly * ticsPerSecond);
+				wdStart(precPvt->wd1_id, tics,
 					(FUNCPTR) callbackRequest, (int) (&precPvt->dlyCallback));
 			}
 		}
@@ -1891,7 +1914,7 @@ pvSearchCallback(recDynLink * precDynLink)
 {
 
 	recDynLinkPvt  *puserPvt = (recDynLinkPvt *) precDynLink->puserPvt;
-	sscanRecord *psscan = puserPvt->psscan;
+	sscanRecord    *psscan = puserPvt->psscan;
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
 	posFields      *pPos = (posFields *) & psscan->p1pp;
 	detFields      *pDet = (detFields *) & psscan->d01hr;
@@ -1902,8 +1925,7 @@ pvSearchCallback(recDynLink * precDynLink)
 	size_t          nelem;
 	long            status;
 	long            nRequest = 1;
-	long            options = DBR_UNITS | DBR_PRECISION | DBR_GR_DOUBLE |
-	DBR_CTRL_DOUBLE;
+	long            options = DBR_UNITS | DBR_PRECISION | DBR_GR_DOUBLE | DBR_CTRL_DOUBLE;
 	int             i, precision;
 
 	/*
@@ -1962,12 +1984,10 @@ pvSearchCallback(recDynLink * precDynLink)
 			recDynLinkGetUnits(precDynLink, pPos->p_eu, 8);
 			recDynLinkGetPrecision(precDynLink, &precision);
 			pPos->p_pr = precision;
-			recDynLinkGetControlLimits(precDynLink,
-				      &pPos->p_lr, &pPos->p_hr);
+			recDynLinkGetControlLimits(precDynLink, &pPos->p_lr, &pPos->p_hr);
 		} else {
-			status = dbGet(puserPvt->pAddr, DBR_FLOAT,
-				       precPvt->pDynLinkInfo,
-				       &options, &nRequest, NULL);
+			status = dbGet(puserPvt->pAddr, DBR_FLOAT, precPvt->pDynLinkInfo,
+					&options, &nRequest, NULL);
 			if (status == OK) {
 				strcpy(pPos->p_eu, precPvt->pDynLinkInfo->units);
 				pPos->p_pr = precPvt->pDynLinkInfo->precision;
@@ -1994,12 +2014,10 @@ pvSearchCallback(recDynLink * precDynLink)
 			recDynLinkGetUnits(precDynLink, pDet->d_eu, 8);
 			recDynLinkGetPrecision(precDynLink, &precision);
 			pDet->d_pr = precision;
-			recDynLinkGetGraphicLimits(precDynLink,
-				      &pDet->d_lr, &pDet->d_hr);
+			recDynLinkGetGraphicLimits(precDynLink, &pDet->d_lr, &pDet->d_hr);
 		} else {
-			status = dbGet(puserPvt->pAddr, DBR_FLOAT,
-				       precPvt->pDynLinkInfo,
-				       &options, &nRequest, NULL);
+			status = dbGet(puserPvt->pAddr, DBR_FLOAT, precPvt->pDynLinkInfo,
+					&options, &nRequest, NULL);
 			if (status == OK) {
 				strcpy(pDet->d_eu, precPvt->pDynLinkInfo->units);
 				pDet->d_pr = precPvt->pDynLinkInfo->precision;
@@ -2084,7 +2102,10 @@ pvSearchCallback(recDynLink * precDynLink)
 			for (i = 1; i <= NUM_POS; i++, pPvStat++, pPos++) {
 				if (sscanRecordDebug) printf("%s:pvSearchCallback: pPvStat[%d]=%d, pPos[%d].p_cv=%g\n",
 					psscan->name, i, i, *pPvStat, pPos->p_cv);
-				if ((*pPvStat == PV_OK) && (pPos->p_cv == -HUGE_VAL)) return;
+				if ((*pPvStat == PV_OK) && (pPos->p_cv == -HUGE_VAL)) {
+					/* Haven't received the first monitor callback yet.  Wait for it. */
+					return;
+				}
 			}
 			if (sscanRecordDebug) printf("%s:pvSearchCallback: scan pending - call scanOnce()\n",
 					psscan->name);
@@ -2100,7 +2121,7 @@ posMonCallback(recDynLink * precDynLink)
 {
 
 	recDynLinkPvt  *puserPvt = (recDynLinkPvt *) precDynLink->puserPvt;
-	sscanRecord *psscan = puserPvt->psscan;
+	sscanRecord    *psscan = puserPvt->psscan;
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
 	unsigned short  linkIndex = puserPvt->linkIndex;
 	unsigned short  pvIndex = linkIndex % NUM_PVS;
@@ -2117,7 +2138,7 @@ posMonCallback(recDynLink * precDynLink)
 	 * been cleared but before the link's search callback has come in.
 	 */
 	if (*pPvStat & PV_NoRead) {
-		printf("%s:posMonCallback: received monitor callback while link is in state 'PV_NoRead'\n",
+		printf("%s:posMonCallback: ignoring obsolete monitor callback (link state: 'PV_NoRead')\n",
 					psscan->name);
 		return;
 	}
@@ -2209,8 +2230,7 @@ checkConnections(sscanRecord * psscan)
  *
  */
 static long 
-initScan(psscan)
-	sscanRecord *psscan;
+initScan(sscanRecord *psscan)
 {
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
 	posFields      *pPos;
@@ -2220,9 +2240,7 @@ initScan(psscan)
 
 
 	/* General initialization ... */
-	if (sscanRecordDebug) {
-		precPvt->tickStart = tickGet();
-	}
+	if (sscanRecordDebug) precPvt->tickStart = tickGet();
 	psscan->cpt = 0;		/* reset point counter */
 	precPvt->scanErr = 0;
 
@@ -2694,7 +2712,7 @@ packData(sscanRecord *psscan)
 						lowIndex = i;
 					}
 				}
-				aveDiff /= (psscan->cpt - 1);
+				aveDiff /= MAX(1,(psscan->cpt - 1));
 
 				/* did we find an acceptable max or min? */
 				if ((highVal - lowVal) > 2*aveDiff) {
@@ -2830,9 +2848,9 @@ doPuts(precPvt)
 	recDynLinkPvt  *puserPvt;
 	posFields      *pPos;
 	unsigned short *pPvStat;
-	int             i;
+	int             i, tics;
 	long            status;
-	double			tics, oldPos;
+	double			oldPos;
 	float			*tcd;
 	int				linkIndex;
 
@@ -2914,8 +2932,8 @@ doPuts(precPvt)
 			if (psscan->ddly == 0.) {
 				scanOnce(psscan);
 			} else {
-				tics = psscan->ddly * ticsPerSecond; tics = NINT(tics)+1.e-6;
-				wdStart(precPvt->wd1_id, (int) tics,
+				tics = (int) NINT(psscan->ddly * ticsPerSecond);
+				wdStart(precPvt->wd1_id, tics,
 					(FUNCPTR) callbackRequest, (int) (&precPvt->dlyCallback));
 			}
 			break;
@@ -3117,7 +3135,8 @@ adjLinParms(paddr)
 	case (SPC_SC_S):	/* start position changed */
 		/* if step increment/center/width are not frozen, change them  */
 		if (!pParms->p_fi && !pParms->p_fc && !pParms->p_fw) {
-			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
+			/* avoid div by zero */
+			pParms->p_si = (pParms->p_ep - pParms->p_sp) / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
@@ -3126,7 +3145,11 @@ adjLinParms(paddr)
 			return;
 			/* If npts/center/width aren't frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fc && !pParms->p_fw) {
-			psscan->npts = ((pParms->p_ep - pParms->p_sp) / (pParms->p_si)) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = ((pParms->p_ep - pParms->p_sp) / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points!", i + 1);
@@ -3140,47 +3163,47 @@ adjLinParms(paddr)
 			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
 			POST(&pParms->p_wd);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 			/* if end/center are not frozen, change them  */
 		} else if (!pParms->p_fe && !pParms->p_fc) {
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
 			return;
-			/*
-			 * if step increment/end/width are not frozen, change
-			 * them
-			 */
+			/* if step increment/end/width are not frozen, change them */
 		} else if (!pParms->p_fi && !pParms->p_fe && !pParms->p_fw) {
 			pParms->p_wd = (pParms->p_cp - pParms->p_sp) * 2;
 			POST(&pParms->p_wd);
-			pParms->p_si = pParms->p_wd / (psscan->npts - 1);
+			/* avoid div by zero */
+			pParms->p_si = pParms->p_wd / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
 			pParms->p_ep = (pParms->p_sp + pParms->p_wd);
 			POST(&pParms->p_ep);
 			return;
 			/* If npts/end/width aren't frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fe && !pParms->p_fw) {
-			psscan->npts = ((pParms->p_cp - pParms->p_sp) * 2 / (pParms->p_si)) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = ((pParms->p_cp - pParms->p_sp) * 2 / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points!", i + 1);
 				/* adjust changed field to be consistent */
-				pParms->p_sp = pParms->p_cp - ((pParms->p_si * (psscan->npts - 1)) / 2);
+				pParms->p_sp = pParms->p_cp - ((pParms->p_si * MAX(1,(psscan->npts - 1))) / 2);
 				POST(&pParms->p_sp);
 				psscan->alrt = 1;
 			}
 			POST(&psscan->npts);
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
 			POST(&pParms->p_wd);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 		}
@@ -3189,23 +3212,26 @@ adjLinParms(paddr)
 	case (SPC_SC_I):	/* step increment changed */
 		/* if npts is not frozen, change it  */
 		if (!psscan->fpts) {
-			psscan->npts = ((pParms->p_ep - pParms->p_sp) / (pParms->p_si)) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = ((pParms->p_ep - pParms->p_sp) / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
-				/* adjust changed field to be consistent */
-				pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
+				/* adjust changed field to be consistent, avoid div by zero  */
+				pParms->p_si = (pParms->p_ep - pParms->p_sp) / MAX(1,(psscan->npts - 1));
 				POST(&pParms->p_si);
 				psscan->alrt = 1;
 			}
 			POST(&psscan->npts);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 			/* if end/center/width are not frozen, change them */
 		} else if (!pParms->p_fe && !pParms->p_fc && !pParms->p_fw) {
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
@@ -3214,7 +3240,7 @@ adjLinParms(paddr)
 			return;
 			/* if start/center/width are not frozen, change them */
 		} else if (!pParms->p_fs && !pParms->p_fc && !pParms->p_fw) {
-			pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_sp = pParms->p_ep - (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_sp);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
@@ -3223,15 +3249,15 @@ adjLinParms(paddr)
 			return;
 			/* if start/end/width are not frozen, change them */
 		} else if (!pParms->p_fs && !pParms->p_fe && !pParms->p_fw) {
-			pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
+			pParms->p_sp = pParms->p_cp - (MAX(1,(psscan->npts - 1)) * pParms->p_si) / 2;
 			POST(&pParms->p_sp);
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
 			POST(&pParms->p_wd);
 			return;
 		} else {	/* too constrained !! */
-			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
+			pParms->p_si = (pParms->p_ep - pParms->p_sp) / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
 			sprintf(psscan->smsg, "P%1d SCAN Parameters Too Constrained !", i + 1);
 			psscan->alrt = 1;
@@ -3242,7 +3268,7 @@ adjLinParms(paddr)
 	case (SPC_SC_E):	/* end position changed   */
 		/* if step increment/center/width are not frozen, change them */
 		if (!pParms->p_fi && !pParms->p_fc && !pParms->p_fw) {
-			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
+			pParms->p_si = (pParms->p_ep - pParms->p_sp) / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
@@ -3251,12 +3277,16 @@ adjLinParms(paddr)
 			return;
 			/* If npts/center/width are not frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fc && !pParms->p_fw) {
-			psscan->npts = ((pParms->p_ep - pParms->p_sp) / (pParms->p_si)) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = ((pParms->p_ep - pParms->p_sp) / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
-				pParms->p_ep = pParms->p_sp + (pParms->p_si * (psscan->npts - 1));
+				pParms->p_ep = pParms->p_sp + (pParms->p_si * MAX(1,(psscan->npts - 1)));
 				POST(&pParms->p_ep);
 				psscan->alrt = 1;
 			}
@@ -3265,13 +3295,12 @@ adjLinParms(paddr)
 			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
 			POST(&pParms->p_wd);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 			/* if start/center are not frozen, change them  */
 		} else if (!pParms->p_fs && !pParms->p_fc) {
-			pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_sp = pParms->p_ep - (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_sp);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
@@ -3282,17 +3311,21 @@ adjLinParms(paddr)
 			POST(&pParms->p_wd);
 			pParms->p_sp = pParms->p_ep - pParms->p_wd;
 			POST(&pParms->p_sp);
-			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
+			pParms->p_si = (pParms->p_ep - pParms->p_sp) / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
 			return;
 			/* If npts/start/width are not frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fs && !pParms->p_fw) {
-			psscan->npts = (((pParms->p_ep - pParms->p_cp) * 2) / (pParms->p_si)) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = (((pParms->p_ep - pParms->p_cp) * 2) / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
-				pParms->p_ep = pParms->p_cp + (pParms->p_si * (psscan->npts - 1) / 2);
+				pParms->p_ep = pParms->p_cp + (pParms->p_si * MAX(1,(psscan->npts - 1)) / 2);
 				POST(&pParms->p_ep);
 				psscan->alrt = 1;
 			}
@@ -3301,12 +3334,11 @@ adjLinParms(paddr)
 			POST(&pParms->p_wd);
 			pParms->p_sp = pParms->p_ep - pParms->p_wd;
 			POST(&pParms->p_sp);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 		} else {	/* too constrained !! */
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
 			sprintf(psscan->smsg, "P%1d SCAN Parameters Too Constrained !", i + 1);
 			psscan->alrt = 1;
@@ -3317,9 +3349,9 @@ adjLinParms(paddr)
 	case (SPC_SC_C):	/* center position changed   */
 		/* if start/end are not frozen, change them */
 		if (!pParms->p_fs && !pParms->p_fe) {
-			pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
+			pParms->p_sp = pParms->p_cp - (MAX(1,(psscan->npts - 1)) * pParms->p_si) / 2;
 			POST(&pParms->p_sp);
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
 			return;
 			/* if end/inc/width are not frozen, change them */
@@ -3328,7 +3360,7 @@ adjLinParms(paddr)
 			POST(&pParms->p_wd);
 			pParms->p_ep = pParms->p_sp + pParms->p_wd;
 			POST(&pParms->p_ep);
-			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
+			pParms->p_si = (pParms->p_ep - pParms->p_sp) / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
 			return;
 			/* if start/inc/width are not frozen, change them */
@@ -3337,7 +3369,7 @@ adjLinParms(paddr)
 			POST(&pParms->p_wd);
 			pParms->p_sp = pParms->p_ep - pParms->p_wd;
 			POST(&pParms->p_sp);
-			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
+			pParms->p_si = (pParms->p_ep - pParms->p_sp) / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
 			return;
 			/*
@@ -3345,12 +3377,16 @@ adjLinParms(paddr)
 			 * them
 			 */
 		} else if (!psscan->fpts && !pParms->p_fe && !pParms->p_fw) {
-			psscan->npts = (((pParms->p_cp - pParms->p_sp) * 2) / (pParms->p_si)) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = (((pParms->p_cp - pParms->p_sp) * 2) / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
-				pParms->p_cp = pParms->p_sp + (pParms->p_si * (psscan->npts - 1) / 2);
+				pParms->p_cp = pParms->p_sp + (pParms->p_si * MAX(1,(psscan->npts - 1)) / 2);
 				POST(&pParms->p_cp);
 				psscan->alrt = 1;
 			}
@@ -3359,18 +3395,21 @@ adjLinParms(paddr)
 			POST(&pParms->p_wd);
 			pParms->p_ep = pParms->p_sp + pParms->p_wd;
 			POST(&pParms->p_ep);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 			/* If npts/start/width are not frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fs && !pParms->p_fw) {
-			psscan->npts = (((pParms->p_ep - pParms->p_cp) * 2) / (pParms->p_si)) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = (((pParms->p_ep - pParms->p_cp) * 2) / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
-				pParms->p_cp = pParms->p_ep - (pParms->p_si * (psscan->npts - 1) / 2);
+				pParms->p_cp = pParms->p_ep - (pParms->p_si * MAX(1,(psscan->npts - 1)) / 2);
 				POST(&pParms->p_cp);
 				psscan->alrt = 1;
 			}
@@ -3379,12 +3418,11 @@ adjLinParms(paddr)
 			POST(&pParms->p_wd);
 			pParms->p_sp = pParms->p_ep - pParms->p_wd;
 			POST(&pParms->p_sp);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 		} else {	/* too constrained !! */
-			pParms->p_cp = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si) / 2;
+			pParms->p_cp = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si) / 2;
 			POST(&pParms->p_cp);
 			sprintf(psscan->smsg, "P%1d SCAN Parameters Too Constrained !", i + 1);
 			psscan->alrt = 1;
@@ -3395,89 +3433,98 @@ adjLinParms(paddr)
 	case (SPC_SC_W):	/* width position changed   */
 		/* if step start/inc/end are not frozen, change them */
 		if (!pParms->p_fs && !pParms->p_fi && !pParms->p_fe) {
-			pParms->p_si = pParms->p_wd / (psscan->npts - 1);
+			pParms->p_si = pParms->p_wd / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
-			pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
+			pParms->p_sp = pParms->p_cp - (MAX(1,(psscan->npts - 1)) * pParms->p_si) / 2;
 			POST(&pParms->p_sp);
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
 			return;
 			/* If npts/start/end are not frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fs && !pParms->p_fe) {
-			psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
-				pParms->p_wd = (pParms->p_si * (psscan->npts - 1));
+				pParms->p_wd = (pParms->p_si * MAX(1,(psscan->npts - 1)));
 				POST(&pParms->p_wd);
 				psscan->alrt = 1;
 			}
 			POST(&psscan->npts);
-			pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
+			pParms->p_sp = pParms->p_cp - (MAX(1,(psscan->npts - 1)) * pParms->p_si) / 2;
 			POST(&pParms->p_sp);
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 			/* if center/end/inc are not frozen, change them */
 		} else if (!pParms->p_fc && !pParms->p_fe && !pParms->p_fi) {
-			pParms->p_si = pParms->p_wd / (psscan->npts - 1);
+			pParms->p_si = pParms->p_wd / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
 			return;
 			/* if start/center/inc are not frozen, change them */
 		} else if (!pParms->p_fs && !pParms->p_fc && !pParms->p_fi) {
-			pParms->p_si = pParms->p_wd / (psscan->npts - 1);
+			pParms->p_si = pParms->p_wd / MAX(1,(psscan->npts - 1));
 			POST(&pParms->p_si);
-			pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_sp = pParms->p_ep - (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_sp);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
 			return;
 			/* If npts/center/end aren't frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fc && !pParms->p_fe) {
-			psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
-				pParms->p_wd = (pParms->p_si * (psscan->npts - 1));
+				pParms->p_wd = (pParms->p_si * MAX(1,(psscan->npts - 1)));
 				POST(&pParms->p_wd);
 				psscan->alrt = 1;
 			}
 			POST(&psscan->npts);
-			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_ep);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 			/* If npts/start/center aren't frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fs && !pParms->p_fc) {
-			psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
+			if (fabs(pParms->p_si) <= DBL_EPSILON) {
+				psscan->npts = psscan->mpts;
+			} else {
+				psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
+			}
 			if (psscan->npts > psscan->mpts) {
 				psscan->npts = psscan->mpts;
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
-				pParms->p_wd = (pParms->p_si * (psscan->npts - 1));
+				pParms->p_wd = (pParms->p_si * MAX(1,(psscan->npts - 1)));
 				POST(&pParms->p_wd);
 				psscan->alrt = 1;
 			}
 			POST(&psscan->npts);
-			pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
+			pParms->p_sp = pParms->p_ep - (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 			POST(&pParms->p_sp);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 			POST(&pParms->p_cp);
-			precPvt->nptsCause = i;	/* indicate cause of # of
-						 * points changed */
+			precPvt->nptsCause = i;	/* indicate cause of # of points changed */
 			changedNpts(psscan);
 			return;
 		} else {	/* too constrained !! */
@@ -3519,10 +3566,7 @@ changedNpts(psscan)
 	unsigned short  freezeState = 0;
 
 	/* for each positioner, calculate scan params as best as we can */
-	/*
-	 * if the positioner is in table mode, don't touch linear scan parms
-	 * !
-	 */
+	/* if the positioner is in table mode, don't touch linear scan parms! */
 	for (i = 0; i < NUM_POS; i++, pParms++) {
 		/* Check if Positioner is in TABLE Mode */
 		if (pParms->p_sm == sscanP1SM_Table) {
@@ -3538,10 +3582,7 @@ changedNpts(psscan)
 			/* Adjust linear scan params as best we can */
 
 			/* develop freezeState switching word ... */
-			/*
-			 * START_FRZ | STEP_FRZ | END_FRZ | CENTER_FRZ |
-			 * WIDTH_FRZ
-			 */
+			/* START_FRZ | STEP_FRZ | END_FRZ | CENTER_FRZ | WIDTH_FRZ */
 
 			freezeState = (pParms->p_fs << 4) |
 				(pParms->p_fi << 3) |
@@ -3552,37 +3593,31 @@ changedNpts(psscan)
 			if (sscanRecordDebug) {
 				printf("%s:Freeze State of P%1d = 0x%hx \n", psscan->name, i, freezeState);
 			}
-			/*
-			 * a table describing what happens is at the end of
-			 * the file
-			 */
+			/* a table describing what happens is at the end of the file */
 			switch (freezeState) {
 			case (0):
-			case (1):	/* if center or width is frozen, but
-					 * not inc , ... */
+			case (1):	/* if center or width is frozen, but not inc , ... */
 			case (2):
 			case (3):
 			case (4):
-			case (5):	/* if end/center or end/width are
-					 * frozen, but not inc, */
+			case (5):	/* if end/center or end/width are frozen, but not inc, */
 			case (6):
 			case (7):
 			case (16):
-			case (17):	/* if start/center or start/width are
-					 * frozen, but not inc */
+			case (17):	/* if start/center or start/width are frozen, but not inc */
 			case (18):
 			case (19):
 			case (20):
 			case (21):
 			case (22):
 			case (23):
-				pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
+				pParms->p_si = (pParms->p_ep - pParms->p_sp) / MAX(1,(psscan->npts - 1));
 				POST(&pParms->p_si);
 				break;
 
 			case (8):	/* end/center/width unfrozen, change them */
 			case (24):
-				pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+				pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 				POST(&pParms->p_ep);
 				pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 				POST(&pParms->p_cp);
@@ -3591,7 +3626,7 @@ changedNpts(psscan)
 				break;
 
 			case (12):	/* start/center/width aren't frozen, change them  */
-				pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
+				pParms->p_sp = pParms->p_ep - (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 				POST(&pParms->p_sp);
 				pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
 				POST(&pParms->p_cp);
@@ -3600,18 +3635,15 @@ changedNpts(psscan)
 				break;
 
 			case (10):	/* if center is frozen, but not width/start/end , ...  */
-				pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
+				pParms->p_sp = pParms->p_cp - (MAX(1,(psscan->npts - 1)) * pParms->p_si) / 2;
 				POST(&pParms->p_sp);
-				pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+				pParms->p_ep = pParms->p_sp + (MAX(1,(psscan->npts - 1)) * pParms->p_si);
 				POST(&pParms->p_ep);
 				pParms->p_wd = (pParms->p_ep - pParms->p_sp);
 				POST(&pParms->p_wd);
 				break;
 
-				/*
-				 * The following freezeStates are known to be
-				 * "Too Constrained"
-				 */
+				/* The following freezeStates are known to be "Too Constrained" */
 				/* 9,11,13,14,15,25,26,27,28,29,30,31 */
 			default:	/* too constrained !! */
 				sprintf(psscan->smsg, "P%1d SCAN Parameters Too Constrained !", i + 1);
@@ -3823,10 +3855,7 @@ previewScan(psscan)
 				pDetBuf = precPvt->detBufPtr[i].pBufA;
 			}
 			for (j = 0; j < psscan->npts; j++) {
-				/*
-				 * determine next desired position for each
-				 * positioner
-				 */
+				/* determine next desired position for each positioner */
 				switch (pPos->p_sm) {
 				case sscanP1SM_Linear:
 					if (pPos->p_ar) {
@@ -3865,10 +3894,7 @@ previewScan(psscan)
 				pPosBuf[j] = j;
 				pDetBuf[j] = value;
 			}
-			/*
-			 * now fill the rest of the array(s) with the last
-			 * values
-			 */
+			/* now fill the rest of the array(s) with the last values */
 			for (j = j; j < psscan->mpts; j++) {
 				pPosBuf[j] = pPosBuf[j - 1];
 				pDetBuf[j] = pDetBuf[j - 1];
