@@ -64,6 +64,7 @@ init_record(busyRecord *pbusy, int pass)
 		if (pbusy->dol.type == CONSTANT) {
 			if (recGblInitConstantLink(&pbusy->dol, DBF_USHORT, &ival)) {
 				pbusy->val = ival ? 1 : 0;
+				pbusy->udf = FALSE;
 			}
 		}
 	}
@@ -85,6 +86,7 @@ process(busyRecord *pbusy)
 			pbusy->val = val;
 			pbusy->udf = FALSE;
 		} else {
+			pbusy->udf = TRUE;
 			recGblSetSevr(pbusy, LINK_ALARM, INVALID_ALARM);
 		}
 	}
