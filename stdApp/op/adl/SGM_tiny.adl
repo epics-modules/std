@@ -1,12 +1,12 @@
 
 file {
-	name="/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta12_shareR1.0/stdApp/op/adl/SGM_tiny_1.2.adl"
-	version=020305
+	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/SGM_tiny_1.4.adl"
+	version=020306
 }
 display {
 	object {
-		x=10
-		y=10
+		x=118
+		y=76
 		width=320
 		height=173
 	}
@@ -270,8 +270,6 @@ composite {
 		height=20
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		"message button" {
 			object {
@@ -416,6 +414,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "message button" {
 	object {
@@ -473,7 +473,7 @@ polyline {
 		args="P=$(P),M=$(M_rIn)"
 	}
 	display[3] {
-		label="x  motor (tangent-arm)"
+		label="x  motor (grating drive)"
 		name="motorx_more.adl"
 		args="P=$(P),M=$(M_x)"
 	}
@@ -483,7 +483,7 @@ polyline {
 		args="P=$(P),M=$(M_rOut)"
 	}
 	display[5] {
-		label="grating motor"
+		label="index motor (grating index)"
 		name="motorx_more.adl"
 		args="P=$(P),M=$(M_g)"
 	}
@@ -601,6 +601,8 @@ text {
 		chan="$(P)SGM$(N):LambdaTweak.C"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "message button" {
@@ -729,6 +731,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "message button" {
 	object {
@@ -796,6 +800,8 @@ menu {
 		clr=54
 		bclr=3
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -808,6 +814,8 @@ menu {
 		chan="$(P)SGM$(N):Energy"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "text update" {
@@ -822,6 +830,8 @@ menu {
 		clr=54
 		bclr=3
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -834,6 +844,8 @@ menu {
 		chan="$(P)SGM$(N):Lambda"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "text update" {
@@ -848,6 +860,8 @@ menu {
 		clr=54
 		bclr=3
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -860,6 +874,8 @@ menu {
 		chan="$(P)SGM$(N):phi"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 rectangle {
@@ -876,7 +892,7 @@ rectangle {
 text {
 	object {
 		x=0
-		y=0
+		y=3
 		width=320
 		height=20
 	}
@@ -963,4 +979,16 @@ text {
 	}
 	textix="r' AT LIMIT"
 	align="horiz. centered"
+}
+text {
+	object {
+		x=1
+		y=165
+		width=20
+		height=8
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="V1.4"
 }

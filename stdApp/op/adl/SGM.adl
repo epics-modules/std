@@ -1,12 +1,12 @@
 
 file {
-	name="/home/oxygen4/MOONEY/epics/3.13.1/tmm/tmmApp/op/adl/SGM_1.6a.adl"
-	version=020305
+	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/SGM_1.9.adl"
+	version=020306
 }
 display {
 	object {
-		x=98
-		y=497
+		x=381
+		y=44
 		width=592
 		height=290
 	}
@@ -97,20 +97,6 @@ rectangle {
 	"basic attribute" {
 		clr=14
 	}
-}
-text {
-	object {
-		x=120
-		y=169
-		width=140
-		height=20
-	}
-	"basic attribute" {
-		clr=13
-		fill="outline"
-	}
-	textix="Description:"
-	align="horiz. right"
 }
 rectangle {
 	object {
@@ -917,194 +903,6 @@ text {
 	label="<"
 	press_msg="1"
 }
-"text entry" {
-	object {
-		x=265
-		y=249
-		width=60
-		height=16
-	}
-	control {
-		chan="$(P)SGM$(N):len"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=265
-		y=269
-		width=60
-		height=16
-	}
-	control {
-		chan="$(P)SGM$(N):2Theta"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-composite {
-	object {
-		x=330
-		y=249
-		width=55
-		height=34
-	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		"text update" {
-			object {
-				x=330
-				y=269
-				width=55
-				height=14
-			}
-			monitor {
-				chan="$(P)SGM$(N):2Theta.EGU"
-				clr=54
-				bclr=3
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=330
-				y=249
-				width=55
-				height=14
-			}
-			monitor {
-				chan="$(P)SGM$(N):len.EGU"
-				clr=54
-				bclr=3
-			}
-			limits {
-			}
-		}
-	}
-}
-text {
-	object {
-		x=120
-		y=249
-		width=140
-		height=14
-	}
-	"basic attribute" {
-		clr=13
-		fill="outline"
-	}
-	textix="tangent-arm length:"
-	align="horiz. right"
-}
-text {
-	object {
-		x=120
-		y=269
-		width=140
-		height=14
-	}
-	"basic attribute" {
-		clr=13
-		fill="outline"
-	}
-	textix="included angle:"
-	align="horiz. right"
-}
-"text update" {
-	object {
-		x=330
-		y=209
-		width=55
-		height=14
-	}
-	monitor {
-		chan="$(P)SGM$(N):gDensity.EGU"
-		clr=54
-		bclr=3
-	}
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=330
-		y=229
-		width=55
-		height=14
-	}
-	monitor {
-		chan="$(P)SGM$(N):R.EGU"
-		clr=54
-		bclr=3
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=120
-		y=229
-		width=140
-		height=14
-	}
-	"basic attribute" {
-		clr=13
-		fill="outline"
-	}
-	textix="radius of curvature:"
-	align="horiz. right"
-}
-"text update" {
-	object {
-		x=265
-		y=229
-		width=60
-		height=14
-	}
-	monitor {
-		chan="$(P)SGM$(N):R"
-		clr=54
-		bclr=3
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=120
-		y=189
-		width=140
-		height=14
-	}
-	"basic attribute" {
-		clr=13
-		fill="outline"
-	}
-	textix="diffraction order:"
-	align="horiz. right"
-}
-text {
-	object {
-		x=120
-		y=209
-		width=140
-		height=14
-	}
-	"basic attribute" {
-		clr=13
-		fill="outline"
-	}
-	textix="grating line density:"
-	align="horiz. right"
-}
 rectangle {
 	object {
 		x=215
@@ -1500,7 +1298,7 @@ menu {
 	object {
 		x=5
 		y=190
-		width=100
+		width=90
 		height=20
 	}
 	control {
@@ -1525,21 +1323,6 @@ menu {
 	bclr=17
 	label="-Gratings"
 }
-"text update" {
-	object {
-		x=265
-		y=209
-		width=60
-		height=14
-	}
-	monitor {
-		chan="$(P)SGM$(N):gDensity"
-		clr=54
-		bclr=3
-	}
-	limits {
-	}
-}
 text {
 	object {
 		x=5
@@ -1555,64 +1338,6 @@ text {
 		chan="$(P)SGM$(N):exists"
 	}
 	textix="THAT GRATING IS"
-}
-composite {
-	object {
-		x=265
-		y=189
-		width=120
-		height=14
-	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		"text update" {
-			object {
-				x=330
-				y=189
-				width=55
-				height=14
-			}
-			monitor {
-				chan="$(P)SGM$(N):m.EGU"
-				clr=54
-				bclr=3
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=265
-				y=189
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)SGM$(N):m"
-				clr=54
-				bclr=3
-			}
-			limits {
-			}
-		}
-	}
-}
-"text update" {
-	object {
-		x=265
-		y=169
-		width=120
-		height=20
-	}
-	monitor {
-		chan="$(P)SGM$(N):stripeDesc"
-		clr=54
-		bclr=3
-	}
-	limits {
-	}
 }
 text {
 	object {
@@ -1671,7 +1396,7 @@ text {
 		args="P=$(P),M=$(M_rIn)"
 	}
 	display[3] {
-		label="x  motor (tangent-arm)"
+		label="x  motor (grating drive)"
 		name="motorx_more.adl"
 		args="P=$(P),M=$(M_x)"
 	}
@@ -1681,7 +1406,7 @@ text {
 		args="P=$(P),M=$(M_rOut)"
 	}
 	display[5] {
-		label="grating motor"
+		label="index motor (grating index)"
 		name="motorx_more.adl"
 		args="P=$(P),M=$(M_g)"
 	}
@@ -1877,8 +1602,6 @@ composite {
 		height=38
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		rectangle {
 			object {
@@ -2284,4 +2007,297 @@ text {
 	}
 	textix="r'"
 	align="horiz. right"
+}
+text {
+	object {
+		x=0
+		y=0
+		width=20
+		height=8
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="V1.8"
+}
+text {
+	object {
+		x=100
+		y=169
+		width=95
+		height=18
+	}
+	"basic attribute" {
+		clr=13
+		fill="outline"
+	}
+	textix="Description:"
+}
+text {
+	object {
+		x=100
+		y=249
+		width=150
+		height=14
+	}
+	"basic attribute" {
+		clr=13
+		fill="outline"
+	}
+	textix="tangent-arm length:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=100
+		y=269
+		width=150
+		height=14
+	}
+	"basic attribute" {
+		clr=13
+		fill="outline"
+	}
+	textix="included angle:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=100
+		y=229
+		width=150
+		height=14
+	}
+	"basic attribute" {
+		clr=13
+		fill="outline"
+	}
+	textix="radius of curvature:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=100
+		y=189
+		width=150
+		height=14
+	}
+	"basic attribute" {
+		clr=13
+		fill="outline"
+	}
+	textix="diffraction order:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=100
+		y=209
+		width=150
+		height=14
+	}
+	"basic attribute" {
+		clr=13
+		fill="outline"
+	}
+	textix="grating line density:"
+	align="horiz. right"
+}
+"text entry" {
+	object {
+		x=255
+		y=249
+		width=60
+		height=16
+	}
+	control {
+		chan="$(P)SGM$(N):len"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=255
+		y=269
+		width=60
+		height=16
+	}
+	control {
+		chan="$(P)SGM$(N):2Theta"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=255
+		y=229
+		width=60
+		height=14
+	}
+	monitor {
+		chan="$(P)SGM$(N):R"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=255
+		y=209
+		width=60
+		height=14
+	}
+	monitor {
+		chan="$(P)SGM$(N):gDensity"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+composite {
+	object {
+		x=320
+		y=209
+		width=65
+		height=74
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=320
+				y=249
+				width=65
+				height=34
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=320
+						y=269
+						width=65
+						height=14
+					}
+					monitor {
+						chan="$(P)SGM$(N):2Theta.EGU"
+						clr=54
+						bclr=3
+					}
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=320
+						y=249
+						width=65
+						height=14
+					}
+					monitor {
+						chan="$(P)SGM$(N):len.EGU"
+						clr=54
+						bclr=3
+					}
+					limits {
+					}
+				}
+			}
+		}
+		"text update" {
+			object {
+				x=320
+				y=209
+				width=65
+				height=14
+			}
+			monitor {
+				chan="$(P)SGM$(N):gDensity.EGU"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=320
+				y=229
+				width=65
+				height=14
+			}
+			monitor {
+				chan="$(P)SGM$(N):R.EGU"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=255
+		y=189
+		width=130
+		height=14
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=325
+				y=189
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)SGM$(N):m.EGU"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=255
+				y=189
+				width=65
+				height=14
+			}
+			monitor {
+				chan="$(P)SGM$(N):m"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+	}
+}
+"text update" {
+	object {
+		x=195
+		y=169
+		width=190
+		height=18
+	}
+	monitor {
+		chan="$(P)SGM$(N):stripeDesc"
+		clr=54
+		bclr=0
+	}
+	limits {
+	}
 }
