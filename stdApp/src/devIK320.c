@@ -1,4 +1,4 @@
-/* $Id: devIK320.c,v 1.1.1.1.2.1 2003-08-11 19:24:32 sluiter Exp $ */
+/* $Id: devIK320.c,v 1.1.1.1.2.2 2004-01-16 18:07:59 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,9 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1.2.1  2003/08/11 19:24:32  sluiter
+ * Bug fix for bus error in get_ioint_info() if hardware is missing.
+ *
  * Revision 1.1.1.1  2001/07/03 20:05:27  sluiter
  * Creating
  *
@@ -54,6 +57,7 @@
  * .01 10.20.99 kag removed 'ZERO' function from menus
  * .02 08.11.03 rls bug fix for bus error in get_ioint_info() if hardware
  *			is missing.
+ * .03 01.15.03 rls more bug fixes for when hardware is missing.
  *
  */
 
@@ -574,28 +578,35 @@ ik320InitFunct(mbboRecord *prec)
 STATIC long
 ik320InitDir(mbboRecord *prec)
 {
-long rval = ik320InitMbbo(prec, devDirMenu, NUM_ELS(devDirMenu[0]), 1);
-	if ( OK == rval ) {
-		if ( ! prec->pini ) {
-			DevIK320Mbbo tmp = (DevIK320Mbbo)(prec->dpvt);
-			/* get value from the card */
-			prec->rval = drvIK320CARD(tmp->drv)->direction[tmp->axis - 1];
-		}
+    long rval = ik320InitMbbo(prec, devDirMenu, NUM_ELS(devDirMenu[0]), 1);
+    if (OK == rval)
+    {
+	if (!prec->pini)
+	{
+	    DevIK320Mbbo tmp = (DevIK320Mbbo)(prec->dpvt);
+	    if (tmp->drv == NULL)
+		return(ERROR);
+	    /* get value from the card */
+	    prec->rval = drvIK320CARD(tmp->drv)->direction[tmp->axis - 1];
 	}
-	return rval;
+    }
+    return(rval);
 }
 
-STATIC long
-ik320InitModeX3(mbboRecord *prec)
+STATIC long ik320InitModeX3(mbboRecord *prec)
 {
-long rval = ik320InitMbbo(prec, devX3ModeMenu, NUM_ELS(devX3ModeMenu), 0);
-	if (OK == rval) {
-		if ( ! prec->pini) {
-			/* get value from the card */
-			prec->rval = drvIK320CARD(((DevIK320Mbbo)(prec->dpvt))->drv)->modeX3;
-		}
+    long rval = ik320InitMbbo(prec, devX3ModeMenu, NUM_ELS(devX3ModeMenu), 0);
+    if (OK == rval)
+    {
+	if (!prec->pini)
+	{
+	    if (prec->dpvt == NULL)
+		rval = ERROR;
+	    else /* get value from the card */
+		prec->rval = drvIK320CARD(((DevIK320Mbbo)(prec->dpvt))->drv)->modeX3;
 	}
-	return rval;
+    }
+    return(rval);
 }
 
 STATIC long
@@ -806,58 +817,63 @@ cleanup:
 STATIC long
 ik320InitAiRec(aiRecord *prec)
 {
-	long 			status;
-	DevIK320Ai		devState=0;
+    long            status;
+    DevIK320Ai      devState=0;
 
-	DM(1,"devIK320InitAiRec() entering\n");
-	if (! (devState=(DevIK320Ai)malloc(sizeof(DevIK320AiRec))) ) {
-		status = S_dev_noMemory;
-		goto cleanup;
-	}
+    DM(1,"devIK320InitAiRec() entering\n");
+    if (!(devState = (DevIK320Ai) malloc(sizeof(DevIK320AiRec))))
+    {
+	status = S_dev_noMemory;
+	goto cleanup;
+    }
 
-	if ((status=ik320Connect(&prec->inp,&devState->axis,&devState->drv)))
-		goto cleanup;
+    if ((status=ik320Connect(&prec->inp,&devState->axis,&devState->drv)))
+	goto cleanup;
 
-	prec->dpvt=devState;
+    prec->dpvt=devState;
 
-	scanIoInit( &devState->scanPvt );
+    scanIoInit( &devState->scanPvt );
 
-	return OK;
+    return (OK);
 
-cleanup:
-	prec->pact=TRUE;
-	if (devState) free(devState);
-	
-	return status;
+    cleanup:
+    prec->pact=TRUE;
+    if (devState) free(devState);
+
+    return (status);
 }
 
 STATIC long
 get_ioint_info(int cmd, dbCommon *prec, IOSCANPVT *ppvt)
 {
-DevIK320Ai devState = (DevIK320Ai)prec->dpvt;
+    DevIK320Ai devState = (DevIK320Ai)prec->dpvt;
 
-	if (devState == NULL)
-	    return ERROR;
-	
-	/* tell the driver we switched on/off io event scanning
-	 * NOTE: no interrupt must occur until the caller of get_iont_info
-	 *		 is in a safe state. Otherwise the result is undefined and
-	 *		 deadlock might occur (nobody calling drvIK320Finish()).	
-	 *		 We'd need a `special' processing routine here, so the
-	 *		 driver could be released in special(,after).
-	 */	
-	*ppvt = devState->scanPvt;
-	if (drvIK320RegisterIOScan(	devState->drv,
-							cmd ? 0 : & devState->scanPvt,
-							devState->axis)) {
-		/* card is busy */
-		return ERROR;
-	} 
-	ik320GroupChanged(cmd,drvIK320GroupNr(devState->drv));
+    if (devState == NULL)
+	return(ERROR);
 
-	/* should be able to call this after processing finished :-( */
-	drvIK320Finish(devState->drv);
-	return OK;
+    /* tell the driver we switched on/off io event scanning
+     * NOTE: no interrupt must occur until the caller of get_iont_info
+     *		 is in a safe state. Otherwise the result is undefined and
+     *		 deadlock might occur (nobody calling drvIK320Finish()).	
+     *		 We'd need a `special' processing routine here, so the
+     *		 driver could be released in special(,after).
+     */
+    *ppvt = devState->scanPvt;
+    
+    if (devState->drv == NULL)
+	return(ERROR);
+    
+    if (drvIK320RegisterIOScan( devState->drv, cmd ? 0 : & devState->scanPvt,
+				devState->axis))
+    {
+	/* card is busy */
+	return(ERROR);
+    }
+    ik320GroupChanged(cmd,drvIK320GroupNr(devState->drv));
+
+    /* should be able to call this after processing finished :-( */
+    drvIK320Finish(devState->drv);
+    return(OK);
 }
 
 STATIC long
