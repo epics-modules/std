@@ -2516,10 +2516,10 @@ contScan(sscanRecord *psscan)
 		status = 0;
 		addToPrev = (psscan->acqm == sscanACQM_ADD) ||
 					((psscan->acqm == sscanACQM_ACC) && (precPvt->prevACQM == sscanACQM_ACC));
-		pFbuff = addToPrev ? (float *)precPvt->dataBuffer : precPvt->detBufPtr[i].pFill;
 		pPvStat = &psscan->d01nv;
 		pDet = (detFields *) & psscan->d01hr;
 		for (i = 0; i < precPvt->valDetPvs; i++, pDet++, pPvStat++) {
+			pFbuff = addToPrev ? (float *)precPvt->dataBuffer : precPvt->detBufPtr[i].pFill;
 			if (precPvt->acqDet[i] && (precPvt->detBufPtr[i].pFill != NULL)) {
 				if (psscan->acqt == sscanACQT_1D_ARRAY) {
 
@@ -2664,6 +2664,7 @@ packData(sscanRecord *psscan)
 	float			*pDBuf, *pf, *pf1, *pf2;
 	unsigned short	*pPvStat;
 
+	if (sscanRecordDebug >= 5) printf("%s:packData\n", psscan->name);
 	if (precPvt->dataState == DS_PACKED) return;
 	precPvt->dataState = DS_PACKED;
 	/*
@@ -2690,6 +2691,8 @@ packData(sscanRecord *psscan)
 	}
 
 	if ((psscan->cpt > 1) && (psscan->pasm >= sscanPASM_Peak_Pos)) {
+		if (sscanRecordDebug >= 5) printf("%s:packData cpt=%d,pasm=%d\n",
+			psscan->name, psscan->cpt, psscan->pasm);
 		/* Find peak/valley/edge in reference detector data array and go to it. */
 		markIndex = -1;
 
