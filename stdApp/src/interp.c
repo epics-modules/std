@@ -1,10 +1,11 @@
-#include <stddef.h>
-#include <stdlib.h>
-/* #include <ctype.h> */
+#include <vxWorks.h>
+#include <types.h>
 #include <math.h>
-#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <stdioLib.h>
 
-/* #include <dbEvent.h> */
+#include <dbEvent.h>
 #include <dbDefs.h>
 #include <dbCommon.h>
 #include <recSup.h>
@@ -12,7 +13,7 @@
 
 volatile int interpDebug=0;
 
-static long interp_init(genSubRecord *pgsub)
+long interp_init(genSubRecord *pgsub)
 {
 	double	*a, *b, *c;
 	int i, n=100;
@@ -31,9 +32,9 @@ static long interp_init(genSubRecord *pgsub)
 	return(0);
 }
 
-static long interp_do(genSubRecord *pgsub)
+long interp_do(genSubRecord *pgsub)
 {
-	double	*a, *b, *c, *d, ix;
+	double	*a, *b, *c, *d, ix, p;
 	double	*valb, *valc;
 	int		hi, lo, n, mid;
 
@@ -71,19 +72,3 @@ static long interp_do(genSubRecord *pgsub)
 	}
 	return(0);
 }
-
-#include <registryFunction.h>
-#include <epicsExport.h>
-
-epicsExportAddress(int, interpDebug);
-
-static registryFunctionRef interpRef[] = {
-	{"interp_init", (REGISTRYFUNCTION)interp_init},
-	{"interp_do", (REGISTRYFUNCTION)interp_do}
-};
-
-static void interpRegister(void) {
-	registryFunctionRefAdd(interpRef, NELEMENTS(interpRef));
-}
-
-epicsExportRegistrar(interpRegister);
