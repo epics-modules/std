@@ -36,6 +36,11 @@
 #include <stddef.h>
 #include <string.h>
 
+#ifdef vxWorks
+#include <symLib.h>
+#include <sysSymTbl.h>
+#endif
+
 #include "macLib.h"
 #include "dbmf.h"
 #include "epicsVersion.h"
@@ -65,6 +70,8 @@ static MAC_HANDLE *macHandle = NULL;
 static char** vars = NULL;
 static char* db_file_name = NULL;
 static int var_count,sub_count;
+static SYM_TYPE symTyp;
+static char **symVal;
 
 %}
 
@@ -112,6 +119,23 @@ templ_head: DBFILE WORD
 		db_file_name = dbmfMalloc(strlen($2)+1);
 		strcpy(db_file_name,$2);
 		dbmfFree($2);
+	}
+        | DBFILE WORD WORD
+	{
+#ifdef vxWorks
+		var_count=0;
+		if(db_file_name) dbmfFree(db_file_name);
+		db_file_name = dbmfMalloc(strlen($2)+1);
+		strcpy(db_file_name,$2);
+		dbmfFree($2);
+                /* First assume that the string is a vxWorks symbol, if not then
+                   assume it is a literal path */
+                if (symFindByName(sysSymTbl,$3,(char **)&symVal,&symTyp)==OK)
+                        strcpy(db_path, *symVal);
+                else
+                        strcpy(db_path,$3);
+                dbmfFree($3);
+#endif
 	}
 	;
 
