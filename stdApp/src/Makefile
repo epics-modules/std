@@ -51,8 +51,8 @@ LIBRARY_IOC += std
 
 std_SRCS += symTable.c
 std_SRCS += symTableTest.c
-std_SRCS_vxWorks += dbrestore.c save_restore.c fGetDateStr.c
-std_SRCS_vxWorks  += initHooks.c
+std_SRCS += dbrestore.c save_restore.c fGetDateStr.c
+std_SRCS  += initHooks.c
 #std_SRCS += devAiVaroc.c drvVarocB.c
 #std_SRCS += devXxHP10895LaserAxis.c
 #std_SRCS += devXxHeidenhainGpib.c
