@@ -131,6 +131,7 @@
 volatile int debug_saveData = 0;
 volatile int debug_saveDataMsg = 0;
 volatile int saveData_MessagePolicy = 0;
+volatile int saveData_HandshakeOnDATAHigh = 0;
 
 #ifdef NODEBUG 
 #define Debug0(d,s) ;
@@ -257,7 +258,6 @@ LOCAL char *txcd[SCAN_NBT]= {
 /************************************************************************/
 /*----- STRUCT TO CONNECT A SCAN RECORD AND RETRIEVE DATA FROM IT ------*/
 
-LOCAL const float file_format_version=FILE_FORMAT_VERSION;
 LOCAL const char  save_data_version[]=SAVE_DATA_VERSION;
 
 #define NOT_CONNECTED	0	/* SCAN not connected			*/
@@ -763,7 +763,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.4.2.1 2004-01-14 19:42:19 mooney Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.4.2.2 2004-04-26 15:44:37 mooney Exp $\n");
 }
 
 void saveData_Info() {
@@ -1364,23 +1364,24 @@ LOCAL void dataMonitor(struct event_handler_args eha)
 {
   struct dbr_time_short *pval;
   SCAN* pscan;
-  short sval;
+  short newData, sval;
   char  disp;
 
   pscan= (SCAN*)ca_puser(eha.chid);
   pval = (struct dbr_time_short *) eha.dbr;
   sval= pval->value;
-  if((pscan->data!=-1) && (sval==0)) {
-
-    if(pscan->chandShake) {
-      if ((save_status != STATUS_INACTIVE) && (save_status != STATUS_ACTIVE_FS_ERROR)) {
-        /* hand shake busy						*/
-        sval= HANDSHAKE_BUSY;
-        ca_array_put(DBR_SHORT, 1, pscan->chandShake, &sval);
-      }
-    }
-    if(nb_scan_running++ == 0) {
-      /* disable put to filesystem and subdir				*/
+  if (pscan->data != -1) {
+	if (sval == saveData_HandshakeOnDATAHigh) {
+	    if (pscan->chandShake) {
+	      if ((save_status != STATUS_INACTIVE) && (save_status != STATUS_ACTIVE_FS_ERROR)) {
+	        /* hand shake busy */
+	        newData= HANDSHAKE_BUSY;
+	        ca_array_put(DBR_SHORT, 1, pscan->chandShake, &newData);
+	      }
+	    }
+	}
+    if ((sval==0) && (nb_scan_running++ == 0)) {
+      /* new scan started: disable put to filesystem and subdir */
       disp=(char)1;
       ca_array_put(DBR_CHAR, 1, file_system_disp_chid, &disp);
       disp=(char)1;
@@ -1602,7 +1603,7 @@ LOCAL void extraValCallback(struct event_handler_args eha)
   PV_NODE * pnode = eha.usr;
   long type = eha.type;
   long count = eha.count;
-  DBR_VAL * pval = eha.dbr;
+  const DBR_VAL *pval = eha.dbr;
   char *string;
 
   size_t size=0;
@@ -1637,7 +1638,7 @@ LOCAL void extraValCallback(struct event_handler_args eha)
 
   memcpy(pnode->pval, pval, size);
   if (type == DBR_STRING) {
-    string = pnode->pval;
+    string = (char *)pnode->pval;
     string[size>39?39:size] = '\0';
     /* logMsg("extraValCallback: string is >%s<\n", (char *)(pnode->pval)); */
   }
@@ -1649,11 +1650,11 @@ LOCAL void extraValCallback(struct event_handler_args eha)
 LOCAL void extraDescCallback(struct event_handler_args eha)
 { 
   PV_NODE * pnode = eha.usr;
-  DBR_VAL * pval = eha.dbr;
+  const DBR_VAL *pval = eha.dbr;
 
   semTake(pnode->lock, WAIT_FOREVER);
 
-  strcpy(pnode->desc, pval);
+  strcpy(pnode->desc, (char *)pval);
   ca_clear_channel(pnode->desc_chid);
 
   semGive(pnode->lock);
@@ -2065,6 +2066,7 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
   long  scan_offset;
   long  data_size;
   long  openTick=0;
+  float f;
 
   pscan= pmsg->pscan;  
 
@@ -2216,7 +2218,8 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
       /*----------------------------------------------------------------*/
       /* Write the file header */
       Debug0(3, "Writing file header\n");
-      xdr_float(&xdrs, &file_format_version);       /* file version	*/
+	  f = FILE_FORMAT_VERSION;
+      xdr_float(&xdrs, &f);       /* file version	*/
       xdr_long(&xdrs, &pscan->counter); /* scan number */
       xdr_short(&xdrs, &pscan->scan_dim);/* rank of the data */
       pscan->dims_offset= xdr_getpos(&xdrs);
