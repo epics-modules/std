@@ -421,7 +421,7 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
 {
 	int card = psr->out.value.vmeio.card;
 	int status;
-	struct callback *pcallbacks;
+	CALLBACK *pcallbacks;
 
 	Debug(5,"scaler_init_record: card %d\n", card);
 
@@ -453,7 +453,7 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
 	psr->nch = scaler_state[card]->num_channels;
 
 	/* setup interrupt handler */
-	pcallbacks = (struct callback *)psr->dpvt;
+	pcallbacks = (CALLBACK *)psr->dpvt;
 	scaler_state[card]->pcallback = (CALLBACK *)&(pcallbacks[3]);
 	status = scalerISRSetup(card);
 

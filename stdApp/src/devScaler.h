@@ -18,14 +18,3 @@ typedef struct {
 	DEVSUPFUN	done;
 } SCALERDSET;
 
-/*** callback stuff ***/
-struct callback {
-	CALLBACK	callback;
-	struct dbCommon *precord;
-#ifdef  NOT_YET_OSI
-	WDOG_ID wd_id;
-#else
-        epicsTimerId wd_id;
-#endif
-};
-
