@@ -85,6 +85,7 @@ Modification Log:
 #include	<recGbl.h>
 #include	<devSup.h>
 #include	<special.h>
+#include	<epicsMutex.h>
 #define GEN_SIZE_OFFSET
 #include	"scalerRecord.h"
 #undef GEN_SIZE_OFFSET
@@ -119,8 +120,6 @@ Modification Log:
 #endif
 volatile int scalerRecordDebug = 0;
 volatile int scaler_wait_time = 10;
-
-epicsTimerQueueId	scalerWdTimerQ = NULL;
 
 #define MIN(a,b) (a)<(b)?(a):(b)
 #define MAX(a,b) (a)>(b)?(a):(b)
@@ -167,48 +166,58 @@ struct rset scalerRSET = {
 };
 epicsExportAddress(rset, scalerRSET);
 
+struct rpvtStruct {
+	epicsMutexId updateMutex;
+};
+
 static void do_alarm();
 static void monitor();
 static void updateCounts(scalerRecord *pscal);
 
-static void deviceCallbackFunc(struct callback *pcb)
+static void deviceCallbackFunc(CALLBACK *pcb)
 {
-    struct dbCommon *precord=pcb->precord;
+    struct dbCommon *precord;
 
+	callbackGetUser(precord, pcb);
     dbScanLock(precord);
     process(precord);
     dbScanUnlock(precord);
 }
 
 
-static void updateCallbackFunc(struct callback *pcb)
+static void updateCallbackFunc(CALLBACK *pcb)
 {
-    struct dbCommon *precord=pcb->precord;
+	scalerRecord *pscal;
+	struct rpvtStruct *prpvt;
 
-    dbScanLock(precord);
-    updateCounts((scalerRecord *)precord);
-    dbScanUnlock(precord);
+	callbackGetUser(pscal, pcb);
+	prpvt = (struct rpvtStruct *)pscal->rpvt;
+	epicsMutexLock(prpvt->updateMutex);
+    updateCounts(pscal);
+	epicsMutexUnlock(prpvt->updateMutex);
 }
 
-static void userCallbackFunc(struct callback *pcb)
+static void delayCallbackFunc(CALLBACK *pcb)
 {
-    scalerRecord *pscal = (scalerRecord *)pcb->precord;
+    scalerRecord *pscal;
 
 	/*
 	 * User asked us to start counting after a delay that has now expired.
 	 * If user has not rescinded that request in the meantime, tell
 	 * process() to start counting.
 	 */
+	callbackGetUser(pscal, pcb);
 	if (pscal->us == USER_STATE_WAITING && pscal->cnt) {
 		pscal->us = USER_STATE_REQSTART;
 		(void)scanOnce((void *)pscal);
 	}
 }
 
-static void autoCallbackFunc(struct callback *pcb)
+static void autoCallbackFunc(CALLBACK *pcb)
 {
-    scalerRecord *pscal = (scalerRecord *)pcb->precord;
+    scalerRecord *pscal;
 
+	callbackGetUser(pscal, pcb);
 	(void)scanOnce((void *)pscal);
 }
 
@@ -218,58 +227,55 @@ int pass;
 {
 	long status;
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
-	struct callback *pcallbacks, *pupdateCallback, *puserCallback, *pautoCallback, *pdeviceCallback;
+	CALLBACK *pcallbacks, *pupdateCallback, *pdelayCallback,
+		*pautoCallback, *pdeviceCallback;
+    struct rpvtStruct	*prpvt;
 
 	Debug(5, "scaler init_record: pass = %d\n", pass);
-	Debug(5, "init_record: .PR1 = %ld\n", pscal->pr1);
+	Debug(5, "init_record: .PR1 = %ld\n", (long)pscal->pr1);
 	if (pass == 0) {
 		pscal->vers = VERSION;
+        pscal->rpvt = (void *)calloc(1, sizeof(struct rpvtStruct));
+	    prpvt = (struct rpvtStruct *)pscal->rpvt;
+		if ((prpvt->updateMutex = epicsMutexCreate()) == 0) {
+			epicsPrintf("scalerRecord:init_record: could not create mutex.\n");
+			return(-1);
+		}
 		return (0);
 	}
+    prpvt = (struct rpvtStruct *)pscal->rpvt;
 
 	/* Gotta have a .val field.  Make its value reproducible. */
 	pscal->val = 0;
 
 	/*** setup callback stuff (note: array of 4 callback structures) ***/
-	pcallbacks = (struct callback *)(calloc(4,sizeof(struct callback)));
+	pcallbacks = (CALLBACK *)(calloc(4,sizeof(CALLBACK)));
 	pscal->dpvt = (void *)pcallbacks;
 
 	/* callback to implement periodic updates */
-	pupdateCallback = (struct callback *)&(pcallbacks[0]);
-	callbackSetCallback(updateCallbackFunc,&pupdateCallback->callback);
-	callbackSetPriority(pscal->prio,&pupdateCallback->callback);
-	pupdateCallback->precord = (struct dbCommon *)pscal;
-
-	if (scalerWdTimerQ == NULL) {
-		/* create sharable queue */
-		scalerWdTimerQ = epicsTimerQueueAllocate(1, epicsThreadPriorityLow);
-	}
-
- 	pupdateCallback->wd_id = epicsTimerQueueCreateTimer(scalerWdTimerQ,
-		(void(*)())callbackRequest,pupdateCallback);
+	pupdateCallback = (CALLBACK *)&(pcallbacks[0]);
+	callbackSetCallback(updateCallbackFunc, pupdateCallback);
+	callbackSetPriority(pscal->prio, pupdateCallback);
+	callbackSetUser((void *)pscal, pupdateCallback);
 
 	/* second callback to implement delay */
-	puserCallback = (struct callback *)&(pcallbacks[1]);
-	callbackSetCallback(userCallbackFunc,&puserCallback->callback);
-	callbackSetPriority(pscal->prio,&puserCallback->callback);
-	puserCallback->precord = (struct dbCommon *)pscal;
- 	puserCallback->wd_id = epicsTimerQueueCreateTimer(scalerWdTimerQ,
-		(void(*)())callbackRequest,puserCallback);
+	pdelayCallback = (CALLBACK *)&(pcallbacks[1]);
+	callbackSetCallback(delayCallbackFunc, pdelayCallback);
+	callbackSetPriority(pscal->prio, pdelayCallback);
+	callbackSetUser((void *)pscal, pdelayCallback);
 
 	/* third callback to implement auto-count */
-	pautoCallback = (struct callback *)&(pcallbacks[2]);
-	callbackSetCallback(autoCallbackFunc,&pautoCallback->callback);
-	callbackSetPriority(pscal->prio,&pautoCallback->callback);
-	pautoCallback->precord = (struct dbCommon *)pscal;
- 	pautoCallback->wd_id = epicsTimerQueueCreateTimer(scalerWdTimerQ,
-		(void(*)())callbackRequest,pautoCallback);
+	pautoCallback = (CALLBACK *)&(pcallbacks[2]);
+	callbackSetCallback(autoCallbackFunc, pautoCallback);
+	callbackSetPriority(pscal->prio, pautoCallback);
+	callbackSetUser((void *)pscal, pautoCallback);
 
 	/* fourth callback for device support */
-	pdeviceCallback = (struct callback *)&(pcallbacks[3]);
-	callbackSetCallback(deviceCallbackFunc,&pdeviceCallback->callback);
-	callbackSetPriority(pscal->prio,&pdeviceCallback->callback);
-	callbackSetUser((struct dbCommon *)pscal,&pdeviceCallback->callback);
-	pdeviceCallback->precord = (struct dbCommon *)pscal;
+	/* Note that device support depends on this callback being pcallbacks[3] */
+	pdeviceCallback = (CALLBACK *)&(pcallbacks[3]);
+	callbackSetCallback(deviceCallbackFunc, pdeviceCallback);
+	callbackSetPriority(pscal->prio, pdeviceCallback);
+	callbackSetUser((void *)pscal, pdeviceCallback);
 
 	/* Check that we have everything we need. */
 	if (!(pdset = (SCALERDSET *)(pscal->dset)))
@@ -278,11 +284,11 @@ int pass;
 		return(S_dev_noDSET);
 	}
 
-	Debug(2, "init_record: calling dset->init_record\n", 0);
+	Debug(2, "init_record: calling dset->init_record%c\n", '.');
 	if (pdset->init_record)
 	{
 		status=(*pdset->init_record)(pscal);
-		Debug(3, "init_record: dset->init_record returns %d\n", status);
+		Debug(3, "init_record: dset->init_record returns %ld\n", status);
 		if (status) {
 			pscal->card = -1;
 			return (status);
@@ -308,7 +314,7 @@ int pass;
 		/* convert time to clock ticks */
 		pscal->pr1 = (long) (pscal->tp * pscal->freq);
 		db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
-		Debug(3, "init_record: .TP != 0, so .PR1 set to %ld\n", pscal->pr1);
+		Debug(3, "init_record: .TP != 0, so .PR1 set to %ld\n", (long)pscal->pr1);
 	} else if (pscal->pr1 && pscal->freq) {
 		/* convert clock ticks to time */
 		pscal->tp = (double)(pscal->pr1 / pscal->freq);
@@ -325,16 +331,20 @@ scalerRecord *pscal;
 	int i, status, prev_scaler_state;
 	int card = pscal->out.value.vmeio.card;
 	int justFinishedUserCount=0, justStartedUserCount=0, putNotifyOperation=0;
-	long *ppreset = &(pscal->pr1);
-	short *pdir = &pscal->d1;
-	short *pgate = &pscal->g1;
+	long *ppreset = (long *)&(pscal->pr1);
+	short *pdir = (short *)&pscal->d1;
+	short *pgate = (short *)&pscal->g1;
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
-	struct callback *pcallbacks = (struct callback *)pscal->dpvt;
-	struct callback *pupdateCallback = (struct callback *)&(pcallbacks[0]);
-	struct callback *puserCallback = (struct callback *)&(pcallbacks[1]);
-	struct callback *pautoCallback = (struct callback *)&(pcallbacks[2]);
+	CALLBACK *pcallbacks = (CALLBACK *)pscal->dpvt;
+	CALLBACK *pupdateCallback = (CALLBACK *)&(pcallbacks[0]);
+	/* CALLBACK *pdelayCallback = (CALLBACK *)&(pcallbacks[1]); */
+	CALLBACK *pautoCallback = (CALLBACK *)&(pcallbacks[2]);
+    struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
 
-	Debug(5, "process: entry\n", 0);
+
+	Debug(5, "process: entry%c\n", '.');
+	epicsMutexLock(prpvt->updateMutex);
+
 	pscal->pact = TRUE;
 	pscal->udf = FALSE;
 	prev_scaler_state = pscal->ss;
@@ -370,7 +380,7 @@ scalerRecord *pscal;
 				for (i=0; i<pscal->nch; i++) {
 					pdir[i] = pgate[i];
 					if (pgate[i]) {
-						Debug(5, "process: writing preset: %d.\n", ppreset[i]);
+						Debug(5, "process: writing preset: %ld.\n", ppreset[i]);
 						(*pdset->write_preset)(card, i, ppreset[i]);
 					}
 				}
@@ -424,20 +434,22 @@ scalerRecord *pscal;
 	/* Are we in auto-count mode and not already counting? */
 	if (pscal->us == USER_STATE_IDLE && pscal->cont &&
 		pscal->ss != SCALER_STATE_COUNTING) {
-        double dly_sec=0.0;  /* seconds to delay */
+        double dly_sec=pscal->dly1;  /* seconds to delay */
 
 		if (justFinishedUserCount) dly_sec = MAX(pscal->dly1, scaler_wait_time);
 		if (putNotifyOperation) dly_sec = MAX(pscal->dly1, scaler_wait_time);
 		/* if (we-have-to-wait && we-haven't-already-waited) { */
 		if (dly_sec > 0 && pscal->ss != SCALER_STATE_WAITING) {
-			Debug(5, "process: scheduling autocount restart\n", 0);
-			/* Schedule a callback, and make a note that counting should start
-			 * the next time we process (if pscal->ss is still 1 at that time).
+			Debug(5, "process: scheduling autocount restart%c\n", '.');
+			/*
+			 * Schedule a callback, and make a note that counting should start
+			 * the next time we process (if pscal->ss is still SCALER_STATE_WAITING
+			 * at that time).
 			 */
 			pscal->ss = SCALER_STATE_WAITING;  /* tell ourselves to start next time */
-			epicsTimerStartDelay(pautoCallback->wd_id, dly_sec);
+			callbackRequestDelayed(pautoCallback, dly_sec);
 		} else {
-			Debug(5, "process: restarting autocount\n", 0);
+			Debug(5, "process: restarting autocount%c\n", '.');
 			/* Either the delay time is zero, or pscal->ss = SCALER_STATE_WAITING
 			 * (we've already waited), so start auto-count counting.
 			 * Different rules apply for auto-count counting:
@@ -457,14 +469,14 @@ scalerRecord *pscal;
 			pscal->ss = SCALER_STATE_COUNTING;
 
 			/* schedule first update callback */
-			callbackSetPriority(pscal->prio,&pupdateCallback->callback);
 			if (pscal->rat1 > .1) {
-				epicsTimerStartDelay(pupdateCallback->wd_id, 1.0/pscal->rat1);
+				callbackRequestDelayed(pupdateCallback, 1.0/pscal->rat1);
 			}
 		}
 	}
 
 	pscal->pact = FALSE;
+	epicsMutexUnlock(prpvt->updateMutex);
 	return(0);
 }
 
@@ -474,10 +486,10 @@ static void updateCounts(scalerRecord *pscal)
 	int i, called_by_process;
 	float rate;
 	int card = pscal->out.value.vmeio.card;
-	long *pscaler = &(pscal->s1);
+	long *pscaler = (long *)&(pscal->s1);
 	long counts[MAX_SCALER_CHANNELS];
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
-	struct callback *pupdateCallback = (struct callback *)pscal->dpvt;
+	CALLBACK *pupdateCallback = (CALLBACK *)pscal->dpvt;
 
 	called_by_process = (pscal->pact == TRUE);
 	Debug(5, "updateCounts: %s called by process()\n", called_by_process ? " " : "NOT");
@@ -495,7 +507,7 @@ static void updateCounts(scalerRecord *pscal)
 		for (i=0; i<pscal->nch; i++) {counts[i] = 0;}
 	}
 
-	Debug(5, "updateCounts: posting scaler values\n", 0);
+	Debug(5, "updateCounts: posting scaler values%c\n", '.');
 	/* post scaler values */
 	for (i=0; i<pscal->nch; i++) {
 		if (counts[i] != pscaler[i]) {
@@ -511,11 +523,10 @@ static void updateCounts(scalerRecord *pscal)
 
 	if (pscal->ss == SCALER_STATE_COUNTING) {
 		/* arrange to call this routine again after user-specified time */
-		Debug(5, "updateCounts: arranging for callback\n", 0);
-		callbackSetPriority(pscal->prio,&pupdateCallback->callback);
+		Debug(5, "updateCounts: arranging for callback%c\n", '.');
 		rate = ((pscal->us == USER_STATE_COUNTING) ? pscal->rate : pscal->rat1);
 		if (rate > .1) {
-			epicsTimerStartDelay(pupdateCallback->wd_id, 1.0/rate);
+			callbackRequestDelayed(pupdateCallback, 1.0/rate);
 		}
 	}
 
@@ -528,12 +539,12 @@ struct dbAddr *paddr;
 int	after;
 {
 	scalerRecord *pscal = (scalerRecord *)(paddr->precord);
-	int special_type = paddr->special;
+	/* int special_type = paddr->special; */
 	int i=0;
 	unsigned short *pdir, *pgate;
 	long *ppreset;
-	struct callback *pcallbacks = (struct callback *)pscal->dpvt;
-	struct callback *puserCallback = (struct callback *)&(pcallbacks[1]);
+	CALLBACK *pcallbacks = (CALLBACK *)pscal->dpvt;
+	CALLBACK *pdelayCallback = (CALLBACK *)&(pcallbacks[1]);
     int fieldIndex = dbGetFieldIndex(paddr);
 
 	Debug(5, "special: entry; after=%d\n", after);
@@ -547,7 +558,6 @@ int	after;
 		/* Scan record if it's not Passive.  (If it's Passive, it'll get */
 		/* scanned automatically, since .cnt is a Process-Passive field.) */
 		/* Arrange to process after user-specified delay time */
-		callbackSetPriority(pscal->prio,&puserCallback->callback);
 		i = pscal->dly;   /* seconds to delay */
 		if (i<0) i = 0;
 		if (i == 0 || pscal->cnt == 0) {
@@ -560,7 +570,7 @@ int	after;
 				switch (pscal->us) {
 				case USER_STATE_WAITING:
 					/* We may have a watchdog timer going.  Cancel it. */
-					epicsTimerCancel(puserCallback->wd_id);
+					if (pdelayCallback->timer) epicsTimerCancel(pdelayCallback->timer);
 					pscal->us = USER_STATE_IDLE;
 					break;
 				case USER_STATE_REQSTART:
@@ -575,7 +585,7 @@ int	after;
 		else {
 			/* schedule callback to handle request */
 			pscal->us = USER_STATE_WAITING;
-			epicsTimerStartDelay(puserCallback->wd_id, pscal->dly);
+			callbackRequestDelayed(pdelayCallback, pscal->dly);
 		}
 		break;
 

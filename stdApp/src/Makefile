@@ -46,8 +46,6 @@ DBD += shareBase.dbd
 
 #=============================
 
-#PROD_IOC_vxWorks = std
-
 LIBRARY_IOC += std
 
 std_SRCS += dbrestore.c save_restore.c fGetDateStr.c
@@ -134,8 +132,9 @@ std_LIBS += seq pv
 seq_DIR    = $(SNCSEQ_LIB)
 pv_DIR     = $(SNCSEQ_LIB)
 
-# publish this file so it can be included by device support for scaler
-# built in the MCA module
+# publish header files needed by other modules
+INC += recDynLink.h
+INC += aiCvtDouble.h
 INC += devScaler.h
 INC += fastPID.h
 
