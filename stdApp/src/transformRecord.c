@@ -80,7 +80,11 @@
  *                     received during init is real or will soon be amended.
  * .22  04-09-03  tmm  v5.6: Change arg list to sCalcPostfix.
  * .23  06-01-03  tmm  v5.7: Added DBE_LOG to all db_post_events() calls..
+ * .24  06-26-03  rls  Port to 3.14; alarm() conflicts with alarm declaration in unistd.h
+ *			(transformRecord.h->epicsTime.h->osdTime.h->unistd.h) when
+ *			compiled with SUNPro.
  */
+
 #define VERSION 5.7
 
 #ifdef vxWorks
@@ -164,7 +168,7 @@ rset    transformRSET = {
 };
 epicsExportAddress(rset, transformRSET);
 
-static void     alarm();
+static void     checkAlarms();
 static void     monitor();
 
 /* To provide feedback to the user as to the connection status of the 
@@ -352,7 +356,7 @@ process(transformRecord *ptran)
 
 	if ((ptran->nsev >= INVALID_ALARM) && (ptran->ivla == transformIVLA_DO_NOTHING)) {
 		recGblGetTimeStamp(ptran);
-		alarm(ptran);
+		checkAlarms(ptran);
 		recGblResetAlarms(ptran); /* monitor normally would do this */
 		ptran->pact = FALSE;
 		return (0);
@@ -411,7 +415,7 @@ process(transformRecord *ptran)
 
 	recGblGetTimeStamp(ptran);
 	/* check for alarms */
-	alarm(ptran);
+	checkAlarms(ptran);
 	/* check event list */
 	monitor(ptran);
 	/* process the forward scan link record */
@@ -558,7 +562,7 @@ get_precision(struct dbAddr *paddr, long *precision)
 
 
 static void 
-alarm(transformRecord *ptran)
+checkAlarms(transformRecord *ptran)
 {
 	if (ptran->udf == TRUE) {
 		recGblSetSevr(ptran, UDF_ALARM, INVALID_ALARM);

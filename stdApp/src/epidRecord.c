@@ -62,6 +62,9 @@
  * .15  05-19-01        mlr     Added Feedback Mode (FMOD) field.  Current choices
                                 are PID and MaxMin.  These are used by device support
                                 in implementing algorithms.
+ * .16  06-26-03	rls	Port to 3.14; alarm() conflicts with alarm
+				declaration in unistd.h (epidRecord.h->epicsTime.h->
+				osdTime.h->unistd.h) when compiled with SUNPro.
  */
 
 #ifdef vxWorks
@@ -137,7 +140,7 @@ struct epidDSET { /* epid DSET */
     DEVSUPFUN       do_pid;
 };
 
-static void alarm();
+static void checkAlarms();
 static void monitor();
 
 
@@ -193,7 +196,7 @@ static long process(epidRecord *pepid)
     if (!pact && pepid->pact) return(0);
     pepid->pact = TRUE;
     recGblGetTimeStamp(pepid);
-    alarm(pepid);
+    checkAlarms(pepid);
     monitor(pepid);
     recGblFwdLink(pepid);
     pepid->pact=FALSE;
@@ -286,7 +289,7 @@ static long get_alarm_double(struct dbAddr *paddr, struct dbr_alDouble *pad)
     return(0);
 }
 
-static void alarm(epidRecord *pepid)
+static void checkAlarms(epidRecord *pepid)
 {
     double      val;
     float       hyst, lalm, hihi, high, low, lolo;
