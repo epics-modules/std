@@ -58,22 +58,6 @@ std_SRCS += recDynLink.c
 # timestamp record
 std_SRCS += timestampRecord.c
 
-# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-std_SRCS += std_registerRecordDeviceDriver.cpp
-#std_SRCS_DEFAULT += stdMain.cpp #maybe only for win32
-#std_SRCS_vxWorks += -nil- #?
-
-#The following adds support from base/src/vxWorks
-#std_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
-
-### The following builds SNL programs as components of std
-# NOTE: for suffix .st, code is run through cpp; for .stt, it's not
-#std_SRCS += sample.st
-#
-#std_LIBS += seq pv
-#seq_DIR    = $(SNCSEQ_LIB)
-#pv_DIR     = $(SNCSEQ_LIB)
-
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
 INC += devScaler.h
@@ -93,7 +77,7 @@ PROD_IOC = stdApp
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 stdApp_SRCS_DEFAULT += std_registerRecordDeviceDriver.cpp
-#stdApp_SRCS_vxWorks += stdVX_registerRecordDeviceDriver.cpp
+stdApp_SRCS_vxWorks += stdVX_registerRecordDeviceDriver.cpp
 stdApp_SRCS_DEFAULT += stdMain.cpp
 stdApp_SRCS_vxWorks += -nil-
 #The following adds support from base/src/vxWorks
@@ -101,7 +85,6 @@ stdApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 stdApp_LIBS += std
 stdApp_LIBS += mpf mpfEpics gpib
-#stdApp_LIBS += seq pv
 stdApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
