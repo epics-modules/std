@@ -1,0 +1,30 @@
+menu(busyVAL) {
+	choice(busyVAL_Done,"Done")
+	choice(busyVAL_Busy,"Busy")
+}
+recordtype(busy) {
+	include "dbCommon.dbd" 
+	field(VAL,DBF_MENU) {
+		prompt("Current Value")
+		menu(busyVAL)
+		asl(ASL0)
+		pp(TRUE)
+	}
+	field(LVAL,DBF_MENU) {
+		prompt("Last Value")
+		menu(busyVAL)
+		asl(ASL0)
+		special(SPC_NOMOD)
+	}
+	field(OMSL,DBF_MENU) {
+		prompt("Output Mode Select")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		menu(menuOmsl)
+	}
+	field(DOL,DBF_INLINK) {
+		prompt("Desired Output Loc")
+		promptgroup(GUI_COMMON)
+		interest(1)
+	}
+}

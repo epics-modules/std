@@ -1,0 +1,90 @@
+# autosave/restore
+STDLIBOBJS += $(STD_BIN)/dbrestore.o
+STDLIBOBJS += $(STD_BIN)/save_restore.o
+
+#STDLIBOBJS += $(STD_BIN)/initHooks.o
+
+# SSI encoder interface
+STDLIBOBJS += $(STD_BIN)/devAiVaroc.o
+STDLIBOBJS += $(STD_BIN)/drvVarocB.o
+
+STDLIBOBJS += $(STD_BIN)/devXxHP10895LaserAxis.o
+STDLIBOBJS += $(STD_BIN)/devXxHeidenhainGpib.o
+STDLIBOBJS += $(STD_BIN)/devXxKeithleyDMM199Gpib.o
+
+# Heidenhain IK320 support
+STDLIBOBJS += $(STD_BIN)/devIK320.o
+STDLIBOBJS += $(STD_BIN)/drvIK320.o
+STDLIBOBJS += $(STD_BIN)/drvIK320ErrStat.o
+STDLIBOBJS += $(STD_BIN)/aiCvtDouble.o
+
+ # monochromator SNL programs
+STDLIBOBJS += $(STD_BIN)/hrCtl.o
+STDLIBOBJS += $(STD_BIN)/kohzuCtl.o
+
+# scaler
+STDLIBOBJS += $(STD_BIN)/scalerRecord.o
+STDLIBOBJS += $(STD_BIN)/devScaler.o
+
+STDLIBOBJS += $(STD_BIN)/scanparmRecord.o
+
+STDLIBOBJS += $(STD_BIN)/sscanRecord.o
+
+STDLIBOBJS += $(STD_BIN)/serialRecord.o
+STDLIBOBJS += $(STD_BIN)/tableRecord.o
+STDLIBOBJS += $(STD_BIN)/transformRecord.o
+# string calc support
+STDLIBOBJS += $(STD_BIN)/sCalcoutRecord.o
+STDLIBOBJS += $(STD_BIN)/sCalcPostfix.o
+STDLIBOBJS += $(STD_BIN)/sCalcPerform.o
+
+STDLIBOBJS += $(STD_BIN)/vmeRecord.o
+STDLIBOBJS += $(STD_BIN)/gpibRecord.o
+#STDLIBOBJS += $(STD_BIN)/camacRecord.o
+
+STDLIBOBJS += $(STD_BIN)/epidRecord.o
+STDLIBOBJS += $(STD_BIN)/devEpidSoft.o
+
+STDLIBOBJS += $(STD_BIN)/module_types.o
+
+STDLIBOBJS += $(STD_BIN)/devBunchClkGen.o
+
+STDLIBOBJS += $(STD_BIN)/busyRecord.o
+STDLIBOBJS += $(STD_BIN)/devGP307gpib.o
+STDLIBOBJS += $(STD_BIN)/devXxAX301.o
+
+# Override base with local version that uses ca_put_callback
+STDLIBOBJS += $(STD_BIN)/recDynLink.o
+
+STDLIBOBJS += $(STD_BIN)/waitRecord.o
+STDLIBOBJS += $(STD_BIN)/swaitRecord.o
+
+STDLIBOBJS += $(STD_BIN)/ddfanoutRecord.o
+STDLIBOBJS += $(STD_BIN)/sseqRecord.o
+
+# save scan data stuff
+STDLIBOBJS += $(STD_BIN)/xdr_stdio.o
+STDLIBOBJS += $(STD_BIN)/xdr_lib.o
+STDLIBOBJS += $(STD_BIN)/saveData.o
+STDLIBOBJS += $(STD_BIN)/req_file.o
+
+# For machine-status board
+STDLIBOBJS += $(STD_BIN)/devA32Vme.o
+STDLIBOBJS += $(STD_BIN)/subAve.o
+
+# ioc status checking stuff
+STDLIBOBJS += $(STD_BIN)/iocCheck.o
+
+# Override dbLoadRecords, dbLoadDatabase from base with new versions
+# that work around the lack of soft links in 3.13.1
+STDLIBOBJS += $(STD_BIN)/dbLoadRecords.o
+STDLIBOBJS += $(STD_BIN)/dbLoadTemplate.o
+
+# Don't need this for 3.13.1.1 and later
+#STDLIBOBJS += $(STD_BIN)/locationProbe.o
+
+# Should not need this anymore either
+#STDLIBOBJS += $(STD_BIN)/ldpp.o
+
+STDLIBOBJS += $(STD_BIN)/genSubRecord.o
+

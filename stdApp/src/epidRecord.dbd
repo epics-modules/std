@@ -1,0 +1,243 @@
+menu(epidFeedbackState) {
+        choice(epidFeedbackState_Off,"Off")
+        choice(epidFeedbackState_On, "On")
+}
+
+recordtype(epid) {
+	include "dbCommon.dbd" 
+	field(VAL,DBF_FLOAT) {
+		prompt("Setpoint")
+		asl(ASL0)
+		pp(TRUE)
+	}
+	field(SMSL,DBF_MENU) {
+		prompt("Setpoint Mode Select")
+		promptgroup(GUI_PID)
+		interest(1)
+		menu(menuOmsl)
+	}
+	field(STPL,DBF_INLINK) {
+		prompt("Setpoint Location")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
+        field(INP,DBF_INLINK) {
+		prompt("Controlled Value Loc")
+                promptgroup(GUI_INPUTS)
+                interest(1)
+        }
+        field(OUTL,DBF_OUTLINK) {
+                prompt("Output Location")
+                promptgroup(GUI_PID)
+                interest(1)
+        }
+	field(CVAL,DBF_FLOAT) {
+		prompt("Controlled Value")
+		special(SPC_NOMOD)
+	}
+	field(CVLP,DBF_FLOAT) {
+		prompt("Prev. Controlled Value")
+		special(SPC_NOMOD)
+	}
+	field(OVAL, DBF_FLOAT) {
+		prompt("Output value")
+		special(SPC_NOMOD)
+	}
+	field(OVLP,DBF_FLOAT) {
+		prompt("Prev output")
+		special(SPC_NOMOD)
+		interest(3)
+	}
+	field(PREC,DBF_SHORT) {
+		prompt("Display Precision")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(MDT,DBF_FLOAT) {
+		prompt("Min Delta T")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
+	field(FBON,DBF_MENU) {
+		prompt("Feedback On/Off")
+		promptgroup(GUI_PID)
+		interest(1)
+		menu(epidFeedbackState)
+	}
+	field(KP,DBF_FLOAT) {
+		prompt("Proportional Gain")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
+	field(KI,DBF_FLOAT) {
+		prompt("Intergral Gain")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
+	field(KD,DBF_FLOAT) {
+		prompt("Derivative Gain")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
+	field(EGU,DBF_STRING) {
+		prompt("Engineering Units")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+		size(16)
+	}
+	field(HOPR,DBF_FLOAT) {
+		prompt("High Operating Range")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(LOPR,DBF_FLOAT) {
+		prompt("Low Operating Range")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(DRVH,DBF_FLOAT) {
+		prompt("High Drive Limit")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(DRVL,DBF_FLOAT) {
+		prompt("Low Drive Limit")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(HIHI,DBF_FLOAT) {
+		prompt("Hihi Deviation Limit")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(LOLO,DBF_FLOAT) {
+		prompt("Lolo Deviation Limit")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(HIGH,DBF_FLOAT) {
+		prompt("High Deviation Limit")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(LOW,DBF_FLOAT) {
+		prompt("Low Deviation Limit")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(HHSV,DBF_MENU) {
+		prompt("Hihi Severity")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+		menu(menuAlarmSevr)
+	}
+	field(LLSV,DBF_MENU) {
+		prompt("Lolo Severity")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+		menu(menuAlarmSevr)
+	}
+	field(HSV,DBF_MENU) {
+		prompt("High Severity")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+		menu(menuAlarmSevr)
+	}
+	field(LSV,DBF_MENU) {
+		prompt("Low Severity")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+		menu(menuAlarmSevr)
+	}
+	field(HYST,DBF_FLOAT) {
+		prompt("Alarm Deadband")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(ADEL,DBF_FLOAT) {
+		prompt("Archive Deadband")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(MDEL,DBF_FLOAT) {
+		prompt("Monitor Deadband")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(ODEL,DBF_FLOAT) {
+		prompt("Output Deadband")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
+	field(P,DBF_FLOAT) {
+		prompt("P component")
+		special(SPC_NOMOD)
+		interest(2)
+	}
+	field(PP,DBF_FLOAT) {
+		prompt("Prev. P component")
+		special(SPC_NOMOD)
+		interest(2)
+	}
+	field(I,DBF_FLOAT) {
+		prompt("I component")
+		interest(2)
+	}
+	field(IP,DBF_FLOAT) {
+		prompt("Prev. I component")
+		interest(2)
+	}
+	field(D,DBF_FLOAT) {
+		prompt("D component")
+		special(SPC_NOMOD)
+		interest(2)
+	}
+	field(DP,DBF_FLOAT) {
+		prompt("Prev. D component")
+		special(SPC_NOMOD)
+		interest(2)
+	}
+	field(CT,DBF_ULONG) {
+		prompt("Clock Ticks")
+		special(SPC_NOMOD)
+		interest(4)
+	}
+	field(CTP,DBF_ULONG) {
+		prompt("Clock Ticks Prev")
+		special(SPC_NOMOD)
+		interest(4)
+	}
+	field(DT,DBF_FLOAT) {
+		prompt("Delta T")
+		interest(2)
+	}
+	field(DTP,DBF_FLOAT) {
+		prompt("Prev. Delta T")
+		interest(2)
+	}
+	field(ERR,DBF_FLOAT) {
+		prompt("Error")
+		special(SPC_NOMOD)
+		interest(2)
+	}
+	field(ERRP,DBF_FLOAT) {
+		prompt("Prev. Error")
+		special(SPC_NOMOD)
+		interest(2)
+	}
+	field(LALM,DBF_FLOAT) {
+		prompt("Last Value Alarmed")
+		special(SPC_NOMOD)
+		interest(3)
+	}
+	field(ALST,DBF_FLOAT) {
+		prompt("Last Value Archived")
+		special(SPC_NOMOD)
+		interest(3)
+	}
+	field(MLST,DBF_FLOAT) {
+		prompt("Last Value Monitored")
+		special(SPC_NOMOD)
+		interest(3)
+	}
+}

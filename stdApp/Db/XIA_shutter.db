@@ -1,0 +1,89 @@
+grecord(ao,"$(P)$(S)exposeTime") {
+	field(DESC,"exposure time (s)")
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(S)waitTime.A  PP MS")
+	field(DOL,"1")
+	field(PREC,"2")
+	field(DRVH,"6553")
+	field(DRVL,".01")
+}
+grecord(bo,"$(P)$(S)busyOn") {
+	field(DTYP,"Soft Channel")
+	field(FLNK,"$(P)$(S)serial.VAL  PP MS")
+	field(DOL,"1")
+	field(OUT,"$(P)$(S)busy.VAL  PP MS")
+}
+grecord(calcout,"$(P)$(S)waitTime") {
+	field(SDIS,"0")
+	field(CALC,"(A+1)*1000")
+	field(OUT,"$(P)$(S)serial.TMOT  NPP MS")
+}
+grecord(fanout,"$(P)$(S)after") {
+}
+grecord(longout,"$(P)$(S)address") {
+	field(DTYP,"Soft Channel")
+}
+grecord(seq,"$(P)$(S)wait") {
+	field(PREC,"3")
+	field(DLY1,"0.1")
+	field(DOL1,"0")
+	field(LNK1,"$(P)$(S)busy.VAL  PP MS")
+}
+grecord(stringin,"$(P)$(S)getAck") {
+	field(DTYP,"Hideos si stringParm")
+	field(FLNK,"$(P)$(S)busyOn.VAL  PP MS")
+	field(INP,"#C$(C) S0 @$(IPSLOT)-Serial[$(CHAN)],TERM=0d")
+}
+grecord(stringin,"$(P)$(S)getReply") {
+	field(DTYP,"Hideos si stringParm")
+	field(INP,"#C$(C) S0 @$(IPSLOT)-Serial[$(CHAN)],TERM=0d")
+}
+grecord(stringout,"$(P)$(S)init") {
+	field(PINI,"YES")
+	field(DTYP,"Soft Channel")
+	field(VAL,"2")
+	field(OUT,"$(P)$(S)sendCommand.VAL  PP MS")
+}
+grecord(stringout,"$(P)$(S)sendCommand") {
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(S)do.AA  PP MS")
+}
+grecord(stringout,"$(P)$(S)sout") {
+	field(DTYP,"Hideos so stringParm")
+	field(FLNK,"$(P)$(S)getReply.VAL  PP MS")
+	field(OUT,"#C$(C) S0 @$(IPSLOT)-Serial[$(CHAN)],TERM=0d")
+}
+grecord(stringout,"$(P)$(S)sout1") {
+	field(DTYP,"Hideos so stringParm")
+	field(SDIS,"0")
+	field(FLNK,"$(P)$(S)getAck.VAL  PP MS")
+	field(OUT,"#C$(C) S0 @$(IPSLOT)-Serial[$(CHAN)],TERM=0d")
+}
+grecord(serial,"$(P)$(S)serial") {
+	field(DESC,"XIA shutter serial")
+	field(DTYP,"Hideos/MPF Serial")
+	field(FLNK,"$(P)$(S)wait.VAL  PP MS")
+	field(TMOD,"Read")
+	field(INP,"#C$(C) S0 @$(IPSLOT)-Serial[$(CHAN)]")
+}
+grecord(scalcout,"$(P)$(S)do") {
+	field(DESC,"0 argument command builder")
+	field(CALC,"printf('!PFCU%02d ', a)+aa[0,1]")
+	field(INPA,"$(P)$(S)address.VAL  NPP NMS")
+	field(OUT,"$(P)$(S)sout.VAL  PP MS")
+	field(AA,"024CFHLOPUZ")
+}
+grecord(scalcout,"$(P)$(S)expose") {
+	field(DESC,"0 argument command builder")
+	field(SDIS,"$(P)$(S)busy.VAL  NPP MS")
+	field(CALC,"$P('!PFCU%02d E ', a) + $P('%d',b*100)")
+	field(INPA,"$(P)$(S)address.VAL  NPP NMS")
+	field(INPB,"$(P)$(S)exposeTime.VAL  PP MS")
+	field(OUT,"$(P)$(S)sout1.VAL  PP MS")
+	field(ODLY,"0.1")
+	field(AA,"024CFHLOPUZ")
+}
+grecord(scalcout,"$(P)$(S)parse") {
+}
+grecord(busy,"$(P)$(S)busy") {
+}

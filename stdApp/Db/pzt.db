@@ -1,0 +1,406 @@
+grecord(ai,"$(P)pzt1_read") {
+	field(PHAS,"2")
+	field(DTYP,"PZT Bug")
+	field(FLNK,"$(P)pzt1_read_slct.PROC  PP MS")
+	field(INP,"#L3 B1 G8 @8")
+}
+grecord(ai,"$(P)pzt2_read") {
+	field(PHAS,"1")
+	field(DTYP,"PZT Bug")
+	field(FLNK,"$(P)pzt2_read_slct.PROC  PP MS")
+	field(INP,"#L3 B1 G8 @10")
+}
+grecord(ao,"$(P)pzt1_write") {
+	field(DESC,"soft ao channel")
+	field(SDIS,"$(P)pzt1_enable.VAL  NPP MS")
+	field(FLNK,"$(P)pzt1_write_calc.PROC  PP MS")
+	field(PREC,"5")
+	field(EGUF,"5")
+	field(EGUL,"-5")
+	field(EGU,"microns")
+	field(DRVH,"5")
+	field(DRVL,"-5")
+	field(HOPR,"5")
+	field(LOPR,"-5")
+}
+grecord(ao,"$(P)pzt2_write") {
+	field(DESC,"soft ao channel")
+	field(SDIS,"$(P)pzt2_enable.VAL  NPP MS")
+	field(FLNK,"$(P)pzt2_write_calc.PROC  PP MS")
+	field(PREC,"5")
+	field(EGUF,"5")
+	field(EGUL,"-5")
+	field(EGU,"microns")
+	field(DRVH,"5")
+	field(DRVL,"-5")
+	field(HOPR,"5")
+	field(LOPR,"-5")
+}
+grecord(ao,"$(P)pzt1_arcsec") {
+	field(SDIS,"$(P)pzt1_enable.VAL  NPP MS")
+	field(OUT,"$(P)pzt1_tran.A  PP MS")
+	field(PREC,"3")
+	field(DRVH,"77.35")
+	field(DRVL,"-77.35")
+	field(HOPR,"77.35")
+	field(LOPR,"-77.35")
+}
+grecord(ao,"$(P)pzt1_volts") {
+	field(SDIS,"$(P)pzt1_enable.VAL  NPP MS")
+	field(OUT,"$(P)pzt1_tran.B  PP MS")
+	field(PREC,"3")
+	field(DRVH,"5")
+	field(DRVL,"-5")
+	field(HOPR,"5")
+	field(LOPR,"-5")
+}
+grecord(ao,"$(P)pzt2_arcsec") {
+	field(SDIS,"$(P)pzt2_enable.VAL  NPP MS")
+	field(OUT,"$(P)pzt2_tran.A  PP MS")
+	field(PREC,"3")
+	field(DRVH,"77.35")
+	field(DRVL,"-77.35")
+	field(HOPR,"77.35")
+	field(LOPR,"-77.35")
+}
+grecord(ao,"$(P)pzt2_volts") {
+	field(SDIS,"$(P)pzt2_enable.VAL  NPP MS")
+	field(OUT,"$(P)pzt2_tran.B  PP MS")
+	field(PREC,"3")
+	field(DRVH,"5")
+	field(DRVL,"-5")
+	field(HOPR,"5")
+	field(LOPR,"-5")
+}
+grecord(ao,"$(P)pzt1_wb1") {
+	field(SDIS,"$(P)pzt1_arcsec.PACT  NPP MS")
+	field(OUT,"$(P)pzt1_arcsec.VAL  PP MS")
+}
+grecord(ao,"$(P)pzt1_wb2") {
+	field(SDIS,"$(P)pzt1_volts.PACT  NPP MS")
+	field(OUT,"$(P)pzt1_volts.VAL  PP MS")
+}
+grecord(ao,"$(P)pzt2_wb1") {
+	field(SDIS,"$(P)pzt2_arcsec.PACT  NPP MS")
+	field(OUT,"$(P)pzt2_arcsec.VAL  PP MS")
+}
+grecord(ao,"$(P)pzt2_wb2") {
+	field(SDIS,"$(P)pzt2_volts.PACT  NPP MS")
+	field(OUT,"$(P)pzt2_volts.VAL  PP MS")
+}
+grecord(bo,"$(P)wpzt_slct_mod2") {
+	field(DESC,"select module 2")
+	field(DTYP,"PZT Bug")
+	field(FLNK,"$(P)pzt2_read.PROC  PP MS")
+	field(OUT,"#L3 B1 G8 @2")
+}
+grecord(bo,"$(P)wpzt_slct_mod1") {
+	field(DESC,"select module 1")
+	field(DTYP,"PZT Bug")
+	field(FLNK,"$(P)pzt1_read.PROC  PP MS")
+	field(OUT,"#L3 B1 G8 @1")
+}
+grecord(bo,"$(P)pzt_init") {
+	field(DESC,"initialize piezo controller")
+	field(PINI,"YES")
+	field(DTYP,"PZT Bug")
+	field(OUT,"#L3 B1 G8 @0")
+}
+grecord(bo,"$(P)pzt1_listen") {
+	field(DESC,"pzt listen mode (N!3)")
+	field(DTYP,"PZT Bug")
+	field(OUT,"#L3 B1 G8 @3")
+	field(HIGH,"1")
+}
+grecord(bo,"$(P)pzt1_write_slct") {
+	field(DESC,"select module 1")
+	field(DTYP,"PZT Bug")
+	field(OUT,"#L3 B1 G8 @1")
+}
+grecord(bo,"$(P)pzt2_listen") {
+	field(DESC,"pzt listen mode (N!3)")
+	field(DTYP,"PZT Bug")
+	field(OUT,"#L3 B1 G8 @3")
+}
+grecord(bo,"$(P)pzt2_write_slct") {
+	field(DESC,"select module 1")
+	field(DTYP,"PZT Bug")
+	field(OUT,"#L3 B1 G8 @2")
+}
+grecord(bo,"$(P)pzt1_read_slct") {
+	field(DESC,"select module 1")
+	field(DTYP,"PZT Bug")
+	field(FLNK,"$(P)pzt1_read_tran.PROC  PP MS")
+	field(OUT,"#L3 B1 G8 @1")
+}
+grecord(bo,"$(P)pzt2_read_slct") {
+	field(DESC,"module selecting write")
+	field(DTYP,"PZT Bug")
+	field(FLNK,"$(P)pzt2_read_tran.PROC  PP MS")
+	field(OUT,"#L3 B1 G8 @2")
+}
+grecord(bo,"$(P)pzt1_twr") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt1_twr.VAL  NPP NMS")
+	field(FLNK,"$(P)pzt1_tweak.PROC  PP MS")
+}
+grecord(bo,"$(P)pzt1_twf") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt1_twf.VAL  NPP NMS")
+	field(FLNK,"$(P)pzt1_tweak.PROC  PP MS")
+}
+grecord(bo,"$(P)pzt2_twr") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt2_twr.VAL  NPP MS")
+	field(FLNK,"$(P)pzt2_tweak.PROC  PP MS")
+}
+grecord(bo,"$(P)pzt2_twf") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt2_twf.VAL  NPP MS")
+	field(FLNK,"$(P)pzt2_tweak.PROC  PP MS")
+}
+grecord(bo,"$(P)pzt1_twr_arcsec") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt1_twr_arcsec.VAL  NPP NMS")
+	field(FLNK,"$(P)pzt1_tweak_arcsec.PROC  PP MS")
+}
+grecord(bo,"$(P)pzt1_twf_arcsec") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt1_twf_arcsec.VAL  NPP NMS")
+	field(FLNK,"$(P)pzt1_tweak_arcsec.PROC  PP MS")
+}
+grecord(bo,"$(P)pzt2_twr_arcsec") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt2_twr_arcsec.VAL  NPP MS")
+	field(FLNK,"$(P)pzt2_tweak_arcsec.PROC  PP MS")
+}
+grecord(bo,"$(P)pzt2_twf_arcsec") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt2_twf_arcsec.VAL  NPP MS")
+	field(FLNK,"$(P)pzt2_tweak_arcsec.PROC  PP MS")
+}
+grecord(bo,"$(P)pzt1_enable") {
+	field(ZNAM,"Enabled")
+	field(ONAM,"Disabled")
+}
+grecord(bo,"$(P)pzt2_enable") {
+	field(ZNAM,"Enabled")
+	field(ONAM,"Disabled")
+}
+grecord(bo,"$(P)pzt1_putMvg") {
+	field(OMSL,"closed_loop")
+	field(DOL,"1")
+	field(OUT,"$(P)pzt1_move.VAL  PP MS")
+}
+grecord(bo,"$(P)pzt1_putDone") {
+	field(OMSL,"closed_loop")
+	field(OUT,"$(P)pzt1_move.VAL  PP MS")
+}
+grecord(bo,"$(P)pzt2_putMvg") {
+	field(OMSL,"closed_loop")
+	field(DOL,"1")
+	field(OUT,"$(P)pzt2_move.VAL  PP MS")
+}
+grecord(bo,"$(P)pzt2_putDone") {
+	field(OMSL,"closed_loop")
+	field(OUT,"$(P)pzt2_move.VAL  PP MS")
+}
+grecord(calc,"$(P)pzt1_write_calc") {
+	field(DESC,"calc to convert pzt write")
+	field(FLNK,"$(P)pzt1_fan.VAL  PP MS")
+	field(CALC,"min(max(c,A/B),d)")
+	field(INPA,"$(P)pzt1_write.VAL  NPP MS")
+	field(INPB,"-6.103515625e-04")
+	field(INPC,"-8191.999")
+	field(INPD,"8191.999")
+	field(PREC,"8")
+}
+grecord(calc,"$(P)pzt2_write_calc") {
+	field(DESC,"calc to convert pzt write")
+	field(FLNK,"$(P)pzt2_fan.VAL  PP MS")
+	field(CALC,"min(max(c,A/B),d)")
+	field(INPA,"$(P)pzt2_write.VAL  NPP MS")
+	field(INPB,"-6.103515625e-04")
+	field(INPC,"-8191.999")
+	field(INPD,"8191.999")
+	field(PREC,"8")
+}
+grecord(compress,"$(P)pzt1_avg") {
+	field(INP,"$(P)pzt1_read_tran.B  NPP NMS")
+	field(ALG,"N to 1 Average")
+	field(N,"10")
+	field(PREC,"3")
+}
+grecord(compress,"$(P)pzt2_avg") {
+	field(INP,"$(P)pzt2_read_tran.B  NPP NMS")
+	field(ALG,"N to 1 Average")
+	field(N,"10")
+	field(PREC,"3")
+}
+grecord(compress,"$(P)pzt1_avg_arcsec") {
+	field(INP,"$(P)pzt1_read_tran.C  NPP NMS")
+	field(ALG,"N to 1 Average")
+	field(N,"10")
+	field(PREC,"3")
+}
+grecord(compress,"$(P)pzt2_avg_arcsec") {
+	field(INP,"$(P)pzt2_read_tran.C  NPP NMS")
+	field(ALG,"N to 1 Average")
+	field(N,"10")
+	field(PREC,"3")
+}
+grecord(fanout,"$(P)pzt_AutoReadFO") {
+	field(SELM,"Mask")
+	field(LNK1,"$(P)pzt1_read.PROC  PP MS")
+	field(LNK2,"$(P)pzt2_read.PROC  PP MS")
+}
+grecord(fanout,"$(P)pzt2_fan") {
+	field(LNK1,"$(P)pzt2_putMvg.PROC  PP MS")
+	field(LNK2,"$(P)pzt2_write_slct.PROC  PP MS")
+	field(LNK3,"$(P)pzt2_listen.PROC  PP MS")
+	field(LNK4,"$(P)pzt2_gpib_write.PROC  PP MS")
+	field(LNK5,"$(P)wpzt_slct_mod2.VAL  PP MS")
+}
+grecord(fanout,"$(P)pzt1_fan") {
+	field(LNK1,"$(P)pzt1_putMvg.PROC  PP MS")
+	field(LNK2,"$(P)pzt1_write_slct.VAL  PP MS")
+	field(LNK3,"$(P)pzt1_listen.VAL  PP MS")
+	field(LNK4,"$(P)pzt1_gpib_write.PROC  PP MS")
+	field(LNK5,"$(P)wpzt_slct_mod1.VAL  PP MS")
+}
+grecord(fanout,"$(P)pzt1_avgFO") {
+	field(LNK1,"$(P)pzt1_avg_arcsec.PROC  CA MS")
+	field(LNK2,"$(P)pzt1_avg.PROC  CA MS")
+	field(LNK3,"$(P)pzt1_putDone.PROC  PP MS")
+}
+grecord(fanout,"$(P)pzt2_avgFO") {
+	field(LNK1,"$(P)pzt2_avg_arcsec.PROC  CA MS")
+	field(LNK2,"$(P)pzt2_avg.PROC  CA MS")
+	field(LNK3,"$(P)pzt2_putDone.PROC  PP MS")
+}
+grecord(longout,"$(P)pzt1_gpib_write") {
+	field(DESC,"piezo gpib write")
+	field(DTYP,"PZT Bug")
+	field(OUT,"#L3 B1 G8 @7")
+	field(DOL,"$(P)pzt1_write_calc.VAL  NPP MS")
+	field(OMSL,"closed_loop")
+}
+grecord(longout,"$(P)pzt2_gpib_write") {
+	field(DESC,"piezo gpib write")
+	field(DTYP,"PZT Bug")
+	field(OUT,"#L3 B1 G8 @7")
+	field(DOL,"$(P)pzt2_write_calc.VAL  NPP MS")
+	field(OMSL,"closed_loop")
+}
+grecord(mbbo,"$(P)pzt_ReadCtrl") {
+	field(NOBT,"2")
+	field(OUT,"$(P)pzt_AutoRead.A  NPP NMS")
+	field(ONVL,"0x1")
+	field(TWVL,"0x2")
+	field(THVL,"0x3")
+	field(ZRST,"Off")
+	field(ONST,"Channel A")
+	field(TWST,"Channel B")
+	field(THST,"Both")
+}
+grecord(transform,"$(P)pzt1_tweak") {
+	field(SDIS,"$(P)pzt1_enable.VAL  NPP MS")
+	field(CLCE,"a?c+d:b?c-d:c")
+	field(INPA,"$(P)pzt1_twf.VAL  NPP MS")
+	field(INPB,"$(P)pzt1_twr.VAL  NPP MS")
+	field(INPC,"$(P)pzt1_volts.VAL  NPP MS")
+	field(INPD,"0.1")
+	field(OUTE,"$(P)pzt1_volts.VAL  PP MS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)pzt2_tweak") {
+	field(SDIS,"$(P)pzt2_enable.VAL  NPP MS")
+	field(CLCE,"a?c+d:b?c-d:c")
+	field(INPA,"$(P)pzt2_twf.VAL  NPP MS")
+	field(INPB,"$(P)pzt2_twr.VAL  NPP MS")
+	field(INPC,"$(P)pzt2_volts.VAL  NPP MS")
+	field(INPD,"0.1")
+	field(OUTE,"$(P)pzt2_volts.VAL  PP MS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)pzt1_tweak_arcsec") {
+	field(SDIS,"$(P)pzt1_enable.VAL  NPP MS")
+	field(CLCE,"a?c+d:b?c-d:c")
+	field(CLCF,"15.46986")
+	field(INPA,"$(P)pzt1_twf_arcsec.VAL  NPP MS")
+	field(INPB,"$(P)pzt1_twr_arcsec.VAL  NPP MS")
+	field(INPC,"$(P)pzt1_arcsec.VAL  NPP MS")
+	field(INPD,"1")
+	field(OUTE,"$(P)pzt1_arcsec.VAL  PP MS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)pzt1_tran") {
+	field(SDIS,"$(P)pzt1_enable.VAL  NPP MS")
+	field(CLCA,"b*j")
+	field(CLCB,"a/j")
+	field(CLCC,"b")
+	field(INPJ,"15.46986")
+	field(OUTA,"$(P)pzt1_wb1.VAL  PP MS")
+	field(OUTB,"$(P)pzt1_wb2.VAL  PP MS")
+	field(OUTC,"$(P)pzt1_write.VAL  PP MS")
+}
+grecord(transform,"$(P)pzt2_tweak_arcsec") {
+	field(SDIS,"$(P)pzt2_enable.VAL  NPP MS")
+	field(CLCE,"a?c+d:b?c-d:c")
+	field(CLCF,"15.46986")
+	field(INPA,"$(P)pzt2_twf_arcsec.VAL  NPP MS")
+	field(INPB,"$(P)pzt2_twr_arcsec.VAL  NPP MS")
+	field(INPC,"$(P)pzt2_arcsec.VAL  NPP MS")
+	field(INPD,"1")
+	field(OUTE,"$(P)pzt2_arcsec.VAL  PP MS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)pzt2_tran") {
+	field(SDIS,"$(P)pzt2_enable.VAL  NPP MS")
+	field(CLCA,"b*j")
+	field(CLCB,"a/j")
+	field(CLCC,"b")
+	field(INPJ,"15.46986")
+	field(OUTA,"$(P)pzt2_wb1.VAL  PP MS")
+	field(OUTB,"$(P)pzt2_wb2.VAL  PP MS")
+	field(OUTC,"$(P)pzt2_write.VAL  PP MS")
+}
+grecord(transform,"$(P)pzt_read_toggle") {
+	field(CLCA,"0")
+	field(CLCB,"0")
+	field(CLCC,"a*2+b")
+	field(OUTC,"$(P)pzt_AutoRead.B  NPP NMS")
+}
+grecord(transform,"$(P)pzt1_read_tran") {
+	field(FLNK,"$(P)pzt1_avgFO.PROC  PP MS")
+	field(CLCB,"a*d")
+	field(CLCC,"b*e")
+	field(INPA,"$(P)pzt1_read.VAL  NPP NMS")
+	field(INPD,"-1.59e-04")
+	field(INPE,"15.46986")
+	field(INPF,"1")
+	field(OUTF,"$(P)pzt_read_toggle.A  PP MS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)pzt2_read_tran") {
+	field(FLNK,"$(P)pzt2_avgFO.PROC  PP MS")
+	field(CLCB,"a*d")
+	field(CLCC,"b*e")
+	field(INPA,"$(P)pzt2_read.VAL  NPP NMS")
+	field(INPD,"-1.59e-04")
+	field(INPE,"15.46986")
+	field(INPF,"1")
+	field(OUTF,"$(P)pzt_read_toggle.B  PP MS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)pzt_AutoRead") {
+	field(DISV,"0")
+	field(SDIS,"$(P)pzt_ReadCtrl.VAL  NPP NMS")
+	field(CLCB,"1")
+	field(CLCC,"a<3?a:b")
+	field(OUTC,"$(P)pzt_AutoReadFO.SELN  PP MS")
+}
+grecord(busy,"$(P)pzt2_move") {
+}
+grecord(busy,"$(P)pzt1_move") {
+}

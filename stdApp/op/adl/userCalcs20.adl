@@ -1,0 +1,1454 @@
+
+file {
+	name="/home/beams/BCDA/epics/synApps_R3.13.1.1_R4.2/share/stdApp/op/adl/userCalcs20_2.0.adl"
+	version=020306
+}
+display {
+	object {
+		x=582
+		y=49
+		width=160
+		height=420
+	}
+	clr=64
+	bclr=3
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+"choice button" {
+	object {
+		x=2
+		y=0
+		width=160
+		height=20
+	}
+	control {
+		chan="$(P)userCalcEnable.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+composite {
+	object {
+		x=0
+		y=20
+		width=160
+		height=200
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=20
+				y=20
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc1.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=20
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 1"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc1"
+			}
+			display[1] {
+				label="user calc 1 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc1"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=40
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc2.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=40
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 2"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc2"
+			}
+			display[1] {
+				label="user calc 2 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc2"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=60
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc3.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=60
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 3"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc3"
+			}
+			display[1] {
+				label="user calc 3 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc3"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=80
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc4.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=80
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 4"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc4"
+			}
+			display[1] {
+				label="user calc 4 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc4"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=100
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc5.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=100
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 5"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc5"
+			}
+			display[1] {
+				label="user calc 5 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc5"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=120
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc6.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=120
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 6"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc6"
+			}
+			display[1] {
+				label="user calc 6 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc6"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=140
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc7.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=140
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 7"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc7"
+			}
+			display[1] {
+				label="user calc 7 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc7"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=160
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc8.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=160
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 8"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc8"
+			}
+			display[1] {
+				label="user calc 8 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc8"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=180
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc9.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=180
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 9"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc9"
+			}
+			display[1] {
+				label="user calc 9 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc9"
+			}
+			clr=14
+			bclr=51
+		}
+		"text entry" {
+			object {
+				x=20
+				y=200
+				width=120
+				height=20
+			}
+			control {
+				chan="$(P)userCalc10.DESC"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=0
+				y=200
+				width=20
+				height=20
+			}
+			display[0] {
+				label="user calc 10"
+				name="userCalc.adl"
+				args="P=$(P),C=userCalc10"
+			}
+			display[1] {
+				label="user calc 10 (full)"
+				name="userCalc_full.adl"
+				args="P=$(P),C=userCalc10"
+			}
+			clr=14
+			bclr=51
+		}
+		text {
+			object {
+				x=140
+				y=20
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc1.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=30
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc1.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=40
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc2.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=50
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc2.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=60
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc3.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=70
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc3.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=80
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc4.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=90
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc4.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=100
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc5.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=110
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc5.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=120
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc6.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=130
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc6.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=180
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc9.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=190
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc9.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=200
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc10.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=210
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc10.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=140
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc7.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=150
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc7.OUTV"
+			}
+			textix="PUT"
+		}
+		text {
+			object {
+				x=140
+				y=160
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)userCalc8.SCAN"
+			}
+			textix="ON"
+		}
+		text {
+			object {
+				x=140
+				y=170
+				width=20
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)userCalc8.OUTV"
+			}
+			textix="PUT"
+		}
+	}
+}
+"text entry" {
+	object {
+		x=20
+		y=220
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc11.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=220
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 11"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc11"
+	}
+	display[1] {
+		label="user calc 11 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc11"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=240
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc12.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=240
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 12"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc12"
+	}
+	display[1] {
+		label="user calc 12 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc12"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=260
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc13.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=260
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 13"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc13"
+	}
+	display[1] {
+		label="user calc 13 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc13"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=280
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc14.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=280
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 14"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc14"
+	}
+	display[1] {
+		label="user calc 14 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc14"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=300
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc15.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=300
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 15"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc15"
+	}
+	display[1] {
+		label="user calc 15 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc15"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=320
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc16.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=320
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 16"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc16"
+	}
+	display[1] {
+		label="user calc 16 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc16"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=340
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc17.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=340
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 17"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc17"
+	}
+	display[1] {
+		label="user calc 17 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc17"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=360
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc18.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=360
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 18"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc18"
+	}
+	display[1] {
+		label="user calc 18 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc18"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=380
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc19.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=380
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 19"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc19"
+	}
+	display[1] {
+		label="user calc 19 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc19"
+	}
+	clr=14
+	bclr=51
+}
+"text entry" {
+	object {
+		x=20
+		y=400
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)userCalc20.DESC"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=400
+		width=20
+		height=20
+	}
+	display[0] {
+		label="user calc 20"
+		name="userCalc.adl"
+		args="P=$(P),C=userCalc20"
+	}
+	display[1] {
+		label="user calc 20 (full)"
+		name="userCalc_full.adl"
+		args="P=$(P),C=userCalc20"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=140
+		y=220
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc11.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=230
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc11.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=240
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc12.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=250
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc12.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=260
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc13.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=270
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc13.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=280
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc14.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=290
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc14.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=300
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc15.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=310
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc15.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=320
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc16.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=330
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc16.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=380
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc19.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=390
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc19.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=400
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc20.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=410
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc20.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=340
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc17.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=350
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc17.OUTV"
+	}
+	textix="PUT"
+}
+text {
+	object {
+		x=140
+		y=360
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)userCalc18.SCAN"
+	}
+	textix="ON"
+}
+text {
+	object {
+		x=140
+		y=370
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)userCalc18.OUTV"
+	}
+	textix="PUT"
+}

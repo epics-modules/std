@@ -1,0 +1,2179 @@
+
+file {
+	name="/tmp_mnt/home/sricat/S1IDA/epics/3.12.2/1idaApp/op/adl/chainc_1.1.adl"
+	version=020205
+}
+display {
+	object {
+		x=10
+		y=10
+		width=800
+		height=520
+	}
+	clr=2
+	bclr=3
+	cmap=""
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=0
+		width=365
+		height=27
+	}
+	"basic attribute" {
+		clr=54
+	}
+}
+text {
+	object {
+		x=8
+		y=9
+		width=356
+		height=15
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="Sector 1 IDA Love Controllers: Chain C"
+}
+rectangle {
+	object {
+		x=5
+		y=191
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=15
+		y=199
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_7.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=25
+		y=235
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_7.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=15
+		y=313
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#7"
+}
+"related display" {
+	object {
+		x=69
+		y=312
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 7"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=7"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=15
+		y=286
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_7_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=9
+		y=220
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_7_on.VAL"
+	}
+}
+text {
+	object {
+		x=35
+		y=236
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_7_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=5
+		y=32
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=15
+		y=40
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_1.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=25
+		y=76
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_1.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=15
+		y=154
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#1"
+}
+"related display" {
+	object {
+		x=69
+		y=153
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 1"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=1"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=15
+		y=127
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_1_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=9
+		y=61
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_1_on.VAL"
+	}
+}
+text {
+	object {
+		x=35
+		y=77
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_1_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=135
+		y=191
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=145
+		y=199
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_8.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=155
+		y=235
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_8.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=145
+		y=313
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#8"
+}
+"related display" {
+	object {
+		x=199
+		y=312
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 8"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=8"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=145
+		y=286
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_8_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=139
+		y=220
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_8_on.VAL"
+	}
+}
+text {
+	object {
+		x=165
+		y=236
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_8_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=135
+		y=32
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=145
+		y=40
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_2.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=155
+		y=76
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_2.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=145
+		y=154
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#2"
+}
+"related display" {
+	object {
+		x=199
+		y=153
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 2"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=2"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=145
+		y=127
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_2_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=139
+		y=61
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_2_on.VAL"
+	}
+}
+text {
+	object {
+		x=165
+		y=77
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_2_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=265
+		y=32
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=275
+		y=40
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_3.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=285
+		y=76
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_3.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=275
+		y=154
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#3"
+}
+"related display" {
+	object {
+		x=329
+		y=153
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 3"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=3"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=275
+		y=127
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_3_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=269
+		y=61
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_3_on.VAL"
+	}
+}
+text {
+	object {
+		x=295
+		y=77
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_3_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=265
+		y=191
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=275
+		y=199
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_9.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=285
+		y=235
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_9.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=275
+		y=313
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#9"
+}
+"related display" {
+	object {
+		x=329
+		y=312
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 9"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=9"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=275
+		y=286
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_9_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=269
+		y=220
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_9_on.VAL"
+	}
+}
+text {
+	object {
+		x=295
+		y=236
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_9_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=395
+		y=32
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=405
+		y=40
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_4.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=415
+		y=76
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_4.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=405
+		y=154
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#4"
+}
+"related display" {
+	object {
+		x=459
+		y=153
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 4"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=4"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=405
+		y=127
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_4_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=399
+		y=61
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_4_on.VAL"
+	}
+}
+text {
+	object {
+		x=425
+		y=77
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_4_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=395
+		y=191
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=405
+		y=199
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_10.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=415
+		y=235
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_10.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=405
+		y=313
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#10"
+}
+"related display" {
+	object {
+		x=459
+		y=312
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 10"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=10"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=405
+		y=286
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_10_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=399
+		y=220
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_10_on.VAL"
+	}
+}
+text {
+	object {
+		x=425
+		y=236
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_10_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=525
+		y=32
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=535
+		y=40
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_5.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=545
+		y=76
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_5.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=535
+		y=154
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#5"
+}
+"related display" {
+	object {
+		x=589
+		y=153
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 5"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=5"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=535
+		y=127
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_5_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=529
+		y=61
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_5_on.VAL"
+	}
+}
+text {
+	object {
+		x=555
+		y=77
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_5_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=525
+		y=191
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=535
+		y=199
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_11.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=545
+		y=235
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_11.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=535
+		y=313
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#11"
+}
+"related display" {
+	object {
+		x=589
+		y=312
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 11"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=11"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=535
+		y=286
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_11_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=529
+		y=220
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_11_on.VAL"
+	}
+}
+text {
+	object {
+		x=555
+		y=236
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_11_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=655
+		y=32
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=665
+		y=40
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_6.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=675
+		y=76
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_6.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=665
+		y=154
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#6"
+}
+"related display" {
+	object {
+		x=719
+		y=153
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 6"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=6"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=665
+		y=127
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_6_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=659
+		y=61
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_6_on.VAL"
+	}
+}
+text {
+	object {
+		x=685
+		y=77
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_6_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=655
+		y=191
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=665
+		y=199
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_12.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=675
+		y=235
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_12.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=665
+		y=313
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#12"
+}
+"related display" {
+	object {
+		x=719
+		y=312
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 12"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=12"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=665
+		y=286
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_12_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=659
+		y=220
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_12_on.VAL"
+	}
+}
+text {
+	object {
+		x=685
+		y=236
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_12_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=5
+		y=349
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=15
+		y=357
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_13.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=25
+		y=393
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_13.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=15
+		y=471
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#13"
+}
+"related display" {
+	object {
+		x=69
+		y=470
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 13"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=13"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=15
+		y=444
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_13_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=9
+		y=378
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_1_on.VAL"
+	}
+}
+text {
+	object {
+		x=35
+		y=394
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_13_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=135
+		y=349
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=145
+		y=357
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_14.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=155
+		y=393
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_14.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=145
+		y=471
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#14"
+}
+"related display" {
+	object {
+		x=199
+		y=470
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 14"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=14"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=145
+		y=444
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_14_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=139
+		y=378
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_2_on.VAL"
+	}
+}
+text {
+	object {
+		x=165
+		y=394
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_14_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=265
+		y=349
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=275
+		y=357
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_15.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=285
+		y=393
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_15.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=275
+		y=471
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#15"
+}
+"related display" {
+	object {
+		x=329
+		y=470
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 15"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=15"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=275
+		y=444
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_15_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=269
+		y=378
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_3_on.VAL"
+	}
+}
+text {
+	object {
+		x=295
+		y=394
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_15_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=395
+		y=349
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=405
+		y=357
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_16.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=415
+		y=393
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_16.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=405
+		y=471
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#16"
+}
+"related display" {
+	object {
+		x=459
+		y=470
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 16"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=16"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=405
+		y=444
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_16_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=399
+		y=378
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_4_on.VAL"
+	}
+}
+text {
+	object {
+		x=425
+		y=394
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_16_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=525
+		y=349
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=535
+		y=357
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_17.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=545
+		y=393
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_17.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=535
+		y=471
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#17"
+}
+"related display" {
+	object {
+		x=589
+		y=470
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 17"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=17"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=535
+		y=444
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_17_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=529
+		y=378
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_5_on.VAL"
+	}
+}
+text {
+	object {
+		x=555
+		y=394
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_17_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=655
+		y=349
+		width=120
+		height=150
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"text entry" {
+	object {
+		x=665
+		y=357
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_18.DESC"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=675
+		y=393
+		width=80
+		height=37
+	}
+	monitor {
+		chan="$(P)$(M)_18.VAL"
+		clr=54
+		bclr=3
+	}
+	clrmod="alarm"
+}
+text {
+	object {
+		x=665
+		y=471
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#18"
+}
+"related display" {
+	object {
+		x=719
+		y=470
+		width=45
+		height=20
+	}
+	display[0] {
+		label="Controller 18"
+		name="love_controller.adl"
+		args="P=$(P), M=$(M), N=18"
+	}
+	clr=14
+	bclr=51
+}
+"choice button" {
+	object {
+		x=665
+		y=444
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(M)_18_on.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+rectangle {
+	object {
+		x=659
+		y=378
+		width=111
+		height=50
+	}
+	"basic attribute" {
+		clr=3
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_6_on.VAL"
+	}
+}
+text {
+	object {
+		x=685
+		y=394
+		width=55
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+		width=5
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(M)_18_on.VAL"
+	}
+	textix="OFF"
+	align="horiz. centered"
+}

@@ -1,0 +1,211 @@
+grecord(ao,"$(P)$(SLIT)xp") {
+	field(OUT,"$(P)$(SLIT)t1.A  PP MS")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(SLIT)xn_tweakVal") {
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(SLIT)xn") {
+	field(OUT,"$(P)$(SLIT)t1.B  PP MS")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(SLIT)size_tweakVal") {
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(SLIT)size") {
+	field(OUT,"$(P)$(SLIT)t1.C  PP MS")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(SLIT)center_tweakVal") {
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(SLIT)center") {
+	field(OUT,"$(P)$(SLIT)t1.D  PP MS")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(SLIT)vback1") {
+	field(OUT,"$(P)$(SLIT)t1.A  NPP NMS")
+	field(DOL,"$(P)$(mXp).VAL  NPP NMS")
+	field(OMSL,"closed_loop")
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(SLIT)vback2") {
+	field(OUT,"$(P)$(SLIT)t1.B  PP MS")
+	field(DOL,"$(P)$(mXn).VAL  NPP NMS")
+	field(OMSL,"closed_loop")
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(SLIT)xpBPut") {
+	field(SDIS,"$(P)$(SLIT)xp.PACT  NPP NMS")
+	field(OUT,"$(P)$(SLIT)xp.VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)xnBPut") {
+	field(SDIS,"$(P)$(SLIT)xn.PACT  NPP NMS")
+	field(OUT,"$(P)$(SLIT)xn.VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)sizeBPut") {
+	field(SDIS,"$(P)$(SLIT)size.PACT  NPP NMS")
+	field(OUT,"$(P)$(SLIT)size.VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)centerBPut") {
+	field(SDIS,"$(P)$(SLIT)center.PACT  NPP NMS")
+	field(OUT,"$(P)$(SLIT)center.VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)xp_tweakVal") {
+	field(PREC,"3")
+}
+grecord(bo,"$(P)$(SLIT)set1") {
+	field(OMSL,"closed_loop")
+	field(DOL,"$(P)$(SLIT)set.VAL  NPP NMS")
+	field(OUT,"$(P)$(mXp).SET  PP MS")
+	field(ZNAM,"Use")
+	field(ONAM,"Set")
+}
+grecord(bo,"$(P)$(SLIT)set") {
+	field(FLNK,"$(P)$(SLIT)set1.PROC  PP MS")
+	field(OUT,"$(P)$(mXn).SET  PP MS")
+	field(ZNAM,"Use")
+	field(ONAM,"Set")
+}
+grecord(bo,"$(P)$(SLIT)gate") {
+	field(SDIS,"$(P)$(SLIT)sync.PACT  NPP NMS")
+	field(OUT,"$(P)gateOpen.VAL  PP MS")
+	field(ZNAM,"Closed")
+	field(ONAM,"Open")
+}
+grecord(fanout,"$(P)$(SLIT)sync") {
+	field(PINI,"YES")
+	field(LNK1,"$(P)$(SLIT)vback1.PROC  PP MS")
+	field(LNK2,"$(P)$(SLIT)vback2.PROC  PP MS")
+}
+grecord(seq,"$(P)$(SLIT)putOPR") {
+	field(DOL1,"$(P)$(SLIT)t3.A  NPP NMS")
+	field(LNK1,"$(P)$(SLIT)xp.LOPR  NPP NMS")
+	field(DOL2,"$(P)$(SLIT)t3.B  NPP NMS")
+	field(LNK2,"$(P)$(SLIT)xp.HOPR  NPP NMS")
+	field(DOL3,"$(P)$(SLIT)t3.C  NPP NMS")
+	field(LNK3,"$(P)$(SLIT)xn.LOPR  NPP NMS")
+	field(DOL4,"$(P)$(SLIT)t3.D  NPP NMS")
+	field(LNK4,"$(P)$(SLIT)xn.HOPR  NPP NMS")
+	field(DOL5,"$(P)$(SLIT)t3.E  NPP NMS")
+	field(LNK5,"$(P)$(SLIT)size.LOPR  NPP NMS")
+	field(DOL6,"$(P)$(SLIT)t3.F  NPP NMS")
+	field(LNK6,"$(P)$(SLIT)size.HOPR  NPP NMS")
+	field(DOL7,"$(P)$(SLIT)t3.G  NPP NMS")
+	field(LNK7,"$(P)$(SLIT)center.LOPR  NPP NMS")
+	field(DOL8,"$(P)$(SLIT)t3.H  NPP NMS")
+	field(LNK8,"$(P)$(SLIT)center.HOPR  NPP NMS")
+}
+grecord(transform,"$(P)$(SLIT)t2") {
+	field(DESC,"xp(a),xn(b)->siz(c),cntr(d)")
+	field(CLCC,"A-B")
+	field(CLCD,"(A+B)/2")
+	field(INPA,"$(P)$(mXp).RBV  NPP NMS")
+	field(INPB,"$(P)$(mXn).RBV  NPP NMS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(SLIT)t3") {
+	field(FLNK,"$(P)$(SLIT)putOPR.PROC  PP MS")
+	field(CLCE,"a-d")
+	field(CLCF,"b-c")
+	field(CLCG,"(a+c)/2")
+	field(CLCH,"(b+d)/2")
+	field(INPA,"$(P)$(mXp).LLM  NPP NMS")
+	field(INPB,"$(P)$(mXp).HLM  NPP NMS")
+	field(INPC,"$(P)$(mXn).LLM  NPP NMS")
+	field(INPD,"$(P)$(mXn).HLM  NPP NMS")
+	field(OUTA,"$(P)$(SLIT)xp.DRVL  NPP NMS")
+	field(OUTB,"$(P)$(SLIT)xp.DRVH  NPP NMS")
+	field(OUTC,"$(P)$(SLIT)xn.DRVL  NPP NMS")
+	field(OUTD,"$(P)$(SLIT)xn.DRVH  NPP NMS")
+	field(OUTE,"$(P)$(SLIT)size.DRVL  NPP NMS")
+	field(OUTF,"$(P)$(SLIT)size.DRVH  NPP NMS")
+	field(OUTG,"$(P)$(SLIT)center.DRVL  NPP NMS")
+	field(OUTH,"$(P)$(SLIT)center.DRVH  NPP NMS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(SLIT)t1") {
+	field(DESC,"xp(a),xn(b)->size(c),center")
+	field(CLCA,"d+c/2")
+	field(CLCB,"d-c/2")
+	field(CLCC,"a-b")
+	field(CLCD,"(a+b)/2")
+	field(CLCF,"a")
+	field(CLCG,"b")
+	field(INPE,"1")
+	field(OUTA,"$(P)$(SLIT)xpBPut.VAL  PP MS")
+	field(OUTB,"$(P)$(SLIT)xnBPut.VAL  PP MS")
+	field(OUTC,"$(P)$(SLIT)sizeBPut.VAL  PP MS")
+	field(OUTD,"$(P)$(SLIT)centerBPut.VAL  PP MS")
+	field(OUTE,"$(P)$(SLIT)gate.VAL  PP MS")
+	field(OUTF,"$(P)$(mXp).VAL  PP MS")
+	field(OUTG,"$(P)$(mXn).VAL  PP MS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(SLIT)xp_tweak") {
+	field(CLCD,"a?c-e:b?c+e:c")
+	field(INPC,"$(P)$(SLIT)xp.VAL  NPP NMS")
+	field(INPE,"$(P)$(SLIT)xp_tweakVal.VAL  NPP MS")
+	field(OUTD,"$(P)$(SLIT)xp.VAL  PP MS")
+	field(OUTF,"$(P)$(SLIT)xp_tweak.A  NPP NMS")
+	field(OUTG,"$(P)$(SLIT)xp_tweak.B  NPP NMS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(SLIT)xn_tweak") {
+	field(CLCD,"a?c-e:b?c+e:c")
+	field(INPC,"$(P)$(SLIT)xn.VAL  NPP MS")
+	field(INPE,"$(P)$(SLIT)xn_tweakVal.VAL  NPP MS")
+	field(OUTD,"$(P)$(SLIT)xn.VAL  PP MS")
+	field(OUTF,"$(P)$(SLIT)xn_tweak.A  NPP NMS")
+	field(OUTG,"$(P)$(SLIT)xn_tweak.B  NPP NMS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(SLIT)size_tweak") {
+	field(CLCD,"a?c-e:b?c+e:c")
+	field(INPC,"$(P)$(SLIT)size.VAL  NPP NMS")
+	field(INPE,"$(P)$(SLIT)size_tweakVal.VAL  NPP MS")
+	field(OUTD,"$(P)$(SLIT)size.VAL  PP MS")
+	field(OUTF,"$(P)$(SLIT)size_tweak.A  NPP NMS")
+	field(OUTG,"$(P)$(SLIT)size_tweak.B  NPP NMS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(SLIT)center_tweak") {
+	field(CLCD,"a?c-e:b?c+e:c")
+	field(INPC,"$(P)$(SLIT)center.VAL  NPP NMS")
+	field(INPE,"$(P)$(SLIT)center_tweakVal.VAL  NPP MS")
+	field(OUTD,"$(P)$(SLIT)center.VAL  PP MS")
+	field(OUTF,"$(P)$(SLIT)center_tweak.A  NPP NMS")
+	field(OUTG,"$(P)$(SLIT)center_tweak.B  NPP NMS")
+	field(PREC,"3")
+}
+grecord(swait,"$(P)$(SLIT)RWait") {
+	field(SCAN,"I/O Intr")
+	field(PINI,"YES")
+	field(FLNK,"$(P)$(SLIT)t2.PROC  PP MS")
+	field(INAN,"$(P)$(mXp).RBV")
+	field(INBN,"$(P)$(mXn).RBV")
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)$(SLIT)LWait") {
+	field(SCAN,"I/O Intr")
+	field(PINI,"YES")
+	field(FLNK,"$(P)$(SLIT)t3.PROC  PP MS")
+	field(INAN,"$(P)$(mXp).LLM")
+	field(INBN,"$(P)$(mXp).HLM")
+	field(INCN,"$(P)$(mXn).LLM")
+	field(INDN,"$(P)$(mXn).HLM")
+}
+grecord(swait,"$(P)$(SLIT)closeGate") {
+	field(SCAN,"I/O Intr")
+	field(INAN,"$(P)$(SLIT)gate.VAL")
+	field(INBN,"$(P)$(mXn).DMOV")
+	field(OUTN,"$(P)$(SLIT)gate.VAL")
+	field(INAP,"No")
+	field(CALC,"a&&b")
+	field(OOPT,"Transition To Non-zero")
+	field(DOPT,"Use DOL")
+}

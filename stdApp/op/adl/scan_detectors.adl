@@ -1,0 +1,5050 @@
+
+file {
+	name="/home/oxygen4/MOONEY/epics/3.13.1.1/tmm/tmmApp/op/adl/scan_detectors_5.2.adl"
+	version=020306
+}
+display {
+	object {
+		x=21
+		y=135
+		width=580
+		height=740
+	}
+	clr=14
+	bclr=3
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=1
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+"text update" {
+	object {
+		x=0
+		y=0
+		width=580
+		height=15
+	}
+	monitor {
+		chan="$(P)$(S).NAME"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+polyline {
+	object {
+		x=0
+		y=15
+		width=584
+		height=3
+	}
+	"basic attribute" {
+		clr=53
+		width=3
+	}
+	"dynamic attribute" {
+		chan="$(P)$(S).NAME"
+	}
+	points {
+		(1,16)
+		(582,16)
+	}
+}
+text {
+	object {
+		x=0
+		y=19
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PLOT"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=220
+		y=30
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D01CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=33
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D01NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=50
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D02CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=53
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D02NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=90
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D04CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=93
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D04NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=70
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D03CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=73
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D03NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=110
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D05CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=113
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D05NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=130
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D06CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=133
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D06NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=150
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D07CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=153
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D07NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=170
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D08CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=173
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D08NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=190
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D09CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=193
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D09NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=230
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D11CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=233
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D11NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=250
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D12CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=253
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D12NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=290
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D14CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=293
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D14NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=270
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D13CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=273
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D13NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=310
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D15CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=313
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D15NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=330
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D16CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=333
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D16NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=350
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D17CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=353
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D17NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=370
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D18CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=373
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D18NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=390
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D19CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=393
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D19NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=210
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D10CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=213
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D10NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=430
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D21CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=433
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D21NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=450
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D22CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=453
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D22NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=490
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D24CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=493
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D24NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=470
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D23CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=473
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D23NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=510
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D25CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=513
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D25NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=530
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D26CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=533
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D26NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=550
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D27CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=553
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D27NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=570
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D28CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=573
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D28NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=590
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D29CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=593
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D29NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=410
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D20CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=413
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D20NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=630
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D31CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=633
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D31NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=650
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D32CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=653
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D32NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=690
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D34CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=693
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D34NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=670
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D33CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=673
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D33NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=710
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D35CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=713
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D35NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=30
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D36CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=33
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D36NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=50
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D37CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=53
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D37NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=70
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D38CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=73
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D38NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=90
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D39CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=93
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D39NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=220
+		y=610
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D30CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=210
+		y=613
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D30NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=130
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D41CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=133
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D41NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=150
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D42CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=153
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D42NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=190
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D44CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=193
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D44NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=170
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D43CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=173
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D43NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=210
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D45CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=213
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D45NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=230
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D46CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=233
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D46NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=250
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D47CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=253
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D47NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=270
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D48CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=273
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D48NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=290
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D49CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=293
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D49NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=110
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D40CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=113
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D40NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=330
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D51CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=333
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D51NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=350
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D52CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=353
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D52NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=390
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D54CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=393
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D54NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=370
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D53CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=373
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D53NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=410
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D55CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=413
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D55NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=430
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D56CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=433
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D56NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=450
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D57CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=453
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D57NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=470
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D58CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=473
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D58NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=490
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D59CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=493
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D59NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=310
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D50CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=313
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D50NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=530
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D61CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=533
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D61NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=550
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D62CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=553
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D62NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=590
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D64CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=593
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D64NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=570
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D63CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=573
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D63NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=610
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D65CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=613
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D65NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=630
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D66CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=633
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D66NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=650
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D67CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=653
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D67NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=670
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D68CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=673
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D68NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=690
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D69CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=693
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D69NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=510
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D60CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=513
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D60NV"
+	}
+	textix="X"
+}
+"text update" {
+	object {
+		x=520
+		y=710
+		width=60
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S).D70CV"
+		clr=53
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=510
+		y=713
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).D70NV"
+	}
+	textix="X"
+}
+text {
+	object {
+		x=300
+		y=19
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PLOT"
+	align="horiz. centered"
+}
+composite {
+	object {
+		x=0
+		y=30
+		width=25
+		height=700
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=0
+				y=30
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D01,N=01"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=01"
+			}
+			clr=0
+			bclr=17
+			label="-01"
+		}
+		"related display" {
+			object {
+				x=0
+				y=50
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D02,N=02"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=02"
+			}
+			clr=0
+			bclr=17
+			label="-02"
+		}
+		"related display" {
+			object {
+				x=0
+				y=90
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D04,N=04"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=04"
+			}
+			clr=0
+			bclr=17
+			label="-04"
+		}
+		"related display" {
+			object {
+				x=0
+				y=70
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D03,N=03"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=03"
+			}
+			clr=0
+			bclr=17
+			label="-03"
+		}
+		"related display" {
+			object {
+				x=0
+				y=110
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D05,N=05"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=05"
+			}
+			clr=0
+			bclr=17
+			label="-05"
+		}
+		"related display" {
+			object {
+				x=0
+				y=130
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D06,N=06"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=06"
+			}
+			clr=0
+			bclr=17
+			label="-06"
+		}
+		"related display" {
+			object {
+				x=0
+				y=150
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D07,N=07"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=07"
+			}
+			clr=0
+			bclr=17
+			label="-07"
+		}
+		"related display" {
+			object {
+				x=0
+				y=170
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D08,N=08"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=08"
+			}
+			clr=0
+			bclr=17
+			label="-08"
+		}
+		"related display" {
+			object {
+				x=0
+				y=190
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D09,N=09"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=09"
+			}
+			clr=0
+			bclr=17
+			label="-09"
+		}
+		"related display" {
+			object {
+				x=0
+				y=230
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D11,N=11"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=11"
+			}
+			clr=0
+			bclr=17
+			label="-11"
+		}
+		"related display" {
+			object {
+				x=0
+				y=250
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D12,N=12"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=12"
+			}
+			clr=0
+			bclr=17
+			label="-12"
+		}
+		"related display" {
+			object {
+				x=0
+				y=290
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D14,N=14"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=14"
+			}
+			clr=0
+			bclr=17
+			label="-14"
+		}
+		"related display" {
+			object {
+				x=0
+				y=270
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D13,N=13"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=13"
+			}
+			clr=0
+			bclr=17
+			label="-13"
+		}
+		"related display" {
+			object {
+				x=0
+				y=310
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D15,N=15"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=15"
+			}
+			clr=0
+			bclr=17
+			label="-15"
+		}
+		"related display" {
+			object {
+				x=0
+				y=330
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D16,N=16"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=16"
+			}
+			clr=0
+			bclr=17
+			label="-16"
+		}
+		"related display" {
+			object {
+				x=0
+				y=350
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D17,N=17"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=17"
+			}
+			clr=0
+			bclr=17
+			label="-17"
+		}
+		"related display" {
+			object {
+				x=0
+				y=370
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D18,N=18"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=18"
+			}
+			clr=0
+			bclr=17
+			label="-18"
+		}
+		"related display" {
+			object {
+				x=0
+				y=390
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D19,N=19"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=19"
+			}
+			clr=0
+			bclr=17
+			label="-19"
+		}
+		"related display" {
+			object {
+				x=0
+				y=210
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D10,N=10"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=10"
+			}
+			clr=0
+			bclr=17
+			label="-10"
+		}
+		"related display" {
+			object {
+				x=0
+				y=430
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D21,N=21"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=21"
+			}
+			clr=0
+			bclr=17
+			label="-21"
+		}
+		"related display" {
+			object {
+				x=0
+				y=450
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D22,N=22"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=22"
+			}
+			clr=0
+			bclr=17
+			label="-22"
+		}
+		"related display" {
+			object {
+				x=0
+				y=490
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D24,N=24"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=24"
+			}
+			clr=0
+			bclr=17
+			label="-24"
+		}
+		"related display" {
+			object {
+				x=0
+				y=470
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D23,N=23"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=23"
+			}
+			clr=0
+			bclr=17
+			label="-23"
+		}
+		"related display" {
+			object {
+				x=0
+				y=510
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D25,N=25"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=25"
+			}
+			clr=0
+			bclr=17
+			label="-25"
+		}
+		"related display" {
+			object {
+				x=0
+				y=530
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D26,N=26"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=26"
+			}
+			clr=0
+			bclr=17
+			label="-26"
+		}
+		"related display" {
+			object {
+				x=0
+				y=550
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D27,N=27"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=27"
+			}
+			clr=0
+			bclr=17
+			label="-27"
+		}
+		"related display" {
+			object {
+				x=0
+				y=570
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D28,N=28"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=28"
+			}
+			clr=0
+			bclr=17
+			label="-28"
+		}
+		"related display" {
+			object {
+				x=0
+				y=590
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D29,N=29"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=29"
+			}
+			clr=0
+			bclr=17
+			label="-29"
+		}
+		"related display" {
+			object {
+				x=0
+				y=410
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D20,N=20"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=20"
+			}
+			clr=0
+			bclr=17
+			label="-20"
+		}
+		"related display" {
+			object {
+				x=0
+				y=630
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D31,N=31"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=31"
+			}
+			clr=0
+			bclr=17
+			label="-31"
+		}
+		"related display" {
+			object {
+				x=0
+				y=650
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D32,N=32"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=32"
+			}
+			clr=0
+			bclr=17
+			label="-32"
+		}
+		"related display" {
+			object {
+				x=0
+				y=690
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D34,N=34"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=34"
+			}
+			clr=0
+			bclr=17
+			label="-34"
+		}
+		"related display" {
+			object {
+				x=0
+				y=670
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D33,N=33"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=33"
+			}
+			clr=0
+			bclr=17
+			label="-33"
+		}
+		"related display" {
+			object {
+				x=0
+				y=710
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D35,N=35"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=35"
+			}
+			clr=0
+			bclr=17
+			label="-35"
+		}
+		"related display" {
+			object {
+				x=0
+				y=610
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D30,N=30"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=30"
+			}
+			clr=0
+			bclr=17
+			label="-30"
+		}
+	}
+}
+composite {
+	object {
+		x=25
+		y=17
+		width=185
+		height=713
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=25
+				y=17
+				width=185
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Detector Names"
+			align="horiz. centered"
+		}
+		"text entry" {
+			object {
+				x=25
+				y=30
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D01PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=50
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D02PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=90
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D04PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=70
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D03PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=110
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D05PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=130
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D06PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=150
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D07PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=170
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D08PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=190
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D09PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=230
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D11PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=250
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D12PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=290
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D14PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=270
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D13PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=310
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D15PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=330
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D16PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=350
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D17PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=370
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D18PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=390
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D19PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=210
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D10PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=430
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D21PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=450
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D22PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=490
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D24PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=470
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D23PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=510
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D25PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=530
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D26PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=550
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D27PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=570
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D28PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=590
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D29PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=410
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D20PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=630
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D31PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=650
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D32PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=690
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D34PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=670
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D33PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=710
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D35PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=25
+				y=610
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D30PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=300
+		y=30
+		width=25
+		height=700
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=300
+				y=30
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D36,N=36"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=36"
+			}
+			clr=0
+			bclr=17
+			label="-36"
+		}
+		"related display" {
+			object {
+				x=300
+				y=50
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D37,N=37"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=37"
+			}
+			clr=0
+			bclr=17
+			label="-37"
+		}
+		"related display" {
+			object {
+				x=300
+				y=70
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D38,N=38"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=38"
+			}
+			clr=0
+			bclr=17
+			label="-38"
+		}
+		"related display" {
+			object {
+				x=300
+				y=90
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D39,N=39"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=39"
+			}
+			clr=0
+			bclr=17
+			label="-39"
+		}
+		"related display" {
+			object {
+				x=300
+				y=130
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D41,N=41"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=41"
+			}
+			clr=0
+			bclr=17
+			label="-41"
+		}
+		"related display" {
+			object {
+				x=300
+				y=150
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D42,N=42"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=42"
+			}
+			clr=0
+			bclr=17
+			label="-42"
+		}
+		"related display" {
+			object {
+				x=300
+				y=190
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D44,N=44"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=44"
+			}
+			clr=0
+			bclr=17
+			label="-44"
+		}
+		"related display" {
+			object {
+				x=300
+				y=170
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D43,N=43"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=43"
+			}
+			clr=0
+			bclr=17
+			label="-43"
+		}
+		"related display" {
+			object {
+				x=300
+				y=210
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D45,N=45"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=45"
+			}
+			clr=0
+			bclr=17
+			label="-45"
+		}
+		"related display" {
+			object {
+				x=300
+				y=230
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D46,N=46"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=46"
+			}
+			clr=0
+			bclr=17
+			label="-46"
+		}
+		"related display" {
+			object {
+				x=300
+				y=250
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D47,N=47"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=47"
+			}
+			clr=0
+			bclr=17
+			label="-47"
+		}
+		"related display" {
+			object {
+				x=300
+				y=270
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D48,N=48"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=48"
+			}
+			clr=0
+			bclr=17
+			label="-48"
+		}
+		"related display" {
+			object {
+				x=300
+				y=290
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D49,N=49"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=49"
+			}
+			clr=0
+			bclr=17
+			label="-49"
+		}
+		"related display" {
+			object {
+				x=300
+				y=110
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D40,N=40"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=40"
+			}
+			clr=0
+			bclr=17
+			label="-40"
+		}
+		"related display" {
+			object {
+				x=300
+				y=330
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D51,N=51"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=51"
+			}
+			clr=0
+			bclr=17
+			label="-51"
+		}
+		"related display" {
+			object {
+				x=300
+				y=350
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D52,N=52"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=52"
+			}
+			clr=0
+			bclr=17
+			label="-52"
+		}
+		"related display" {
+			object {
+				x=300
+				y=390
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D54,N=54"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=54"
+			}
+			clr=0
+			bclr=17
+			label="-54"
+		}
+		"related display" {
+			object {
+				x=300
+				y=370
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D53,N=53"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=53"
+			}
+			clr=0
+			bclr=17
+			label="-53"
+		}
+		"related display" {
+			object {
+				x=300
+				y=410
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D55,N=55"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=55"
+			}
+			clr=0
+			bclr=17
+			label="-55"
+		}
+		"related display" {
+			object {
+				x=300
+				y=430
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D56,N=56"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=56"
+			}
+			clr=0
+			bclr=17
+			label="-56"
+		}
+		"related display" {
+			object {
+				x=300
+				y=450
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D57,N=57"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=57"
+			}
+			clr=0
+			bclr=17
+			label="-57"
+		}
+		"related display" {
+			object {
+				x=300
+				y=470
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D58,N=58"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=58"
+			}
+			clr=0
+			bclr=17
+			label="-58"
+		}
+		"related display" {
+			object {
+				x=300
+				y=490
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D59,N=59"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=59"
+			}
+			clr=0
+			bclr=17
+			label="-59"
+		}
+		"related display" {
+			object {
+				x=300
+				y=310
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D50,N=50"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=50"
+			}
+			clr=0
+			bclr=17
+			label="-50"
+		}
+		"related display" {
+			object {
+				x=300
+				y=530
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D61,N=61"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=61"
+			}
+			clr=0
+			bclr=17
+			label="-61"
+		}
+		"related display" {
+			object {
+				x=300
+				y=550
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D62,N=62"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=62"
+			}
+			clr=0
+			bclr=17
+			label="-62"
+		}
+		"related display" {
+			object {
+				x=300
+				y=590
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D64,N=64"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=64"
+			}
+			clr=0
+			bclr=17
+			label="-64"
+		}
+		"related display" {
+			object {
+				x=300
+				y=570
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D63,N=63"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=63"
+			}
+			clr=0
+			bclr=17
+			label="-63"
+		}
+		"related display" {
+			object {
+				x=300
+				y=610
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D65,N=65"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=65"
+			}
+			clr=0
+			bclr=17
+			label="-65"
+		}
+		"related display" {
+			object {
+				x=300
+				y=630
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D66,N=66"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=66"
+			}
+			clr=0
+			bclr=17
+			label="-66"
+		}
+		"related display" {
+			object {
+				x=300
+				y=650
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D67,N=67"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=67"
+			}
+			clr=0
+			bclr=17
+			label="-67"
+		}
+		"related display" {
+			object {
+				x=300
+				y=670
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D68,N=68"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=68"
+			}
+			clr=0
+			bclr=17
+			label="-68"
+		}
+		"related display" {
+			object {
+				x=300
+				y=690
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D69,N=69"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=69"
+			}
+			clr=0
+			bclr=17
+			label="-69"
+		}
+		"related display" {
+			object {
+				x=300
+				y=510
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D60,N=60"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=60"
+			}
+			clr=0
+			bclr=17
+			label="-60"
+		}
+		"related display" {
+			object {
+				x=300
+				y=710
+				width=25
+				height=20
+			}
+			display[0] {
+				label="Real-time plot"
+				name="scanDetPlotRT.adl"
+				args="P=$(P),S=$(S),D=D70,N=70"
+			}
+			display[1] {
+				label="After-scan plot"
+				name="scanDetPlot.adl"
+				args="P=$(P),S=$(S),N=70"
+			}
+			clr=0
+			bclr=17
+			label="-70"
+		}
+	}
+}
+composite {
+	object {
+		x=325
+		y=17
+		width=185
+		height=713
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=325
+				y=30
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D36PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=50
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D37PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=70
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D38PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=90
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D39PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=130
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D41PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=150
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D42PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=190
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D44PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=170
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D43PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=210
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D45PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=230
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D46PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=250
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D47PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=270
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D48PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=290
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D49PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=110
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D40PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=330
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D51PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=350
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D52PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=390
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D54PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=370
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D53PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=410
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D55PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=430
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D56PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=450
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D57PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=470
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D58PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=490
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D59PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=310
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D50PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=530
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D61PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=550
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D62PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=590
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D64PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=570
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D63PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=610
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D65PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=630
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D66PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=650
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D67PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=670
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D68PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=690
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D69PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=510
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D60PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=325
+				y=710
+				width=185
+				height=20
+			}
+			control {
+				chan="$(P)$(S).D70PV"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=325
+				y=17
+				width=185
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Detector Names"
+			align="horiz. centered"
+		}
+	}
+}

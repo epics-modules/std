@@ -1,0 +1,640 @@
+grecord(ao,"$(P)4step:sig4:H") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig4:G") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig4:F") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig4:E") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig4:D") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig4:C") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig4:B") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig4:A") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig3:H") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig3:G") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig3:F") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig3:E") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig3:D") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig3:C") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig3:B") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig3:A") {
+	field(DESC,"signal 3")
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig2:H") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig2:G") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig2:F") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig2:E") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig2:D") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig2:C") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig2:B") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig2:A") {
+	field(DESC,"signal 2")
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig1:H") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig1:G") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig1:F") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig1:E") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig1:D") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig1:C") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:sig1:B") {
+	field(PREC,"6")
+}
+grecord(ao,"$(P)4step:det2TrigVal") {
+	field(PINI,"YES")
+	field(OUT,"$(P)4step:det2TrigInfo.DO2  PP MS")
+	field(DOL,"1")
+}
+grecord(ao,"$(P)4step:det1TrigVal") {
+	field(PINI,"YES")
+	field(OUT,"$(P)4step:det1TrigInfo.DO2  PP MS")
+	field(DOL,"1")
+}
+grecord(ao,"$(P)4step:sig1:A") {
+	field(DESC,"signal 1")
+	field(PREC,"6")
+}
+grecord(bo,"$(P)4step:start") {
+	field(FLNK,"$(P)4step:Aactions.VAL  PP MS")
+	field(OMSL,"closed_loop")
+	field(DOL,"1")
+	field(OUT,"$(P)4step:ctrl.J  PP MS")
+}
+grecord(calcout,"$(P)4step:doEndCalcs") {
+	field(CALC,"a>b")
+	field(INPA,"$(P)4step:ctrl.L  NPP MS")
+	field(INPB,"$(P)4step:numSteps.VAL  NPP MS")
+	field(OOPT,"Transition To Non-zero")
+}
+grecord(fanout,"$(P)4step:DtrigFan") {
+	field(LNK1,"$(P)4step:Dtrig1.VAL  PP MS")
+	field(LNK2,"$(P)4step:Dtrig2.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:Dfan") {
+	field(FLNK,"$(P)4step:ctrl.VAL  PP MS")
+	field(LNK1,"$(P)4step:sig1.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:DdoOrSkip") {
+	field(SELM,"Specified")
+	field(SELL,"$(P)4step:ctrl.D  PP MS")
+	field(LNK1,"$(P)4step:Dtrig.VAL  PP MS")
+	field(LNK2,"$(P)4step:Dfan.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:CtrigFan") {
+	field(LNK1,"$(P)4step:Ctrig1.VAL  PP MS")
+	field(LNK2,"$(P)4step:Ctrig2.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:Cfan") {
+	field(FLNK,"$(P)4step:Dactions.VAL  PP MS")
+	field(LNK1,"$(P)4step:sig1.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:CdoOrSkip") {
+	field(SELM,"Specified")
+	field(SELL,"$(P)4step:ctrl.C  PP MS")
+	field(LNK1,"$(P)4step:Ctrig.VAL  PP MS")
+	field(LNK2,"$(P)4step:Cfan.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:BtrigFan") {
+	field(LNK1,"$(P)4step:Btrig1.VAL  PP MS")
+	field(LNK2,"$(P)4step:Btrig2.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:Bfan") {
+	field(FLNK,"$(P)4step:Cactions.VAL  PP MS")
+	field(LNK1,"$(P)4step:sig1.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:BdoOrSkip") {
+	field(SELM,"Specified")
+	field(SELL,"$(P)4step:ctrl.B  PP MS")
+	field(LNK1,"$(P)4step:Btrig.VAL  PP MS")
+	field(LNK2,"$(P)4step:Bfan.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:Afan") {
+	field(DESC,"A fanout")
+	field(FLNK,"$(P)4step:Bactions.VAL  PP MS")
+	field(LNK1,"$(P)4step:sig1.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:AdoOrSkip") {
+	field(SELM,"Specified")
+	field(SELL,"$(P)4step:ctrl.A  NPP MS")
+	field(LNK1,"$(P)4step:Atrig.VAL  PP MS")
+	field(LNK2,"$(P)4step:Afan.VAL  PP MS")
+}
+grecord(fanout,"$(P)4step:AtrigFan") {
+	field(LNK1,"$(P)4step:Atrig1.VAL  PP MS")
+	field(LNK2,"$(P)4step:Atrig2.VAL  PP MS")
+}
+grecord(mbbo,"$(P)4step:numSteps") {
+	field(DTYP,"Soft Channel")
+	field(DOL,"4")
+	field(ZRVL,"0")
+	field(ONVL,"1")
+	field(TWVL,"2")
+	field(THVL,"3")
+	field(FRVL,"4")
+	field(ZRST,"Zero")
+	field(ONST,"One")
+	field(TWST,"Two")
+	field(THST,"Three")
+	field(FRST,"Four")
+}
+grecord(stringout,"$(P)4step:sig3:Desc") {
+	field(PINI,"YES")
+	field(VAL,"signal 3")
+	field(OUT,"$(P)4step:sig3:sFan.STR1  PP MS")
+}
+grecord(stringout,"$(P)4step:sig2:Desc") {
+	field(PINI,"YES")
+	field(VAL,"signal 2")
+	field(OUT,"$(P)4step:sig2:sFan.STR1  PP MS")
+}
+grecord(stringout,"$(P)4step:sig1:Desc") {
+	field(PINI,"YES")
+	field(VAL,"signal 1")
+	field(OUT,"$(P)4step:sig1:sFan.STR1  PP MS")
+}
+grecord(stringout,"$(P)4step:det2TrigName") {
+	field(PINI,"YES")
+	field(OUT,"$(P)4step:det2TrigInfo.STR1  PP MS")
+}
+grecord(stringout,"$(P)4step:det1TrigName") {
+	field(PINI,"YES")
+	field(VAL,"$(P)scaler1.CNT")
+	field(OUT,"$(P)4step:det1TrigInfo.STR1  PP MS")
+}
+grecord(stringout,"$(P)4step:sig4:Desc") {
+	field(PINI,"YES")
+	field(VAL,"signal 4")
+	field(OUT,"$(P)4step:sig4:sFan.STR1  PP MS")
+}
+grecord(transform,"$(P)4step:sig1") {
+	field(DESC,"Signal 1 acquire/calc")
+	field(FLNK,"$(P)4step:sig2.VAL  PP MS")
+	field(CLCA,"K=1?I:A")
+	field(CLCB,"k=1?0:k=2?i:b")
+	field(CLCC,"k=1?0:k=3?i:c")
+	field(CLCD,"k=1?0:k=4?i:d")
+	field(CLCE,"(a+c)/2")
+	field(CLCF,"(b+d)/2")
+	field(CLCG,"e-f")
+	field(INPJ,"$(P)scaler1.T")
+	field(INPK,"$(P)4step:ctrl.L  NPP MS")
+	field(INPL,"0")
+	field(OUTA,"$(P)4step:sig1:A.VAL  PP MS")
+	field(OUTB,"$(P)4step:sig1:B.VAL  PP MS")
+	field(OUTC,"$(P)4step:sig1:C.VAL  PP MS")
+	field(OUTD,"$(P)4step:sig1:D.VAL  PP MS")
+	field(OUTE,"$(P)4step:sig1:E.VAL  PP MS")
+	field(OUTF,"$(P)4step:sig1:F.VAL  PP MS")
+	field(OUTG,"$(P)4step:sig1:G.VAL  PP MS")
+	field(OUTH,"$(P)4step:sig1:H.VAL  PP MS")
+	field(PREC,"6")
+	field(CMTA,"A measurement")
+	field(CMTB,"B measurement")
+	field(CMTC,"C measurement")
+	field(CMTD,"D measurement")
+	field(CMTE,"E calc")
+	field(CMTF,"F calc")
+	field(CMTG,"G calc")
+}
+grecord(transform,"$(P)4step:sig2") {
+	field(DESC,"Signal 2 acquire/calc")
+	field(FLNK,"$(P)4step:sig3.VAL  PP MS")
+	field(CLCA,"k=1?i:a")
+	field(CLCB,"k=1?0:k=2?i:b")
+	field(CLCC,"k=1?0:k=3?i:c")
+	field(CLCD,"k=1?0:k=4?i:d")
+	field(CLCE,"(a+c)/2")
+	field(CLCF,"(b+d)/2")
+	field(CLCG,"e-f")
+	field(INPJ,"$(P)scaler1.S2")
+	field(INPK,"$(P)4step:ctrl.L  NPP MS")
+	field(INPL,"0")
+	field(OUTA,"$(P)4step:sig2:A.VAL  PP MS")
+	field(OUTB,"$(P)4step:sig2:B.VAL  PP MS")
+	field(OUTC,"$(P)4step:sig2:C.VAL  PP MS")
+	field(OUTD,"$(P)4step:sig2:D.VAL  PP MS")
+	field(OUTE,"$(P)4step:sig2:E.VAL  PP MS")
+	field(OUTF,"$(P)4step:sig2:F.VAL  PP MS")
+	field(OUTG,"$(P)4step:sig2:G.VAL  PP MS")
+	field(OUTH,"$(P)4step:sig2:H.VAL  PP MS")
+	field(PREC,"6")
+	field(CMTA,"A measurement")
+	field(CMTB,"B measurement")
+	field(CMTC,"C measurement")
+	field(CMTD,"D measurement")
+	field(CMTE,"E calc")
+	field(CMTF,"F calc")
+	field(CMTG,"G calc")
+}
+grecord(transform,"$(P)4step:sig3") {
+	field(DESC,"Signal 3 acquire/calc")
+	field(FLNK,"$(P)4step:sig4.VAL  PP MS")
+	field(CLCA,"k=1?i:a")
+	field(CLCB,"k=1?0:k=2?i:b")
+	field(CLCC,"k=1?0:k=3?i:c")
+	field(CLCD,"k=1?0:k=4?i:d")
+	field(CLCE,"(a+c)/2")
+	field(CLCF,"(b+d)/2")
+	field(CLCG,"e-f")
+	field(INPJ,"$(P)scaler1.S3")
+	field(INPK,"$(P)4step:ctrl.L  NPP MS")
+	field(INPL,"0")
+	field(OUTA,"$(P)4step:sig3:A.VAL  PP MS")
+	field(OUTB,"$(P)4step:sig3:B.VAL  PP MS")
+	field(OUTC,"$(P)4step:sig3:C.VAL  PP MS")
+	field(OUTD,"$(P)4step:sig3:D.VAL  PP MS")
+	field(OUTE,"$(P)4step:sig3:E.VAL  PP MS")
+	field(OUTF,"$(P)4step:sig3:F.VAL  PP MS")
+	field(OUTG,"$(P)4step:sig3:G.VAL  PP MS")
+	field(OUTH,"$(P)4step:sig3:H.VAL  PP MS")
+	field(PREC,"6")
+	field(CMTA,"A measurement")
+	field(CMTB,"B measurement")
+	field(CMTC,"C measurement")
+	field(CMTD,"D measurement")
+	field(CMTE,"E calc")
+	field(CMTF,"F calc")
+	field(CMTG,"G calc")
+}
+grecord(transform,"$(P)4step:sig4") {
+	field(DESC,"Signal 4 acquire/calc")
+	field(FLNK,"0")
+	field(CLCA,"k=1?i:a")
+	field(CLCB,"k=1?0:k=2?i:b")
+	field(CLCC,"k=1?0:k=3?i:c")
+	field(CLCD,"k=1?0:k=4?i:d")
+	field(CLCE,"(a+c)/2")
+	field(CLCF,"(b+d)/2")
+	field(CLCG,"e-f")
+	field(INPJ,"$(P)scaler1.S4")
+	field(INPK,"$(P)4step:ctrl.L  NPP MS")
+	field(INPL,"0")
+	field(OUTA,"$(P)4step:sig4:A.VAL  PP MS")
+	field(OUTB,"$(P)4step:sig4:B.VAL  PP MS")
+	field(OUTC,"$(P)4step:sig4:C.VAL  PP MS")
+	field(OUTD,"$(P)4step:sig4:D.VAL  PP MS")
+	field(OUTE,"$(P)4step:sig4:E.VAL  PP MS")
+	field(OUTF,"$(P)4step:sig4:F.VAL  PP MS")
+	field(OUTG,"$(P)4step:sig4:G.VAL  PP MS")
+	field(OUTH,"$(P)4step:sig4:H.VAL  PP MS")
+	field(PREC,"6")
+	field(CMTA,"A measurement")
+	field(CMTB,"B measurement")
+	field(CMTC,"C measurement")
+	field(CMTD,"D measurement")
+	field(CMTE,"E calc")
+	field(CMTF,"F calc")
+	field(CMTG,"G calc")
+}
+grecord(transform,"$(P)4step:ctrl") {
+	field(FLNK,"$(P)4step:currStep.VAL  PP MS")
+	field(CLCA,"e>=1?1:2")
+	field(CLCB,"e>=2?1:2")
+	field(CLCC,"e>=3?1:2")
+	field(CLCD,"e>=4?1:2")
+	field(CLCF,"f?0:g")
+	field(CLCG,"g?0:h")
+	field(CLCH,"h?0:i")
+	field(CLCI,"i?0:j")
+	field(CLCJ,"0")
+	field(CLCL,"j?1:l+1")
+	field(INPE,"$(P)4step:numSteps.VAL  NPP MS")
+}
+grecord(scalcout,"$(P)4step:currStep") {
+	field(FLNK,"$(P)4step:doEndCalcs.VAL  PP MS")
+	field(CALC,"a>b?bb:aa[a,a]")
+	field(INPA,"$(P)4step:ctrl.L  NPP MS")
+	field(INPB,"$(P)4step:numSteps.VAL  NPP MS")
+	field(AA,"?ABCD?????")
+	field(BB,"DONE")
+}
+grecord(swait,"$(P)4step:Dtrig2") {
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Dtrig1") {
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Dtrig") {
+	field(DESC,"step D detector trig/wait")
+	field(FLNK,"$(P)4step:Dfan.VAL  PP MS")
+	field(OUTN,"$(P)4step:DtrigFan.PROC")
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Dactions") {
+	field(DESC,"step D action trig/wait")
+	field(FLNK,"$(P)4step:DdoOrSkip.VAL  PP MS")
+	field(INAN,"$(P)4step:numSteps.RVAL")
+	field(OUTN,"$(P)4step:Dseq.PROC")
+	field(CALC,"A>=4")
+	field(OOPT,"When Non-zero")
+	field(DOPT,"Use DOL")
+	field(DOLD,"1")
+}
+grecord(swait,"$(P)4step:Ctrig2") {
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Ctrig1") {
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Ctrig") {
+	field(DESC,"step C detector trig/wait")
+	field(FLNK,"$(P)4step:Cfan.VAL  PP MS")
+	field(OUTN,"$(P)4step:CtrigFan.PROC")
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Cactions") {
+	field(DESC,"step C action trig/wait")
+	field(FLNK,"$(P)4step:CdoOrSkip.VAL  PP MS")
+	field(INAN,"$(P)4step:numSteps.RVAL")
+	field(OUTN,"$(P)4step:Cseq.PROC")
+	field(CALC,"A>=3")
+	field(OOPT,"When Non-zero")
+	field(DOPT,"Use DOL")
+	field(DOLD,"1")
+}
+grecord(swait,"$(P)4step:Btrig2") {
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Btrig1") {
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Btrig") {
+	field(DESC,"step B detector trig/wait")
+	field(FLNK,"$(P)4step:Bfan.VAL  PP MS")
+	field(OUTN,"$(P)4step:BtrigFan.PROC")
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Bactions") {
+	field(DESC,"step B action trig/wait")
+	field(FLNK,"$(P)4step:BdoOrSkip.VAL  PP MS")
+	field(INAN,"$(P)4step:numSteps.RVAL")
+	field(OUTN,"$(P)4step:Bseq.PROC")
+	field(CALC,"A>=2")
+	field(OOPT,"When Non-zero")
+	field(DOPT,"Use DOL")
+	field(DOLD,"1")
+}
+grecord(swait,"$(P)4step:Atrig") {
+	field(DESC,"step A detector trig/wait")
+	field(FLNK,"$(P)4step:Afan.VAL  PP MS")
+	field(OUTN,"$(P)4step:AtrigFan.PROC")
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Aactions") {
+	field(DESC,"step A action trig/wait")
+	field(FLNK,"$(P)4step:AdoOrSkip.VAL  PP MS")
+	field(INAN,"$(P)4step:numSteps.RVAL")
+	field(OUTN,"$(P)4step:Aseq.PROC")
+	field(CALC,"a>=1")
+	field(OOPT,"When Non-zero")
+	field(DOPT,"Use DOL")
+	field(DOLD,"1")
+}
+grecord(swait,"$(P)4step:Atrig1") {
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)4step:Atrig2") {
+	field(DOPT,"Use DOL")
+}
+grecord(sseq,"$(P)4step:sig4:sFan") {
+	field(DOL1,"0")
+	field(LNK1,"$(P)4step:sig4:A.DESC  PP MS")
+	field(DOL2,"$(P)4step:sig4:sFan.STR1  NPP MS")
+	field(LNK2,"$(P)4step:sig4:B.DESC  PP MS")
+	field(DOL3,"$(P)4step:sig4:sFan.STR1  NPP MS")
+	field(LNK3,"$(P)4step:sig4:C.DESC  PP MS")
+	field(DOL4,"$(P)4step:sig4:sFan.STR1  NPP MS")
+	field(LNK4,"$(P)4step:sig4:D.DESC  PP MS")
+	field(DOL5,"$(P)4step:sig4:sFan.STR1  NPP MS")
+	field(LNK5,"$(P)4step:sig4:E.DESC  PP MS")
+	field(DOL6,"$(P)4step:sig4:sFan.STR1  NPP MS")
+	field(LNK6,"$(P)4step:sig4:F.DESC  PP MS")
+	field(DOL7,"$(P)4step:sig4:sFan.STR1  NPP MS")
+	field(LNK7,"$(P)4step:sig4:G.DESC  PP MS")
+	field(DOL8,"$(P)4step:sig4:sFan.STR1  NPP MS")
+	field(LNK8,"$(P)4step:sig4:H.DESC  PP MS")
+}
+grecord(sseq,"$(P)4step:sig3:sFan") {
+	field(PINI,"YES")
+	field(DOL1,"0")
+	field(LNK1,"$(P)4step:sig3:A.DESC  PP MS")
+	field(DOL2,"$(P)4step:sig3:sFan.STR1  NPP MS")
+	field(LNK2,"$(P)4step:sig3:B.DESC  PP MS")
+	field(DOL3,"$(P)4step:sig3:sFan.STR1  NPP MS")
+	field(LNK3,"$(P)4step:sig3:C.DESC  PP MS")
+	field(DOL4,"$(P)4step:sig3:sFan.STR1  NPP MS")
+	field(LNK4,"$(P)4step:sig3:D.DESC  PP MS")
+	field(DOL5,"$(P)4step:sig3:sFan.STR1  NPP MS")
+	field(LNK5,"$(P)4step:sig3:E.DESC  PP MS")
+	field(DOL6,"$(P)4step:sig3:sFan.STR1  NPP MS")
+	field(LNK6,"$(P)4step:sig3:F.DESC  PP MS")
+	field(DOL7,"$(P)4step:sig3:sFan.STR1  NPP MS")
+	field(LNK7,"$(P)4step:sig3:G.DESC  PP MS")
+	field(DOL8,"$(P)4step:sig3:sFan.STR1  NPP MS")
+	field(LNK8,"$(P)4step:sig3:H.DESC  PP MS")
+}
+grecord(sseq,"$(P)4step:sig2:sFan") {
+	field(DOL1,"0")
+	field(LNK1,"$(P)4step:sig2:A.DESC  PP MS")
+	field(DOL2,"$(P)4step:sig2:sFan.STR1  NPP MS")
+	field(LNK2,"$(P)4step:sig2:B.DESC  PP MS")
+	field(DOL3,"$(P)4step:sig2:sFan.STR1  NPP MS")
+	field(LNK3,"$(P)4step:sig2:C.DESC  PP MS")
+	field(DOL4,"$(P)4step:sig2:sFan.STR1  NPP MS")
+	field(LNK4,"$(P)4step:sig2:D.DESC  PP MS")
+	field(DOL5,"$(P)4step:sig2:sFan.STR1  NPP MS")
+	field(LNK5,"$(P)4step:sig2:E.DESC  PP MS")
+	field(DOL6,"$(P)4step:sig2:sFan.STR1  NPP MS")
+	field(LNK6,"$(P)4step:sig2:F.DESC  PP MS")
+	field(DOL7,"$(P)4step:sig2:sFan.STR1  NPP MS")
+	field(LNK7,"$(P)4step:sig2:G.DESC  PP MS")
+	field(DOL8,"$(P)4step:sig2:sFan.STR1  NPP MS")
+	field(LNK8,"$(P)4step:sig2:H.DESC  PP MS")
+}
+grecord(sseq,"$(P)4step:det2TrigInfo") {
+	field(LNK1,"$(P)4step:Atrig2.OUTN  NPP MS")
+	field(LNK2,"$(P)4step:Atrig2.DOLD  NPP MS")
+	field(DOL3,"$(P)4step:det2TrigInfo.STR1  NPP MS")
+	field(LNK3,"$(P)4step:Btrig2.OUTN  NPP MS")
+	field(DOL4,"$(P)4step:det2TrigInfo.DO2  NPP MS")
+	field(LNK4,"$(P)4step:Btrig2.DOLD  NPP MS")
+	field(DOL5,"$(P)4step:det2TrigInfo.STR1  NPP MS")
+	field(LNK5,"$(P)4step:Ctrig2.OUTN  NPP MS")
+	field(DOL6,"$(P)4step:det2TrigInfo.DO2  NPP MS")
+	field(LNK6,"$(P)4step:Ctrig2.DOLD  NPP MS")
+	field(DOL7,"$(P)4step:det2TrigInfo.STR1  NPP MS")
+	field(LNK7,"$(P)4step:Dtrig2.OUTN  NPP MS")
+	field(DOL8,"$(P)4step:det2TrigInfo.DO2  NPP MS")
+	field(LNK8,"$(P)4step:Dtrig2.DOLD  NPP MS")
+}
+grecord(sseq,"$(P)4step:det1TrigInfo") {
+	field(LNK1,"$(P)4step:Atrig1.OUTN  NPP MS")
+	field(LNK2,"$(P)4step:Atrig1.DOLD  NPP MS")
+	field(DOL3,"$(P)4step:det1TrigInfo.STR1  NPP MS")
+	field(LNK3,"$(P)4step:Btrig1.OUTN  NPP MS")
+	field(DOL4,"$(P)4step:det1TrigInfo.DO2  NPP MS")
+	field(LNK4,"$(P)4step:Btrig1.DOLD  NPP MS")
+	field(DOL5,"$(P)4step:det1TrigInfo.STR1  NPP MS")
+	field(LNK5,"$(P)4step:Ctrig1.OUTN  NPP MS")
+	field(DOL6,"$(P)4step:det1TrigInfo.DO2  NPP MS")
+	field(LNK6,"$(P)4step:Ctrig1.DOLD  NPP MS")
+	field(DOL7,"$(P)4step:det1TrigInfo.STR1  NPP MS")
+	field(LNK7,"$(P)4step:Dtrig1.OUTN  NPP MS")
+	field(DOL8,"$(P)4step:det1TrigInfo.DO2  NPP MS")
+	field(LNK8,"$(P)4step:Dtrig1.DOLD  NPP MS")
+}
+grecord(sseq,"$(P)4step:calcSendH") {
+	field(PINI,"YES")
+	field(DOL1,"$(P)4step:sig1.CLCH  CP MS")
+	field(LNK1,"$(P)4step:sig2.CLCH  NPP MS")
+	field(DOL2,"$(P)4step:calcSendH.STR1  NPP MS")
+	field(LNK2,"$(P)4step:sig3.CLCH  NPP MS")
+	field(DOL3,"$(P)4step:calcSendH.STR1  NPP MS")
+	field(LNK3,"$(P)4step:sig4.CLCH  NPP MS")
+	field(DOL4,"0")
+	field(DOL5,"0")
+	field(DOL6,"0")
+}
+grecord(sseq,"$(P)4step:calcSendG") {
+	field(PINI,"YES")
+	field(DOL1,"$(P)4step:sig1.CLCG  CP MS")
+	field(LNK1,"$(P)4step:sig2.CLCG  NPP MS")
+	field(DOL2,"$(P)4step:calcSendG.STR1  NPP MS")
+	field(LNK2,"$(P)4step:sig3.CLCG  NPP MS")
+	field(DOL3,"$(P)4step:calcSendG.STR1  NPP MS")
+	field(LNK3,"$(P)4step:sig4.CLCG  NPP MS")
+	field(DOL4,"0")
+	field(DOL5,"0")
+	field(DOL6,"0")
+}
+grecord(sseq,"$(P)4step:calcSendF") {
+	field(PINI,"YES")
+	field(DOL1,"$(P)4step:sig1.CLCF  CP MS")
+	field(LNK1,"$(P)4step:sig2.CLCF  NPP MS")
+	field(DOL2,"$(P)4step:calcSendF.STR1  NPP MS")
+	field(LNK2,"$(P)4step:sig3.CLCF  NPP MS")
+	field(DOL3,"$(P)4step:calcSendF.STR1  NPP MS")
+	field(LNK3,"$(P)4step:sig4.CLCF  NPP MS")
+	field(DOL4,"0")
+	field(DOL5,"0")
+	field(DOL6,"0")
+}
+grecord(sseq,"$(P)4step:calcSendE") {
+	field(PINI,"YES")
+	field(DOL1,"$(P)4step:sig1.CLCE  CP MS")
+	field(LNK1,"$(P)4step:sig2.CLCE  NPP MS")
+	field(DOL2,"$(P)4step:calcSendE.STR1  NPP MS")
+	field(LNK2,"$(P)4step:sig3.CLCE  NPP MS")
+	field(DOL3,"$(P)4step:calcSendE.STR1  NPP MS")
+	field(LNK3,"$(P)4step:sig4.CLCE  NPP MS")
+	field(DOL4,"0")
+	field(DOL5,"0")
+}
+grecord(sseq,"$(P)4step:Dseq") {
+	field(DESC,"step D actions")
+	field(PREC,"3")
+	field(DOL1,"-100")
+	field(LNK1,"$(P)DAC1_2.VAL PP")
+	field(DLY2,"0.1")
+	field(DOL2,"0")
+	field(LNK2,"$(P)DAC1_2.VAL PP")
+}
+grecord(sseq,"$(P)4step:Cseq") {
+	field(DESC,"step C actions")
+	field(PREC,"3")
+	field(DOL1,"-100")
+	field(LNK1,"$(P)DAC1_1.VAL PP")
+	field(DLY2,"0.1")
+	field(DOL2,"0")
+	field(LNK2,"$(P)DAC1_1.VAL PP")
+}
+grecord(sseq,"$(P)4step:Bseq") {
+	field(DESC,"step B actions")
+	field(PREC,"3")
+	field(DOL1,"100")
+	field(LNK1,"$(P)DAC1_2.VAL PP")
+	field(DLY2,"0.1")
+	field(DOL2,"0")
+	field(LNK2,"$(P)DAC1_2.VAL PP")
+}
+grecord(sseq,"$(P)4step:Aseq") {
+	field(DESC,"step A actions")
+	field(PREC,"3")
+	field(DOL1,"100")
+	field(LNK1,"$(P)DAC1_1.VAL PP")
+	field(DLY2,"0.1")
+	field(DOL2,"0")
+	field(LNK2,"$(P)DAC1_1.VAL PP")
+}
+grecord(sseq,"$(P)4step:sig1:sFan") {
+	field(PINI,"YES")
+	field(DOL1,"0")
+	field(LNK1,"$(P)4step:sig1:A.DESC  PP MS")
+	field(DOL2,"$(P)4step:sig1:sFan.STR1  NPP MS")
+	field(LNK2,"$(P)4step:sig1:B.DESC  PP MS")
+	field(DOL3,"$(P)4step:sig1:sFan.STR1  NPP MS")
+	field(LNK3,"$(P)4step:sig1:C.DESC  PP MS")
+	field(DOL4,"$(P)4step:sig1:sFan.STR1  NPP MS")
+	field(LNK4,"$(P)4step:sig1:D.DESC  PP MS")
+	field(DOL5,"$(P)4step:sig1:sFan.STR1  NPP MS")
+	field(LNK5,"$(P)4step:sig1:E.DESC  PP MS")
+	field(DOL6,"$(P)4step:sig1:sFan.STR1  NPP MS")
+	field(LNK6,"$(P)4step:sig1:F.DESC  PP MS")
+	field(DOL7,"$(P)4step:sig1:sFan.STR1  NPP MS")
+	field(LNK7,"$(P)4step:sig1:G.DESC  PP MS")
+	field(DOL8,"$(P)4step:sig1:sFan.STR1  NPP MS")
+	field(LNK8,"$(P)4step:sig1:H.DESC  PP MS")
+}

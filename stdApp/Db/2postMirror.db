@@ -1,0 +1,237 @@
+grecord(ao,"$(P)$(Q)vback2") {
+	field(OUT,"$(P)$(Q)t1.B  PP MS")
+	field(DOL,"$(P)$(mUp).VAL  NPP NMS")
+	field(OMSL,"closed_loop")
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(Q)vback1") {
+	field(OUT,"$(P)$(Q)t1.A  NPP NMS")
+	field(DOL,"$(P)$(mDn).VAL  NPP NMS")
+	field(OMSL,"closed_loop")
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(Q)up_tweakVal") {
+	field(DOL,"1")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(Q)upBPut") {
+	field(SDIS,"$(P)$(Q)up.PACT  NPP NMS")
+	field(OUT,"$(P)$(Q)up.VAL  PP MS")
+}
+grecord(ao,"$(P)$(Q)up") {
+	field(OUT,"$(P)$(Q)t1.B  PP MS")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(Q)dnBPut") {
+	field(SDIS,"$(P)$(Q)dn.PACT  NPP NMS")
+	field(OUT,"$(P)$(Q)dn.VAL  PP MS")
+}
+grecord(ao,"$(P)$(Q)dn") {
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(Q)t1.A  PP MS")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(Q)avg_tweakVal") {
+	field(DOL,"1")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(Q)avgBPut") {
+	field(SDIS,"$(P)$(Q)avg.PACT  NPP NMS")
+	field(OUT,"$(P)$(Q)avg.VAL  PP MS")
+}
+grecord(ao,"$(P)$(Q)avg") {
+	field(OUT,"$(P)$(Q)t1.D  PP MS")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(ao,"$(P)$(Q)angl_tweakVal") {
+	field(DOL,"1")
+	field(PREC,"3")
+	field(EGU,"mr")
+}
+grecord(ao,"$(P)$(Q)anglBPut") {
+	field(SDIS,"$(P)$(Q)angl.PACT  NPP NMS")
+	field(OUT,"$(P)$(Q)angl.VAL  PP MS")
+}
+grecord(ao,"$(P)$(Q)angl") {
+	field(OUT,"$(P)$(Q)t1.C  PP MS")
+	field(PREC,"3")
+	field(EGU,"mr")
+}
+grecord(ao,"$(P)$(Q)length") {
+	field(DESC,"dist between up/dn posts")
+	field(PINI,"YES")
+	field(DOL,"$(LENGTH)")
+	field(OMSL,"closed_loop")
+	field(PREC,"3")
+	field(EGU,"m")
+}
+grecord(ao,"$(P)$(Q)dn_tweakVal") {
+	field(DOL,"1")
+	field(PREC,"3")
+	field(EGU,"mm")
+}
+grecord(bo,"$(P)$(Q)set1") {
+	field(OMSL,"closed_loop")
+	field(DOL,"$(P)$(Q)set.VAL  NPP NMS")
+	field(OUT,"$(P)$(mDn).SET  PP MS")
+	field(ZNAM,"Use")
+	field(ONAM,"Set")
+}
+grecord(bo,"$(P)$(Q)set") {
+	field(FLNK,"$(P)$(Q)set1.PROC  PP MS")
+	field(OUT,"$(P)$(mUp).SET  PP MS")
+	field(ZNAM,"Use")
+	field(ONAM,"Set")
+}
+grecord(bo,"$(P)$(Q)gate") {
+	field(SDIS,"$(P)$(Q)sync.PACT  NPP NMS")
+	field(OUT,"$(P)gateOpen.VAL  PP MS")
+	field(ZNAM,"Closed")
+	field(ONAM,"Open")
+}
+grecord(bo,"$(P)mirror-$(Q)") {
+}
+grecord(fanout,"$(P)$(Q)sync") {
+	field(PINI,"YES")
+	field(LNK1,"$(P)$(Q)vback1.PROC  PP MS")
+	field(LNK2,"$(P)$(Q)vback2.PROC  PP MS")
+}
+grecord(seq,"$(P)$(Q)putOPR") {
+	field(DOL1,"$(P)$(Q)t3.A  NPP NMS")
+	field(LNK1,"$(P)$(Q)dn.LOPR  NPP NMS")
+	field(DOL2,"$(P)$(Q)t3.B  NPP NMS")
+	field(LNK2,"$(P)$(Q)dn.HOPR  NPP NMS")
+	field(DOL3,"$(P)$(Q)t3.C  NPP NMS")
+	field(LNK3,"$(P)$(Q)up.LOPR  NPP NMS")
+	field(DOL4,"$(P)$(Q)t3.D  NPP NMS")
+	field(LNK4,"$(P)$(Q)up.HOPR  NPP NMS")
+	field(DOL5,"$(P)$(Q)t3.E  NPP NMS")
+	field(LNK5,"$(P)$(Q)angl.LOPR  NPP NMS")
+	field(DOL6,"$(P)$(Q)t3.F  NPP NMS")
+	field(LNK6,"$(P)$(Q)angl.HOPR  NPP NMS")
+	field(DOL7,"$(P)$(Q)t3.G  NPP NMS")
+	field(LNK7,"$(P)$(Q)avg.LOPR  NPP NMS")
+	field(DOL8,"$(P)$(Q)t3.H  NPP NMS")
+	field(LNK8,"$(P)$(Q)avg.HOPR  NPP NMS")
+}
+grecord(transform,"$(P)$(Q)up_tweak") {
+	field(CLCD,"a?c-e:b?c+e:c")
+	field(INPC,"$(P)$(Q)up.VAL  NPP NMS")
+	field(INPE,"$(P)$(Q)up_tweakVal.VAL  NPP NMS")
+	field(OUTD,"$(P)$(Q)up.VAL  PP MS")
+	field(OUTF,"$(P)$(Q)up_tweak.A  NPP NMS")
+	field(OUTG,"$(P)$(Q)up_tweak.B  NPP NMS")
+	field(EGU,"mm")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(Q)t3") {
+	field(FLNK,"$(P)$(Q)putOPR.PROC  PP MS")
+	field(CLCE,"(a-d)/l")
+	field(CLCF,"(b-c)/l")
+	field(CLCG,"(a+c)/2")
+	field(CLCH,"(b+d)/2")
+	field(INPA,"$(P)$(mDn).LLM  NPP NMS")
+	field(INPB,"$(P)$(mDn).HLM  NPP NMS")
+	field(INPC,"$(P)$(mUp).LLM  NPP NMS")
+	field(INPD,"$(P)$(mUp).HLM  NPP NMS")
+	field(INPL,"$(P)$(Q)length.VAL  NPP NMS")
+	field(OUTA,"$(P)$(Q)dn.DRVL  NPP NMS")
+	field(OUTB,"$(P)$(Q)dn.DRVH  NPP NMS")
+	field(OUTC,"$(P)$(Q)up.DRVL  NPP NMS")
+	field(OUTD,"$(P)$(Q)up.DRVH  NPP NMS")
+	field(OUTE,"$(P)$(Q)angl.DRVL  NPP NMS")
+	field(OUTF,"$(P)$(Q)angl.DRVH  NPP NMS")
+	field(OUTG,"$(P)$(Q)avg.DRVL  NPP NMS")
+	field(OUTH,"$(P)$(Q)avg.DRVH  NPP NMS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(Q)t2") {
+	field(DESC,"dn(a),up(b)->angl(c),avg(d)")
+	field(CLCC,"(A-B)/h")
+	field(CLCD,"(A+B)/2")
+	field(INPA,"$(P)$(mDn).RBV  NPP NMS")
+	field(INPB,"$(P)$(mUp).RBV  NPP NMS")
+	field(INPH,"$(P)$(Q)length.VAL  NPP NMS")
+	field(PREC,"5")
+}
+grecord(transform,"$(P)$(Q)t1") {
+	field(DESC,"dn(a),up(b)->angl(c),avg(d)")
+	field(CLCA,"(D*2+C*H)/2")
+	field(CLCB,"(d*2-c*h)/2")
+	field(CLCC,"(a-b)/h")
+	field(CLCD,"(a+b)/2")
+	field(CLCF,"a")
+	field(CLCG,"b")
+	field(INPE,"1")
+	field(INPH,"$(P)$(Q)length.VAL  NPP NMS")
+	field(OUTA,"$(P)$(Q)dnBPut.VAL  PP MS")
+	field(OUTB,"$(P)$(Q)upBPut.VAL  PP MS")
+	field(OUTC,"$(P)$(Q)anglBPut.VAL  PP MS")
+	field(OUTD,"$(P)$(Q)avgBPut.VAL  PP MS")
+	field(OUTE,"$(P)$(Q)gate.VAL  PP MS")
+	field(OUTF,"$(P)$(mDn).VAL  PP MS")
+	field(OUTG,"$(P)$(mUp).VAL  PP MS")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(Q)dn_tweak") {
+	field(CLCD,"a?c-e:b?c+e:c")
+	field(INPC,"$(P)$(Q)dn.VAL  NPP NMS")
+	field(INPE,"$(P)$(Q)dn_tweakVal.VAL  NPP NMS")
+	field(OUTD,"$(P)$(Q)dn.VAL  PP MS")
+	field(OUTF,"$(P)$(Q)dn_tweak.A  NPP NMS")
+	field(OUTG,"$(P)$(Q)dn_tweak.B  NPP NMS")
+	field(EGU,"mm")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(Q)avg_tweak") {
+	field(CLCD,"a?c-e:b?c+e:c")
+	field(INPC,"$(P)$(Q)avg.VAL  NPP NMS")
+	field(INPE,"$(P)$(Q)avg_tweakVal.VAL  NPP NMS")
+	field(OUTD,"$(P)$(Q)avg.VAL  PP MS")
+	field(OUTF,"$(P)$(Q)avg_tweak.A  NPP NMS")
+	field(OUTG,"$(P)$(Q)avg_tweak.B  NPP NMS")
+	field(EGU,"mm")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(Q)angl_tweak") {
+	field(CLCD,"a?c-e:b?c+e:c")
+	field(INPC,"$(P)$(Q)angl.VAL  NPP NMS")
+	field(INPE,"$(P)$(Q)angl_tweakVal.VAL  NPP NMS")
+	field(OUTD,"$(P)$(Q)angl.VAL  PP MS")
+	field(OUTF,"$(P)$(Q)angl_tweak.A  NPP NMS")
+	field(OUTG,"$(P)$(Q)angl_tweak.B  NPP NMS")
+	field(EGU,"mr")
+	field(PREC,"3")
+}
+grecord(swait,"$(P)$(Q)closeGate") {
+	field(SCAN,"I/O Intr")
+	field(INAN,"$(P)$(Q)gate.VAL")
+	field(INBN,"$(P)$(mUp).DMOV")
+	field(OUTN,"$(P)$(Q)gate.VAL")
+	field(INAP,"No")
+	field(CALC,"a&&b")
+	field(OOPT,"Transition To Non-zero")
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)$(Q)RWait") {
+	field(SCAN,"I/O Intr")
+	field(PINI,"YES")
+	field(FLNK,"$(P)$(Q)t2.PROC  PP MS")
+	field(INAN,"$(P)$(mDn).RBV")
+	field(INBN,"$(P)$(mUp).RBV")
+	field(DOPT,"Use DOL")
+}
+grecord(swait,"$(P)$(Q)LWait") {
+	field(SCAN,"I/O Intr")
+	field(PINI,"YES")
+	field(FLNK,"$(P)$(Q)t3.PROC  PP MS")
+	field(INAN,"$(P)$(mDn).LLM")
+	field(INBN,"$(P)$(mDn).HLM")
+	field(INCN,"$(P)$(mUp).LLM")
+	field(INDN,"$(P)$(mUp).HLM")
+}

@@ -1,0 +1,90 @@
+# Modified by Mark Rivers 23-Jan-2000 to removed VAL1, SAR1 fields which are not
+# needed.  These were added by Tim Mooney in 1997, but they are not necessary and
+# complicate the record.  Also removed MLST and SLST which are not used.
+
+menu(vmeAMOD) {
+	choice(vmeAMOD_A16,"A16")
+	choice(vmeAMOD_A24,"A24")
+	choice(vmeAMOD_A32,"A32")
+}
+menu(vmeDSIZ) {
+	choice(vmeDSIZ_D8,"D8")
+	choice(vmeDSIZ_D16,"D16")
+	choice(vmeDSIZ_D32,"D32")
+}
+menu(vmeRDWT) {
+	choice(vmeRDWT_Read,"Read")
+	choice(vmeRDWT_Write,"Write")
+}
+recordtype(vme) {
+	include "dbCommon.dbd" 
+	field(VAL,DBF_LONG) {
+		prompt("Current value")
+		asl(ASL0)
+		special(SPC_DBADDR)
+		pp(TRUE)
+	}
+	field(SARR,DBF_UCHAR) {
+		prompt("Status array")
+		asl(ASL0)
+		special(SPC_DBADDR)
+		pp(TRUE)
+	}
+	field(BPTR,DBF_NOACCESS) {
+		prompt("Buffer Pointer")
+		special(SPC_NOMOD)
+		interest(4)
+		size(4)
+		extra("void *bptr")
+	}
+	field(SPTR,DBF_NOACCESS) {
+		prompt("Status Pointer")
+		special(SPC_NOMOD)
+		interest(4)
+		size(4)
+		extra("void *sptr")
+	}
+	field(ADDR,DBF_ULONG) {
+		prompt("VME address (hex)")
+		promptgroup(GUI_DISPLAY)
+		base(HEX)
+		interest(1)
+	}
+	field(AMOD,DBF_MENU) {
+		prompt("VME address mode")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		menu(vmeAMOD)
+	}
+	field(DSIZ,DBF_MENU) {
+		prompt("VME data size")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		menu(vmeDSIZ)
+		initial("1")
+	}
+	field(RDWT,DBF_MENU) {
+		prompt("Read/write")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		menu(vmeRDWT)
+	}
+	field(NMAX,DBF_LONG) {
+		prompt("Max. number of values")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+		initial("32")
+	}
+	field(NUSE,DBF_LONG) {
+		prompt("Number of values to R/W")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+		initial("1")
+	}
+	field(AINC,DBF_LONG) {
+		prompt("Address increment (1-4)")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+		initial("2")
+	}
+}

@@ -1,0 +1,214 @@
+grecord(ao,"$(P)$(SLIT)centerBPut") {
+	field(DTYP,"Soft Channel")
+	field(SDIS,"$(P)$(SLIT)center.PACT  NPP MS")
+	field(OUT,"$(P)$(SLIT)center.VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)mXnPut") {
+	field(DTYP,"Soft Channel")
+	field(SDIS,"$(P)$(SLIT)syncOp.VAL  NPP MS")
+	field(OUT,"$(P)$(mXn).VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)mXpPut") {
+	field(DTYP,"Soft Channel")
+	field(SDIS,"$(P)$(SLIT)syncOp.VAL  PP MS")
+	field(OUT,"$(P)$(mXp).VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)sizeBPut") {
+	field(DTYP,"Soft Channel")
+	field(SDIS,"$(P)$(SLIT)size.PACT  NPP MS")
+	field(OUT,"$(P)$(SLIT)size.VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)vback1") {
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(SLIT)t1.A  PP MS")
+	field(DOL,"$(P)$(mXp).VAL  CP NMS")
+	field(OMSL,"closed_loop")
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(SLIT)vback2") {
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(SLIT)t1.B  PP MS")
+	field(DOL,"$(P)$(mXn).VAL  CP NMS")
+	field(OMSL,"closed_loop")
+	field(PREC,"3")
+}
+grecord(ao,"$(P)$(SLIT)xnBPut") {
+	field(DTYP,"Soft Channel")
+	field(SDIS,"$(P)$(SLIT)xn.PACT  NPP MS")
+	field(OUT,"$(P)$(SLIT)xn.VAL  PP MS")
+}
+grecord(ao,"$(P)$(SLIT)xpBPut") {
+	field(DTYP,"Soft Channel")
+	field(SDIS,"$(P)$(SLIT)xp.PACT  NPP MS")
+	field(OUT,"$(P)$(SLIT)xp.VAL  PP MS")
+}
+grecord(bo,"$(P)$(SLIT)set") {
+	field(DTYP,"Soft Channel")
+	field(FLNK,"$(P)$(SLIT)set1.PROC  PP MS")
+	field(OUT,"$(P)$(mXn).SET  PP MS")
+	field(ZNAM,"Use")
+	field(ONAM,"Set")
+}
+grecord(bo,"$(P)$(SLIT)set1") {
+	field(DTYP,"Soft Channel")
+	field(OMSL,"closed_loop")
+	field(DOL,"$(P)$(SLIT)set.VAL  NPP NMS")
+	field(OUT,"$(P)$(mXp).SET  PP MS")
+	field(ZNAM,"Use")
+	field(ONAM,"Set")
+}
+grecord(calc,"$(P)$(SLIT)syncOp") {
+	field(CALC,"a||b")
+	field(INPA,"$(P)$(SLIT)vback2.PACT  NPP MS")
+	field(INPB,"$(P)$(SLIT)vback1.PACT  NPP MS")
+	field(INPC,"0")
+}
+grecord(dfanout,"$(P)$(SLIT)stop") {
+	field(OUTA,"$(P)$(SLIT)xp.STOP  CA MS")
+	field(OUTB,"$(P)$(SLIT)xn.STOP  CA MS")
+	field(OUTC,"$(P)$(SLIT)size.STOP  CA MS")
+	field(OUTD,"$(P)$(SLIT)center.STOP  CA MS")
+	field(DOL,"1")
+}
+grecord(fanout,"$(P)$(SLIT)sync") {
+	field(PHAS,"0")
+	field(LNK1,"$(P)$(SLIT)vback1.PROC  CA MS")
+	field(LNK2,"$(P)$(SLIT)vback2.PROC  CA MS")
+}
+grecord(seq,"$(P)$(SLIT)init") {
+	field(PINI,"YES")
+	field(PREC,"1")
+	field(DLY1,"5")
+	field(LNK1,"$(P)$(SLIT)sync.PROC  PP MS")
+	field(DLY2,"0")
+	field(LNK2,"0")
+}
+grecord(transform,"$(P)$(SLIT)t1") {
+	field(DESC,"xp(a),xn(b)->size(c),center")
+	field(CLCA,"d+c/2")
+	field(CLCB,"d-c/2")
+	field(CLCC,"a-b")
+	field(CLCD,"(a+b)/2")
+	field(CLCF,"a")
+	field(CLCG,"b")
+	field(OUTA,"$(P)$(SLIT)xpBPut.VAL  PP MS")
+	field(OUTB,"$(P)$(SLIT)xnBPut.VAL  PP MS")
+	field(OUTC,"$(P)$(SLIT)sizeBPut.VAL  PP MS")
+	field(OUTD,"$(P)$(SLIT)centerBPut.VAL  PP MS")
+	field(OUTE,"0")
+	field(OUTF,"$(P)$(SLIT)mXpPut.VAL  PP MS")
+	field(OUTG,"$(P)$(SLIT)mXnPut.VAL  PP MS")
+	field(PREC,"3")
+	field(CMTA,"X+ slit")
+	field(CMTB,"X- slit")
+	field(CMTC,"size")
+	field(CMTD,"center")
+	field(CMTE,"gate")
+	field(CMTF,"send X+ to motor")
+	field(CMTG,"send X- to motor")
+}
+grecord(transform,"$(P)$(SLIT)t2") {
+	field(DESC,"xp(a), xn(b)->siz(c),cntr(d)")
+	field(CLCC,"a-b")
+	field(CLCD,"(a+b)/2")
+	field(CLCE,"g&&h")
+	field(INPA,"$(P)$(mXp).RBV  CP MS")
+	field(INPB,"$(P)$(mXn).RBV  CP MS")
+	field(INPG,"$(P)$(mXp).DMOV  CP MS")
+	field(INPH,"$(P)$(mXn).DMOV  CP MS")
+	field(EGU,"mm")
+	field(PREC,"5")
+	field(CMTA,"X+ slit")
+	field(CMTB,"X- slit")
+	field(CMTC,"Size")
+	field(CMTD,"Center")
+	field(CMTE,"Done")
+	field(CMTG,"X+ motor-done input")
+	field(CMTH,"X- motor-done input")
+}
+grecord(transform,"$(P)$(SLIT)t2_old") {
+	field(DESC,"xp(a),xn(b)->siz(c),cntr(d)")
+	field(CLCC,"A-B")
+	field(CLCD,"(A+B)/2")
+	field(PREC,"3")
+}
+grecord(transform,"$(P)$(SLIT)t3") {
+	field(PHAS,"0")
+	field(CLCE,"a-d")
+	field(CLCF,"b-c")
+	field(CLCG,"(a+c)/2")
+	field(CLCH,"(b+d)/2")
+	field(INPA,"$(P)$(mXp).LLM  CP NMS")
+	field(INPB,"$(P)$(mXp).HLM  CP NMS")
+	field(INPC,"$(P)$(mXn).LLM  CP NMS")
+	field(INPD,"$(P)$(mXn).HLM  CP NMS")
+	field(OUTA,"$(P)$(SLIT)xp.LLM  NPP MS")
+	field(OUTB,"$(P)$(SLIT)xp.HLM  NPP MS")
+	field(OUTC,"$(P)$(SLIT)xn.LLM  NPP MS")
+	field(OUTD,"$(P)$(SLIT)xn.HLM  NPP MS")
+	field(OUTE,"$(P)$(SLIT)size.LLM  NPP MS")
+	field(OUTF,"$(P)$(SLIT)size.HLM  NPP MS")
+	field(OUTG,"$(P)$(SLIT)center.LLM  NPP MS")
+	field(OUTH,"$(P)$(SLIT)center.HLM  NPP MS")
+	field(PREC,"3")
+}
+grecord(scalcout,"$(P)$(SLIT)mXn_nameCalc") {
+	field(CALC,"aa[0,'.']")
+	field(INAA,"$(P)$(SLIT)mXnPut.OUT CPP")
+}
+grecord(scalcout,"$(P)$(SLIT)mXp_nameCalc") {
+	field(CALC,"aa[0,'.']")
+	field(INAA,"$(P)$(SLIT)mXpPut.OUT CPP")
+}
+grecord(motor,"$(P)$(SLIT)center") {
+	field(DESC,"$(SLIT) Center")
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(SLIT)t1.D  PP MS")
+	field(RDBL,"$(P)$(SLIT)t2.D  NPP MS")
+	field(MRES,".00025")
+	field(RRES,"1")
+	field(URIP,"Yes")
+	field(PREC,"5")
+	field(EGU,"mm")
+	field(TWV,"1")
+	field(DINP,"$(P)$(SLIT)t2.E  NPP MS")
+}
+grecord(motor,"$(P)$(SLIT)size") {
+	field(DESC,"$(SLIT) Size")
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(SLIT)t1.C  PP MS")
+	field(RDBL,"$(P)$(SLIT)t2.C  NPP MS")
+	field(MRES,".00025")
+	field(RRES,"1")
+	field(URIP,"Yes")
+	field(PREC,"5")
+	field(EGU,"mm")
+	field(TWV,"1")
+	field(DINP,"$(P)$(SLIT)t2.E  NPP MS")
+}
+grecord(motor,"$(P)$(SLIT)xn") {
+	field(DESC,"$(SLIT) X-")
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(SLIT)t1.B  PP MS")
+	field(RDBL,"$(P)$(SLIT)t2.B  NPP MS")
+	field(MRES,".00025")
+	field(RRES,"1")
+	field(URIP,"Yes")
+	field(PREC,"5")
+	field(EGU,"mm")
+	field(TWV,"1")
+	field(DINP,"$(P)$(SLIT)t2.E  NPP MS")
+}
+grecord(motor,"$(P)$(SLIT)xp") {
+	field(DESC,"$(SLIT) X+")
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)$(SLIT)t1.A  PP MS")
+	field(RDBL,"$(P)$(SLIT)t2.A  NPP MS")
+	field(MRES,".00025")
+	field(RRES,"1")
+	field(URIP,"Yes")
+	field(PREC,"5")
+	field(EGU,"mm")
+	field(TWV,"1")
+	field(DINP,"$(P)$(SLIT)t2.E  NPP MS")
+}

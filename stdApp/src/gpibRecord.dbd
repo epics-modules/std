@@ -1,0 +1,172 @@
+menu(gpibTMOD) {
+	choice(gpibTMOD_Write_Read,"Write/Read")
+	choice(gpibTMOD_Write,"Write")
+	choice(gpibTMOD_Read,"Read")
+}
+menu(gpibOFMT) {
+	choice(gpibOFMT_ASCII,"ASCII")
+	choice(gpibOFMT_Binary,"Binary")
+}
+menu(gpibUCMD) {
+	choice(gpibUCMD_None,"None")
+	choice(gpibUCMD_Device_Clear__DCL_,"Device Clear (DCL)")
+	choice(gpibUCMD_Local_Lockout__LL0_,"Local Lockout (LL0)")
+	choice(gpibUCMD_Serial_Poll_Disable__SPD_,"Serial Poll Disable (SPD)")
+	choice(gpibUCMD_Serial_Poll_Enable__SPE_,"Serial Poll Enable (SPE)")
+	choice(gpibUCMD_Unlisten__UNL_,"Unlisten (UNL)")
+	choice(gpibUCMD_Untalk__UNT_,"Untalk (UNT)")
+}
+menu(gpibACMD) {
+	choice(gpibACMD_None,"None")
+	choice(gpibACMD_Group_Execute_Trig___GET_,"Group Execute Trig. (GET)")
+	choice(gpibACMD_Go_To_Local__GTL_,"Go To Local (GTL)")
+	choice(gpibACMD_Selected_Dev__Clear__SDC_,"Selected Dev. Clear (SDC)")
+	choice(gpibACMD_Take_Control__TCT_,"Take Control (TCT)")
+	choice(gpibACMD_Serial_Poll,"Serial Poll")
+}
+recordtype(gpib) {
+	include "dbCommon.dbd" 
+	field(VAL,DBF_STRING) {
+		prompt("Value field (unused)")
+		promptgroup(GUI_INPUTS)
+		asl(ASL0)
+		size(40)
+	}
+	field(TMOD,DBF_MENU) {
+		prompt("Transaction mode")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		menu(gpibTMOD)
+	}
+	field(AOUT,DBF_STRING) {
+		prompt("Output (command) string")
+		promptgroup(GUI_INPUTS)
+		asl(ASL0)
+		pp(TRUE)
+		size(40)
+	}
+	field(BOUT,DBF_CHAR) {
+		prompt("Output binary data")
+		asl(ASL0)
+		special(SPC_DBADDR)
+		pp(TRUE)
+	}
+	field(OPTR,DBF_NOACCESS) {
+		prompt("Output buffer pointer")
+		special(SPC_NOMOD)
+		interest(4)
+		size(4)
+		extra("void *optr")
+	}
+	field(OMAX,DBF_LONG) {
+		prompt("Max. size of output arr")
+		promptgroup(GUI_DISPLAY)
+		special(SPC_NOMOD)
+		interest(1)
+		initial("512")
+	}
+	field(NOWT,DBF_LONG) {
+		prompt("Number of bytes to writ")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+		initial("512")
+	}
+	field(OFMT,DBF_MENU) {
+		prompt("Output format")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		menu(gpibOFMT)
+	}
+	field(AINP,DBF_STRING) {
+		prompt("Input (response) string")
+		promptgroup(GUI_INPUTS)
+		asl(ASL0)
+		special(SPC_NOMOD)
+		size(40)
+	}
+	field(BINP,DBF_CHAR) {
+		prompt("Input binary data")
+		asl(ASL0)
+		special(SPC_DBADDR)
+	}
+	field(IPTR,DBF_NOACCESS) {
+		prompt("Input buffer pointer")
+		special(SPC_NOMOD)
+		interest(4)
+		size(4)
+		extra("void *iptr")
+	}
+	field(IMAX,DBF_LONG) {
+		prompt("Max. size of input arra")
+		promptgroup(GUI_DISPLAY)
+		special(SPC_NOMOD)
+		interest(1)
+		initial("512")
+	}
+	field(NRRD,DBF_LONG) {
+		prompt("Number of bytes to read")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(NORD,DBF_LONG) {
+		prompt("Number of bytes read")
+		promptgroup(GUI_DISPLAY)
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(EOS,DBF_LONG) {
+		prompt("Input Delimiter")
+		promptgroup(GUI_DISPLAY)
+		initial("-1")
+	}
+	field(IFMT,DBF_MENU) {
+		prompt("Input format")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		menu(gpibOFMT)
+	}
+	field(SPR,DBF_UCHAR) {
+		prompt("Serial poll response")
+		promptgroup(GUI_INPUTS)
+		asl(ASL0)
+		special(SPC_NOMOD)
+	}
+	field(OINP,DBF_STRING) {
+		prompt("Previous input string")
+		special(SPC_NOMOD)
+		interest(3)
+		size(40)
+	}
+	field(INP,DBF_INLINK) {
+		prompt("Input Specification")
+		promptgroup(GUI_INPUTS)
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(ADDR,DBF_LONG) {
+		prompt("GPIB address")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+		initial("1")
+	}
+	field(TMOT,DBF_LONG) {
+		prompt("Timeout (msec)")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+		initial("500")
+	}
+	field(UCMD,DBF_MENU) {
+		prompt("Universal command")
+		promptgroup(GUI_COMMON)
+		pp(TRUE)
+		interest(1)
+		menu(gpibUCMD)
+	}
+	field(ACMD,DBF_MENU) {
+		prompt("Addressed command")
+		promptgroup(GUI_COMMON)
+		pp(TRUE)
+		interest(1)
+		menu(gpibACMD)
+	}
+}

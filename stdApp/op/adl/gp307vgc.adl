@@ -1,0 +1,729 @@
+
+file {
+	name="/tmp_mnt/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta7_shareR1.0/stdApp/op/adl/gp307vgc.adl"
+	version=020205
+}
+display {
+	object {
+		x=10
+		y=10
+		width=190
+		height=300
+	}
+	clr=2
+	bclr=3
+	cmap=""
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=147
+		y=51
+		width=40
+		height=90
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=4
+		y=51
+		width=140
+		height=145
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=3
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=57
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=10
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=71
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=10
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=84
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=10
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=98
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=10
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=112
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=10
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=126
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=10
+	}
+}
+arc {
+	object {
+		x=30
+		y=212
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=6
+	}
+	begin=0
+	path=23040
+}
+rectangle {
+	object {
+		x=173
+		y=56
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)gp307$(A):sp1"
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=70
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)gp307$(A):sp2"
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=98
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		clr="alarm"
+		vis="if not zero"
+		chan="$(P)gp307$(A):sp4"
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=84
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		clr="alarm"
+		vis="if not zero"
+		chan="$(P)gp307$(A):sp3"
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=112
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		clr="alarm"
+		vis="if not zero"
+		chan="$(P)gp307$(A):sp5"
+	}
+}
+rectangle {
+	object {
+		x=173
+		y=126
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		clr="alarm"
+		vis="if not zero"
+		chan="$(P)gp307$(A):sp6"
+	}
+}
+arc {
+	object {
+		x=30
+		y=212
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)gp307$(A):calc1.VAL"
+	}
+	begin=0
+	path=23040
+}
+"message button" {
+	object {
+		x=112
+		y=260
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)gp307$(A):dgsON"
+		clr=14
+		bclr=51
+	}
+	label="ON"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=61
+		y=260
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)gp307$(A):ig2ON"
+		clr=14
+		bclr=51
+	}
+	label="ON"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=10
+		y=260
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)gp307$(A):ig1ON"
+		clr=14
+		bclr=51
+	}
+	label="ON"
+	press_msg="1"
+}
+arc {
+	object {
+		x=79
+		y=211
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=6
+	}
+	begin=0
+	path=23040
+}
+arc {
+	object {
+		x=78
+		y=211
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)gp307$(A):calc2.VAL"
+	}
+	begin=0
+	path=23040
+}
+arc {
+	object {
+		x=129
+		y=212
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=6
+	}
+	begin=0
+	path=23040
+}
+arc {
+	object {
+		x=130
+		y=212
+		width=10
+		height=10
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)gp307$(A):dgStatus"
+	}
+	begin=0
+	path=23040
+}
+text {
+	object {
+		x=9
+		y=88
+		width=130
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Ion Gauge (Torr)"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=9
+		y=132
+		width=130
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Convectron A (Torr)"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=9
+		y=177
+		width=130
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Convectron B (Torr)"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=9
+		y=56
+		width=130
+		height=30
+	}
+	monitor {
+		chan="$(P)gp307$(A):igPres"
+		clr=20
+		bclr=3
+	}
+	clrmod="alarm"
+	align="horiz. centered"
+	format="exponential"
+}
+"text update" {
+	object {
+		x=9
+		y=100
+		width=130
+		height=30
+	}
+	monitor {
+		chan="$(P)gp307$(A):cg1Pres"
+		clr=60
+		bclr=3
+	}
+	clrmod="alarm"
+	align="horiz. centered"
+	format="exponential"
+}
+"text update" {
+	object {
+		x=9
+		y=144
+		width=130
+		height=30
+	}
+	monitor {
+		chan="$(P)gp307$(A):cg2Pres"
+		clr=60
+		bclr=3
+	}
+	clrmod="alarm"
+	align="horiz. centered"
+	format="exponential"
+}
+text {
+	object {
+		x=150
+		y=55
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SP1"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=150
+		y=69
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SP2"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=150
+		y=83
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SP3"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=150
+		y=97
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SP4"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=150
+		y=111
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SP5"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=150
+		y=125
+		width=20
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SP6"
+	align="horiz. centered"
+}
+"message button" {
+	object {
+		x=10
+		y=239
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)gp307$(A):ig1OFF"
+		clr=14
+		bclr=51
+	}
+	label="OFF"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=61
+		y=239
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)gp307$(A):ig2OFF"
+		clr=14
+		bclr=51
+	}
+	label="OFF"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=112
+		y=239
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)gp307$(A):dgsOFF"
+		clr=14
+		bclr=51
+	}
+	label="OFF"
+	press_msg="1"
+}
+text {
+	object {
+		x=15
+		y=226
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="IG1"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=65
+		y=226
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="IG2"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=114
+		y=226
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DEGAS"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=4
+		y=204
+		width=54
+		height=89
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=56
+		y=204
+		width=54
+		height=89
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=108
+		y=204
+		width=54
+		height=89
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=0
+		width=189
+		height=43
+	}
+	"basic attribute" {
+		clr=54
+	}
+}
+"text entry" {
+	object {
+		x=4
+		y=6
+		width=177
+		height=28
+	}
+	control {
+		chan="$(P)gp307$(A):cg2Pres.DESC"
+		clr=0
+		bclr=54
+	}
+	format="exponential"
+}

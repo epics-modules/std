@@ -1,0 +1,86 @@
+%
+% This request file stores away all settings
+%
+#define PREFIX tmm
+
+#include "yy20MotorSettings.req"
+
+#define TABLE_REC table1
+#include "yyTableSettings.req"
+
+#define SCALER_REC scaler1
+#include "yyScalerSettings.req"
+PREFIX:scaler1_calc_ctrl.VAL
+PREFIX:scaler1_calc1.CALC
+PREFIX:scaler1_calc2.CALC
+PREFIX:scaler1_calc3.CALC
+
+% Kohzu monochromator
+PREFIX:BraggHAO.VAL
+PREFIX:BraggKAO.VAL
+PREFIX:BraggLAO.VAL
+PREFIX:BraggAAO.VAL
+
+% other monochromator
+PREFIX:Bragg_H.VAL
+PREFIX:Bragg_K.VAL
+PREFIX:Bragg_L.VAL
+PREFIX:Bragg_a.VAL
+
+%scan & scan-related wait records
+#include "yyScanAll.req"
+
+%scanParm databases
+#define PARMREC m1:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m2:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m3:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m4:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m5:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m6:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m7:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m8:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m9:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m10:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m11:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m12:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m13:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m14:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m15:scanParms
+#include "yyScanParmSettings.req"
+#define PARMREC m16:scanParms
+#include "yyScanParmSettings.req"
+
+% optical table
+#define TABLE_REC table1
+#include "yyTableSettings.req
+#define TABLE_REC table2
+#include "yyTableSettings.req
+
+% userCalcs
+#include "yy10UserCalcs.req"
+#include "yy10UserTransforms.req"
+
+#define FILTER fltr1
+#define FILTERLOCK fltr_1_2
+#include "yyFilterSettings.req"
+#define FILTER fltr2
+#include "yyFilterSettings.req"
+
+% Current preamplifiers (until we get a yyPreampSettings.req)
+#include "yySR570_A1.req"
+#include "yySR570_A2.req"
+

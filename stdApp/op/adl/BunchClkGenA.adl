@@ -1,0 +1,637 @@
+
+file {
+	name="/home/phoebus1/FRL/epics/R3.13.0.beta11/adl/BunchClkGen/BunchClkGenA.adl"
+	version=020303
+}
+display {
+	object {
+		x=100
+		y=212
+		width=442
+		height=235
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+"text entry" {
+	object {
+		x=222
+		y=112
+		width=73
+		height=21
+	}
+	control {
+		chan="$(UNIT)SetBucketAO.VAL"
+		clr=30
+		bclr=47
+	}
+}
+text {
+	object {
+		x=235
+		y=99
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Set"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=301
+		y=112
+		width=73
+		height=21
+	}
+	control {
+		chan="$(UNIT)ReSetBuckAO.VAL"
+		clr=30
+		bclr=47
+	}
+}
+text {
+	object {
+		x=314
+		y=99
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Reset"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=276
+		y=82
+		width=46
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Bunch Control"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=214
+		y=76
+		width=220
+		height=95
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+"choice button" {
+	object {
+		x=374
+		y=21
+		width=55
+		height=25
+	}
+	control {
+		chan="$(UNIT)DisableBO.VAL"
+		clr=14
+		bclr=4
+	}
+}
+text {
+	object {
+		x=378
+		y=8
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Output"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=376
+		y=49
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)DisableBI.VAL"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=370
+		y=3
+		width=62
+		height=65
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+"text update" {
+	object {
+		x=7
+		y=33
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)RunningBI.VAL"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=64
+		y=33
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)P0DetectBI.VAL"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+text {
+	object {
+		x=9
+		y=19
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Running"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=66
+		y=19
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="P0 Detect"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=37
+		y=6
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Status"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=3
+		y=3
+		width=118
+		height=50
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+"text entry" {
+	object {
+		x=26
+		y=106
+		width=73
+		height=21
+	}
+	control {
+		chan="$(UNIT)P0DelayAO.VAL"
+		clr=30
+		bclr=47
+	}
+}
+text {
+	object {
+		x=39
+		y=93
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Coarse"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=105
+		y=106
+		width=73
+		height=21
+	}
+	control {
+		chan="$(UNIT)FineDelayAO.VAL"
+		clr=30
+		bclr=47
+	}
+}
+text {
+	object {
+		x=118
+		y=93
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Fine"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=80
+		y=76
+		width=46
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Delay Relative to P0"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=18
+		y=69
+		width=164
+		height=102
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+"text update" {
+	object {
+		x=37
+		y=130
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)P0DelayAI.VAL"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=116
+		y=130
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)FineDelayAI.VAL"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=116
+		y=148
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)FineDelayAI.EGU"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=37
+		y=148
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)P0DelayAI.EGU"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=312
+		y=132
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)ReSetBuckAO.EGU"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=233
+		y=132
+		width=51
+		height=14
+	}
+	monitor {
+		chan="$(UNIT)SetBucketAO.EGU"
+		clr=27
+		bclr=0
+	}
+	align="horiz. centered"
+}
+"message button" {
+	object {
+		x=219
+		y=150
+		width=60
+		height=18
+	}
+	control {
+		chan="$(UNIT)ClearPatBO.VAL"
+		clr=20
+		bclr=3
+	}
+	label="Clear All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=289
+		y=150
+		width=85
+		height=18
+	}
+	control {
+		chan="$(UNIT)LoadPatBO.VAL"
+		clr=20
+		bclr=3
+	}
+	label="Load Pattern"
+	press_msg="1"
+}
+text {
+	object {
+		x=188
+		y=7
+		width=74
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Bunch Clk Generator"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=188
+		y=26
+		width=74
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="$(UNIT)"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=406
+		y=178
+		width=27
+		height=21
+	}
+	display[0] {
+		label="List of Bucket Numbers"
+		name="BunchClkGenWF.adl"
+		args="UNIT=$(UNIT)"
+	}
+	clr=14
+	bclr=4
+}
+text {
+	object {
+		x=345
+		y=185
+		width=43
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Bucket List"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=19
+		y=178
+		width=27
+		height=21
+	}
+	display[0] {
+		label="Bucket Pattern"
+		name="BunchClkGenPatternWF.adl"
+		args="UNIT=$(UNIT)"
+	}
+	clr=14
+	bclr=4
+}
+text {
+	object {
+		x=73
+		y=185
+		width=43
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Bucket Pattern"
+	align="horiz. centered"
+}
+"choice button" {
+	object {
+		x=376
+		y=118
+		width=55
+		height=25
+	}
+	control {
+		chan="$(UNIT)AutoLoadBO.VAL"
+		clr=14
+		bclr=4
+	}
+}
+text {
+	object {
+		x=380
+		y=105
+		width=46
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="AutoLoad"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=76
+		y=210
+		width=275
+		height=13
+	}
+	monitor {
+		chan="$(UNIT)MessageSI"
+		clr=14
+		bclr=50
+	}
+}
+"message button" {
+	object {
+		x=352
+		y=207
+		width=72
+		height=20
+	}
+	control {
+		chan="$(UNIT)ClearMessBO.VAL"
+		clr=14
+		bclr=4
+	}
+	label="Clear Msg"
+	press_msg="1"
+}
+text {
+	object {
+		x=26
+		y=211
+		width=50
+		height=11
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Message"
+	align="horiz. centered"
+}

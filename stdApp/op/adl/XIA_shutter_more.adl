@@ -1,0 +1,400 @@
+
+file {
+	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/XIA_shutter_more.adl"
+	version=020306
+}
+display {
+	object {
+		x=192
+		y=160
+		width=280
+		height=170
+	}
+	clr=14
+	bclr=3
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=1
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=0
+		width=280
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+	}
+}
+"message button" {
+	object {
+		x=140
+		y=65
+		width=130
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Open shutter"
+	press_msg="O"
+}
+"message button" {
+	object {
+		x=10
+		y=65
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Close shutter"
+	press_msg="C"
+}
+polyline {
+	object {
+		x=0
+		y=25
+		width=281
+		height=3
+	}
+	"basic attribute" {
+		clr=54
+		width=3
+	}
+	points {
+		(1,26)
+		(279,26)
+	}
+}
+composite {
+	object {
+		x=15
+		y=30
+		width=50
+		height=10
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=15
+				y=30
+				width=50
+				height=10
+			}
+			"basic attribute" {
+				clr=30
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)$(S)busy"
+			}
+			textix="BUSY"
+			align="horiz. centered"
+		}
+		text {
+			object {
+				x=15
+				y=30
+				width=50
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)$(S)busy"
+			}
+			textix="DONE"
+			align="horiz. centered"
+		}
+	}
+}
+"message button" {
+	object {
+		x=15
+		y=40
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)$(S)expose.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Expose"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=65
+		y=40
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)$(S)exposeTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=115
+		y=42
+		width=10
+		height=16
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="(s)"
+}
+"message button" {
+	object {
+		x=10
+		y=85
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Insert Filter 1"
+	press_msg="I1"
+}
+"message button" {
+	object {
+		x=10
+		y=105
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Insert Filter 2"
+	press_msg="I2"
+}
+"message button" {
+	object {
+		x=140
+		y=85
+		width=130
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Remove Filter 1"
+	press_msg="R1"
+}
+"message button" {
+	object {
+		x=140
+		y=105
+		width=130
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Remove Filter 2"
+	press_msg="R2"
+}
+text {
+	object {
+		x=0
+		y=5
+		width=280
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="XIA Shutter"
+	align="horiz. centered"
+}
+"message button" {
+	object {
+		x=10
+		y=125
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Insert Filter 3"
+	press_msg="I3"
+}
+"message button" {
+	object {
+		x=10
+		y=145
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Insert Filter 4"
+	press_msg="I4"
+}
+"message button" {
+	object {
+		x=140
+		y=125
+		width=130
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Remove Filter 3"
+	press_msg="R3"
+}
+"message button" {
+	object {
+		x=140
+		y=145
+		width=130
+		height=20
+	}
+	control {
+		chan="$(P)$(S)sendCommand.VAL"
+		clr=14
+		bclr=51
+	}
+	label="Remove Filter 4"
+	press_msg="R4"
+}
+"related display" {
+	object {
+		x=190
+		y=30
+		width=40
+		height=20
+	}
+	display[0] {
+		label="XIA shutter (small)"
+		name="XIA_shutter_small.adl"
+		args="P=$(P),S=$(S)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=63
+	label="-Less"
+}
+"related display" {
+	object {
+		x=230
+		y=30
+		width=40
+		height=20
+	}
+	display[0] {
+		label="XIA shutter (small)"
+		name="XIA_shutter.adl"
+		args="P=$(P),S=$(S)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=63
+	label="-More"
+}

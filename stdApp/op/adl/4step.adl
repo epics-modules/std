@@ -1,0 +1,1568 @@
+
+file {
+	name="/home/oxygen4/MOONEY/epics/3.13.1/tmm/tmmApp/op/adl/4step_1.5.adl"
+	version=020305
+}
+display {
+	object {
+		x=147
+		y=171
+		width=600
+		height=380
+	}
+	clr=14
+	bclr=2
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=1
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=3
+		y=73
+		width=109
+		height=284
+	}
+	"basic attribute" {
+		clr=14
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=5
+		y=75
+		width=105
+		height=280
+	}
+	"basic attribute" {
+		clr=4
+	}
+}
+"message button" {
+	object {
+		x=0
+		y=35
+		width=110
+		height=20
+	}
+	control {
+		chan="$(P)4step:start.PROC"
+		clr=14
+		bclr=51
+	}
+	label="DO MEASUREMENT"
+	press_msg="1"
+}
+text {
+	object {
+		x=10
+		y=105
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#STEPS"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=50
+		y=100
+		width=55
+		height=20
+	}
+	control {
+		chan="$(P)4step:numSteps.VAL"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=115
+		y=255
+		width=25
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="E"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=115
+		y=280
+		width=25
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="F"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=115
+		y=305
+		width=25
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="G"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=115
+		y=330
+		width=25
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="H"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=115
+		y=140
+		width=25
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="A"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=115
+		y=165
+		width=25
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="B"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=115
+		y=190
+		width=25
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="C"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=115
+		y=215
+		width=25
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="D"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=115
+		y=125
+		width=25
+		height=14
+	}
+	monitor {
+		chan="$(P)4step:currStep.SVAL"
+		clr=53
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=75
+		width=95
+		height=20
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="Setup"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=10
+		y=255
+		width=95
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig1.CLCE"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=10
+		y=305
+		width=95
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig1.CLCG"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=10
+		y=330
+		width=95
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig1.CLCH"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=10
+		y=240
+		width=95
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+text {
+	object {
+		x=15
+		y=242
+		width=86
+		height=10
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="CALC EXPRESSION"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=10
+		y=125
+		width=95
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+text {
+	object {
+		x=15
+		y=127
+		width=86
+		height=10
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="STEP"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=10
+		y=140
+		width=95
+		height=20
+	}
+	display[0] {
+		label="A sequence"
+		name="yySseq.adl"
+		args="P=$(P),S=4step:Aseq"
+	}
+	clr=0
+	bclr=17
+	label="-A sequence"
+}
+"related display" {
+	object {
+		x=10
+		y=165
+		width=95
+		height=20
+	}
+	display[0] {
+		label="B sequence"
+		name="yySseq.adl"
+		args="P=$(P),S=4step:Bseq"
+	}
+	clr=0
+	bclr=17
+	label="-B sequence"
+}
+"related display" {
+	object {
+		x=10
+		y=190
+		width=95
+		height=20
+	}
+	display[0] {
+		label="C sequence"
+		name="yySseq.adl"
+		args="P=$(P),S=4step:Cseq"
+	}
+	clr=0
+	bclr=17
+	label="-C sequence"
+}
+"related display" {
+	object {
+		x=10
+		y=215
+		width=95
+		height=20
+	}
+	display[0] {
+		label="D sequence"
+		name="yySseq.adl"
+		args="P=$(P),S=4step:Dseq"
+	}
+	clr=0
+	bclr=17
+	label="-D sequence"
+}
+polyline {
+	object {
+		x=5
+		y=95
+		width=107
+		height=3
+	}
+	"basic attribute" {
+		clr=54
+		width=2
+	}
+	points {
+		(6,96)
+		(110,96)
+	}
+}
+text {
+	object {
+		x=145
+		y=64
+		width=100
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Signal 1"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=260
+		y=64
+		width=105
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Signal 2"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=375
+		y=64
+		width=105
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Signal 3"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=490
+		y=64
+		width=105
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Signal 4"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=120
+		y=105
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="LINK"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=120
+		y=83
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DESC"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=10
+		y=280
+		width=95
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig1.CLCF"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=0
+		width=600
+		height=20
+	}
+	"basic attribute" {
+		clr=0
+	}
+}
+polyline {
+	object {
+		x=0
+		y=20
+		width=600
+		height=3
+	}
+	"basic attribute" {
+		clr=54
+		width=3
+	}
+	points {
+		(1,21)
+		(598,21)
+	}
+}
+text {
+	object {
+		x=21
+		y=0
+		width=557
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Four-step measurement"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=145
+		y=255
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig1:E"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=145
+		y=280
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig1:F"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=145
+		y=305
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig1:G"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=145
+		y=330
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig1:H"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=145
+		y=140
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig1:A"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=145
+		y=165
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig1:B"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=145
+		y=190
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig1:C"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=145
+		y=215
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig1:D"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=143
+		y=98
+		width=109
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)4step:sig1.IDV"
+	}
+}
+"text entry" {
+	object {
+		x=145
+		y=100
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig1.INPI"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=145
+		y=78
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig1:Desc"
+		clr=14
+		bclr=0
+	}
+	format="string"
+	limits {
+	}
+}
+composite {
+	object {
+		x=145
+		y=125
+		width=450
+		height=14
+	}
+	"composite name"=""
+	vis="static"
+	chan=""
+	children {
+		rectangle {
+			object {
+				x=145
+				y=125
+				width=450
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+		}
+		text {
+			object {
+				x=166
+				y=127
+				width=408
+				height=10
+			}
+			"basic attribute" {
+				clr=0
+			}
+			textix="MEASURED VALUES"
+			align="horiz. centered"
+		}
+	}
+}
+composite {
+	object {
+		x=145
+		y=240
+		width=450
+		height=14
+	}
+	"composite name"=""
+	vis="static"
+	chan=""
+	children {
+		rectangle {
+			object {
+				x=145
+				y=240
+				width=450
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+		}
+		text {
+			object {
+				x=166
+				y=242
+				width=408
+				height=10
+			}
+			"basic attribute" {
+				clr=0
+			}
+			textix="CALCULATED VALUES"
+			align="horiz. centered"
+		}
+	}
+}
+"text update" {
+	object {
+		x=260
+		y=255
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig2:E"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=260
+		y=280
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig2:F"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=260
+		y=305
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig2:G"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=260
+		y=330
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig2:H"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=260
+		y=140
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig2:A"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=260
+		y=165
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig2:B"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=260
+		y=190
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig2:C"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=260
+		y=215
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig2:D"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=258
+		y=98
+		width=109
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)4step:sig2.IDV"
+	}
+}
+"text entry" {
+	object {
+		x=260
+		y=100
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig2.INPI"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=260
+		y=78
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig2:Desc"
+		clr=14
+		bclr=0
+	}
+	format="string"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=375
+		y=255
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig3:E"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=375
+		y=280
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig3:F"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=375
+		y=305
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig3:G"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=375
+		y=330
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig3:H"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=375
+		y=140
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig3:A"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=375
+		y=165
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig3:B"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=375
+		y=190
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig3:C"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=375
+		y=215
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig3:D"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=373
+		y=98
+		width=109
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)4step:sig3.IDV"
+	}
+}
+"text entry" {
+	object {
+		x=375
+		y=100
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig3.INPI"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=375
+		y=78
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig3:Desc"
+		clr=14
+		bclr=0
+	}
+	format="string"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=490
+		y=255
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig4:E"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=490
+		y=280
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig4:F"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=490
+		y=305
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig4:G"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=490
+		y=330
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig4:H"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=490
+		y=140
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig4:A"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=490
+		y=165
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig4:B"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=490
+		y=190
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig4:C"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=490
+		y=215
+		width=105
+		height=20
+	}
+	monitor {
+		chan="$(P)4step:sig4:D"
+		clr=53
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=488
+		y=98
+		width=109
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)4step:sig4.IDV"
+	}
+}
+"text entry" {
+	object {
+		x=490
+		y=100
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig4.INPI"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=490
+		y=78
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)4step:sig4:Desc"
+		clr=14
+		bclr=0
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=132
+		y=35
+		width=180
+		height=20
+	}
+	control {
+		chan="$(P)4step:det1TrigName.VAL"
+		clr=14
+		bclr=35
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=132
+		y=25
+		width=180
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DETECTOR 1 TRIGGER NAME"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=130
+		y=33
+		width=184
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)4step:Atrig1.OUTV"
+	}
+}
+"text entry" {
+	object {
+		x=317
+		y=35
+		width=30
+		height=20
+	}
+	control {
+		chan="$(P)4step:det1TrigVal.VAL"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=317
+		y=25
+		width=30
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="VALUE"
+	align="horiz. centered"
+}
+composite {
+	object {
+		x=375
+		y=25
+		width=217
+		height=32
+	}
+	"composite name"=""
+	vis="static"
+	chan=""
+	children {
+		"text entry" {
+			object {
+				x=377
+				y=35
+				width=180
+				height=20
+			}
+			control {
+				chan="$(P)4step:det2TrigName.VAL"
+				clr=14
+				bclr=35
+			}
+			format="string"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=377
+				y=25
+				width=180
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="DETECTOR 2 TRIGGER NAME"
+			align="horiz. centered"
+		}
+		rectangle {
+			object {
+				x=375
+				y=33
+				width=184
+				height=24
+			}
+			"basic attribute" {
+				clr=20
+				fill="outline"
+				width=2
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)4step:Atrig2.OUTV"
+			}
+		}
+		"text entry" {
+			object {
+				x=562
+				y=35
+				width=30
+				height=20
+			}
+			control {
+				chan="$(P)4step:det1TrigVal.VAL"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=562
+				y=25
+				width=30
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="VALUE"
+			align="horiz. centered"
+		}
+	}
+}
+"text entry" {
+	object {
+		x=440
+		y=355
+		width=150
+		height=20
+	}
+	control {
+		chan="$(P)4step:doEndCalcs.OUT"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=336
+		y=360
+		width=100
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="TRIGGER END CALCS:"
+	align="horiz. centered"
+}

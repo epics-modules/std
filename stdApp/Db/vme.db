@@ -1,0 +1,18 @@
+grecord(vme,"$(P)$(Q)")
+{
+	field(SDIS,"$(P)$(Q):Done.PACT NPP NMS")
+	field(FLNK,"$(P)$(Q):Done.PROC PP MS")
+}
+grecord(bo,"$(P)$(Q):Go")
+{
+	field(FLNK,"$(P)$(Q).PROC PP MS")
+	field(ZNAM,"Done")
+	field(ONAM,"Execute")
+}
+grecord(bo,"$(P)$(Q):Done")
+{
+	field(OMSL,"closed_loop")
+	field(OUT,"$(P)$(Q):Go.VAL PP MS")
+	field(ZNAM,"Done")
+	field(ONAM,"Execute")
+}

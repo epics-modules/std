@@ -1,0 +1,1397 @@
+
+file {
+        name="/net/epics/xfd/operations/IDBPM.adl"
+        version=020303
+}
+display {
+        object {
+                x=86
+                y=130
+                width=500
+                height=700
+        }
+        clr=0
+        bclr=55
+        cmap=""
+        gridSpacing=5
+        gridOn=0
+        snapToGrid=0
+}
+"color map" {
+        ncolors=65
+        colors {
+                ffffff,
+                ececec,
+                dadada,
+                c8c8c8,
+                bbbbbb,
+                aeaeae,
+                9e9e9e,
+                919191,
+                858585,
+                787878,
+                696969,
+                5a5a5a,
+                464646,
+                2d2d2d,
+                000000,
+                00d800,
+                1ebb00,
+                339900,
+                2d7f00,
+                216c00,
+                fd0000,
+                de1309,
+                be190b,
+                a01207,
+                820400,
+                5893ff,
+                597ee1,
+                4b6ec7,
+                3a5eab,
+                27548d,
+                fbf34a,
+                f9da3c,
+                eeb62b,
+                e19015,
+                cd6100,
+                ffb0ff,
+                d67fe2,
+                ae4ebc,
+                8b1a96,
+                610a75,
+                a4aaff,
+                8793e2,
+                6a73c1,
+                4d52a4,
+                343386,
+                c7bb6d,
+                b79d5c,
+                a47e3c,
+                7d5627,
+                58340f,
+                99ffff,
+                73dfff,
+                4ea5f9,
+                2a63e4,
+                0a00b8,
+                ebf1b5,
+                d4db9d,
+                bbc187,
+                a6a462,
+                8b8239,
+                73ff6b,
+                52da3b,
+                3cb420,
+                289315,
+                1a7309,
+        }
+}
+polyline {
+        object {
+                x=101
+                y=120
+                width=0
+                height=47
+        }
+        "basic attribute" {
+                clr=14
+        }
+        points {
+                (101,120)
+                (101,167)
+        }
+}
+polyline {
+        object {
+                x=121
+                y=120
+                width=0
+                height=50
+        }
+        "basic attribute" {
+                clr=14
+        }
+        points {
+                (121,120)
+                (121,170)
+        }
+}
+polyline {
+        object {
+                x=101
+                y=195
+                width=0
+                height=50
+        }
+        "basic attribute" {
+                clr=14
+        }
+        points {
+                (101,195)
+                (101,245)
+        }
+}
+polyline {
+        object {
+                x=121
+                y=195
+                width=0
+                height=50
+        }
+        "basic attribute" {
+                clr=14
+        }
+        points {
+                (121,195)
+                (121,245)
+        }
+}
+polyline {
+        object {
+                x=365
+                y=111
+                width=0
+                height=47
+        }
+        "basic attribute" {
+                clr=14
+        }
+        points {
+                (365,111)
+                (365,158)
+        }
+}
+polyline {
+        object {
+                x=365
+                y=186
+                width=0
+                height=50
+        }
+        "basic attribute" {
+                clr=14
+        }
+        points {
+                (365,186)
+                (365,236)
+        }
+}
+polyline {
+        object {
+                x=291
+                y=176
+                width=66
+                height=32
+        }
+        "basic attribute" {
+                clr=10
+        }
+        points {
+                (291,208)
+                (357,176)
+        }
+}
+polyline {
+        object {
+                x=374
+                y=176
+                width=68
+                height=32
+        }
+        "basic attribute" {
+                clr=10
+        }
+        points {
+                (374,176)
+                (442,208)
+        }
+}
+text {
+        object {
+                x=46
+                y=13
+                width=400
+                height=30
+        }
+        "basic attribute" {
+                clr=20
+        }
+        textix="$(xx)-ID BPM Information"
+        align="horiz. centered"
+}
+"text update" {
+        object {
+                x=14
+                y=118
+                width=75
+                height=20
+        }
+        monitor {
+                chan="FE:$(xx):ID:1XBPM:A:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=134
+                y=118
+                width=75
+                height=20
+        }
+        monitor {
+                chan="FE:$(xx):ID:1XBPM:C:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=11
+                y=223
+                width=75
+                height=20
+        }
+        monitor {
+                chan="FE:$(xx):ID:1XBPM:B:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=131
+                y=222
+                width=75
+                height=20
+        }
+        monitor {
+                chan="FE:$(xx):ID:1XBPM:D:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=246
+                y=221
+                width=75
+                height=20
+        }
+        monitor {
+                chan="FE:$(xx):ID:2XBPM:E:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=412
+                y=221
+                width=75
+                height=20
+        }
+        monitor {
+                chan="FE:$(xx):ID:2XBPM:F:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=281
+                y=116
+                width=75
+                height=20
+        }
+        monitor {
+                chan="FE:$(xx):ID:2XBPM:A:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=331
+                y=246
+                width=75
+                height=20
+        }
+        monitor {
+                chan="FE:$(xx):ID:2XBPM:B:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=371
+                y=110
+                width=10
+                height=15
+        }
+        "basic attribute" {
+                clr=54
+        }
+        textix="A"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=285
+                y=183
+                width=10
+                height=15
+        }
+        "basic attribute" {
+                clr=54
+        }
+        textix="E"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=368
+                y=220
+                width=10
+                height=15
+        }
+        "basic attribute" {
+                clr=54
+        }
+        textix="B"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=436
+                y=186
+                width=10
+                height=15
+        }
+        "basic attribute" {
+                clr=54
+        }
+        textix="F"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=98
+                y=102
+                width=10
+                height=15
+        }
+        "basic attribute" {
+                clr=54
+        }
+        textix="A"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=98
+                y=247
+                width=10
+                height=15
+        }
+        "basic attribute" {
+                clr=54
+        }
+        textix="B"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=118
+                y=102
+                width=10
+                height=15
+        }
+        "basic attribute" {
+                clr=54
+        }
+        textix="C"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=118
+                y=247
+                width=10
+                height=15
+        }
+        "basic attribute" {
+                clr=54
+        }
+        textix="D"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=35
+                y=79
+                width=150
+                height=20
+        }
+        "basic attribute" {
+                clr=43
+        }
+        textix="1st Raw Signals"
+}
+text {
+        object {
+                x=305
+                y=79
+                width=150
+                height=20
+        }
+        "basic attribute" {
+                clr=43
+        }
+        textix="2nd Raw Signals"
+}
+text {
+        object {
+                x=88
+                y=279
+                width=280
+                height=20
+        }
+        "basic attribute" {
+                clr=22
+        }
+        textix="* NORMALIZED x-BPM SIGNALS *"
+        align="horiz. centered"
+}
+"text update" {
+        object {
+                x=263
+                y=400
+                width=100
+                height=15
+        }
+        monitor {
+                chan="FE:$(xx):ID:1XBPM:HPOS:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=8
+                y=401
+                width=100
+                height=15
+        }
+        monitor {
+                chan="FE:$(xx):ID:1XBPM:VPOS:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=128
+                y=400
+                width=100
+                height=15
+        }
+        monitor {
+                chan="FE:$(xx):ID:2XBPM:VPOS:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=384
+                y=400
+                width=100
+                height=15
+        }
+        monitor {
+                chan="FE:$(xx):ID:2XBPM:HPOS:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=131
+                y=527
+                width=100
+                height=15
+        }
+        monitor {
+                chan="FE:$(xx):ID:HANGLE:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=139
+                y=150
+                width=0
+                height=20
+        }
+        "basic attribute" {
+                clr=38
+        }
+        align="horiz. right"
+}
+text {
+        object {
+                x=148
+                y=106
+                width=60
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="1XBPM:C"
+        align="horiz. right"
+}
+text {
+        object {
+                x=27
+                y=107
+                width=60
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="1XBPM:A"
+        align="horiz. right"
+}
+text {
+        object {
+                x=26
+                y=211
+                width=60
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="1XBPM:B"
+        align="horiz. right"
+}
+text {
+        object {
+                x=145
+                y=212
+                width=60
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="1XBPM:D"
+        align="horiz. right"
+}
+text {
+        object {
+                x=291
+                y=104
+                width=60
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="2XBPM:A"
+        align="horiz. right"
+}
+text {
+        object {
+                x=260
+                y=211
+                width=60
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="2XBPM:E"
+        align="horiz. right"
+}
+text {
+        object {
+                x=341
+                y=236
+                width=60
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="2XBPM:B"
+        align="horiz. right"
+}
+text {
+        object {
+                x=423
+                y=210
+                width=60
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="2XBPM:F"
+        align="horiz. right"
+}
+text {
+        object {
+                x=2
+                y=303
+                width=470
+                height=20
+        }
+        "basic attribute" {
+                clr=20
+        }
+        textix="The Normalized signals are for reference only"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=8
+                y=321
+                width=450
+                height=20
+        }
+        "basic attribute" {
+                clr=20
+        }
+        textix="These are normalized for only one particular"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=19
+                y=385
+                width=80
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="1XBPM:VPOSITION"
+        align="horiz. right"
+}
+text {
+        object {
+                x=136
+                y=385
+                width=80
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="2XBPM:VPOSITION"
+        align="horiz. right"
+}
+text {
+        object {
+                x=272
+                y=386
+                width=80
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="1XBPM:HPOSITION"
+        align="horiz. right"
+}
+text {
+        object {
+                x=390
+                y=386
+                width=80
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="2XBPM:HPOSITION"
+        align="horiz. right"
+}
+text {
+        object {
+                x=86
+                y=415
+                width=20
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="mm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=206
+                y=415
+                width=20
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="mm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=342
+                y=415
+                width=20
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="mm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=463
+                y=415
+                width=20
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="mm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=134
+                y=541
+                width=90
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microradians"
+        align="horiz. right"
+}
+text {
+        object {
+                x=25
+                y=362
+                width=180
+                height=20
+        }
+        "basic attribute" {
+                clr=29
+        }
+        textix="Vertical Positions"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=280
+                y=362
+                width=190
+                height=20
+        }
+        "basic attribute" {
+                clr=29
+        }
+        textix="Horizontal Positions"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=18
+                y=432
+                width=210
+                height=20
+        }
+        "basic attribute" {
+                clr=20
+        }
+        textix="Normalized at Source"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=107
+                y=53
+                width=300
+                height=20
+        }
+        "basic attribute" {
+                clr=39
+        }
+        textix="Beam Line Front End X-RAY BPM"
+}
+"text update" {
+        object {
+                x=356
+                y=487
+                width=100
+                height=25
+        }
+        monitor {
+                chan="ID$(xx):Gap.VAL"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=262
+                y=492
+                width=90
+                height=20
+        }
+        "basic attribute" {
+                clr=27
+        }
+        textix="ID gap :"
+        align="horiz. centered"
+}
+"text update" {
+        object {
+                x=367
+                y=440
+                width=75
+                height=30
+        }
+        monitor {
+                chan="S:SRcurrentAI"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+}
+text {
+        object {
+                x=266
+                y=446
+                width=90
+                height=20
+        }
+        "basic attribute" {
+                clr=27
+        }
+        textix="Current:"
+}
+text {
+        object {
+                x=128
+                y=338
+                width=190
+                height=20
+        }
+        "basic attribute" {
+                clr=20
+        }
+        textix="ID gap and Current"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=455
+                y=451
+                width=20
+                height=20
+        }
+        "basic attribute" {
+                clr=27
+        }
+        textix="mA"
+}
+"text update" {
+        object {
+                x=355
+                y=542
+                width=100
+                height=25
+        }
+        monitor {
+                chan="ID$(xx):Energy.VAL"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=466
+                y=491
+                width=20
+                height=20
+        }
+        "basic attribute" {
+                clr=27
+        }
+        textix="mm"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=465
+                y=546
+                width=25
+                height=20
+        }
+        "basic attribute" {
+                clr=27
+        }
+        textix="keV"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=257
+                y=547
+                width=100
+                height=20
+        }
+        "basic attribute" {
+                clr=27
+        }
+        textix="Energy :"
+        align="horiz. centered"
+}
+"text update" {
+        object {
+                x=19
+                y=527
+                width=100
+                height=15
+        }
+        monitor {
+                chan="FE:$(xx):ID:HPOSITION:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=22
+                y=541
+                width=90
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="mm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=129
+                y=473
+                width=100
+                height=15
+        }
+        monitor {
+                chan="FE:$(xx):ID:VANGLE:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=132
+                y=487
+                width=90
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microradians"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=17
+                y=473
+                width=100
+                height=15
+        }
+        monitor {
+                chan="FE:$(xx):ID:VPOSITION:CC"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=20
+                y=487
+                width=90
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="mm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=10
+                y=454
+                width=250
+                height=15
+        }
+        "basic attribute" {
+                clr=43
+        }
+        textix="Vertical Position & Angle"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=7
+                y=508
+                width=250
+                height=15
+        }
+        "basic attribute" {
+                clr=43
+        }
+        textix="Horizontal Position & Angle"
+        align="horiz. centered"
+}
+"text update" {
+        object {
+                x=400
+                y=647
+                width=90
+                height=20
+        }
+        monitor {
+                chan="S$(x):ID:SrcPt:yAngleM"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=442
+                y=632
+                width=50
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="VANGLE"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=400
+                y=669
+                width=90
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microradians"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=273
+                y=647
+                width=90
+                height=20
+        }
+        monitor {
+                chan="S$(x):ID:SrcPt:yPositionM"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=292
+                y=632
+                width=80
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="VPOSITION"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=341
+                y=670
+                width=20
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="mm"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=135
+                y=647
+                width=90
+                height=20
+        }
+        monitor {
+                chan="S$(x):ID:SrcPt:xAngleM"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=177
+                y=632
+                width=50
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="HANGLE"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=136
+                y=669
+                width=90
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microradians"
+        align="horiz. right"
+}
+"text update" {
+        object {
+                x=8
+                y=647
+                width=90
+                height=20
+        }
+        monitor {
+                chan="S$(x):ID:SrcPt:xPositionM"
+                clr=15
+                bclr=55
+        }
+        clrmod="alarm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=27
+                y=632
+                width=80
+                height=10
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="HPOSITION"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=78
+                y=669
+                width=20
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="mm"
+        align="horiz. right"
+}
+text {
+        object {
+                x=107
+                y=602
+                width=280
+                height=20
+        }
+        "basic attribute" {
+                clr=25
+        }
+        textix="SR Particle BPM Signals Normalized to the Source"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=103
+                y=581
+                width=300
+                height=20
+        }
+        "basic attribute" {
+                clr=39
+        }
+        textix="Storage RING Particle BPM"
+        align="horiz. centered"
+}
+text {
+        object {
+                x=21
+                y=139
+                width=70
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microAmps"
+}
+text {
+        object {
+                x=139
+                y=139
+                width=70
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microAmps"
+}
+text {
+        object {
+                x=287
+                y=138
+                width=70
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microAmps"
+}
+text {
+        object {
+                x=419
+                y=243
+                width=70
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microAmps"
+}
+text {
+        object {
+                x=336
+                y=267
+                width=70
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microAmps"
+}
+text {
+        object {
+                x=253
+                y=242
+                width=70
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microAmps"
+}
+text {
+        object {
+                x=135
+                y=245
+                width=70
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microAmps"
+}
+text {
+        object {
+                x=18
+                y=245
+                width=70
+                height=13
+        }
+        "basic attribute" {
+                clr=14
+        }
+        textix="microAmps"
+}

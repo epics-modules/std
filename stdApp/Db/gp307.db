@@ -1,0 +1,166 @@
+grecord(ai,"$(P)gp307$(A):igPres")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @5")
+	field(PREC,"1")
+	field(HOPR,"1.0e+10")
+	field(LOPR,"1.0e-13")
+}
+grecord(ai,"$(P)gp307$(A):cg2Pres")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @7")
+	field(PREC,"1")
+	field(HOPR,"1.0e+10")
+	field(LOPR,"1.0e-13")
+}
+grecord(ai,"$(P)gp307$(A):cg1Pres")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @6")
+	field(PREC,"1")
+	field(HOPR,"1.0e+10")
+	field(LOPR,"1.0e-13")
+}
+grecord(bo,"$(P)gp307$(A):ig2ON")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(OMSL,"closed_loop")
+	field(OUT,"#L3 B4 G$(A) @10")
+	field(ZNAM,"IG1 OFF")
+	field(ONAM,"IG1 ON")
+}
+grecord(bo,"$(P)gp307$(A):dgsON")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(OMSL,"closed_loop")
+	field(OUT,"#L3 B4 G$(A) @0")
+	field(ZNAM,"IG1 OFF")
+	field(ONAM,"IG1 ON")
+}
+grecord(bi,"$(P)gp307$(A):sp1")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @12")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+grecord(bi,"$(P)gp307$(A):sp2")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @13")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+grecord(bi,"$(P)gp307$(A):sp3")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @14")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+grecord(bi,"$(P)gp307$(A):sp4")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @15")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+grecord(bi,"$(P)gp307$(A):sp5")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @16")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+grecord(bi,"$(P)gp307$(A):sp6")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @17")
+	field(ZNAM,"0")
+	field(ONAM,"1")
+}
+grecord(fanout,"$(P)gp307$(A):fanout2")
+{
+	field(LNK1,"$(P)gp307$(A):sp6.PROC PP MS")
+	field(LNK2,"$(P)gp307$(A):sp5.PROC PP MS")
+	field(LNK3,"$(P)gp307$(A):sp4.PROC PP MS")
+	field(LNK4,"$(P)gp307$(A):sp3.PROC PP MS")
+	field(LNK5,"$(P)gp307$(A):sp2.PROC PP MS")
+	field(LNK6,"$(P)gp307$(A):sp1.PROC PP MS")
+}
+grecord(bo,"$(P)gp307$(A):ig1ON")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(OMSL,"closed_loop")
+	field(OUT,"#L3 B4 G$(A) @8")
+	field(ZNAM,"IG1 OFF")
+	field(ONAM,"IG1 ON")
+}
+grecord(bo,"$(P)gp307$(A):ig2OFF")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(OMSL,"closed_loop")
+	field(OUT,"#L3 B4 G$(A) @11")
+	field(ZNAM,"IG1 OFF")
+	field(ONAM,"IG1 ON")
+}
+grecord(bo,"$(P)gp307$(A):dgsOFF")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(OMSL,"closed_loop")
+	field(OUT,"#L3 B4 G$(A) @1")
+	field(ZNAM,"IG1 OFF")
+	field(ONAM,"IG1 ON")
+}
+grecord(bo,"$(P)gp307$(A):ig1OFF")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(OMSL,"closed_loop")
+	field(OUT,"#L3 B4 G$(A) @9")
+	field(ZNAM,"IG1 OFF")
+	field(ONAM,"IG1 ON")
+}
+grecord(ai,"$(P)gp307$(A):ig1Pres")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(FLNK,"$(P)gp307$(A):calc1.PROC PP MS")
+	field(INP,"#L3 B4 G$(A) @3")
+	field(PREC,"1")
+}
+grecord(ai,"$(P)gp307$(A):ig2Pres")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(FLNK,"$(P)gp307$(A):calc2.PROC PP MS")
+	field(INP,"#L3 B4 G$(A) @4")
+}
+grecord(fanout,"$(P)gp307$(A):heartbeat")
+{
+	field(SCAN,"1 second")
+	field(FLNK,"$(P)gp307$(A):fanout2.PROC PP MS")
+	field(LNK1,"$(P)gp307$(A):ig2Pres.PROC PP MS")
+	field(LNK2,"$(P)gp307$(A):ig1Pres.PROC PP MS")
+	field(LNK3,"$(P)gp307$(A):cg1Pres.PROC PP MS")
+	field(LNK4,"$(P)gp307$(A):cg2Pres.PROC PP MS")
+	field(LNK5,"$(P)gp307$(A):igPres.PROC PP MS")
+	field(LNK6,"$(P)gp307$(A):dgStatus.PROC PP MS")
+}
+grecord(calc,"$(P)gp307$(A):calc1")
+{
+	field(CALC,"(A<B)?C:D")
+	field(INPA,"$(P)gp307$(A):ig1Pres.VAL PP MS")
+	field(INPB,"9.9e+09")
+	field(INPC,"1")
+}
+grecord(calc,"$(P)gp307$(A):calc2")
+{
+	field(CALC,"(A<B)?C:D")
+	field(INPA,"$(P)gp307$(A):ig2Pres.VAL PP MS")
+	field(INPB,"9.9e+09")
+	field(INPC,"1")
+}
+grecord(bi,"$(P)gp307$(A):dgStatus")
+{
+	field(DTYP,"Vg307 BBGPIB Instrument")
+	field(INP,"#L3 B4 G$(A) @2")
+}

@@ -1,0 +1,1634 @@
+
+file {
+	name="/tmp_mnt/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta7_shareR1.0/stdApp/op/adl/4filter_setup_4.1.adl"
+	version=020205
+}
+display {
+	object {
+		x=10
+		y=10
+		width=920
+		height=295
+	}
+	clr=14
+	bclr=4
+	cmap=""
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=275
+		width=920
+		height=17
+	}
+	"basic attribute" {
+		clr=16
+	}
+}
+text {
+	object {
+		x=5
+		y=278
+		width=920
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="NOTE: After changing filter-material description, you must close and reopen any screen that displays it."
+	align="horiz. centered"
+}
+text {
+	object {
+		x=5
+		y=255
+		width=115
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Motor-drive PV"
+}
+"text entry" {
+	object {
+		x=120
+		y=255
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)motorOut.OUTN"
+		clr=14
+		bclr=35
+	}
+	format="string"
+}
+text {
+	object {
+		x=180
+		y=247
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(Q1)motorOut.OUTV"
+	}
+	textix="INVALID"
+}
+"text entry" {
+	object {
+		x=155
+		y=125
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)pos5.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=155
+		y=145
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)pos4.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=155
+		y=165
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)pos3.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=155
+		y=185
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)pos2.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=155
+		y=225
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)posHome.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=155
+		y=205
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)pos1.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=770
+		y=125
+		width=70
+		height=125
+	}
+	control {
+		chan="$(P)$(Q4)select.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=540
+		y=125
+		width=70
+		height=125
+	}
+	control {
+		chan="$(P)$(Q3)select.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=310
+		y=125
+		width=70
+		height=125
+	}
+	control {
+		chan="$(P)$(Q2)select.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=80
+		y=125
+		width=70
+		height=125
+	}
+	control {
+		chan="$(P)$(Q1)select.VAL"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=235
+		y=255
+		width=115
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Motor-drive PV"
+}
+"text entry" {
+	object {
+		x=350
+		y=255
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)$(Q2)motorOut.OUTN"
+		clr=14
+		bclr=35
+	}
+	format="string"
+}
+composite {
+	object {
+		x=385
+		y=125
+		width=70
+		height=120
+	}
+	"composite name"=""
+	vis="static"
+	chan=""
+	children {
+		"text entry" {
+			object {
+				x=385
+				y=125
+				width=70
+				height=20
+			}
+			control {
+				chan="$(P)$(Q2)pos5.VAL"
+				clr=14
+				bclr=51
+			}
+		}
+		"text entry" {
+			object {
+				x=385
+				y=145
+				width=70
+				height=20
+			}
+			control {
+				chan="$(P)$(Q2)pos4.VAL"
+				clr=14
+				bclr=51
+			}
+		}
+		"text entry" {
+			object {
+				x=385
+				y=165
+				width=70
+				height=20
+			}
+			control {
+				chan="$(P)$(Q2)pos3.VAL"
+				clr=14
+				bclr=51
+			}
+		}
+		"text entry" {
+			object {
+				x=385
+				y=185
+				width=70
+				height=20
+			}
+			control {
+				chan="$(P)$(Q2)pos2.VAL"
+				clr=14
+				bclr=51
+			}
+		}
+		"text entry" {
+			object {
+				x=385
+				y=225
+				width=70
+				height=20
+			}
+			control {
+				chan="$(P)$(Q2)posHome.VAL"
+				clr=14
+				bclr=51
+			}
+		}
+		"text entry" {
+			object {
+				x=385
+				y=205
+				width=70
+				height=20
+			}
+			control {
+				chan="$(P)$(Q2)pos1.VAL"
+				clr=14
+				bclr=51
+			}
+		}
+	}
+}
+text {
+	object {
+		x=410
+		y=245
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(Q2)motorOut.OUTV"
+	}
+	textix="INVALID"
+}
+"text entry" {
+	object {
+		x=235
+		y=125
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q2)name5"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=235
+		y=145
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q2)name4"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=235
+		y=165
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q2)name3"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=235
+		y=185
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q2)name2"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=235
+		y=225
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q2)nameHome"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=235
+		y=205
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q2)name1"
+		clr=14
+		bclr=16
+	}
+}
+text {
+	object {
+		x=385
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="position"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=310
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="control"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=235
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="material"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=385
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="motor"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=310
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	align="horiz. centered"
+}
+text {
+	object {
+		x=235
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="filter"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=229
+		y=62
+		width=2
+		height=212
+	}
+	"basic attribute" {
+		clr=14
+		width=2
+	}
+	points {
+		(230,63)
+		(230,273)
+	}
+}
+"choice button" {
+	object {
+		x=245
+		y=20
+		width=200
+		height=20
+	}
+	control {
+		chan="$(P)$(LOCK2)lock.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+text {
+	object {
+		x=405
+		y=45
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(LOCK2)lockOut.OUTV"
+	}
+	textix="INVALID"
+}
+"text entry" {
+	object {
+		x=285
+		y=40
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(LOCK2)lockOut.OUTN"
+		clr=14
+		bclr=35
+	}
+	format="string"
+}
+text {
+	object {
+		x=230
+		y=42
+		width=55
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Lock_PV"
+}
+"text entry" {
+	object {
+		x=5
+		y=125
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)name5"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=5
+		y=145
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)name4"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=5
+		y=165
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)name3"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=5
+		y=185
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)name2"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=5
+		y=225
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)nameHome"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=5
+		y=205
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q1)name1"
+		clr=14
+		bclr=16
+	}
+}
+text {
+	object {
+		x=155
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="position"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=80
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="control"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=5
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="material"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=155
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="motor"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=80
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	align="horiz. centered"
+}
+text {
+	object {
+		x=5
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="filter"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=0
+		y=0
+		width=920
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="User Filter $(P)$(Q1)"
+	align="horiz. centered"
+}
+"choice button" {
+	object {
+		x=15
+		y=20
+		width=200
+		height=20
+	}
+	control {
+		chan="$(P)$(LOCK1)lock.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+text {
+	object {
+		x=175
+		y=45
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(LOCK1)lockOut.OUTV"
+	}
+	textix="INVALID"
+}
+"text entry" {
+	object {
+		x=55
+		y=40
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(LOCK1)lockOut.OUTN"
+		clr=14
+		bclr=35
+	}
+	format="string"
+}
+text {
+	object {
+		x=0
+		y=42
+		width=55
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Lock_PV"
+}
+polyline {
+	object {
+		x=0
+		y=17
+		width=917
+		height=2
+	}
+	"basic attribute" {
+		clr=14
+		width=2
+	}
+	points {
+		(1,18)
+		(916,18)
+	}
+}
+polyline {
+	object {
+		x=0
+		y=61
+		width=917
+		height=2
+	}
+	"basic attribute" {
+		clr=14
+		width=2
+	}
+	points {
+		(1,62)
+		(916,62)
+	}
+}
+text {
+	object {
+		x=5
+		y=65
+		width=220
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="upstream"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=0
+		y=275
+		width=917
+		height=2
+	}
+	"basic attribute" {
+		clr=14
+		width=2
+	}
+	points {
+		(1,276)
+		(916,276)
+	}
+}
+text {
+	object {
+		x=465
+		y=255
+		width=115
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Motor-drive PV"
+}
+"text entry" {
+	object {
+		x=580
+		y=255
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)motorOut.OUTN"
+		clr=14
+		bclr=35
+	}
+	format="string"
+}
+"text entry" {
+	object {
+		x=615
+		y=125
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)pos5.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=615
+		y=145
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)pos4.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=615
+		y=165
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)pos3.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=615
+		y=185
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)pos2.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=615
+		y=225
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)posHome.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=615
+		y=205
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)pos1.VAL"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=640
+		y=245
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(Q3)motorOut.OUTV"
+	}
+	textix="INVALID"
+}
+"text entry" {
+	object {
+		x=465
+		y=125
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)name5"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=465
+		y=145
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)name4"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=465
+		y=165
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)name3"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=465
+		y=185
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)name2"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=465
+		y=225
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)nameHome"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=465
+		y=205
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q3)name1"
+		clr=14
+		bclr=16
+	}
+}
+text {
+	object {
+		x=615
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="position"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=540
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="control"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=465
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="material"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=615
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="motor"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=540
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	align="horiz. centered"
+}
+text {
+	object {
+		x=465
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="filter"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=459
+		y=62
+		width=2
+		height=212
+	}
+	"basic attribute" {
+		clr=14
+		width=2
+	}
+	points {
+		(460,63)
+		(460,273)
+	}
+}
+"choice button" {
+	object {
+		x=475
+		y=20
+		width=200
+		height=20
+	}
+	control {
+		chan="$(P)$(LOCK3)lock.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+text {
+	object {
+		x=635
+		y=45
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(LOCK3)lockOut.OUTV"
+	}
+	textix="INVALID"
+}
+"text entry" {
+	object {
+		x=515
+		y=40
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(LOCK3)lockOut.OUTN"
+		clr=14
+		bclr=35
+	}
+	format="string"
+}
+text {
+	object {
+		x=460
+		y=42
+		width=55
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Lock_PV"
+}
+text {
+	object {
+		x=695
+		y=255
+		width=115
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Motor-drive PV"
+}
+"text entry" {
+	object {
+		x=810
+		y=255
+		width=105
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)motorOut.OUTN"
+		clr=14
+		bclr=35
+	}
+	format="string"
+}
+"text entry" {
+	object {
+		x=845
+		y=125
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)pos5.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=845
+		y=145
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)pos4.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=845
+		y=165
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)pos3.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=845
+		y=185
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)pos2.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=845
+		y=225
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)posHome.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=845
+		y=205
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)pos1.VAL"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=870
+		y=245
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(Q4)motorOut.OUTV"
+	}
+	textix="INVALID"
+}
+"text entry" {
+	object {
+		x=695
+		y=125
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)name5"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=695
+		y=145
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)name4"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=695
+		y=165
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)name3"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=695
+		y=185
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)name2"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=695
+		y=225
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)nameHome"
+		clr=14
+		bclr=16
+	}
+}
+"text entry" {
+	object {
+		x=695
+		y=205
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(Q4)name1"
+		clr=14
+		bclr=16
+	}
+}
+text {
+	object {
+		x=695
+		y=65
+		width=220
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="downstream"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=845
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="position"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=770
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="control"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=695
+		y=100
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="material"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=845
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="motor"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=770
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	align="horiz. centered"
+}
+text {
+	object {
+		x=695
+		y=85
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="filter"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=689
+		y=62
+		width=2
+		height=212
+	}
+	"basic attribute" {
+		clr=14
+		width=2
+	}
+	points {
+		(690,63)
+		(690,273)
+	}
+}
+"choice button" {
+	object {
+		x=705
+		y=20
+		width=200
+		height=20
+	}
+	control {
+		chan="$(P)$(LOCK4)lock.VAL"
+		clr=14
+		bclr=51
+	}
+	stacking="column"
+}
+text {
+	object {
+		x=865
+		y=45
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(LOCK4)lockOut.OUTV"
+	}
+	textix="INVALID"
+}
+"text entry" {
+	object {
+		x=745
+		y=40
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(LOCK4)lockOut.OUTN"
+		clr=14
+		bclr=35
+	}
+	format="string"
+}
+text {
+	object {
+		x=690
+		y=42
+		width=55
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Lock_PV"
+}

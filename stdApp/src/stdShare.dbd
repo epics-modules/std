@@ -1,0 +1,119 @@
+################
+# RECORD SUPPORT
+################
+include "scalerRecord.dbd"
+include "scanparmRecord.dbd"
+include "serialRecord.dbd"
+include "tableRecord.dbd"
+include "transformRecord.dbd"
+include "vmeRecord.dbd"
+include "gpibRecord.dbd"
+#include "camacRecord.dbd"
+include "sscanRecord.dbd"
+include "sCalcoutRecord.dbd"
+include "busyRecord.dbd"
+include "waitRecord.dbd"
+include "swaitRecord.dbd"
+include "ddfanoutRecord.dbd"
+include "sseqRecord.dbd"
+include "epidRecord.dbd"
+include "genSubRecord.dbd"
+
+################
+# DEVICE SUPPORT
+################
+device(wait,CONSTANT,devWaitIoEvent,"Soft Channel")
+device(scaler,VME_IO,devScaler,"Joerger VSC8/16")
+
+# Queensgate Piezo drive.
+device(ao,BBGPIB_IO,devAoAX301,"PZT Bug")
+device(ai,BBGPIB_IO,devAiAX301,"PZT Bug")
+device(bo,BBGPIB_IO,devBoAX301,"PZT Bug")
+device(longout,BBGPIB_IO,devLoAX301,"PZT Bug")
+
+# GP307 GPIB
+device(ai,GPIB_IO,devAiGP307Gpib,"Vg307 GPIB Instrument")
+device(bi,GPIB_IO,devBiGP307Gpib,"Vg307 GPIB Instrument")
+device(bo,GPIB_IO,devBoGP307Gpib,"Vg307 GPIB Instrument")
+device(stringin,GPIB_IO,devSiGP307Gpib,"Vg307 GPIB Instrument")
+
+# Heidenhain ND261 and related serial interface boxes
+device(ai,VME_IO,devAiHeidND261,"Hideos ai HeidND261")
+
+# Varoc SSI encoder interface board
+device(ai,VME_IO,devAiVaroc,"ESRF Varoc SSI Encoder Iface")
+
+# GPIB Heidenhain encoder
+device(longin,GPIB_IO,devLiHeidAWE1024,"Heidenhein Encoder")
+device(bo,GPIB_IO,devBoHeidAWE1024,"Heidenhein Encoder")
+device(ao,GPIB_IO,devAoHeidAWE1024,"Heidenhein Encoder")
+device(ai,GPIB_IO,devAiHeidAWE1024,"Heidenhein Encoder")
+device(bi,GPIB_IO,devBiHeidAWE1024,"Heidenhein Encoder")
+device(longout,GPIB_IO,devLoHeidAWE1024,"Heidenhein Encoder")
+device(mbbo,GPIB_IO,devMbboHeidAWE1024,"Heidenhein Encoder")
+device(mbbi,GPIB_IO,devMbbiHeidAWE1024,"Heidenhein Encoder")
+device(stringin,GPIB_IO,devSiHeidAWE1024,"Heidenhein Encoder")
+device(stringout,GPIB_IO,devSoHeidAWE1024,"Heidenhein Encoder")
+
+# HP 10895A Laser Axis (interferometer) board
+device(bi,VME_IO,devBiHP10895LaserAxis,"HP interferometer")
+device(bo,VME_IO,devBoHP10895LaserAxis,"HP interferometer")
+device(mbbi,VME_IO,devMbbiHP10895LaserAxis,"HP interferometer")
+device(mbbo,VME_IO,devMbboHP10895LaserAxis,"HP interferometer")
+device(longin,VME_IO,devLiHP10895LaserAxis,"HP interferometer")
+device(longout,VME_IO,devLoHP10895LaserAxis,"HP interferometer")
+
+# GPIB Keithley model 199 DMM
+device(longin,GPIB_IO,devLiKeithleyDMM199,"KeithleyDMM199")
+device(bo,GPIB_IO,devBoKeithleyDMM199,"KeithleyDMM199")
+device(ao,GPIB_IO,devAoKeithleyDMM199,"KeithleyDMM199")
+device(ai,GPIB_IO,devAiKeithleyDMM199,"KeithleyDMM199")
+device(bi,GPIB_IO,devBiKeithleyDMM199,"KeithleyDMM199")
+device(longout,GPIB_IO,devLoKeithleyDMM199,"KeithleyDMM199")
+device(mbbo,GPIB_IO,devMbboKeithleyDMM199,"KeithleyDMM199")
+device(mbbi,GPIB_IO,devMbbiKeithleyDMM199,"KeithleyDMM199")
+device(stringin,GPIB_IO,devSiKeithleyDMM199,"KeithleyDMM199")
+device(stringout,GPIB_IO,devSoKeithleyDMM199,"KeithleyDMM199")
+
+# Generic GPIB record
+device(gpib,GPIB_IO,devGPIB,"GPIB (NI or HIDEOS)")
+device(gpib,BBGPIB_IO,devGPIB,"GPIB (BitBusS)")
+
+# Bunch clock generator (Frank Lenkszus)
+device(ai,VME_IO,devAiBunchClkGen,"APS Bunch Clock")
+device(ao,VME_IO,devAoBunchClkGen,"APS Bunch Clock")
+device(bi,VME_IO,devBiBunchClkGen,"APS Bunch Clock")
+device(bo,VME_IO,devBoBunchClkGen,"APS Bunch Clock")
+device(waveform,VME_IO,devWfBunchClkGen,"APS Bunch Clock")
+
+device(swait,CONSTANT,devSWaitIoEvent,"Soft Channel")
+
+# Generic A32/D32 VME Access 
+device(ai,VME_IO,devAiA32Vme,"Generic A32 VME")
+device(ao,VME_IO,devAoA32Vme,"Generic A32 VME")
+device(bi,VME_IO,devBiA32Vme,"Generic A32 VME")
+device(bo,VME_IO,devBoA32Vme,"Generic A32 VME")
+device(mbbi,VME_IO,devMbbiA32Vme,"Generic A32 VME")
+device(mbbo,VME_IO,devMbboA32Vme,"Generic A32 VME")
+device(longin,VME_IO,devLiA32Vme,"Generic A32 VME")
+device(longout,VME_IO,devLoA32Vme,"Generic A32 VME")
+
+# Heidenhain IK320 VME counter/interpolator (Till Straumann/BESSY)
+device(mbbo,VME_IO,devIK320Funct,"Heidenhain IK320 Command")
+device(mbbo,VME_IO,devIK320Dir,"Heidenhain IK320 Sign")
+device(mbbo,VME_IO,devIK320ModeX3,"Heidenhain IK320 X3 Mode")
+device(stringout,VME_IO,devIK320Parm,"Heidenhain IK320 Parameter")
+device(ai,VME_IO,devIK320Ai,"Heidenhain IK320")
+device(ai,VME_IO,devIK320GroupAi,"Heidenhain IK320 Group")
+
+# EPID record
+device(epid,CONSTANT,devEpidSoft,"Soft Channel")
+
+################
+# DRIVER SUPPORT
+################
+# Bunch clock generator (Frank Lenkszus)
+driver(drvBunchClkGen)
+# Heidenhain IK320 (Till Straumann/BESSY)
+driver(drvIK320)
+

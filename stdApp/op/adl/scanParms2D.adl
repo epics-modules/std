@@ -1,0 +1,538 @@
+
+file {
+	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/scanParms2D.adl"
+	version=020306
+}
+display {
+	object {
+		x=51
+		y=28
+		width=460
+		height=120
+	}
+	clr=14
+	bclr=3
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=0
+		width=130
+		height=20
+	}
+	"basic attribute" {
+		clr=0
+	}
+}
+text {
+	object {
+		x=0
+		y=0
+		width=130
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="$(DESC)"
+	align="horiz. centered"
+}
+"message button" {
+	object {
+		x=130
+		y=0
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):spLoad"
+		clr=14
+		bclr=51
+	}
+	label="Load"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=170
+		y=0
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):spGo"
+		clr=14
+		bclr=51
+	}
+	label="Load&Go"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=230
+		y=0
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)allstop.VAL"
+		clr=30
+		bclr=20
+	}
+	label="Abort"
+	press_msg="1"
+}
+text {
+	object {
+		x=10
+		y=39
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="1D"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=10
+		y=82
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="2D"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=285
+		y=37
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms1.AFT"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=285
+		y=25
+		width=80
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="AfterScan:"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=370
+		y=37
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms1.AR"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=110
+		y=37
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms1.EP"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=110
+		y=25
+		width=80
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="End"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=190
+		y=25
+		width=30
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="#Pts"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=190
+		y=37
+		width=30
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms1.NP"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=220
+		y=25
+		width=60
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="StepSize"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=220
+		y=40
+		width=60
+		height=14
+	}
+	monitor {
+		chan="$(P)$(Q):scanParms1.STEP"
+		clr=54
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=30
+		y=37
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms1.SP"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=30
+		y=25
+		width=80
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Start"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=370
+		y=25
+		width=80
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Abs/Rel"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=210
+		y=60
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Units:"
+}
+"text update" {
+	object {
+		x=250
+		y=60
+		width=60
+		height=10
+	}
+	monitor {
+		chan="$(EGU1)"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=30
+		y=60
+		width=70
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Positioner:"
+}
+text {
+	object {
+		x=100
+		y=60
+		width=100
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="$(NAME1)"
+}
+text {
+	object {
+		x=210
+		y=103
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Units:"
+}
+"text update" {
+	object {
+		x=250
+		y=103
+		width=60
+		height=10
+	}
+	monitor {
+		chan="$(EGU2)"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=30
+		y=103
+		width=70
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Positioner:"
+}
+text {
+	object {
+		x=100
+		y=103
+		width=100
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="$(NAME2)"
+}
+menu {
+	object {
+		x=285
+		y=80
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms2.AFT"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=370
+		y=80
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms2.AR"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=110
+		y=80
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms2.EP"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=190
+		y=80
+		width=30
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms2.NP"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=220
+		y=83
+		width=60
+		height=14
+	}
+	monitor {
+		chan="$(P)$(Q):scanParms2.STEP"
+		clr=54
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=30
+		y=80
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(Q):scanParms2.SP"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}

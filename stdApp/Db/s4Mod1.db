@@ -1,0 +1,361 @@
+database(s4Mod1.database)
+{
+	record(bo, "$(P)s2_bupdate_off")
+	{
+		field(OUT, "$(P)s2_supdate.DISV NPP NMS")
+		field(ZNAM, "OFF")
+		field(ONAM, "ON")
+	}
+	record(bo, "$(P)s2_bupdate_on")
+	{
+		field(DOL, "1")
+		field(OUT, "$(P)s2_supdate.DISV NPP NMS")
+		field(ZNAM, "OFF")
+		field(ONAM, "ON")
+	}
+	record(stringout, "$(P)s1_ssetup")
+	{
+		field(FLNK, "$(P)s1_pc.VAL PP MS")
+		field(VAL, "Setup")
+		field(OUT, "$(P)s1_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s1_sstop")
+	{
+		field(FLNK, "$(P)s1_pc.VAL PP MS")
+		field(VAL, "Stop")
+		field(OUT, "$(P)s1_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s1_sstart")
+	{
+		field(FLNK, "$(P)s1_pc.VAL PP MS")
+		field(VAL, "Start")
+		field(OUT, "$(P)s1_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s2_ssetup")
+	{
+		field(FLNK, "$(P)s2_pc.VAL PP MS")
+		field(VAL, "Setup")
+		field(OUT, "$(P)s2_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s2_sstop")
+	{
+		field(FLNK, "$(P)s2_pc.VAL PP MS")
+		field(VAL, "Stop")
+		field(OUT, "$(P)s2_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s2_supdate")
+	{
+		field(SCAN, ".1 second")
+		field(DISV, "0")
+		field(FLNK, "$(P)s2_pc.VAL PP MS")
+		field(VAL, "Read")
+		field(OUT, "$(P)s2_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s2_sstart")
+	{
+		field(FLNK, "$(P)s2_pc.VAL PP MS")
+		field(VAL, "Start")
+		field(OUT, "$(P)s2_pc.CMD NPP NMS")
+	}
+	record(pulseCounter, "$(P)s2_pc")
+	{
+		field(DESC, "CH2")
+		field(OUT, "#C0 S3 @")
+		field(HGV, "5")
+		field(SGV, "Active")
+		field(CNTS, "4")
+	}
+	record(bo, "$(P)s3_bupdate_on")
+	{
+		field(DOL, "1")
+		field(OUT, "$(P)s3_supdate.DISV NPP NMS")
+		field(ZNAM, "OFF")
+		field(ONAM, "ON")
+	}
+	record(bo, "$(P)s3_bupdate_off")
+	{
+		field(OUT, "$(P)s3_supdate.DISV NPP NMS")
+		field(ZNAM, "OFF")
+		field(ONAM, "ON")
+	}
+	record(stringout, "$(P)s3_ssetup")
+	{
+		field(FLNK, "$(P)s3_pc.VAL PP MS")
+		field(VAL, "Setup")
+		field(OUT, "$(P)s3_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s3_sstart")
+	{
+		field(FLNK, "$(P)s3_pc.VAL PP MS")
+		field(VAL, "Start")
+		field(OUT, "$(P)s3_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s3_supdate")
+	{
+		field(SCAN, ".1 second")
+		field(DISV, "0")
+		field(FLNK, "$(P)s3_pc.VAL PP MS")
+		field(VAL, "Read")
+		field(OUT, "$(P)s3_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s3_sstop")
+	{
+		field(FLNK, "$(P)s3_pc.VAL PP MS")
+		field(VAL, "Stop")
+		field(OUT, "$(P)s3_pc.CMD NPP NMS")
+	}
+	record(pulseCounter, "$(P)s3_pc")
+	{
+		field(DESC, "CH3")
+		field(OUT, "#C0 S6 @")
+		field(HGV, "5")
+		field(SGV, "Active")
+		field(CNTS, "2")
+	}
+	record(bo, "$(P)s4_bupdate_on")
+	{
+		field(DOL, "1")
+		field(OUT, "$(P)s4_supdate.DISV NPP NMS")
+		field(ZNAM, "OFF")
+		field(ONAM, "ON")
+	}
+	record(bo, "$(P)s4_bupdate_off")
+	{
+		field(OUT, "$(P)s4_supdate.DISV NPP NMS")
+		field(ZNAM, "OFF")
+		field(ONAM, "ON")
+	}
+	record(stringout, "$(P)s4_ssetup")
+	{
+		field(FLNK, "$(P)s4_pc.VAL PP MS")
+		field(VAL, "Setup")
+		field(OUT, "$(P)s4_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s4_sstart")
+	{
+		field(FLNK, "$(P)s4_pc.VAL PP MS")
+		field(VAL, "Start")
+		field(OUT, "$(P)s4_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s4_supdate")
+	{
+		field(SCAN, ".1 second")
+		field(DISV, "0")
+		field(FLNK, "$(P)s4_pc.VAL PP MS")
+		field(VAL, "Read")
+		field(OUT, "$(P)s4_pc.CMD NPP NMS")
+	}
+	record(stringout, "$(P)s4_sstop")
+	{
+		field(FLNK, "$(P)s4_pc.VAL PP MS")
+		field(VAL, "Stop")
+		field(OUT, "$(P)s4_pc.CMD NPP NMS")
+	}
+	record(pulseCounter, "$(P)s4_pc")
+	{
+		field(DESC, "CH4")
+		field(OUT, "#C0 S8 @")
+		field(HGV, "5")
+		field(SGV, "Active")
+		field(CNTS, "4")
+	}
+	record(bo, "$(P)s1_bupdate_on")
+	{
+		field(DOL, "1")
+		field(OUT, "$(P)s1_supdate.DISV NPP NMS")
+		field(ZNAM, "OFF")
+		field(ONAM, "ON")
+	}
+	record(bo, "$(P)s1_bupdate_off")
+	{
+		field(OUT, "$(P)s1_supdate.DISV NPP NMS")
+		field(ZNAM, "OFF")
+		field(ONAM, "ON")
+	}
+	record(stringout, "$(P)s1_supdate")
+	{
+		field(SCAN, ".1 second")
+		field(DISV, "0")
+		field(FLNK, "$(P)s1_pc.VAL PP MS")
+		field(VAL, "Read")
+		field(OUT, "$(P)s1_pc.CMD NPP NMS")
+	}
+	record(fanout, "$(P)s_fdisable1")
+	{
+		field(LNK1, "$(P)s1_bupdate_off.VAL PP MS")
+		field(LNK2, "$(P)s2_bupdate_off.VAL PP MS")
+		field(LNK3, "$(P)s3_bupdate_off.VAL PP MS")
+		field(LNK4, "$(P)s4_bupdate_off.VAL PP MS")
+		field(LNK5, "$(P)s1_sstop.VAL PP MS")
+		field(LNK6, "$(P)s_fdisable2.VAL PP MS")
+	}
+	record(fanout, "$(P)s_fdisable2")
+	{
+		field(LNK1, "$(P)s2_sstop.VAL PP MS")
+		field(LNK2, "$(P)s3_sstop.VAL PP MS")
+		field(LNK3, "$(P)s4_sstop.VAL PP MS")
+		field(LNK4, "$(P)s_sdisable.VAL PP MS")
+	}
+	record(fanout, "$(P)s_fenable3")
+	{
+		field(LNK1, "$(P)s2_bupdate_on.VAL PP MS")
+		field(LNK2, "$(P)s3_bupdate_on.VAL PP MS")
+		field(LNK3, "$(P)s4_bupdate_on.VAL PP MS")
+	}
+	record(fanout, "$(P)s_fenable2")
+	{
+		field(LNK1, "$(P)s3_sstart.VAL PP MS")
+		field(LNK2, "$(P)s4_ssetup.VAL PP MS")
+		field(LNK3, "$(P)s4_sstart.VAL PP MS")
+		field(LNK4, "$(P)s_senable.VAL PP MS")
+		field(LNK5, "$(P)s1_bupdate_on.VAL PP MS")
+		field(LNK6, "$(P)s_fenable3.VAL PP MS")
+	}
+	record(fanout, "$(P)s_fenable1")
+	{
+		field(LNK1, "$(P)s1_ssetup.VAL PP MS")
+		field(LNK2, "$(P)s1_sstart.VAL PP MS")
+		field(LNK3, "$(P)s2_ssetup.VAL PP MS")
+		field(LNK4, "$(P)s2_sstart.VAL PP MS")
+		field(LNK5, "$(P)s3_ssetup.VAL PP MS")
+		field(LNK6, "$(P)s_fenable2.VAL PP MS")
+	}
+	record(stringout, "$(P)s_sdisable")
+	{
+		field(FLNK, "$(P)s_pd.VAL PP MS")
+		field(VAL, "Disable")
+		field(OUT, "$(P)s_pd.STV NPP NMS")
+	}
+	record(stringout, "$(P)s_senable")
+	{
+		field(FLNK, "$(P)s_pd.VAL PP MS")
+		field(VAL, "Enable")
+		field(OUT, "$(P)s_pd.STV NPP NMS")
+	}
+	record(pulseDelay, "$(P)s_pd")
+	{
+		field(DLY, "0.01")
+		field(WIDE, "1")
+		field(CEDG, "Falling Edge")
+		field(LLOW, "Logic Low=1")
+		field(TTYP, "Software")
+		field(GLNK, "1")
+		field(HOPR, "100")
+		field(LOPR, "0.001")
+		field(PREC, "3")
+	}
+	record(bo, "$(P)s_bo")
+	{
+		field(FLNK, "$(P)s_ctrl.PROC PP MS")
+		field(ZNAM, "DONE")
+		field(ONAM, "COUNT")
+	}
+	record(bo, "$(P)s_disable")
+	{
+		field(FLNK, "$(P)s_bo.VAL PP MS")
+		field(OUT, "$(P)s_bo.VAL NPP NMS")
+		field(ZNAM, "STOP")
+		field(ONAM, "START")
+	}
+	record(event, "$(P)s_e")
+	{
+		field(SCAN, "I/O Intr")
+		field(DTYP, "Mizar-8310")
+		field(FLNK, "$(P)s_disable.VAL PP MS")
+		field(INP, "#C0 S3 @")
+	}
+	record(fanout, "$(P)s_ctrl")
+	{
+		field(SELM, "Mask")
+		field(SELL, "$(P)s_ctrlmask.VAL PP MS")
+		field(LNK1, "$(P)s_delaySEQ.PROC PP MS")
+		field(LNK2, "$(P)s_fdisable1.VAL PP MS")
+		field(LNK3, "$(P)s_counts.PROC PP MS")
+		field(LNK4, "$(P)s_wait.PROC PP MS")
+	}
+	record(pulseCounter, "$(P)s1_pc")
+	{
+		field(DESC, "CH1")
+		field(OUT, "#C0 S1 @")
+		field(HGV, "5")
+		field(SGV, "Active")
+		field(CNTS, "2")
+	}
+	record(calc, "$(P)s_ctrlmask")
+	{
+		field(CALC, "A=1?1:14")
+		field(INPA, "$(P)s_bo.VAL NPP NMS")
+	}
+	record(bo, "$(P)s_restart")
+	{
+		field(DISV, "0")
+		field(SDIS, "$(P)s_mode.VAL NPP NMS")
+		field(OMSL, "closed_loop")
+		field(DOL, "$(P)s_mode.VAL NPP NMS")
+		field(OUT, "$(P)s_bo.VAL PP MS")
+		field(ZNAM, "DONE")
+		field(ONAM, "COUNT")
+	}
+	record(bo, "$(P)s_mode")
+	{
+		field(ZNAM, "ONESHOT")
+		field(ONAM, "CONTINUOUS")
+	}
+	record(swait, "$(P)s_wait")
+	{
+		field(OUTN, "$(P)s_restart.VAL")
+	}
+	record(transform, "$(P)s_counts")
+	{
+		field(FLNK, "$(P)s_errorbar.PROC PP MS")
+		field(CLCA, "e?g/MAX(f,0.000001):g")
+		field(CLCB, "e?h/MAX(f,0.000001):h")
+		field(CLCC, "e?i/MAX(f,0.000001):i")
+		field(CLCD, "e?j/MAX(f,0.000001):j")
+		field(INPE, "$(P)s_calc_ctrl.VAL NPP NMS")
+		field(INPF, "$(P)s_pd.WIDE NPP NMS")
+		field(INPG, "$(P)s1_pc.VAL NPP NMS")
+		field(INPH, "$(P)s2_pc.VAL NPP NMS")
+		field(INPI, "$(P)s3_pc.VAL NPP NMS")
+		field(INPJ, "$(P)s4_pc.VAL NPP NMS")
+		field(PREC, "3")
+	}
+	record(bo, "$(P)s_calc_ctrl")
+	{
+		field(ZNAM, "Counts")
+		field(ONAM, "Cts/sec")
+	}
+	record(transform, "$(P)s_errorbar")
+	{
+		field(CLCA, "sqr(max(g,1))/(e?max(f,.000001):1)")
+		field(CLCB, "sqr(max(h,1))/(e?max(f,.000001):1)")
+		field(CLCC, "sqr(max(i,1))/(e?max(f,.000001):1)")
+		field(CLCD, "sqr(max(j,1))/(e?max(f,.000001):1)")
+		field(INPE, "$(P)s_counts.E NPP NMS")
+		field(INPF, "$(P)s_counts.F NPP NMS")
+		field(INPG, "$(P)s1_pc.VAL NPP NMS")
+		field(INPH, "$(P)s2_pc.VAL NPP NMS")
+		field(INPI, "$(P)s3_pc.VAL NPP NMS")
+		field(INPJ, "$(P)s4_pc.VAL NPP NMS")
+		field(PREC, "3")
+	}
+	record(seq, "$(P)s_delaySEQ")
+	{
+		field(LNK1, "$(P)s_fenable1.VAL PP MS")
+	}
+	record(transform, "$(P)s_delayTR")
+	{
+		field(CLCB, ".01667*floor((a/.01667)+0.5)")
+		field(CLCC, "b")
+		field(OUTB, "$(P)s_delay.VAL PP MS")
+		field(OUTC, "$(P)s_delaySEQ.DLY1 NPP NMS")
+		field(EGU, "s")
+		field(PREC, "3")
+	}
+	record(ao, "$(P)s_delay")
+	{
+		field(OUT, "$(P)s_delayTR.A PP MS")
+		field(PREC, "3")
+		field(EGU, "s")
+	}
+}
