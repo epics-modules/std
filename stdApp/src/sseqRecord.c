@@ -66,9 +66,9 @@ epicsExportAddress(int, sseqRecDebug);
 /* This is what a link-group looks like in a string-sequence record */
 struct	linkGroup {
 	double          dly;	/* Delay value (in seconds) */
-	struct link     dol;	/* Where to fetch the input value from */
+	DBLINK          dol;	/* Where to fetch the input value from */
 	double          dov;	/* If dol is CONSTANT, this is the CONSTANT value */
-	struct link     lnk;	/* Where to put the value from dol */
+	DBLINK          lnk;	/* Where to put the value from dol */
 	char            s[40]; /* string value */
 	short			dol_field_type;
 	short			lnk_field_type;
@@ -149,19 +149,17 @@ init_record(sseqRecord *pR, int pass)
 	}
 
 	/* Allocate a callback structure for use in processing */
-	pR->dpvt = (void *)malloc(sizeof(struct  callbackSeq));
+	pR->dpvt = (void *)calloc(1,sizeof(struct  callbackSeq));
 	pdpvt = (struct callbackSeq *)pR->dpvt;
 
 	callbackSetCallback(processCallback, &pdpvt->callback);
 	callbackSetPriority(pR->prio, &pdpvt->callback);
 	callbackSetUser(pR, &pdpvt->callback);
-	pdpvt->callback.timer = (void *) NULL;
 
 	callbackSetCallback(checkLinksCallback, &pdpvt->checkLinksCB);
-	callbackSetPriority(0, &pdpvt->checkLinksCB);
+	callbackSetPriority(pR->prio, &pdpvt->checkLinksCB);
 	callbackSetUser(pR, &pdpvt->checkLinksCB);
 	pdpvt->pending_checkLinksCB = 0;
-	pdpvt->checkLinksCB.timer = (void *) NULL;
 
 	/* Get link selection if sell is a constant and nonzero */
 	if (pR->sell.type==CONSTANT) {
@@ -618,7 +616,7 @@ static void checkLinks(sseqRecord *pR)
 				printf("sseq:checkLinks:dol_field_type=%d (%s), linked to %s\n",
 					plinkGroup->dol_field_type,
 					plinkGroup->dol_field_type>=0 ?
-						pamapdbfType[plinkGroup->dol_field_type].strvalue : "",
+						pamapdbfType[plinkGroup->dol_field_type].strvalue : "???",
 					plinkGroup->dol.value.pv_link.pvname);
 			}
 		}
@@ -632,7 +630,7 @@ static void checkLinks(sseqRecord *pR)
 				printf("sseq:checkLinks:lnk_field_type=%d (%s), linked to %s\n",
 					plinkGroup->lnk_field_type,
 					plinkGroup->lnk_field_type>=0 ?
-						pamapdbfType[plinkGroup->lnk_field_type].strvalue : "",
+						pamapdbfType[plinkGroup->lnk_field_type].strvalue : "???",
 					plinkGroup->lnk.value.pv_link.pvname);
 			}
 		}
