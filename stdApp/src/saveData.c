@@ -752,6 +752,10 @@ void saveData_SetCptWait(float s)
   cpt_wait_ticks= (ULONG) (s*vxTicksPerSecond);
 }
 
+void saveData_SetCptWait_ms(int ms)
+{
+  cpt_wait_ticks= (ULONG) (ms*vxTicksPerSecond/1000.);
+}
 void saveData_Version()
 {
   printf("saveData Version: %s\n", save_data_version);
@@ -759,7 +763,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.4 2002-07-22 22:16:50 bcda Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.4.2.1 2004-01-14 19:42:19 mooney Exp $\n");
 }
 
 void saveData_Info() {
