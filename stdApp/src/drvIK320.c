@@ -1,4 +1,4 @@
-/* $Id: drvIK320.c,v 1.1.1.1.2.1 2003-08-11 19:30:50 sluiter Exp $ */
+/* $Id: drvIK320.c,v 1.1.1.1.2.2 2003-09-05 21:17:41 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,9 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1.2.1  2003/08/11 19:30:50  sluiter
+ * - Fix drvIK320report() trashing all the other reports.
+ *
  * Revision 1.1.1.1  2001/07/03 20:05:28  sluiter
  * Creating
  *
@@ -53,8 +56,7 @@
  *           doesn't have iround().  Local header files included with
  *           "", rather than <>. 
  *
- * 2.1  rls  bug fix for bus error when harware is missing; i.e., probe for
- *           memory. bug fix drvIK320report() trashing all the other reports.
+ * 2.1  rls  bug fix drvIK320report() trashing all the other reports.
  */
 
 #include <vxWorks.h>
@@ -274,13 +276,6 @@ int			i,needsPOST=1;
 	}
 
 	/* could check for jumper 3 */
-	status = locationProbe(atVMEA24, (char *) localA24);
-	if (status != 0)
-	{
-            epicsPrintf("drvIK320Connect(): bus error at address = 0x%08.8x\n", (uint_t) localA24);
-	    goto cleanup;
-	}
-
 	if ((status=devConnectInterrupt(intVME, sw1, irqHandler=IK320IrqCatcher, (void*)rval)))
 		goto cleanup;
 
