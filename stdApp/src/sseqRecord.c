@@ -151,11 +151,13 @@ init_record(sseqRecord *pR, int pass)
 	callbackSetCallback(processCallback, &pdpvt->callback);
 	callbackSetPriority(pR->prio, &pdpvt->callback);
 	callbackSetUser(pR, &pdpvt->callback);
+	pdpvt->callback.timer = (void *) NULL;
 
 	callbackSetCallback(checkLinksCallback, &pdpvt->checkLinksCB);
 	callbackSetPriority(0, &pdpvt->checkLinksCB);
 	callbackSetUser(pR, &pdpvt->checkLinksCB);
 	pdpvt->pending_checkLinksCB = 0;
+	pdpvt->checkLinksCB.timer = (void *) NULL;
 
 	/* Get link selection if sell is a constant and nonzero */
 	if (pR->sell.type==CONSTANT) {
@@ -613,7 +615,6 @@ static long special(struct dbAddr *paddr, int after)
 			plink->dol_field_type,
 			pamapdbfType[plink->dol_field_type].strvalue);
 		return(0);
-		break;
 
 	case(sseqRecordLNK1):
 	case(sseqRecordLNK2):
@@ -647,7 +648,6 @@ static long special(struct dbAddr *paddr, int after)
 			plink->lnk_field_type,
 			pamapdbfType[plink->lnk_field_type].strvalue);
 		return(0);
-		break;
 
 	case(sseqRecordDO1):
 	case(sseqRecordDO2):
