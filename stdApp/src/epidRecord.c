@@ -85,6 +85,7 @@
 #include    "epidRecord.h"
 #undef  GEN_SIZE_OFFSET
 #include "menuOmsl.h"
+#include    <epicsExport.h>
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -105,7 +106,7 @@ static long get_graphic_double();
 static long get_control_double();
 static long get_alarm_double();
 
-struct rset epidRSET={
+rset epidRSET={
     RSETNUMBER,
     report,
     initialize,
@@ -124,6 +125,8 @@ struct rset epidRSET={
     get_graphic_double,
     get_control_double,
     get_alarm_double };
+
+epicsExportAddress(rset, epidRSET);
 
 struct epidDSET { /* epid DSET */
     long            number;
@@ -373,7 +376,7 @@ static void monitor(epidRecord *pepid)
        db_post_events(pepid,&pepid->d,monitor_mask);
        pepid->dp = pepid->d;
     }
-    if (pepid->ctp != pepid->ct) {
+    if (epicsTimeNotEqual(&pepid->ctp, &pepid->ct)) {
        db_post_events(pepid,&pepid->ct,monitor_mask);
        pepid->ctp = pepid->ct;
     }
