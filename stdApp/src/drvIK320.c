@@ -1,4 +1,4 @@
-/* $Id: drvIK320.c,v 1.1.1.1.2.5 2003-09-18 16:24:33 sluiter Exp $ */
+/* $Id: drvIK320.c,v 1.1.1.1.2.6 2004-01-16 18:11:55 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,9 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1.2.5  2003/09/18 16:24:33  sluiter
+ * - Fix for bus error if hardware is missing.
+ *
  * Revision 1.1.1.1  2001/07/03 20:05:28  sluiter
  * Creating
  *
@@ -61,6 +64,7 @@
  *	     - bug fix drvIK320report() trashing all the other reports.
  *	     - bug fix for bus error when harware is missing; i.e., probe for
  *           memory from drvIK320Connect().
+ * 2.2 01-16-04 rls drvIK320Connect() returns error when hardware missing.
  *
  */
 
@@ -266,6 +270,7 @@ long drvIK320Connect(int sw1, int sw2, int irqLevel, IK320Driver *pDrv)
     if (!PROBE_SUCCESS(status))
     {
 	epicsPrintf("drvIK320Connect(): bus error at address = 0x%08.8x\n", (uint_t) vmeA24);
+	status = S_dev_noMemory;
 	goto cleanup;
     }
 
