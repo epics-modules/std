@@ -82,8 +82,8 @@ static registryFunctionRef interpRef[] = {
 	{"interp_do", (REGISTRYFUNCTION)interp_do}
 };
 
-static void interpRegistrar(void) {
+static void interpRegister(void) {
 	registryFunctionRefAdd(interpRef, NELEMENTS(interpRef));
 }
 
-epicsExportRegistrar(interpRegistrar);
+epicsExportRegistrar(interpRegister);
