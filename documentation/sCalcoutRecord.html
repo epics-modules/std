@@ -17,11 +17,11 @@ sCalcout - String Calculation Output Record</H1>
 
 The String Calculation Output or "sCalcout" record is derived from
 the Calcout record and extends it by supporting string expressions in addition
-to numeric expressions.&nbsp; The record has six string fields (AA...FF) used as input variables for the expression;
-calls an extended version of the EPICS calculation engine that accepts
-string arguments, supports a variety of string functions, and can produce
-string results; and its output link writes string or numeric data depending
-on the data type of the field to which it is linked.
+to numeric expressions.&nbsp; The record has 12 string fields (AA...LL) used as
+input variables for the expression; calls an extended version of the EPICS
+calculation engine that accepts string arguments, supports a variety of string
+functions, and can produce string results; and its output link writes string or
+numeric data depending on the data type of the field to which it is linked.
 
 <P>&nbsp;
 <HR><A NAME="HEADING14-11"></A>
@@ -37,16 +37,16 @@ circumstances the record will be processed.  See the EPICS Record Reference Manu
 <H1>
 3. Read Parameters</H1>
 
-The read parameters for the sCalcout record consist of 16 input links:
-12 to numeric fields (INPA -> A, INPB -> B, . . . INPL -> L); and six to
-string fields (INAA -> AA, INBB -> BB, ...INFF -> FF). The fields can be
+The read parameters for the sCalcout record consist of 24 input links:
+12 to numeric fields (INPA -> A, INPB -> B, . . . INPL -> L); and 12 to
+string fields (INAA -> AA, INBB -> BB, ...INLL -> LL). The fields can be
 database links, channel access links, or constants. If they are links,
 they must specify another record's field. If they are constants, they will
 be initialized with the value they are configured with and can be changed
 via <TT>dbPuts</TT>. These fields cannot be hardware addresses. In addition,
 the sCalcout record contains the fields INAV, INBV, . . . INLV, which indicate
 the status of the links to numeric fields, and the fields IAAV, IBBV, .
-. . IFFV, which indicate the status of the links to string fields.&nbsp;
+. . ILLV, which indicate the status of the links to string fields.&nbsp;
 These fields indicate whether or not the specified PV was found and a link
 to it established. See <A HREF="#MARKER-9-2">Section 6, <I>Operator Display
 Parameters</I></A> for an explanation of these fields.
@@ -87,102 +87,14 @@ Parameters</I></A> for an explanation of these fields.
 </TR>
 
 <TR>
-<TD>INPC</TD>
-<TD>Input Link C</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INPD</TD>
-<TD>Input Link D</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INPE</TD>
-<TD>Input Link E</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INPF</TD>
-<TD>Input Link F</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INPG</TD>
-<TD>Input Link G</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INPH</TD>
-<TD>Input Link H</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INPI</TD>
-<TD>Input Link I</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INPJ</TD>
-<TD>Input Link J</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INPK</TD>
-<TD>Input Link K</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
 </TR>
 
 <TR>
@@ -219,41 +131,19 @@ Parameters</I></A> for an explanation of these fields.
 </TR>
 
 <TR>
-<TD>INCC</TD>
-<TD>Input Link CC</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
 </TR>
 
 <TR>
-<TD>INDD</TD>
-<TD>Input Link DD</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INEE</TD>
-<TD>Input Link EE</TD>
-<TD>INLINK</TD>
-<TD>Yes</TD>
-<TD>0</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>N/A</TD>
-</TR>
-
-<TR>
-<TD>INFF</TD>
-<TD>Input Link FF</TD>
+<TD>INFLL</TD>
+<TD>Input Link LL</TD>
 <TD>INLINK</TD>
 <TD>Yes</TD>
 <TD>0</TD>
@@ -341,16 +231,25 @@ you can enter an expression for the record to evaluate when it processes.  The r
 
 <P>
 Expressions supported by the string calculation record can involve operands,
-algebraic operators and functions, trigonometric functions, relational operators, logical operators, string operators and functions, parentheses and commas, and the conditional '?:' operator. The expression can consist of any of these operators, as well as any of the values from the input fields, which are the operands.
+algebraic operators and functions, trigonometric functions, relational
+operators, logical operators, string operators and functions, parentheses
+and commas, and the conditional '?:' operator. The expression can consist
+of any of these operators, as well as any of the values from the input
+fields, which are the operands.
 
-<P>&nbsp;Grouping of operands with parentheses is important not only to specify the order in which operations are to be done, but also to distinguish operands from operators whose names are spelled out, such as the logical operator 'AND'.  The expression 'AANDB', which could have meant 'A AND B', will be misinterpreted by the parser, which will interpret 'AA' as the name of a string variable.
+<P>&nbsp;Grouping of operands with parentheses is important not only to
+specify the order in which operations are to be done, but also to distinguish
+operands from operators whose names are spelled out, such as the logical
+operator 'AND'.  The expression 'AANDB', which could have meant 'A AND B',
+will be misinterpreted by the parser, which will interpret 'AA' as the name
+of a string variable.
 
 <A NAME="HEADING14-19"></A>
 <H2>
 4.1. Operands</H2>
 The expression can use the values retrieved from the input links as operands,
 though constants can be used as operands too. These values retrieved from
-the input links are stored in the A-L, and AA-FF fields. The values to
+the input links are stored in the A-L, and AA-LL fields. The values to
 be used in the expression are simply referenced by the field name. For
 example, the value obtained from the INPA link is stored in the field A,
 and the value obtained from INPB is stored in field B. The field names
@@ -461,8 +360,8 @@ values, as in A+B.
 </TR>
 
 <TR>
-<TD>FF</TD>
-<TD>Input string FF</TD>
+<TD>LL</TD>
+<TD>Input string LL</TD>
 <TD>STRING (40)</TD>
 <TD>No</TD>
 <TD>0</TD>
@@ -477,7 +376,9 @@ values, as in A+B.
 <P>* If a valid input link is associated with this field, then it may
 not be modified.
 
-<P>&nbsp;There are a few special operands not associated with input fields, but defined by the record (more exactly, defined by the calc engine the record uses to evaluate expressions).  All but <code>RNDM</code> are constants.
+<P>&nbsp;There are a few special operands not associated with input fields, but
+defined by the record (more exactly, defined by the calc engine the record uses
+to evaluate expressions).  All but <code>RNDM</code> are constants.
 
 <P><A NAME="HEADING14-20"></A>
 
@@ -977,12 +878,14 @@ to format string (two-argument function) (NOTE: '$S' is a synonym for SSCANF)
 
 <tr>
 <td align=center valign=top>@
-<td>Numeric array element.  Regard the numeric fields A-L as an array whose elements are numbered 0-11, and return the element whose number follows.  (unary)
+<td>Numeric array element.  Regard the numeric fields A-L as an array whose elements
+are numbered 0-11, and return the element whose number follows.  (unary)
 <td><code>@A</code>
 
 <tr>
 <td align=center valign=top>@@
-<td>String array element.  Regard the string fields AA-FF as an array of strings whose elements are numbered 0-5, and return the element whose number follows.  (unary)
+<td>String array element.  Regard the string fields AA-LL as an array of strings whose
+elements are numbered 0-11, and return the element whose number follows.  (unary)
 <td><code>@@A</code>
 
 </table>
@@ -1042,10 +945,13 @@ to format string (two-argument function) (NOTE: '$S' is a synonym for SSCANF)
 <DT><B><CODE>A + "abc"</CODE></B><BR>
 <B><CODE>A + "abc1.2"</B></CODE><BR>
 <B><CODE>A + AA</CODE></B>&nbsp;&nbsp;<I>(where AA = "abc1.2")</I>
-<DD>Result is <CODE>A</CODE>.&nbsp; The strings <CODE>"abc"</CODE> and <CODE>"abc1.2"</CODE> will be converted implicitly to the number <CODE>0</CODE>.
+<DD>Result is <CODE>A</CODE>.&nbsp; The strings <CODE>"abc"</CODE> and
+<CODE>"abc1.2"</CODE> will be converted implicitly to the number <CODE>0</CODE>.
 
 <P><DT><B><CODE>A + DBL("abc1.2")</CODE></B>
-<DD>Result is <CODE>A + 1.2</CODE>.&nbsp; Explicit conversion to a number (by <CODE>DBL</CODE>, <CODE>INT</CODE>, or <CODE>NINT</CODE>) is more aggressive than implicit conversion, and skips leading non-numeric characters.
+<DD>Result is <CODE>A + 1.2</CODE>.&nbsp; Explicit conversion to a number
+(by <CODE>DBL</CODE>, <CODE>INT</CODE>, or <CODE>NINT</CODE>) is more
+aggressive than implicit conversion, and skips leading non-numeric characters.
 
 <P><DT><B><CODE>"abc" + "def"</CODE></B>
 <DD>Result is <CODE>"abcdef"</CODE>.
@@ -1070,16 +976,24 @@ stack.
 <DD>Result is <CODE>65</CODE>, the ASCII code for "A" in decimal.
 
 <P><DT><B><CODE>"abcdef"[2,4]</CODE></B>
-<DD>Result is <CODE>"cde"</CODE>.&nbsp; (The first character of the string is numbered "0".)
+<DD>Result is <CODE>"cde"</CODE>.&nbsp; (The first character of the string
+is numbered "0".)
 
 <P><DT><B><CODE>"abcdef"[-2,-1]</CODE></B>
-<DD>Result is <CODE>"ef"</CODE>.&nbsp; (The last character of the string is numbered "-1".)
+<DD>Result is <CODE>"ef"</CODE>.&nbsp; (The last character of the string is
+numbered "-1".)
 
 <P><DT><B><CODE>"abcdef"["ab","ef"]</CODE></B>
-<DD>Result is <CODE>"cd"</CODE>.&nbsp; (If the first argument is a string, it returns the index of the first character <I>after</I> a successful match, or the first character in the string if no match was found.&nbsp; If the second argument is a string, it returns the index of the last character <i>before</i> a successful match, or the last character in the string if no match was found.)
+<DD>Result is <CODE>"cd"</CODE>.&nbsp; (If the first argument is a string,
+it returns the index of the first character <I>after</I> a successful match,
+or the first character in the string if no match was found.&nbsp; If the
+second argument is a string, it returns the index of the last character
+<i>before</i> a successful match, or the last character in the string if no
+match was found.)
 
 <P><DT><B><CODE>A==2 ? "yes" : "no"</CODE></B>
-<DD>Result is <CODE>"yes"</CODE> if <CODE>A == 2</CODE>; otherwise, result is <CODE>"no"</CODE>.
+<DD>Result is <CODE>"yes"</CODE> if <CODE>A == 2</CODE>; otherwise, result
+is <CODE>"no"</CODE>.
 
 <P><DT><B><CODE>"abcdef"{"bcd","dcb"}</CODE></B>
 <DD>Result is <CODE>"adcbef"</CODE>.
@@ -1098,13 +1012,15 @@ Array</H3>
 
 <DL>
 <DT><B><CODE>@0</CODE></B>
-<DD>Result in the value of the numeric variable <CODE>A</CODE>.  ("<CODE>@0</CODE>" is just another name for <CODE>A</CODE>.)<P>
+<DD>Result in the value of the numeric variable <CODE>A</CODE>.  ("<CODE>@0</CODE>"
+is just another name for <CODE>A</CODE>.)<P>
 
 <DT><B><CODE>@@0</CODE></B>
 <DD>Result in the value of the string variable AA.<P>
 
 <DT><B><CODE>@(A+B)</CODE></B>
-<DD>Result in the value of the numeric variable whose number is given by the sum of A and B.<P>
+<DD>Result in the value of the numeric variable whose number is given by the sum
+of A and B.<P>
 
 <DT><B></B>
 <DD>
@@ -1346,8 +1262,8 @@ used.
 HIHI, HIGH, LOW, and LOLO fields. PREC controls the precision of the VAL
 field.
 
-<P>The INAV-INLV and IAAV-IFFV fields indicate the status of the
-link to the PVs specified in the INPA-INPL and INAA-INFF fields, respectively.
+<P>The INAV-INLV and IAAV-ILLV fields indicate the status of the
+link to the PVs specified in the INPA-INPL and INAA-INLL fields, respectively.
 The fields can have three possible values:
 
 <P>&nbsp;
@@ -1355,12 +1271,14 @@ The fields can have three possible values:
 
 <tr>
 <td valign=top>Ext PV NC
-<td valign=top>the PV wasn't found on this IOC and a Channel Access link hasn't been established.
+<td valign=top>the PV wasn't found on this IOC and a Channel Access link hasn't
+been established.
 </tr>
 
 <tr>
 <td valign=top>Ext PV OK
-<td valign=top>the PV wasn't found on this IOC and a Channel Access link has been established.
+<td valign=top>the PV wasn't found on this IOC and a Channel Access link has
+been established.
 </tr>
 
 <tr>
@@ -1385,7 +1303,8 @@ the field is set to one.
 <P>The DLYA field is set to one during the delay interval specified
 in ODLY.
 
-<P>See the EPICS Record Reference Manual, for more on the record name (NAME) and description (DESC) fields.
+<P>See the EPICS Record Reference Manual, for more on the record name (NAME) and
+description (DESC) fields.
 
 <P>
 <TABLE BORDER>
@@ -1474,111 +1393,15 @@ in ODLY.
 </TR>
 
 <TR>
-<TD>INCV</TD>
-<TD>Link Status of INPC</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>INDV</TD>
-<TD>Link Status of INPD</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>INEV</TD>
-<TD>Link Status of INPE</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>INFV</TD>
-<TD>Link Status of INPF</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>INGV</TD>
-<TD>Link Status of INPG</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>INHV</TD>
-<TD>Link Status of INPH</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>INIV</TD>
-<TD>Link Status of INPI</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>INJV</TD>
-<TD>Link Status of INPJ</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>INKV</TD>
-<TD>Link Status of INPK</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
 </TR>
 
 <TR>
@@ -1690,44 +1513,20 @@ in ODLY.
 </TR>
 
 <TR>
-<TD>ICCV</TD>
-<TD>Link Status of INCC</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
+<TD>...</TD>
 </TR>
 
 <TR>
-<TD>IDDV</TD>
-<TD>Link Status of INDD</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>IEEV</TD>
-<TD>Link Status of INEE</TD>
-<TD>Menu</TD>
-<TD>No</TD>
-<TD>1</TD>
-<TD>Yes</TD>
-<TD>No</TD>
-<TD>No</TD>
-<TD>No</TD>
-</TR>
-
-<TR>
-<TD>IFFV</TD>
-<TD>Link Status of INFF</TD>
+<TD>ILLV</TD>
+<TD>Link Status of INLL</TD>
 <TD>Menu</TD>
 <TD>No</TD>
 <TD>1</TD>
@@ -1754,7 +1553,8 @@ which an error message is generated.
 define the limit alarms for the VAL field and the severity corresponding
 to those conditions.
 
-<P>&nbsp;The HYST field defines an alarm deadband for each limit. See the EPICS Record Reference Manual for a complete explanation of alarms
+<P>&nbsp;The HYST field defines an alarm deadband for each limit. See the
+EPICS Record Reference Manual for a complete explanation of alarms
 and these fields. 
 
 <P>
@@ -1893,8 +1693,8 @@ monitored field by the appropriate deadband, the ADEL for archiver monitors
 and the MDEL field for all other types of monitors. If these fields have
 a value of zero, every time the value changes, monitors are triggered;
 if they have a value of -1, every time the record is scanned, monitors
-are triggered. See <I><A HREF="rcrf-5.html#MARKER-9-15">Monitor Specification,
-Chapter 1, 5</A></I>, for a complete explanation of monitors.
+are triggered.
+
 <TABLE BORDER >
 <TR>
 <TH>Field</TH>
@@ -2098,8 +1898,8 @@ in the same manner for the VAL field.
 </TR>
 
 <TR>
-<TD>LFF</TD>
-<TD>Previous Input Value for FF</TD>
+<TD>LLL</TD>
+<TD>Previous Input Value for LL</TD>
 <TD>STRING[40]</TD>
 <TD>No</TD>
 <TD>0</TD>
@@ -2241,7 +2041,7 @@ are met.</LI>
 
 <P>&nbsp;
 <LI>
-Monitors for A-L and AA-FF are checked whenever other monitors are invoked.</LI>
+Monitors for A-L and AA-LL are checked whenever other monitors are invoked.</LI>
 
 
 <P>&nbsp;
@@ -2368,7 +2168,7 @@ put the value of OVAL to the OUT link and post the event in OEVT (if non-zero).<
 
 <HR>
 <ADDRESS>
-Tim Mooney - JAN 25, 2003</ADDRESS>
+Tim Mooney - Nov 18, 2003</ADDRESS>
 
 </BODY>
 </HTML>

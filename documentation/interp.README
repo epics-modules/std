@@ -1,6 +1,6 @@
 This interpolation software relies in the gensub record (written by
-Andy Foster), a copy of which is included in synApps, built in the stdApp/src
-directory.
+Andy Foster), a copy of which is included in synApps, built in the
+std/stdApp/src directory.
 
 The following fields of the gensub record have the following functions
 in this software:
@@ -26,7 +26,7 @@ VALG high limit for D
 Here's how you use it:
 
 Load A, B, C arrays such that B[i] = y1(A[i]) and C[i] = y2(A[i]),
-where y1 and y2 are the functions you want ti interpolate.  You can
+where y1 and y2 are the functions you want to interpolate.  You can
 do this by editing the file interp.load.  The supplied interp.adl
 file expects interp.load to be located in ../burt, relative to the
 directory in which medm was started.  You could also do it by hand.
@@ -41,6 +41,6 @@ described above.  The user writes to $(P)interp_x, and the database
 sends this (limit-checked) value to the gensub record, which interpolates
 and writes to $(P)interp_y1 and $(P)interp_y2.  If the user has specified
 output-link fields $(P)interp_y1.OUT or $(P)interp_y2.OUT, then the
-values will, of course, be written to the records named in those links.
+values will be written to the PV's named in those links.
 
 Tim Mooney 6/4/2002
