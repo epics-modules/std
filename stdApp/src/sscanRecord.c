@@ -197,9 +197,10 @@
  * 5.15 10-01-01  tmm   Looking for PPC problems involving floating-point exceptions.  Try to
  *                      allow npts == 1, for fly scans.  Fix ppvn pointer problems.  If PV name
  *                      is all whitespace, reset it to an empty string.
+ * 5.16 07-10-03  rls   Bug fix for NUM_DET not matching 70 detectors in *.dbd file.
  */
 
-#define VERSION 5.15
+#define VERSION 5.16
 
 
 
