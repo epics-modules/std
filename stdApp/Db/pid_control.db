@@ -1,0 +1,32 @@
+grecord(epid,"$(P)$(PID)") {
+        field(INP,"$(INP)")
+        field(OUTL,"$(OUT) PP NMS")
+        field(SCAN,"$(SCAN)")
+        field(KP,"$(KP)")
+        field(KI,"$(KI)")
+        field(KD,"$(KD)")
+        field(LOPR,"$(LOPR)")
+        field(HOPR,"$(HOPR)")
+        field(DRVL,"$(DRVL)")
+        field(DRVH,"$(DRVH)")
+        field(PREC,"$(PREC)")
+        field(FLNK,"$(P)$(PID)_limits.VAL PP NMS")
+}
+grecord(transform,"$(P)$(PID)_limits") {
+        field(DESC,"PID limits")
+        field(CMTA,"Low input")
+        field(INPA,"$(DRVL)")
+        field(CMTB,"High limit")
+        field(INPB,"$(DRVH)")
+        field(CMTO,"Low output")
+        field(CLCO,"a")
+        field(OUTO,"$(P)$(PID).DRVL NPP NMS")
+        field(CMTP,"High output")
+        field(CLCP,"b")
+        field(OUTP,"$(P)$(PID).DRVH NPP NMS")
+        field(PREC,"$(PREC)")
+}
+grecord(transform,"$(P)$(PID)_calc") {
+        field(DESC,"PID input calc")
+        field(PREC,"$(PREC)")
+}
