@@ -1,8 +1,5 @@
 program kohzuCtl  ("P=nda, M_THETA=m9, M_Y=m10, M_Z=m11, GEOM=1")
 
-
-%%volatile short kohzuCtlDebug;
-
 /* arguments on the command line  :
  * 
  * ex.  seq &kohzuCtl, "P=nda, M_THETA=m9, M_Y=m10, M_Z=m11"
@@ -35,9 +32,19 @@ program kohzuCtl  ("P=nda, M_THETA=m9, M_Y=m10, M_Z=m11, GEOM=1")
  *                assert "done"; this allows dbPutNotify to detect completion).
  *                Combined two monochromator geometries (kohzu/PSL & kohzu2).
  * 11-02-00 tmm   v3.1 if a motor is frozen, ignore its limit conditions
+ * 12-12-03 tmm   v3.2 Converted to EPICS 3.14 OSI.  Fixed long-standing bug:
+ *                if thetaMotRdbk changed by small amount, program didn't react
+ *                The problem was a single event flag tested in two state sets
+ *                (though cleared in only one).  Now only one ss tests the event
+ *                and it posts a different event thetaMotRdbkPseudo_mon to alert
+ *                the other ss.
  */
 
 /* General Purpose PV's used by sequence */
+short kohzuCtlDebug;
+assign  kohzuCtlDebug to "{P}KohzuCtlDebug"; 
+monitor kohzuCtlDebug;
+
 string  seqMsg1;
 assign  seqMsg1 to "{P}KohzuSeqMsg1SI"; 
 
@@ -51,14 +58,23 @@ short   opAck;
 assign  opAck to "{P}KohzuOperAckBO";
 monitor opAck;
 
+/* {P}KohzuPutBO is the user's "Move" button.  If {P}KohzuModeBO==0, user
+ * can write whatever values he wants to whatever fields, and set
+ * {P}KohzuPutBO=1 to say "make it so".
+ */
 short   putVals; 
 assign  putVals to "{P}KohzuPutBO";
 monitor putVals;
 
+/* {P}KohzuModeBO is the user's "Manual/Auto" menu.  If {P}KohzuModeBO==0,
+ * nothing happens to motors until the user sets {P}KohzuPutBO=1.  If
+ * {P}KohzuModeBO==1, we respond directly to changes in {P}BraggEAO, etc. 
+ */
 short   autoMode;
 assign  autoMode to "{P}KohzuModeBO";
 monitor autoMode;
 
+/* Menu: Normal, Channel Cut, Freeze Z, Freeze Y */
 short   ccMode;
 assign  ccMode to "{P}KohzuMode2MO";
 monitor ccMode;
@@ -367,6 +383,7 @@ assign  thetaMotRdbk to "{P}{M_THETA}.RBV";
 monitor thetaMotRdbk;
 evflag  thetaMotRdbk_mon;
 sync    thetaMotRdbk thetaMotRdbk_mon;
+evflag  thetaMotRdbkPseudo_mon;
 
 double  yMotRdbk;
 assign  yMotRdbk to "{P}{M_Y}.RBV";
@@ -477,13 +494,12 @@ ss kohzuCtl {
 state init {
 	when () {
 		initSeq = 0;
-%%		kohzuCtlDebug = 0;
 	} state initSequence
 }
 
 state initSequence {
 	when (initSeq == 0) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:initSequence:initSeq=0\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:initSequence:initSeq=0\n");
 		hc = 12.3984244;
 		radConv = 57.2958;
 		thetaMotStop = 1;
@@ -546,17 +562,17 @@ state initSequence {
 	} state dInputChanged
 
 	when (initSeq == 1) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:initSequence:initSeq=1\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:initSequence:initSeq=1\n");
 		initSeq = 2;
 	} state chkMotorLimits
 
 	when (initSeq == 2) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:initSequence:initSeq=2\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:initSequence:initSeq=2\n");
 		initSeq = 3;
 	} state updateRdbk
 
-	when (initSeq == 3) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:initSequence:initSeq=3\n");
+	when ((initSeq == 3) && delay(1.)) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:initSequence:initSeq=3\n");
 		sprintf(seqMsg1, "Kohzu Control Ready");
 		pvPut(seqMsg1);
 		sprintf(seqMsg2, " ");
@@ -568,8 +584,8 @@ state initSequence {
 }
 
 state waitForCmndEnter {
-	when (initSeqDone) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmndEnter:initSeqDone\n");
+	when (initSeqDone && delay(.1)) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmndEnter:initSeqDone\n");
 		efClear(H_mon);
 		efClear(K_mon);
 		efClear(L_mon);
@@ -603,15 +619,6 @@ state waitForCmndEnter {
 		zDmovEcho = zDmov;
 		pvPut(zDmovEcho);
 		if (autoMode || useSetMode) {
-#if 0
-%%			if (kohzuCtlDebug) printf("kohzuCtl:waitForCmndEnter: writing to command fields\n");
-			theta = thetaMotCmdMon;
-			pvPut(theta);
-			lambda = D*sin(theta/radConv);
-			pvPut(lambda);
-			E = hc/lambda;
-			pvPut(E);
-#endif
 			thetaRdbk = thetaMotRdbk;
 			pvPut(thetaRdbk);
 			lambdaRdbk = D*sin(thetaRdbk/radConv);
@@ -621,22 +628,21 @@ state waitForCmndEnter {
 		}
 		opAck = 0;
 		pvPut(opAck);
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmndEnter: kohzuMoving=%d; kohzuDone=%d\n", kohzuMoving, kohzuDone);
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmndEnter: kohzuMoving=%d; kohzuDone=%d\n", kohzuMoving, kohzuDone);
 		if (kohzuMoving && kohzuDone) {
-%%			if (kohzuCtlDebug) printf("kohzuCtl:waitForCmndEnter: asserting 'done'.\n");
+			if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmndEnter: asserting 'done'.\n");
 			kohzuMoving=0; kohzuDone = 0;
 			pvPut(kohzuMoving);
 		}
-		delay(.33);
 	} state waitForCmnd  
 
-	when () {
+	when (!initSeqDone) {
 	} state initSequence
 }
 
 state waitForCmnd {
 	when (efTest(H_mon) || efTest(K_mon) || efTest(L_mon) || efTest(A_mon)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:HKLA_mon\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:HKLA_mon\n");
 		sprintf(seqMsg1, "Lattice Spacing Changed");
 		pvPut(seqMsg1);
 		sprintf(seqMsg2, " ");
@@ -648,7 +654,7 @@ state waitForCmnd {
 	} state dInputChanged
 
 	when (efTest(thetaMotHiLim_mon) || efTest(thetaMotLoLim_mon)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:thetaMotXxLim_mon\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:thetaMotXxLim_mon\n");
 		sprintf(seqMsg1, "Theta Motor Soft Limits Changed");
 		pvPut(seqMsg1);
 		sprintf(seqMsg2, " ");
@@ -657,36 +663,36 @@ state waitForCmnd {
 		efClear(thetaMotLoLim_mon);
 	} state thetaLimits
 
-	when (efTest(thetaMotRdbk_mon)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:thetaMotRdbk_mon\n");
+	when (efTestAndClear(thetaMotRdbk_mon)) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:thetaMotRdbk_mon\n");
+		efSet(thetaMotRdbkPseudo_mon);
 	} state updateRdbk
 
 	when (efTest(E_mon)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:E_mon\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:E_mon\n");
 		efClear(E_mon);
 	} state eChanged
 
 	when (efTest(lambda_mon)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:lambda_mon\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:lambda_mon\n");
 		efClear(lambda_mon);
 	} state lChanged
 
 	when (efTest(theta_mon)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:theta_mon\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:theta_mon\n");
 		efClear(theta_mon);
 	} state thChanged
 
-	when (putVals) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:putVals\n");
-		delay(.1);
+	when (putVals && delay(.1)) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:putVals\n");
 	} state moveKohzu
 
 	when (ETweakInc||ETweakDec||LTweakInc||LTweakDec||thTweakInc||thTweakDec) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:Tweak\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:Tweak\n");
 	} state tweak
 
 	when (efTest(yOffset_mon)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:yOffset_mon\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:yOffset_mon\n");
 		efClear(yOffset_mon);
 		autoMode = 0;
 		pvPut(autoMode);
@@ -697,7 +703,7 @@ state waitForCmnd {
 	} state calcMovements
 
 	when (opAck) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:waitForCmnd:opAck\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:waitForCmnd:opAck\n");
 		opAlert = 0;
 		pvPut(opAlert);
 		sprintf(seqMsg1, " ");
@@ -709,7 +715,7 @@ state waitForCmnd {
 
 state tweak {
 	when (ETweakInc) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:tweak:E+\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:E+\n");
 		temp = E + ETweakVal;
 		if ((temp>=ELo) && (temp<=EHi)) {
 			E = temp;
@@ -722,11 +728,10 @@ state tweak {
 		}
 		ETweakInc = 0;
 		pvPut(ETweakInc);
-		delay(.1);
 	} state eChanged
 
 	when (ETweakDec) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:tweak:E-\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:E-\n");
 		temp = E - ETweakVal;
 		if ((temp>=ELo) && (temp<=EHi)) {
 			E = temp;
@@ -739,11 +744,10 @@ state tweak {
 		}
 		ETweakDec = 0;
 		pvPut(ETweakDec);
-		delay(.1);
 	} state eChanged
 
 	when (LTweakInc) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:tweak:L+\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:L+\n");
 		temp = lambda + LTweakVal;
 		if ((temp>=lambdaLo) && (temp<=lambdaHi)) {
 			lambda = temp;
@@ -756,11 +760,10 @@ state tweak {
 		}
 		LTweakInc = 0;
 		pvPut(LTweakInc);
-		delay(.1);
 	} state lChanged
 
 	when (LTweakDec) {
-%%		if (kohzuCtlDebug)printf("kohzuCtl:tweak:L-\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:L-\n");
 		temp = lambda - LTweakVal;
 		if ((temp>=lambdaLo) && (temp<=lambdaHi)) {
 			lambda = temp;
@@ -773,11 +776,10 @@ state tweak {
 		}
 		LTweakDec = 0;
 		pvPut(LTweakDec);
-		delay(.1);
 	} state lChanged
 
 	when (thTweakInc) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:tweak:th+\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:th+\n");
 		temp = theta + thTweakVal;
 		if ((temp>=thetaLo) && (temp<=thetaHi)) {
 			theta = temp;
@@ -790,11 +792,10 @@ state tweak {
 		}
 		thTweakInc = 0;
 		pvPut(thTweakInc);
-		delay(.1);
 	} state thChanged
 
 	when (thTweakDec) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:tweak:th-\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:tweak:th-\n");
 		temp = theta - thTweakVal;
 		if ((temp>=thetaLo) && (temp<=thetaHi)) {
 			theta = temp;
@@ -807,13 +808,12 @@ state tweak {
 		}
 		thTweakDec = 0;
 		pvPut(thTweakDec);
-		delay(.1);
 	} state thChanged
 }
 
 state dInputChanged {
 	when () {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:dInputChanged\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:dInputChanged\n");
 		autoMode = 0;
 		pvPut(autoMode);
 		sprintf(seqMsg2, "Set to Manual Mode");
@@ -835,7 +835,7 @@ state dInputChanged {
 
 state thetaLimits {
 	when () {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:thetaLimits\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:thetaLimits\n");
 		thetaHi = thetaMotHiLim;
 		thetaLo = thetaMotLoLim;
 		if (thetaHi > 89.0) {
@@ -863,7 +863,7 @@ state thetaLimits {
 
 state eChanged {
 	when () { 
-%%		if (kohzuCtlDebug)printf("kohzuCtl:eChanged\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:eChanged\n");
 		lambda = hc/E;
 		pvPut(lambda);
 	} state lChanged
@@ -871,7 +871,7 @@ state eChanged {
 
 state lChanged {
 	when (lambda > D) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:lChanged: lambda>D\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:lChanged: lambda>D\n");
 		/* Don't change Theta, notify operator */
 		sprintf(seqMsg1, "Wavelength > 2d spacing.");
 		pvPut(seqMsg1);
@@ -880,7 +880,7 @@ state lChanged {
 	} state thChanged 
 
 	when () {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:lChanged\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:lChanged\n");
 		theta = radConv * asin(lambda/D);
 		pvPut(theta);
 	} state thChanged
@@ -888,7 +888,7 @@ state lChanged {
 
 state thChanged {
 	when () {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:thChanged\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:thChanged\n");
 		if ((theta <= thetaLo) || (theta >= thetaHi)) {
 			sprintf(seqMsg1, "Theta constrained to LIMIT");
 			pvPut(seqMsg1);
@@ -916,7 +916,7 @@ state thChanged {
 
 state calcMovements {
 	when () {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:calcMovements\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:calcMovements\n");
 
 		/* Calculate new Y and Z, check against limits */
 		thetaMotDesired = theta;
@@ -992,7 +992,7 @@ state calcMovements {
 
 state moveKohzu {
 	when (autoMode || putVals || useSetMode) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:moveKohzu:auto|put\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:moveKohzu:auto|put\n");
 		thSpeed = newThSpeed;
 		ySpeed = newYSpeed;
 		zSpeed = newZSpeed;
@@ -1020,17 +1020,16 @@ state moveKohzu {
 		putVals = 0;
 		pvPut(putVals);
 		causedMove = 1;
-		delay(.5);
 	} state updateRdbk
 
 	when (1) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:moveKohzu\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:moveKohzu\n");
 	} state waitForCmndEnter
 }
 
 state checkDone {
 	when (thetaDmov && yDmov && zDmov) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:checkDone: done\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:checkDone: done\n");
 		kohzuDone = 1;
 	} state waitForCmndEnter
 
@@ -1041,7 +1040,7 @@ state checkDone {
 
 state updateRdbk {
 	when (thetaMotRdbk == 0) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:updateRdbk:thetaMotRdbk==0\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk:thetaMotRdbk==0\n");
 		sprintf(seqMsg1, "Theta Motor Readback is 0 !");
 		pvPut(seqMsg1);
 		sprintf(seqMsg2, "Monochromator stopped");
@@ -1050,8 +1049,8 @@ state updateRdbk {
 		pvPut(opAlert);
 	} state waitForCmndEnter
 
-	when (thetaDmov && yDmov && zDmov) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:updateRdbk:*Dmov\n");
+	when ((thetaDmov && yDmov && zDmov) && delay(.02)) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk:*Dmov\n");
 		thetaRdbk = thetaMotRdbk;
 		lambdaRdbk = D * sin(thetaRdbk/radConv);
 		ERdbk = hc/lambdaRdbk;
@@ -1060,12 +1059,12 @@ state updateRdbk {
 		pvPut(ERdbk);
 
 		kohzuDone = 1;
-%%		if (kohzuCtlDebug) printf("kohzuCtl:updateRdbk: done\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk: done\n");
 	} state thetaMotStopped
 
 
 	when (thetaHls || thetaLls) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:updateRdbk: Th limit switch\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk: Th limit switch\n");
 		sprintf(seqMsg1, "Theta Motor hit a limit switch!");
 		pvPut(seqMsg1);
 		opAlert = 1;
@@ -1076,8 +1075,9 @@ state updateRdbk {
 		pvPut(seqMsg2);
 	} state stopKohzu
 
+	/* Ignore Y limit switches in "channel-cut" and "freeze-y" modes */
 	when ((ccMode != 1) && (ccMode != 3) && (yHls || yLls)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:updateRdbk: Y limit switch\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk: Y limit switch\n");
 		sprintf(seqMsg1, "Y Motor hit a limit switch!");
 		pvPut(seqMsg1);
 		opAlert = 1;
@@ -1088,8 +1088,9 @@ state updateRdbk {
 		pvPut(seqMsg2);
 	} state stopKohzu
 
+	/* Ignore Z limit switches in "channel-cut" and "freeze-z" modes */
 	when ((ccMode != 1) && (ccMode != 2) && (zHls || zLls)) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:updateRdbk: Z limit switch\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:updateRdbk: Z limit switch\n");
 		sprintf(seqMsg1, "Z Motor hit a limit switch!");
 		pvPut(seqMsg1);
 		opAlert = 1;
@@ -1101,7 +1102,7 @@ state updateRdbk {
 	} state stopKohzu
 
 	when ((!thetaDmov || !yDmov || !zDmov) && delay(.1)) {
-%%		if (kohzuCtlDebug>1) printf("kohzuCtl:updateRdbk:moving\n");
+		if (kohzuCtlDebug>1) %%printf("kohzuCtl:updateRdbk:moving\n");
 		thetaRdbk = thetaMotRdbk;
 		lambdaRdbk = D * sin(thetaRdbk/radConv);
 		ERdbk = hc/lambdaRdbk;
@@ -1114,20 +1115,20 @@ state updateRdbk {
 
 state thetaMotStopped {
 	when (causedMove) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:thetaMotStopped:causedMove\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:thetaMotStopped:causedMove\n");
 		thSpeed = oldThSpeed;
 		ySpeed = oldYSpeed;
 		zSpeed = oldZSpeed;
 		pvPut(thSpeed);
 		pvPut(ySpeed);
-%%		if (kohzuCtlDebug) printf("kohzuCtl:thetaMotStopped: ySpeed = %f\n", ySpeed);
+		if (kohzuCtlDebug) %%printf("kohzuCtl:thetaMotStopped: ySpeed = %f\n", ySpeed);
 		pvPut(zSpeed);
 		causedMove = 0;
 	} state waitForCmndEnter
 
 	/* Someone moved the Theta motor directly */
 	when (!causedMove) {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:thetaMotStopped:!causedMove\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:thetaMotStopped:!causedMove\n");
 		if (initSeqDone) {
 			opAlert = 1;
 			pvPut(opAlert);
@@ -1149,7 +1150,7 @@ state thetaMotStopped {
 
 state chkMotorLimits {
 	when () {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:chkMotorLimits\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:chkMotorLimits\n");
 		opAlert = 0;
 		thetaRdbk = thetaMotRdbk;
 		lambdaRdbk = D * sin(thetaRdbk/radConv);
@@ -1204,26 +1205,27 @@ state chkMotorLimits {
 
 state chkMotorLimitsExit {
 	when (!opAlert) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:chkMotorLimitsExit: OK\n");
 		pvPut(opAlert);
 		sprintf(seqMsg1, "All motors within limits");
 		pvPut(seqMsg1);
 	} state waitForCmndEnter
 
-	when (opAlert) {
+	when (opAlert && delay(2.)) {
+		if (kohzuCtlDebug) %%printf("kohzuCtl:chkMotorLimitsExit: opAlert\n");
 		pvPut(opAlert);
 		sprintf(seqMsg2, "Modify Motor Positions/Limits");
 		pvPut(seqMsg2);          
-		delay(2.);
 	} state chkMotorLimits
 }
 
 state stopKohzu {
 	when () {
-%%		if (kohzuCtlDebug) printf("kohzuCtl:stopKohzu\n");
+		if (kohzuCtlDebug) %%printf("kohzuCtl:stopKohzu\n");
 		pvPut(thetaMotStop);
 		pvPut(yStop);
 		pvPut(zStop);
-		delay(1.);
+		/*delay(1.);*/
 	} state updateRdbk
 
 }
@@ -1242,10 +1244,9 @@ state init {
 }
 
 state update {
-	when (efTest(thetaMotRdbk_mon)) {
+	when (efTestAndClear(thetaMotRdbkPseudo_mon)) {
 		thetaMotRdbkEcho = thetaMotRdbk;
 		pvPut(thetaMotRdbkEcho);
-		efClear(thetaMotRdbk_mon);
 	} state update
 
 	when (efTest(yMotRdbk_mon)) {
