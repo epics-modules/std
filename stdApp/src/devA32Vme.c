@@ -105,6 +105,7 @@
  /**********************************************************************/
 
 #include	<vxWorks.h>
+#include        <vxLib.h>
 #include	<sysLib.h>
 #include	<vme.h>
 #include	<types.h>
@@ -119,12 +120,14 @@
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
+#include	<recGbl.h>
 #include        <recSup.h>
 #include	<devSup.h>
 #include	<module_types.h>
 #include	<link.h>
-#include	<fast_lock.h>
+
 #include	<epicsPrint.h>
+#include        <epicsExport.h>
 
 #include        <aoRecord.h>
 #include        <aiRecord.h>
@@ -136,6 +139,8 @@
 #include        <mbbiRecord.h>
 
 #include        <dbScan.h>
+
+#define ERROR (-1)
 
 static long init_ai(), read_ai();
 static long init_ao(), write_ao();
@@ -183,7 +188,7 @@ typedef struct a32Reg {
 typedef struct ioCard {  /* Unique for each card */
   volatile a32Reg  *base;    /* address of this card's registers */
   int               nReg;    /* Number of registers on this card */
-  FAST_LOCK         lock;    /* semaphore */
+  epicsMutexId      lock;    /* semaphore */
   IOSCANPVT         ioscanpvt; /* records to process upon interrupt */
 }ioCard;
 
@@ -218,6 +223,14 @@ A32VME_DSET devLoA32Vme =   {5, NULL, NULL, init_lo, NULL, write_lo, NULL};
 A32VME_DSET devMbbiA32Vme = {5, NULL, NULL, init_mbbi, NULL, read_mbbi,  NULL};
 A32VME_DSET devMbboA32Vme = {5, NULL, NULL, init_mbbo, NULL, write_mbbo, NULL};
 
+epicsExportAddress(A32VME_DSET, devAiA32Vme);
+epicsExportAddress(A32VME_DSET, devAoA32Vme);
+epicsExportAddress(A32VME_DSET, devBiA32Vme);
+epicsExportAddress(A32VME_DSET, devBoA32Vme);
+epicsExportAddress(A32VME_DSET, devLiA32Vme);
+epicsExportAddress(A32VME_DSET, devLoA32Vme);
+epicsExportAddress(A32VME_DSET, devMbbiA32Vme);
+epicsExportAddress(A32VME_DSET, devMbboA32Vme);
 
 /**************************************************************************
  **************************************************************************/
@@ -232,7 +245,7 @@ unsigned long   regData;
       printf("  Card #%d at %p\n", cardNum, cards[cardNum].base);
       for(i=0; i < cards[cardNum].nReg; i++) {
           regData = cards[cardNum].base->reg[i];
-          printf("    Register %d -> 0x%4.4X (%d)\n", i, regData, regData);
+          printf("    Register %d -> 0x%4.4lX (%ld)\n", i, regData, regData);
       }
     }
   }
@@ -284,8 +297,7 @@ int	      iLevel;
   }
   else {
       cards[card].nReg = nregs;
-      FASTLOCKINIT(&(cards[card].lock));
-      FASTUNLOCK(&(cards[card].lock));  /* Init the board lock */
+      cards[card].lock = epicsMutexMustCreate();
   }
  
   if(iVector) {
@@ -383,7 +395,8 @@ struct boRecord *pbo;
  
       if(pbo->out.value.vmeio.card > MAX_NUM_CARDS) {
 	pbo->pact = 1;		/* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", pbo->name);
+        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", 
+        	pbo->out.value.vmeio.card , pbo->name);
         return(ERROR);
       }
 
@@ -391,7 +404,8 @@ struct boRecord *pbo;
 
       if(cards[card].base == NULL) {
 	pbo->pact = 1;		/* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",pbo->name);
+        epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",
+        	card, pbo->name);
         return(ERROR);
       }
 
@@ -457,7 +471,8 @@ struct biRecord *pbi;
 
       if(pbi->inp.value.vmeio.card > MAX_NUM_CARDS) {
         pbi->pact = 1;          /* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", pbi->name);
+        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", 
+        	pbi->inp.value.vmeio.card , pbi->name);
         return(ERROR);
       }
 
@@ -465,7 +480,8 @@ struct biRecord *pbi;
 
       if(cards[card].base == NULL) {
         pbi->pact = 1;          /* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",pbi->name);
+        epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",
+        	card, pbi->name);
         return(ERROR);
       }
 
@@ -530,7 +546,8 @@ struct mbboRecord   *pmbbo;
     case (VME_IO) :
       if(pmbbo->out.value.vmeio.card > MAX_NUM_CARDS) {
         pmbbo->pact = 1;          /* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", pmbbo->name);
+        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", 
+        	pmbbo->out.value.vmeio.card , pmbbo->name);
         return(ERROR);
       }
 
@@ -539,7 +556,7 @@ struct mbboRecord   *pmbbo;
       if(cards[card].base == NULL) {
         pmbbo->pact = 1;          /* make sure we don't process this thing */
         epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",
-                     pmbbo->name);
+                     card, pmbbo->name);
         return(ERROR);
       }
 
@@ -608,7 +625,8 @@ struct mbbiRecord   *pmbbi;
     case (VME_IO) :
       if(pmbbi->inp.value.vmeio.card > MAX_NUM_CARDS) {
         pmbbi->pact = 1;          /* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", pmbbi->name);
+        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", 
+        	pmbbi->inp.value.vmeio.card , pmbbi->name);
         return(ERROR);
       }
 
@@ -617,7 +635,7 @@ struct mbbiRecord   *pmbbi;
       if(cards[card].base == NULL) {
         pmbbi->pact = 1;          /* make sure we don't process this thing */
         epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",
-                     pmbbi->name);
+                     card, pmbbi->name);
         return(ERROR);
       }
 
@@ -685,7 +703,8 @@ struct aiRecord   *pai;
     case (VME_IO) :
       if(pai->inp.value.vmeio.card > MAX_NUM_CARDS) {
         pai->pact = 1;          /* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", pai->name);
+        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", 
+        	pai->inp.value.vmeio.card , pai->name);
         return(ERROR);
       }
 
@@ -694,7 +713,7 @@ struct aiRecord   *pai;
       if(cards[card].base == NULL) {
         pai->pact = 1;          /* make sure we don't process this thing */
         epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",
-                     pai->name);
+                     card, pai->name);
         return(ERROR);
       }
 
@@ -764,7 +783,8 @@ struct aoRecord   *pao;
     case (VME_IO) :
       if(pao->out.value.vmeio.card > MAX_NUM_CARDS) {
         pao->pact = 1;          /* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", pao->name);
+        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", 
+        	pao->out.value.vmeio.card , pao->name);
         return(ERROR);
       }
 
@@ -773,7 +793,7 @@ struct aoRecord   *pao;
       if(cards[card].base == NULL) {
         pao->pact = 1;          /* make sure we don't process this thing */
         epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",
-                     pao->name);
+                     card, pao->name);
         return(ERROR);
       }
 
@@ -854,7 +874,8 @@ struct longinRecord   *pli;
     case (VME_IO) :
       if(pli->inp.value.vmeio.card > MAX_NUM_CARDS) {
         pli->pact = 1;          /* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", pli->name);
+        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", 
+        	pli->inp.value.vmeio.card , pli->name);
         return(ERROR);
       }
 
@@ -863,7 +884,7 @@ struct longinRecord   *pli;
       if(cards[card].base == NULL) {
         pli->pact = 1;          /* make sure we don't process this thing */
         epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",
-                     pli->name);
+                     card, pli->name);
         return(ERROR);
       }
 
@@ -923,7 +944,8 @@ struct longoutRecord   *plo;
     case (VME_IO) :
       if(plo->out.value.vmeio.card > MAX_NUM_CARDS) {
         plo->pact = 1;          /* make sure we don't process this thing */
-        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", plo->name);
+        epicsPrintf("devA32Vme: Card #%d exceeds max: ->%s<- \n", 
+        	plo->out.value.vmeio.card , plo->name);
         return(ERROR);
       }
 
@@ -932,7 +954,7 @@ struct longoutRecord   *plo;
       if(cards[card].base == NULL) {
         plo->pact = 1;          /* make sure we don't process this thing */
         epicsPrintf("devA32Vme: Card #%d not initialized: ->%s<-\n",
-                     plo->name);
+                     card, plo->name);
         return(ERROR);
       }
 
@@ -1222,7 +1244,7 @@ unsigned long  *value; /* the value to return from the card */
   *value = cards[card].base->reg[reg] & mask;
 
   if (devA32VmeDebug >= 20)
-    printf("devA32Vme: read 0x%4.4X from card %d\n", *value, card);
+    printf("devA32Vme: read 0x%4.4lX from card %d\n", *value, card);
 
   return(OK);
 }
@@ -1243,13 +1265,13 @@ unsigned long   value;
   if (checkCard(card) == ERROR)
     return(ERROR);
 
-  FASTLOCK(&(cards[card].lock));
+  epicsMutexMustLock(cards[card].lock);
   cards[card].base->reg[reg] = ((cards[card].base->reg[reg] & ~mask) | 
                               (value & mask));
-  FASTUNLOCK(&(cards[card].lock));
+  epicsMutexUnlock(cards[card].lock);
 
   if (devA32VmeDebug >= 15)
-    printf("devA32Vme: wrote 0x%4.4X to card %d\n",
+    printf("devA32Vme: wrote 0x%4.4lX to card %d\n",
             cards[card].base->reg[reg], card);
 
   return(0);

@@ -40,15 +40,13 @@
  * .18  10/07/01 tmm  v5.11: Add support for Newport 5-motor table geometry
  * .19  10/19/01 tmm  v5.12: Fix Newport 5&6-motor geometry
  * .20  01/10/02 tmm  v5.13: Add PNC geometry (SRI with M0 and M1 swapped)
+ * .21  07/03/03 rls  v5.13: Port to R3.14
 */
 
 #define VERSION 5.13
 
-#include	<vxWorks.h>
-#include	<types.h>
-#include	<stdioLib.h>
 #include	<stdlib.h>
-/*#include	<lstLib.h>*/
+#include	<stdio.h>
 #include	<string.h>
 #include	<math.h>
 
@@ -59,10 +57,12 @@
 #include	<dbEvent.h>
 #include	<errMdef.h>
 #include	<recSup.h>
+#include	<recGbl.h>
 #include	<special.h>
 #define GEN_SIZE_OFFSET
 #include	"tableRecord.h"
 #undef GEN_SIZE_OFFSET
+#include	"epicsExport.h"
 
 double D2R;	/* set in init_record() */
 
@@ -93,7 +93,7 @@ struct trajectory {
 	short lvio;
 };
 
-static void     alarm();
+static void     checkAlarms();
 static void     monitor();
 static void		PrintValues(tableRecord *ptbl);
 static long     ProcessOutputLinks(tableRecord *ptbl,
@@ -190,7 +190,7 @@ struct rset     tableRSET = {
 	get_control_double,
 	get_alarm_double
 };
-
+epicsExportAddress(rset, tableRSET);
 
 struct linkStatus {
 	short can_RW_drive;				/* link .m0xl ... */
@@ -524,7 +524,7 @@ process(tableRecord *ptbl)
 	MotorToUser(ptbl, &ptbl->e0x, &ptbl->eax);
 
 	recGblGetTimeStamp(ptbl);
-	alarm(ptbl);
+	checkAlarms(ptbl);
 	monitor(ptbl);
 	recGblFwdLink(ptbl);
 	ptbl->pact = FALSE;
@@ -703,7 +703,7 @@ get_precision(struct dbAddr *paddr, long *precision)
 
 
 static void 
-alarm(tableRecord *ptbl)
+checkAlarms(tableRecord *ptbl)
 {
 	if (ptbl->udf == TRUE) {
 		recGblSetSevr(ptbl, UDF_ALARM, INVALID_ALARM);

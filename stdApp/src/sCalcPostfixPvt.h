@@ -27,6 +27,8 @@
  * -----------------
  * .01  03-18-98 tmm derived from postfix.h
  * .02  10-27-01 mlr added BYTE
+ * .03  03-20-03 tmm added VARGS support, stackElement (now also used by
+ *                   sCalcPostfix.c), MAXV_VAL, MINV_VAL, FETCH_*, 3.14 ready
  * 
  */
 
@@ -36,9 +38,33 @@
 #ifndef INCpostfixPvth
 #define INCpostfixPvth
 
-/* #define		BAD_EXPRESSION	0 */
+#include <shareLib.h>
+
+#include	"epicsVersion.h"
+#if EPICS_REVISION < 14
+#include <math.h>
+#ifdef vxWorks
+#include	<private/mathP.h>
+#define isnan(D) isNan(D)
+#define isinf(D) isInf(D)
+#endif
+#else
+#include "epicsMath.h"
+#endif
+
+#define MAX_VARGS 20
+typedef union { long l[2]; double d; } DOUBLE_LONG;
+
+#define STACKSIZE 30
+#define LOCAL_STRING_SIZE 40
+struct stackElement {
+	double d;
+	char *s;
+	char local_string[LOCAL_STRING_SIZE];
+};
 
 /*	defines for element table      */
+/* #define	BAD_EXPRESSION	0 */
 /* elements that define a value */
 #define 	FETCH		1
 #define 	SFETCH		2
@@ -112,9 +138,26 @@
 #define		A_FETCH		66
 #define		A_SFETCH	67
 #define		BYTE		68
+#define		VARG_TERM	69
+#define		MAXV_VAL	70
+#define		MINV_VAL	71
+/* NOTE: FETCH_A .. FETCH_L must be contiguous and in alphabetical order */
+#define		FETCH_A		72
+#define		FETCH_B		73
+#define		FETCH_C		74
+#define		FETCH_D		75
+#define		FETCH_E		76
+#define		FETCH_F		77
+#define		FETCH_G		78
+#define		FETCH_H		79
+#define		FETCH_I		80
+#define		FETCH_J		81
+#define		FETCH_K		82
+#define		FETCH_L		83
+
+#define NO_STRING		125
+#define USES_STRING		126
 /* #define		END_STACK	127 */
 
-#define USES_STRING 126
-#define NO_STRING 125
 #endif /* INCpostfixPvth */
 

@@ -1,14 +1,14 @@
 
 file {
-	name="/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta12_shareR1.0/stdApp/op/adl/VXstats_2.0.adl"
-	version=020305
+	name="/home/beams/BCDA/epics/synApps_T202_R3_13_7_R4_5/support/stdR3_13/stdApp/op/adl/VXstats.adl"
+	version=030003
 }
 display {
 	object {
 		x=585
 		y=30
-		width=310
-		height=110
+		width=320
+		height=120
 	}
 	clr=14
 	bclr=3
@@ -87,11 +87,22 @@ display {
 		1a7309,
 	}
 }
-text {
+rectangle {
 	object {
 		x=0
 		y=0
-		width=300
+		width=92
+		height=24
+	}
+	"basic attribute" {
+		clr=1
+	}
+}
+text {
+	object {
+		x=139
+		y=3
+		width=100
 		height=20
 	}
 	"basic attribute" {
@@ -102,9 +113,9 @@ text {
 }
 "text update" {
 	object {
-		x=100
-		y=30
-		width=40
+		x=81
+		y=38
+		width=50
 		height=20
 	}
 	monitor {
@@ -112,12 +123,15 @@ text {
 		clr=54
 		bclr=3
 	}
+	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
-		x=100
-		y=50
-		width=40
+		x=81
+		y=58
+		width=50
 		height=20
 	}
 	monitor {
@@ -125,12 +139,15 @@ text {
 		clr=54
 		bclr=3
 	}
+	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
-		x=100
-		y=70
-		width=40
+		x=81
+		y=78
+		width=50
 		height=20
 	}
 	monitor {
@@ -138,11 +155,14 @@ text {
 		clr=54
 		bclr=3
 	}
+	align="horiz. right"
+	limits {
+	}
 }
 text {
 	object {
-		x=0
-		y=90
+		x=6
+		y=100
 		width=150
 		height=20
 	}
@@ -153,12 +173,12 @@ text {
 		vis="if zero"
 		chan="$(P)status"
 	}
-	textix="some task died"
+	textix="some task died!"
 }
 "message button" {
 	object {
-		x=150
-		y=90
+		x=158
+		y=98
 		width=100
 		height=20
 	}
@@ -170,59 +190,49 @@ text {
 	label="clear errFlag"
 	press_msg="1"
 }
-composite {
+text {
 	object {
-		x=0
-		y=30
-		width=100
-		height=60
+		x=24
+		y=38
+		width=50
+		height=20
 	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		text {
-			object {
-				x=0
-				y=30
-				width=100
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="memory (%)"
-		}
-		text {
-			object {
-				x=0
-				y=50
-				width=100
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="cpu (%)"
-		}
-		text {
-			object {
-				x=0
-				y=70
-				width=100
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="fd"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="memory:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=24
+		y=58
+		width=50
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="cpu:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=24
+		y=78
+		width=50
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="fd:"
+	align="horiz. right"
 }
 bar {
 	object {
-		x=150
-		y=30
+		x=158
+		y=38
 		width=100
 		height=15
 	}
@@ -232,11 +242,13 @@ bar {
 		bclr=51
 	}
 	label="no decorations"
+	limits {
+	}
 }
 bar {
 	object {
-		x=150
-		y=50
+		x=158
+		y=58
 		width=100
 		height=15
 	}
@@ -246,11 +258,13 @@ bar {
 		bclr=51
 	}
 	label="no decorations"
+	limits {
+	}
 }
 bar {
 	object {
-		x=150
-		y=70
+		x=158
+		y=78
 		width=100
 		height=15
 	}
@@ -260,95 +274,126 @@ bar {
 		bclr=51
 	}
 	label="no decorations"
+	limits {
+	}
 }
-composite {
+"text entry" {
 	object {
-		x=260
-		y=10
+		x=268
+		y=38
 		width=40
-		height=90
+		height=20
 	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		"text entry" {
-			object {
-				x=260
-				y=30
-				width=40
-				height=20
-			}
-			control {
-				chan="$(P)memoryScanPeriod"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=260
-				y=10
-				width=40
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="CHECK"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=260
-				y=20
-				width=40
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="EVERY"
-			align="horiz. centered"
-		}
-		"text entry" {
-			object {
-				x=260
-				y=50
-				width=40
-				height=20
-			}
-			control {
-				chan="$(P)cpuScanPeriod"
-				clr=14
-				bclr=51
-			}
-		}
-		"text entry" {
-			object {
-				x=260
-				y=70
-				width=40
-				height=20
-			}
-			control {
-				chan="$(P)fdScanPeriod"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=260
-				y=90
-				width=40
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="SECONDS"
-			align="horiz. centered"
-		}
+	control {
+		chan="$(P)memoryScanPeriod"
+		clr=14
+		bclr=51
 	}
+	limits {
+	}
+}
+text {
+	object {
+		x=268
+		y=28
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="RATE"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=268
+		y=58
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)cpuScanPeriod"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=268
+		y=78
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)fdScanPeriod"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=268
+		y=98
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="SECONDS"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=18
+		y=3
+		width=55
+		height=20
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="ioc$(P)"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=136
+		y=38
+		width=15
+		height=20
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="%"
+}
+text {
+	object {
+		x=136
+		y=58
+		width=15
+		height=20
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="%"
+}
+text {
+	object {
+		x=136
+		y=78
+		width=15
+		height=20
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="%"
 }

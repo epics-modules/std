@@ -86,38 +86,40 @@
  *                    This caused saveData to behave as if realTime1D were on at boot.
  *                    Added code to print file-write time if debug_saveData==1.
  * .26 07-22-02  tmm  v1.13 null terminate DBR_STRING variables
+ * .27 09-24-02  tmm  v1.14 test sending handshake after data have been queued, rather than
+ *                    waiting until it has actually been written to disk.
+ * .28 04-07-03  tmm  v1.15 Convert to EPICS 3.14; delete D1*-DF* detectors
  */
 
 
 #define FILE_FORMAT_VERSION (float)1.3
-#define SAVE_DATA_VERSION   "1.13.0"
+#define SAVE_DATA_VERSION   "1.15.0"
 
 
-#include "req_file.h"
-
-
-#include <stdioLib.h>
-#include <ctype.h>
-
-#include <string.h>
+#ifdef vxWorks
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include <usrLib.h>
 #include <ioLib.h>
 #include <nfsDrv.h>
+#endif
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include <time.h>
-
-
-#include <cadef.h>
-
-#include <taskLib.h>
-#include <tickLib.h>
-#include <msgQLib.h>
-#include "xdr_lib.h"
-#include "xdr_stdio.h"
-
 
 #include <dbEvent.h>
 #include <special.h>
-
+#include <cadef.h>
+#include <tsDefs.h>
+#include <epicsMutex.h>
+#include <epicsExport.h>
+#include <iocsh.h>
+#include <epicsMessageQueue.h>
+#include "req_file.h"
+#include "xdr_lib.h"
+#include "xdr_stdio.h"
 
 /************************************************************************/
 /*                           MACROS                                     */
@@ -131,6 +133,12 @@
 volatile int debug_saveData = 0;
 volatile int debug_saveDataMsg = 0;
 volatile int saveData_MessagePolicy = 0;
+
+/*
+ * test sending handshake immediately after data is queued, instead of
+ * waiting until it's been written to disk
+ */
+volatile int saveData_handshake_early = 0;
 
 #ifdef NODEBUG 
 #define Debug0(d,s) ;
@@ -166,7 +174,7 @@ volatile int saveData_MessagePolicy = 0;
 /*---------- STATIC DECLARATIONS TO MATCH SCAN RECORD FIELDS -----------*/
 
 #define SCAN_NBP	4     /* # of scan positioners        */
-#define SCAN_NBD	85    /* # of scan detectors          */
+#define SCAN_NBD	70    /* # of scan detectors          */
 #define SCAN_NBT	4     /* # of scan triggers           */
 
 LOCAL char *pxnv[SCAN_NBP]= {
@@ -191,10 +199,6 @@ LOCAL char *rxcv[SCAN_NBP]= {
   "R1CV",  "R2CV",  "R3CV",  "R4CV"
 };
 LOCAL char *dxnv[SCAN_NBD]= {
-  "D1NV",  "D2NV",  "D3NV",  "D4NV",
-  "D5NV",  "D6NV",  "D7NV",  "D8NV",
-  "D9NV",  "DANV",  "DBNV",  "DCNV",
-  "DDNV",  "DENV",  "DFNV",
   "D01NV", "D02NV","D03NV","D04NV","D05NV","D06NV","D07NV","D08NV","D09NV","D10NV",
   "D11NV", "D12NV","D13NV","D14NV","D15NV","D16NV","D17NV","D18NV","D19NV","D20NV",
   "D21NV", "D22NV","D23NV","D24NV","D25NV","D26NV","D27NV","D28NV","D29NV","D30NV",
@@ -204,10 +208,6 @@ LOCAL char *dxnv[SCAN_NBD]= {
   "D61NV", "D62NV","D63NV","D64NV","D65NV","D66NV","D67NV","D68NV","D69NV","D70NV"
 };
 LOCAL char *dxpv[SCAN_NBD]= {
-  "D1PV",  "D2PV",  "D3PV",  "D4PV",
-  "D5PV",  "D6PV",  "D7PV",  "D8PV",
-  "D9PV",  "DAPV",  "DBPV",  "DCPV",
-  "DDPV",  "DEPV",  "DFPV",
   "D01PV", "D02PV","D03PV","D04PV","D05PV","D06PV","D07PV","D08PV","D09PV","D10PV",
   "D11PV", "D12PV","D13PV","D14PV","D15PV","D16PV","D17PV","D18PV","D19PV","D20PV",
   "D21PV", "D22PV","D23PV","D24PV","D25PV","D26PV","D27PV","D28PV","D29PV","D30PV",
@@ -217,10 +217,6 @@ LOCAL char *dxpv[SCAN_NBD]= {
   "D61PV", "D62PV","D63PV","D64PV","D65PV","D66PV","D67PV","D68PV","D69PV","D70PV"
 };
 LOCAL char *dxda[SCAN_NBD]= {
-  "D1DA",  "D2DA",  "D3DA",  "D4DA",
-  "D5DA",  "D6DA",  "D7DA",  "D8DA",
-  "D9DA",  "DADA",  "DBDA",  "DCDA",
-  "DDDA",  "DEDA",  "DFDA",
   "D01DA", "D02DA","D03DA","D04DA","D05DA","D06DA","D07DA","D08DA","D09DA","D10DA",
   "D11DA", "D12DA","D13DA","D14DA","D15DA","D16DA","D17DA","D18DA","D19DA","D20DA",
   "D21DA", "D22DA","D23DA","D24DA","D25DA","D26DA","D27DA","D28DA","D29DA","D30DA",
@@ -230,10 +226,6 @@ LOCAL char *dxda[SCAN_NBD]= {
   "D61DA", "D62DA","D63DA","D64DA","D65DA","D66DA","D67DA","D68DA","D69DA","D70DA"
 };
 LOCAL char *dxcv[SCAN_NBD]= {
-  "D1CV",  "D2CV",  "D3CV",  "D4CV",
-  "D5CV",  "D6CV",  "D7CV",  "D8CV",
-  "D9CV",  "DACV",  "DBCV",  "DCCV",
-  "DDCV",  "DECV",  "DFCV",
   "D01CV", "D02CV","D03CV","D04CV","D05CV","D06CV","D07CV","D08CV","D09CV","D10CV",
   "D11CV", "D12CV","D13CV","D14CV","D15CV","D16CV","D17CV","D18CV","D19CV","D20CV",
   "D21CV", "D22CV","D23CV","D24CV","D25CV","D26CV","D27CV","D28CV","D29CV","D30CV",
@@ -300,7 +292,7 @@ typedef struct scan {
   short   cpt;		/* current point				*/
   chid    ccpt;
   long    cpt_fpos;	/* where to store data of the current point	*/
-  ULONG   cpt_ticks;	/* ticks of the last cpt monitor		*/
+  epicsTimeStamp  cpt_time;	/* time of the last cpt monitor		*/
   int     cpt_monitored;
   evid    cpt_evid;
   int     all_pts;	/* true if we were able to get all points	*/
@@ -398,7 +390,7 @@ typedef struct scan {
 /* Message structures							*/
 typedef struct scan_short_msg {
   int   type;
-  ULONG time;
+  epicsTimeStamp time;
   SCAN* pscan;
   short val;
 } SCAN_SHORT_MSG;
@@ -406,39 +398,43 @@ typedef struct scan_short_msg {
 #define SCAN_SHORT_SIZE (sizeof(SCAN_SHORT_MSG)<MAX_SIZE? \
 			 sizeof(SCAN_SHORT_MSG):MAX_SIZE)
 
-#define sendScanShortMsg(t, s, v, w) { \
+#define sendScanShortMsg(t, s, v) { \
     SCAN_SHORT_MSG msg; \
     msg.type= t; msg.pscan=s; msg.val= v;\
-    msg.time= tickGet(); \
-    msgQSend(msg_queue, (char*)&msg, \
-	     SCAN_SHORT_SIZE, w, MSG_PRI_NORMAL); }
+    epicsTimeGetCurrent(&(msg.time)); \
+    epicsMessageQueueTrySend(msg_queue, (void *)&msg, \
+	     SCAN_SHORT_SIZE); }
 
+#define sendScanShortMsgWait(t, s, v) { \
+    SCAN_SHORT_MSG msg; \
+    msg.type= t; msg.pscan=s; msg.val= v;\
+    epicsTimeGetCurrent(&(msg.time)); \
+    epicsMessageQueueSend(msg_queue, (void *)&msg, \
+	     SCAN_SHORT_SIZE); }
 
 typedef struct scan_ts_short_msg {
   int   type;
-  ULONG time;
+  epicsTimeStamp time;
   SCAN* pscan;
-  TS_STAMP stamp;
+  epicsTimeStamp stamp;
   short    val;
 } SCAN_TS_SHORT_MSG;
 
 #define SCAN_TS_SHORT_SIZE (sizeof(SCAN_TS_SHORT_MSG)<MAX_SIZE? \
 			    sizeof(SCAN_TS_SHORT_MSG):MAX_SIZE)
 
-#define sendScanTSShortMsg(t, s, q, v, w) { \
+#define sendScanTSShortMsgWait(t, s, q, v) { \
     SCAN_TS_SHORT_MSG msg; \
     msg.type= t; msg.pscan=s; msg.val= v;\
     msg.stamp.secPastEpoch= q.secPastEpoch; \
     msg.stamp.nsec= q.nsec; \
-    msg.time= tickGet(); \
-    msgQSend(msg_queue, (char*)&msg, \
-	     SCAN_TS_SHORT_SIZE, w, MSG_PRI_NORMAL); }
-
-
+    epicsTimeGetCurrent(&(msg.time)); \
+    epicsMessageQueueSend(msg_queue, (void *)&msg, \
+	     SCAN_TS_SHORT_SIZE); }
 
 typedef struct scan_index_msg {
   int   type;
-  ULONG time;
+  epicsTimeStamp time;
   SCAN* pscan;
   int   index;
   double val;
@@ -447,16 +443,16 @@ typedef struct scan_index_msg {
 #define SCAN_INDEX_SIZE (sizeof(SCAN_INDEX_MSG)<MAX_SIZE? \
 			 sizeof(SCAN_INDEX_MSG):MAX_SIZE)
 
-#define sendScanIndexMsg(t,s,i,v,w) { \
+#define sendScanIndexMsgWait(t,s,i,v) { \
     SCAN_INDEX_MSG msg; \
     msg.type=t; msg.pscan=s; msg.index=i; msg.val= (double)v; \
-    msg.time= tickGet(); \
-    msgQSend(msg_queue, (char*)&msg, \
-	     SCAN_INDEX_SIZE, w, MSG_PRI_NORMAL); }
+    epicsTimeGetCurrent(&(msg.time)); \
+    epicsMessageQueueSend(msg_queue, (void *)&msg, \
+	     SCAN_INDEX_SIZE); }
 
 typedef struct string_msg {
   int  type;
-  ULONG time;
+  epicsTimeStamp time;
   char* pdest;
   char  string[40];
 } STRING_MSG;
@@ -464,28 +460,28 @@ typedef struct string_msg {
 #define STRING_SIZE (sizeof(STRING_MSG)<MAX_SIZE? \
 		     sizeof(STRING_MSG):MAX_SIZE)
 
-#define sendStringMsg(t,d,s,w) { \
+#define sendStringMsgWait(t,d,s) { \
     STRING_MSG msg; \
     msg.type=t; msg.pdest=(char*)d; strncpy(msg.string, s, 40); \
-    msg.time= tickGet(); \
-    msgQSend(msg_queue, (char*)&msg, \
-	     STRING_SIZE, w, MSG_PRI_NORMAL); }
+    epicsTimeGetCurrent(&(msg.time)); \
+    epicsMessageQueueSend(msg_queue, (void *)&msg, \
+	     STRING_SIZE); }
 
 typedef struct integer_msg {
   int type;
-  ULONG time;
+  epicsTimeStamp time;
   int val;
 } INTEGER_MSG;
 
 #define INTEGER_SIZE (sizeof(INTEGER_MSG)<MAX_SIZE? \
 		      sizeof(INTEGER_MSG):MAX_SIZE)
 
-#define sendIntegerMsg(t,v,w) { \
+#define sendIntegerMsgWait(t,v) { \
     INTEGER_MSG msg; \
     msg.type=t; msg.val=v; \
-    msg.time= tickGet(); \
-    msgQSend(msg_queue,(char*)&msg, \
-	     INTEGER_SIZE, w, MSG_PRI_NORMAL); }
+    epicsTimeGetCurrent(&(msg.time)); \
+    epicsMessageQueueSend(msg_queue,(void *)&msg, \
+	     INTEGER_SIZE); }
 
 /************************************************************************/
 /*--------------------- list of scan to be saved -----------------------*/
@@ -498,7 +494,7 @@ typedef struct scan_node {
 typedef union db_access_val DBR_VAL;
 
 typedef struct pv_node {
-  SEM_ID   lock;
+  epicsMutexId   lock;
   chid     channel;
   chid     desc_chid;
   char     name[29];
@@ -545,9 +541,9 @@ LOCAL chid  counter_chid;
 LOCAL char  ioc_prefix[10];
 
 LOCAL int          task_id     =ERROR;/* saveScan task id		*/
-LOCAL MSG_Q_ID     msg_queue   =NULL; /* saveScan task's message queue	*/
+LOCAL epicsMessageQueueId     msg_queue   =NULL; /* saveScan task's message queue	*/
 
-LOCAL ULONG        cpt_wait_ticks;
+LOCAL double       cpt_wait_time;
 LOCAL int          nb_scan_running=0; /* # of scan currently running	*/
 LOCAL SCAN_NODE*   list_scan   =NULL; /* list of scan to be saved	*/
 LOCAL PV_NODE*     list_pv= NULL;    /* list of pvs to be saved with each scan */
@@ -712,7 +708,7 @@ int saveData_Init(char* fname, char* macros)
   strncpy(req_macros, macros, 39);
 
   if(msg_queue==NULL) {
-    msg_queue= msgQCreate(MAX_MSG, MAX_SIZE, MSG_Q_FIFO);
+    msg_queue = epicsMessageQueueCreate(MAX_MSG, MAX_SIZE);
     if(msg_queue==NULL) {
       Debug0(1, "Unable to create message queue\n");
       return -1;
@@ -721,7 +717,7 @@ int saveData_Init(char* fname, char* macros)
     if(taskSpawn("saveDataTask", PRIORITY, VX_FP_TASK, 10000, (FUNCPTR)saveDataTask, 
                        taskIdSelf(),0,0,0,0,0,0,0,0,0)==ERROR) {
       Debug0(1, "Unable to create saveDataTask\n");
-      msgQDelete(msg_queue);
+      epicsMessageQueueDestroy(msg_queue);
       return -1;
     } else {
       taskSuspend(0);
@@ -747,9 +743,9 @@ void saveData_Priority(int p)
   taskPrioritySet(task_id, p);
 }
 
-void saveData_SetCptWait(float s)
+void saveData_SetCptWait_ms(int ms)
 {
-  cpt_wait_ticks= (ULONG) (s*vxTicksPerSecond);
+  cpt_wait_time = (double) (ms/1000);
 }
 
 void saveData_Version()
@@ -759,7 +755,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.4 2002-07-22 22:16:50 bcda Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.6 2003-11-04 04:39:22 rivers Exp $\n");
 }
 
 void saveData_Info() {
@@ -822,7 +818,7 @@ LOCAL int connectScan(char* name, char* handShake)
   strncpy(pscan->name, name, 28);
   pscan->name[28]='\0';
   pscan->nxt= NULL;
-  pscan->cpt_ticks=0;
+  epicsTimeGetCurrent(&(pscan->cpt_time));
   pscan->cpt_monitored= FALSE;
 
 
@@ -1373,6 +1369,7 @@ LOCAL void dataMonitor(struct event_handler_args eha)
         /* hand shake busy						*/
         sval= HANDSHAKE_BUSY;
         ca_array_put(DBR_SHORT, 1, pscan->chandShake, &sval);
+      Debug1(2,"saveData handshake %s busy\n", ca_name(pscan->chandShake));
       }
     }
     if(nb_scan_running++ == 0) {
@@ -1393,8 +1390,26 @@ LOCAL void dataMonitor(struct event_handler_args eha)
   }
   pscan->stamp[31]='\0';
 
-  sendScanShortMsg(MSG_SCAN_DATA, (SCAN*)ca_puser(eha.chid),
-                   pval->value, WAIT_FOREVER);
+  sendScanShortMsgWait(MSG_SCAN_DATA, (SCAN*)ca_puser(eha.chid),
+                   pval->value);
+
+  sval= pval->value;
+  if ((sval==1) && saveData_handshake_early) {
+    /*
+     * This is the earliest we can handshake and know that data will not
+     * be overwritten.  When the sscan record's DATA field goes to '1', we're
+     * guaranteed that all scan data have been posted, and assuming data is received
+     * in the same order it's posted, this means we've put all scan data on a message
+     * queue, so it's ok to let the sscan record do a new scan.
+     * It turns out that the above is not true.  We don't put much data on the message
+     * queue, most is still in the sscan record. 
+     */
+    if(pscan->chandShake) {
+      sval= HANDSHAKE_DONE;
+      ca_array_put(DBR_SHORT, 1, pscan->chandShake, &sval);
+      Debug1(2,"saveData handshake %s done (data queued)\n", ca_name(pscan->chandShake));
+    }
+  }
 }
 
 /*----------------------------------------------------------------------*/
@@ -1402,7 +1417,7 @@ LOCAL void dataMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void nptsMonitor(struct event_handler_args eha)
 {
-    sendScanShortMsg(MSG_SCAN_NPTS, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr), WAIT_FOREVER);
+    sendScanShortMsgWait(MSG_SCAN_NPTS, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr));
 }
 
 /*----------------------------------------------------------------------*/
@@ -1411,29 +1426,29 @@ LOCAL void nptsMonitor(struct event_handler_args eha)
 LOCAL void cptMonitor(struct event_handler_args eha)
 {
   SCAN* pscan;
-  ULONG ticks;
+  epicsTimeStamp currentTime;
 
   switch(saveData_MessagePolicy) {
   case 0:
-    sendScanShortMsg(MSG_SCAN_CPT, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr), WAIT_FOREVER);
+    sendScanShortMsgWait(MSG_SCAN_CPT, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr));
     break;
   case 1:
-    sendScanShortMsg(MSG_SCAN_CPT, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr), NO_WAIT);
+    sendScanShortMsg(MSG_SCAN_CPT, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr));
     break;
   case 2:
     pscan = (SCAN *) ca_puser(eha.chid);
-    ticks= tickGet();
-    if(ticks-pscan->cpt_ticks>=cpt_wait_ticks) {
-      pscan->cpt_ticks= ticks;
-      sendScanShortMsg(MSG_SCAN_CPT, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr), NO_WAIT);
+    (void)epicsTimeGetCurrent(&currentTime);
+    if (epicsTimeDiffInSeconds(&currentTime, &(pscan->cpt_time)) >= cpt_wait_time) {
+      pscan->cpt_time = currentTime;
+      sendScanShortMsg(MSG_SCAN_CPT, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr));
     }
     break;
   case 3:
     pscan = (SCAN *) ca_puser(eha.chid);
-    ticks= tickGet();
-    if(ticks-pscan->cpt_ticks>=cpt_wait_ticks) {
-      pscan->cpt_ticks= ticks;
-      sendScanShortMsg(MSG_SCAN_CPT, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr), WAIT_FOREVER);
+    (void)epicsTimeGetCurrent(&currentTime);
+    if (epicsTimeDiffInSeconds(&currentTime, &(pscan->cpt_time)) >= cpt_wait_time) {
+      pscan->cpt_time = currentTime;
+      sendScanShortMsgWait(MSG_SCAN_CPT, (SCAN *) ca_puser(eha.chid), *((short *) eha.dbr));
     }
     break;
   }
@@ -1444,7 +1459,7 @@ LOCAL void cptMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void pxnvMonitor(struct event_handler_args eha)
 {
-    sendScanIndexMsg(MSG_SCAN_PXNV, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr), WAIT_FOREVER);
+    sendScanIndexMsgWait(MSG_SCAN_PXNV, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr));
 }
 
 /*----------------------------------------------------------------------*/
@@ -1452,7 +1467,7 @@ LOCAL void pxnvMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void pxsmMonitor(struct event_handler_args eha)
 {
-    sendStringMsg(MSG_SCAN_PXSM, eha.usr, eha.dbr, WAIT_FOREVER);
+    sendStringMsgWait(MSG_SCAN_PXSM, eha.usr, eha.dbr);
 }
 
 /*----------------------------------------------------------------------*/
@@ -1460,7 +1475,7 @@ LOCAL void pxsmMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void rxnvMonitor(struct event_handler_args eha)
 {
-    sendScanIndexMsg(MSG_SCAN_RXNV, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr), WAIT_FOREVER);
+    sendScanIndexMsgWait(MSG_SCAN_RXNV, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr));
 }
 
 /*----------------------------------------------------------------------*/
@@ -1468,7 +1483,7 @@ LOCAL void rxnvMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void dxnvMonitor(struct event_handler_args eha)
 {
-    sendScanIndexMsg(MSG_SCAN_DXNV, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr), WAIT_FOREVER);
+    sendScanIndexMsgWait(MSG_SCAN_DXNV, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr));
 }
 
 
@@ -1477,7 +1492,7 @@ LOCAL void dxnvMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void txnvMonitor(struct event_handler_args eha)
 {
-    sendScanIndexMsg(MSG_SCAN_TXNV, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr), WAIT_FOREVER);
+    sendScanIndexMsgWait(MSG_SCAN_TXNV, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr));
 }
 
 /*----------------------------------------------------------------------*/
@@ -1485,7 +1500,7 @@ LOCAL void txnvMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void txcdMonitor(struct event_handler_args eha)
 {
-    sendScanIndexMsg(MSG_SCAN_TXCD, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((float *) eha.dbr), WAIT_FOREVER);
+    sendScanIndexMsgWait(MSG_SCAN_TXCD, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((float *) eha.dbr));
 }
 
 /*----------------------------------------------------------------------*/
@@ -1493,24 +1508,24 @@ LOCAL void txcdMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void descMonitor(struct event_handler_args eha)
 {
-    sendStringMsg(MSG_DESC, eha.usr, eha.dbr, WAIT_FOREVER);
+    sendStringMsgWait(MSG_DESC, eha.usr, eha.dbr);
 }
 
 
 LOCAL void fileSystemMonitor(struct event_handler_args eha)
 {
-    sendStringMsg(MSG_FILE_SYSTEM, NULL, eha.dbr, WAIT_FOREVER);
+    sendStringMsgWait(MSG_FILE_SYSTEM, NULL, eha.dbr);
 }
 
 LOCAL void fileSubdirMonitor(struct event_handler_args eha)
 {
-    sendStringMsg(MSG_FILE_SUBDIR, NULL, eha.dbr, WAIT_FOREVER);
+    sendStringMsgWait(MSG_FILE_SUBDIR, NULL, eha.dbr);
 }
 
 
 LOCAL void realTime1DMonitor(struct event_handler_args eha)
 {
-    sendIntegerMsg(MSG_REALTIME1D, *((int *) eha.dbr), WAIT_FOREVER);
+    sendIntegerMsgWait(MSG_REALTIME1D, *((int *) eha.dbr));
 }
 
 
@@ -1520,8 +1535,7 @@ LOCAL int connectCounter(char* name)
 
   ca_search(name, &counter_chid);
   if(ca_pend_io(0.5)!=ECA_NORMAL) {
-    Debug1(1, "Unable to connect counter %s\n", 
-           name);
+    Debug1(1, "Unable to connect counter %s\n", name);
     return -1;
   }
   return 0;
@@ -1537,8 +1551,7 @@ LOCAL int connectFileSystem(char* fs)
   ca_search(fs, &file_system_chid);
   ca_search(fs_disp, &file_system_disp_chid);
   if(ca_pend_io(0.5)!=ECA_NORMAL) {
-    printf("saveData: Unable to connect %s\nsaveDataTask not initialized\n", 
-           fs);
+    printf("saveData: Unable to connect %s\nsaveDataTask not initialized\n", fs);
     return -1;
   } else {
     if(ca_add_event(DBR_STRING, file_system_chid, 
@@ -1560,8 +1573,7 @@ LOCAL int connectSubdir(char* sd)
   ca_search(sd, &file_subdir_chid);
   ca_search(sd_disp, &file_subdir_disp_chid);
   if(ca_pend_io(0.5)!=ECA_NORMAL) {
-    printf("saveData: Unable to connect %s\nsaveDataTask not initialized\n", 
-           sd);
+    printf("saveData: Unable to connect %s\nsaveDataTask not initialized\n", sd);
     return -1;
   } else {
     if(ca_add_event(DBR_STRING, file_subdir_chid, 
@@ -1603,7 +1615,7 @@ LOCAL void extraValCallback(struct event_handler_args eha)
 
   size_t size=0;
 
-  semTake(pnode->lock, WAIT_FOREVER);
+  epicsMutexLock(pnode->lock);
 
   switch(type) {
   case DBR_STRING:
@@ -1627,19 +1639,19 @@ LOCAL void extraValCallback(struct event_handler_args eha)
     break;
   default:
     printf("saveDta: unsuported dbr_type %d\n", (int)type);
-    semGive(pnode->lock);
+    epicsMutexUnlock(pnode->lock);
     return;
   }
 
   memcpy(pnode->pval, pval, size);
   if (type == DBR_STRING) {
-    string = pnode->pval;
+    string = (char *)pnode->pval;
     string[size>39?39:size] = '\0';
     /* logMsg("extraValCallback: string is >%s<\n", (char *)(pnode->pval)); */
   }
   pnode->count= count;
 
-  semGive(pnode->lock);
+  epicsMutexUnlock(pnode->lock);
 }
 
 LOCAL void extraDescCallback(struct event_handler_args eha)
@@ -1647,12 +1659,12 @@ LOCAL void extraDescCallback(struct event_handler_args eha)
   PV_NODE * pnode = eha.usr;
   DBR_VAL * pval = eha.dbr;
 
-  semTake(pnode->lock, WAIT_FOREVER);
+  epicsMutexLock(pnode->lock);
 
-  strcpy(pnode->desc, pval);
+  strcpy(pnode->desc, (char *)pval);
   ca_clear_channel(pnode->desc_chid);
 
-  semGive(pnode->lock);
+  epicsMutexUnlock(pnode->lock);
 }
 
 
@@ -1734,7 +1746,7 @@ LOCAL int connectPV(char* pv, char* desc)
   pnode->pval= malloc(size);
   memset(pnode->pval, 0, size);
 
-  pnode->lock= semBCreate(SEM_Q_FIFO, SEM_FULL);
+  pnode->lock = epicsMutexCreate();
   /* Get a first image of the pv's value */
   ca_array_get_callback(pnode->dbr_type, count,
                         pnode->channel, extraValCallback, (void*)pnode);
@@ -1982,7 +1994,7 @@ LOCAL void saveExtraPV(XDR* pxdrs)
 
     pcur= list_pv;
     while(pcur) {
-      semTake(pcur->lock, WAIT_FOREVER);
+      epicsMutexLock(pcur->lock);
 
       channel= pcur->channel;
       pval= pcur->pval;
@@ -2034,7 +2046,7 @@ LOCAL void saveExtraPV(XDR* pxdrs)
         break;
       }
 
-      semGive(pcur->lock);
+      epicsMutexUnlock(pcur->lock);
       pcur= pcur->nxt;
     }
   }
@@ -2060,7 +2072,7 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
   long  lval;
   long  scan_offset;
   long  data_size;
-  long  openTick=0;
+  epicsTimeStamp  openTime, now;
 
   pscan= pmsg->pscan;  
 
@@ -2161,12 +2173,12 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
       }
 
       Debug1(3, "Open file: %s\n", pscan->ffname);
-      openTick = tickGet();
+      epicsTimeGetCurrent(&openTime);
       fd= fopen(pscan->ffname, "wb+");
 
     } else {
       Debug1(3, "Open file: %s\n", pscan->ffname);
-      openTick = tickGet();
+      epicsTimeGetCurrent(&openTime);
       fd= fopen(pscan->ffname, "rb+");
       if (fd != NULL) fseek(fd, 0, SEEK_END);
     }
@@ -2374,11 +2386,11 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
 
     xdr_destroy(&xdrs);
     fclose(fd);
+    epicsTimeGetCurrent(&now);
     Debug2(1, "%s header written (%.3fs)\n", pscan->name,
-              ((float)(tickGet()-openTick))/vxTicksPerSecond);
-      
+              (float)epicsTimeDiffInSeconds(&now, &openTime));
     DebugMsg2(2, "%s MSG_SCAN_DATA(0)= %f\n", pscan->name,
-              ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+              (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 
   } else if((pscan->data==0) && (pmsg->val==1)) {
     /* scan ended */
@@ -2386,7 +2398,7 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
 
     /* process the message */
 
-    openTick = tickGet();
+    epicsTimeGetCurrent(&openTime);
     fd= fopen(pscan->ffname, "rb+");
     if ((fd == NULL) || (fileStatus(pscan->ffname) == ERROR)) {
       printf("saveData:proc_scan_data: can't open data file!!\n");
@@ -2483,18 +2495,22 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
 
     xdr_destroy(&xdrs);
     fclose(fd);
+    epicsTimeGetCurrent(&now);
     Debug2(1, "%s data written (%.3fs)\n", pscan->name,
-              ((float)(tickGet()-openTick))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &openTime));
 
     if(pscan->nxt) {
       pscan->nxt->first_scan=TRUE;
     }
 
     /* hand shaking notify						*/
-    if(pscan->chandShake) {
-      sval= HANDSHAKE_DONE;
-      ca_array_put(DBR_SHORT, 1, pscan->chandShake, &sval);
-    }
+	if (!saveData_handshake_early) {
+      if(pscan->chandShake) {
+        sval= HANDSHAKE_DONE;
+        ca_array_put(DBR_SHORT, 1, pscan->chandShake, &sval);
+      }
+      Debug1(2,"saveData handshake %s done (file written)\n", ca_name(pscan->chandShake));
+	}
 
     /* enable file system record					*/
     if(--nb_scan_running==0) {
@@ -2505,8 +2521,9 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
     }
     Debug1(2,"(save_status active) nb_scan_running=%d\n", nb_scan_running);
 
+    epicsTimeGetCurrent(&now);
     DebugMsg2(2, "%s MSG_SCAN_DATA(1)= %f\n", pscan->name, 
-              (float)(tickGet()-pmsg->time)/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 
   }
 }
@@ -2514,11 +2531,13 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
 LOCAL void proc_scan_npts(SCAN_SHORT_MSG* pmsg)
 {
   SCAN* pscan;
+  epicsTimeStamp now;
 
   pscan= pmsg->pscan;
   pscan->npts= pmsg->val;
+  epicsTimeGetCurrent(&now);
   DebugMsg3(2, "%s MSG_SCAN_NPTS(%d)= %f\n", pscan->name, pscan->npts, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 LOCAL void proc_scan_cpt(SCAN_SHORT_MSG* pmsg)
@@ -2527,7 +2546,7 @@ LOCAL void proc_scan_cpt(SCAN_SHORT_MSG* pmsg)
   SCAN* pscan;
   FILE* fd;
   XDR   xdrs;
-  long openTick=0;
+  epicsTimeStamp now, openTime;
 
   pscan= pmsg->pscan;
 
@@ -2560,7 +2579,7 @@ LOCAL void proc_scan_cpt(SCAN_SHORT_MSG* pmsg)
     printf("saveData: unable to get current values !!!\n");
     pscan->all_pts= FALSE;
   } else {
-    openTick = tickGet();
+    epicsTimeGetCurrent(&openTime);
     fd= fopen(pscan->ffname, "rb+");
     xdrstdio_create(&xdrs, fd, XDR_ENCODE);
       
@@ -2586,12 +2605,14 @@ LOCAL void proc_scan_cpt(SCAN_SHORT_MSG* pmsg)
       
     xdr_destroy(&xdrs);
     fclose(fd);
+    epicsTimeGetCurrent(&now);
     Debug2(1, "%s data point written (%.3fs)\n", pscan->name,
-              ((float)(tickGet()-openTick))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &openTime));
   }
 
+    epicsTimeGetCurrent(&now);
   DebugMsg3(2, "%s MSG_SCAN_CPT(%d)= %f\n", pscan->name, pscan->cpt, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 
@@ -2602,6 +2623,7 @@ LOCAL void proc_scan_pxnv(SCAN_INDEX_MSG* pmsg)
   short val;
   char  buff[40];
   int   len;
+  epicsTimeStamp now;
 
   pscan= pmsg->pscan;
   i= pmsg->index;
@@ -2658,18 +2680,21 @@ LOCAL void proc_scan_pxnv(SCAN_INDEX_MSG* pmsg)
       }
     }
   }
+  epicsTimeGetCurrent(&now);
   DebugMsg3(2, "%s MSG_SCAN_PXNV(%d)= %f\n", pscan->name, val, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 LOCAL void proc_scan_pxsm(STRING_MSG* pmsg)
 {
+  epicsTimeStamp now;
 
   strncpy(pmsg->pdest, pmsg->string, 39);
   pmsg->pdest[39]='\0';
 
+  epicsTimeGetCurrent(&now);
   DebugMsg2(2, "MSG_SCAN_PXSM(%s)= %f\n", pmsg->string, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 LOCAL void proc_scan_rxnv(SCAN_INDEX_MSG* pmsg)
@@ -2679,6 +2704,7 @@ LOCAL void proc_scan_rxnv(SCAN_INDEX_MSG* pmsg)
   short val;
   char  buff[40];
   int   len;
+  epicsTimeStamp now;
 
   pscan= pmsg->pscan;
   i= pmsg->index;
@@ -2745,8 +2771,9 @@ LOCAL void proc_scan_rxnv(SCAN_INDEX_MSG* pmsg)
       }
     }
   }
+  epicsTimeGetCurrent(&now);
   DebugMsg3(2, "%s MSG_SCAN_RXNV(%d)= %f\n", pscan->name, val, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 
@@ -2757,6 +2784,7 @@ LOCAL void proc_scan_dxnv(SCAN_INDEX_MSG* pmsg)
   short val;
   char  buff[40];
   int   len;
+  epicsTimeStamp now;
 
   pscan= pmsg->pscan;
   i= pmsg->index;
@@ -2811,8 +2839,9 @@ LOCAL void proc_scan_dxnv(SCAN_INDEX_MSG* pmsg)
       }
     }
   }
+  epicsTimeGetCurrent(&now);
   DebugMsg3(2, "%s MSG_SCAN_DXNV(%d)= %f\n", pscan->name, val, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 
@@ -2822,6 +2851,7 @@ LOCAL void proc_scan_txnv(SCAN_INDEX_MSG* pmsg)
   int   i;
   short val;
   int   len;
+  epicsTimeStamp now;
 
   pscan= pmsg->pscan;
   i= pmsg->index;
@@ -2848,14 +2878,16 @@ LOCAL void proc_scan_txnv(SCAN_INDEX_MSG* pmsg)
 
   updateScan(pscan);
 
+  epicsTimeGetCurrent(&now);
   DebugMsg3(2, "%s MSG_SCAN_TXNV(%d)= %f\n", pscan->name, val, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 LOCAL void proc_scan_txcd(SCAN_INDEX_MSG* pmsg)
 {
   SCAN* pscan;
   int   i;
+  epicsTimeStamp now;
 
   pscan= pmsg->pscan;
   i= pmsg->index;
@@ -2864,26 +2896,33 @@ LOCAL void proc_scan_txcd(SCAN_INDEX_MSG* pmsg)
 
   updateScan(pscan);
 
+  epicsTimeGetCurrent(&now);
   DebugMsg3(2, "%s MSG_SCAN_TXCD(%f)= %f\n", pscan->name, (float)pmsg->val, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 LOCAL void proc_desc(STRING_MSG* pmsg)
 {
+  epicsTimeStamp now;
+
   strncpy(pmsg->pdest, pmsg->string, 39);
   pmsg->pdest[39]= '\0';
 
+  epicsTimeGetCurrent(&now);
   DebugMsg2(2, "MSG_DESC(%s)= %f\n", pmsg->string, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 LOCAL void proc_egu(STRING_MSG* pmsg)
 {
+  epicsTimeStamp now;
+
   strncpy(pmsg->pdest, pmsg->string, 15);
   pmsg->pdest[15]= '\0';
 
+  epicsTimeGetCurrent(&now);
   DebugMsg2(2, "MSG_EGU(%s)= %f\n", pmsg->string, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 
@@ -2893,6 +2932,7 @@ LOCAL void proc_file_system(STRING_MSG* pmsg)
   char  hostname[40];
   char  *filesystem;
   char* cout;
+  epicsTimeStamp now;
 
   /* make sure string is null terminated */
   pmsg->string[39]='\0';
@@ -2947,8 +2987,9 @@ LOCAL void proc_file_system(STRING_MSG* pmsg)
   sendUserMessage(msg);
   ca_array_put(DBR_SHORT, 1, save_status_chid, &save_status);
 
+  epicsTimeGetCurrent(&now);
   DebugMsg2(2, "MSG_FILE_SYSTEM(%s)= %f\n", pmsg->string, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 LOCAL void proc_file_subdir(STRING_MSG* pmsg)
@@ -2958,6 +2999,7 @@ LOCAL void proc_file_subdir(STRING_MSG* pmsg)
   char* cin;
   char* server;
   char* local;
+  epicsTimeStamp now;
 
   if(file_system_state==FS_MOUNTED) {
 
@@ -3013,18 +3055,22 @@ LOCAL void proc_file_subdir(STRING_MSG* pmsg)
     sendUserMessage(msg);
     ca_array_put(DBR_SHORT, 1, save_status_chid, &save_status);
   }
+  epicsTimeGetCurrent(&now);
   DebugMsg2(2, "MSG_FILE_SUBDIR(%s)= %f\n", pmsg->string, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 LOCAL void proc_realTime1D(INTEGER_MSG* pmsg)
 {
+  epicsTimeStamp now;
+
   if(realTime1D!= pmsg->val) {
     realTime1D= pmsg->val;
     updateScans();
   }
+  epicsTimeGetCurrent(&now);
   DebugMsg2(2, "proc_realTime1D: MSG_REALTIME1D(%d)= %f\n", pmsg->val, 
-            ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
+            (float)epicsTimeDiffInSeconds(&now, &pmsg->time));
 }
 
 /*----------------------------------------------------------------------*/
@@ -3037,7 +3083,7 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
 
   Debug0(1, "Task saveDataTask running...\n");
 
-  cpt_wait_ticks= vxTicksPerSecond/10;
+  cpt_wait_time = 0.1; /* seconds */
 
   if(initSaveDataTask()==-1) {
     printf("saveData: Unable to configure saveDataTask\n");
@@ -3059,8 +3105,8 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
   while(1) {
     
     /* waiting for messages						*/
-    if(msgQReceive(msg_queue, pmsg, MAX_SIZE,
-                   WAIT_FOREVER)==S_objLib_OBJ_DELETED) {
+    if (epicsMessageQueueReceive(msg_queue, pmsg, MAX_SIZE) ==
+		S_objLib_OBJ_DELETED) {
       break;
     }
 
@@ -3139,10 +3185,26 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
       break;
 
     default: 
-      Debug1(2, "Unknow message: #%d", *ptype);
+      Debug1(2, "Unknown message: #%d", *ptype);
     }
   }
   return 0;
 }    
 
+static const iocshArg saveData_InitArg0 = { "filename",iocshArgString};
+static const iocshArg saveData_InitArg1 = { "macro string",iocshArgString};
+static const iocshArg * const saveData_InitArgs[3] = {&saveData_InitArg0,
+                                                      &saveData_InitArg1};
+static const iocshFuncDef saveData_InitFuncDef = {"saveData_Init",2,saveData_InitArgs};
+static void saveData_InitCallFunc(const iocshArgBuf *args)
+{
+    saveData_Init(args[0].sval, args[1].sval);
+}
+
+void saveDataRegister(void)
+{
+    iocshRegister(&saveData_InitFuncDef, saveData_InitCallFunc);
+}
+
+epicsExportRegistrar(saveDataRegister);
 

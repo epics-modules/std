@@ -1,12 +1,12 @@
 
 file {
-	name="/home/beams/BCDA/epics/synApps_T202_R3_13_5_R4_4/support/std/stdApp/op/adl/tmp/scan_more.adl"
+	name="/home/oxygen/MOONEY/epics/3.13.5/tmm/tmmApp/op/adl/scan_more.adl"
 	version=030003
 }
 display {
 	object {
-		x=392
-		y=117
+		x=397
+		y=96
 		width=370
 		height=465
 	}
@@ -2152,80 +2152,112 @@ text {
 	textix="PLOT"
 	align="horiz. centered"
 }
-"related display" {
+composite {
 	object {
 		x=25
 		y=308
-		width=100
+		width=250
 		height=27
 	}
-	display[0] {
-		label="Detectors 01-10"
-		name="scan_detectors10.adl"
-		args="P=$(P),S=$(S),N1=01,N2=02,N3=03,N4=04,N5=05,N6=06,N7=07,N8=08,N9=09,N10=10"
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=25
+				y=308
+				width=100
+				height=27
+			}
+			display[0] {
+				label="Detectors 01-10"
+				name="scan_detectors10.adl"
+				args="P=$(P),S=$(S),N1=01,N2=02,N3=03,N4=04,N5=05,N6=06,N7=07,N8=08,N9=09,N10=10"
+			}
+			display[1] {
+				label="Detectors 11-20"
+				name="scan_detectors10.adl"
+				args="P=$(P),S=$(S),N1=11,N2=12,N3=13,N4=14,N5=15,N6=16,N7=17,N8=18,N9=19,N10=20"
+			}
+			display[2] {
+				label="Detectors 21-30"
+				name="scan_detectors10.adl"
+				args="P=$(P),S=$(S),N1=21,N2=22,N3=23,N4=24,N5=25,N6=26,N7=27,N8=28,N9=29,N10=30"
+			}
+			display[3] {
+				label="Detectors 31-40"
+				name="scan_detectors10.adl"
+				args="P=$(P),S=$(S),N1=31,N2=32,N3=33,N4=34,N5=35,N6=36,N7=37,N8=38,N9=39,N10=40"
+			}
+			display[4] {
+				label="Detectors 41-50"
+				name="scan_detectors10.adl"
+				args="P=$(P),S=$(S),N1=41,N2=42,N3=43,N4=44,N5=45,N6=46,N7=47,N8=48,N9=49,N10=50"
+			}
+			display[5] {
+				label="Detectors 51-60"
+				name="scan_detectors10.adl"
+				args="P=$(P),S=$(S),N1=51,N2=52,N3=53,N4=54,N5=55,N6=56,N7=57,N8=58,N9=59,N10=60"
+			}
+			display[6] {
+				label="Detectors 61-70"
+				name="scan_detectors10.adl"
+				args="P=$(P),S=$(S),N1=61,N2=62,N3=63,N4=64,N5=65,N6=66,N7=67,N8=68,N9=69,N10=70"
+			}
+			clr=0
+			bclr=17
+			label="-Detectors"
+		}
+		menu {
+			object {
+				x=195
+				y=320
+				width=80
+				height=14
+			}
+			control {
+				chan="$(P)$(S).ACQM"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=195
+				y=308
+				width=80
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="ACQ MODE"
+			align="horiz. centered"
+		}
+		menu {
+			object {
+				x=125
+				y=320
+				width=70
+				height=14
+			}
+			control {
+				chan="$(P)$(S).ACQT"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=125
+				y=308
+				width=70
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="DIMENSION"
+			align="horiz. centered"
+		}
 	}
-	display[1] {
-		label="Detectors 11-20"
-		name="scan_detectors10.adl"
-		args="P=$(P),S=$(S),N1=11,N2=12,N3=13,N4=14,N5=15,N6=16,N7=17,N8=18,N9=19,N10=20"
-	}
-	display[2] {
-		label="Detectors 21-30"
-		name="scan_detectors10.adl"
-		args="P=$(P),S=$(S),N1=21,N2=22,N3=23,N4=24,N5=25,N6=26,N7=27,N8=28,N9=29,N10=30"
-	}
-	display[3] {
-		label="Detectors 31-40"
-		name="scan_detectors10.adl"
-		args="P=$(P),S=$(S),N1=31,N2=32,N3=33,N4=34,N5=35,N6=36,N7=37,N8=38,N9=39,N10=40"
-	}
-	display[4] {
-		label="Detectors 41-50"
-		name="scan_detectors10.adl"
-		args="P=$(P),S=$(S),N1=41,N2=42,N3=43,N4=44,N5=45,N6=46,N7=47,N8=48,N9=49,N10=50"
-	}
-	display[5] {
-		label="Detectors 51-60"
-		name="scan_detectors10.adl"
-		args="P=$(P),S=$(S),N1=51,N2=52,N3=53,N4=54,N5=55,N6=56,N7=57,N8=58,N9=59,N10=60"
-	}
-	display[6] {
-		label="Detectors 61-70"
-		name="scan_detectors10.adl"
-		args="P=$(P),S=$(S),N1=61,N2=62,N3=63,N4=64,N5=65,N6=66,N7=67,N8=68,N9=69,N10=70"
-	}
-	display[7] {
-		label="Old Detectors 1-F"
-		name="scan_detectorsOld.adl"
-		args="P=$(P),S=$(S)"
-	}
-	clr=0
-	bclr=17
-	label="-Detectors"
-}
-menu {
-	object {
-		x=195
-		y=320
-		width=80
-		height=14
-	}
-	control {
-		chan="$(P)$(S).ACQM"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=195
-		y=308
-		width=80
-		height=10
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="ACQ MODE"
-	align="horiz. centered"
 }

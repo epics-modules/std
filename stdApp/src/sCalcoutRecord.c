@@ -42,22 +42,22 @@
  * .09  01-18-00    tmm    v3.6: special() did not list INGG...INLL
  * .10  05-08-00    tmm    v3.61: changed some status messages to debug messages.
  * .11  08-22-00    tmm    v3.62: changed message text.
+ * .12  04-22-03    tmm    v3.7: RPC fields now allocated in dbd file, since
+ *                         sCalcPostfix doesn't allocate them anymore
+ * .13  06-26-03    rls    Port to 3.14; alarm() conflicts with alarm declaration
+ *			   in unistd.h (sCalcoutRecord.h->epicsTime.h->osdTime.h->
+ *			   unistd.h) when compiled with SUNPro.
  *
  */
 
-#define VERSION 3.62
+#define VERSION 3.7
 
 
-#include	<vxWorks.h>
 #include	<stdlib.h>
 #include	<stdarg.h>
 #include	<stdio.h>
 #include	<string.h>
 #include	<math.h>
-
-#include	<tickLib.h>
-#include	<wdLib.h>
-#include	<sysLib.h>
 
 #include	<epicsVersion.h>
 #include	<alarm.h>
@@ -67,16 +67,17 @@
 #include	<dbScan.h>
 #include	<errMdef.h>
 #include	<recSup.h>
+#include	<recGbl.h>
 #include	<special.h>
 #include	<callback.h>
 #include	<taskwd.h>
-#include	<drvTS.h>	/* also includes timers.h and tsDefs.h */
-#include "sCalcPostfix.h"
+#include	"sCalcPostfix.h"
 
 #define GEN_SIZE_OFFSET
 #include	"sCalcoutRecord.h"
 #undef  GEN_SIZE_OFFSET
 #include	<menuIvoa.h>
+#include        <epicsExport.h>
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -97,7 +98,7 @@ static long get_graphic_double();
 static long get_control_double();
 static long get_alarm_double();
 
-struct rset scalcoutRSET={
+rset scalcoutRSET={
 	RSETNUMBER,
 	report,
 	initialize,
@@ -117,7 +118,7 @@ struct rset scalcoutRSET={
 	get_control_double,
 	get_alarm_double
 };
-
+epicsExportAddress(rset, scalcoutRSET);
 
 /* To provide feedback to the user as to the connection status of the 
  * links (.INxV and .OUTV), the following algorithm has been implemented ...
@@ -137,15 +138,13 @@ struct rset scalcoutRSET={
 
 struct rpvtStruct {
 	CALLBACK	doOutCb;
-	WDOG_ID		wd_id_0;
 	CALLBACK	checkLinkCb;
-	WDOG_ID		wd_id_1;
 	short		wd_id_1_LOCK;
 	short		caLinkStat; /* NO_CA_LINKS,CA_LINKS_ALL_OK,CA_LINKS_NOT_OK */
 	short		outlink_field_type;
 };
 
-static void alarm();
+static void checkAlarms();
 static void monitor();
 static int fetch_values();
 static void execOutput();
@@ -201,9 +200,6 @@ static long init_record(pcalc,pass)
     
 	prpvt = (struct rpvtStruct *)pcalc->rpvt;
 
-	pcalc->rpcl = 0;
-	pcalc->orpc = 0;
-
 	plink = &pcalc->inpa;
 	pvalue = &pcalc->a;
 	plinkValid = &pcalc->inav;
@@ -225,7 +221,8 @@ static long init_record(pcalc,pass)
 			if (sCalcoutRecordDebug && (pAddr->field_type >= DBF_INLINK) &&
 					(pAddr->field_type <= DBF_FWDLINK)) {
 				s = strchr(plink->value.pv_link.pvname, (int)' ') + 1;
-				if (strncmp(s,"CA",2)) printf("sCalcoutRecord(%s):init_record:dblink to link field\n", pcalc->name);
+				if (strncmp(s,"CA",2)) printf("sCalcoutRecord(%s):init_record:dblink to link field\n",
+					pcalc->name);
 			}
 		} else {
 			/* pv is not on this ioc. Callback later for connection stat */
@@ -237,7 +234,7 @@ static long init_record(pcalc,pass)
 		db_post_events(pcalc,plinkValid,DBE_VALUE);
 	}
 
-	pcalc->clcv = sCalcPostfix(pcalc->calc,(char **)&pcalc->rpcl,&error_number);
+	pcalc->clcv = sCalcPostfix(pcalc->calc,pcalc->rpcl,&error_number);
 	if (pcalc->clcv) {
 		recGblRecordError(S_db_badField,(void *)pcalc,
 			"scalcout: init_record: Illegal CALC field");
@@ -245,7 +242,7 @@ static long init_record(pcalc,pass)
 	}
 	db_post_events(pcalc,&pcalc->clcv,DBE_VALUE);
 
-	pcalc->oclv = sCalcPostfix(pcalc->ocal,(char **)&pcalc->orpc,&error_number);
+	pcalc->oclv = sCalcPostfix(pcalc->ocal,(char *)pcalc->orpc,&error_number);
 	if (pcalc->oclv) {
 		recGblRecordError(S_db_badField,(void *)pcalc,
 			"scalcout: init_record: Illegal OCAL field");
@@ -259,13 +256,10 @@ static long init_record(pcalc,pass)
 	callbackSetCallback(checkLinksCallback, &prpvt->checkLinkCb);
 	callbackSetPriority(0, &prpvt->checkLinkCb);
 	callbackSetUser(pcalc, &prpvt->checkLinkCb);
-	prpvt->wd_id_0 = wdCreate();
-	prpvt->wd_id_1 = wdCreate();
 	prpvt->wd_id_1_LOCK = 0;
 
 	if (prpvt->caLinkStat == CA_LINKS_NOT_OK) {
-		wdStart(prpvt->wd_id_1, 60, (FUNCPTR)callbackRequest,
-			(int)(&prpvt->checkLinkCb));
+		callbackRequestDelayed(&prpvt->checkLinkCb,1.0);
 		prpvt->wd_id_1_LOCK = 1;
 	}
 
@@ -276,7 +270,6 @@ static long process(pcalc)
     struct scalcoutRecord     *pcalc;
 {
 	struct rpvtStruct   *prpvt = (struct rpvtStruct *)pcalc->rpvt;
-	int		wdDelay;
 	short	doOutput = 0;
 	long	stat;
 
@@ -301,7 +294,7 @@ static long process(pcalc)
 	if (fetch_values(pcalc)==0) {
 		stat = sCalcPerform(&pcalc->a, ARG_MAX, (char **)(pcalc->strs),
 				STRING_ARG_MAX, &pcalc->val, pcalc->sval, STRING_SIZE,
-				(char *)pcalc->rpcl);
+				pcalc->rpcl);
 		if (stat)
 			recGblSetSevr(pcalc,CALC_ALARM,INVALID_ALARM);
 		else
@@ -309,7 +302,7 @@ static long process(pcalc)
 	}
 	recGblGetTimeStamp(pcalc);
 	/* check for alarms */
-	alarm(pcalc);
+	checkAlarms(pcalc);
 
 	/* check for output link execution */
 	switch (pcalc->oopt) {
@@ -341,10 +334,8 @@ static long process(pcalc)
 		if (pcalc->odly > 0.0) {
 			pcalc->dlya = 1;
 			db_post_events(pcalc,&pcalc->dlya,DBE_VALUE);
-			wdDelay = pcalc->odly * sysClkRateGet();
 			callbackSetPriority(pcalc->prio, &prpvt->doOutCb);
-			wdStart(prpvt->wd_id_0, wdDelay, (FUNCPTR)callbackRequest,
-				(int)(&prpvt->doOutCb));
+			callbackRequestDelayed(&prpvt->doOutCb,(double)pcalc->odly);
 		} else {
 			execOutput(pcalc);
 		}
@@ -381,7 +372,7 @@ static long special(paddr,after)
 	if (!after) return(0);
 	switch (fieldIndex) {
 	case scalcoutRecordCALC:
-		pcalc->clcv = sCalcPostfix(pcalc->calc, (char **)&pcalc->rpcl, &error_number);
+		pcalc->clcv = sCalcPostfix(pcalc->calc, pcalc->rpcl, &error_number);
 		if (pcalc->clcv) {
 			recGblRecordError(S_db_badField,(void *)pcalc,
 				"scalcout: special(): Illegal CALC field");
@@ -392,7 +383,7 @@ static long special(paddr,after)
 		break;
 
 	case scalcoutRecordOCAL:
-		pcalc->oclv = sCalcPostfix(pcalc->ocal, (char **)&pcalc->orpc, &error_number);
+		pcalc->oclv = sCalcPostfix(pcalc->ocal, (char *)pcalc->orpc, &error_number);
 		if (pcalc->oclv) {
 			recGblRecordError(S_db_badField,(void *)pcalc,
 				"scalcout: special(): Illegal OCAL field");
@@ -456,8 +447,7 @@ static long special(paddr,after)
 			*plinkValid = scalcoutINAV_EXT_NC;
 			/* DO_CALLBACK, if not already scheduled */
 			if (!prpvt->wd_id_1_LOCK) {
-				wdStart(prpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-					(int)(&prpvt->checkLinkCb));
+				callbackRequestDelayed(&prpvt->checkLinkCb,.5);
 				prpvt->wd_id_1_LOCK = 1;
 				prpvt->caLinkStat = CA_LINKS_NOT_OK;
 			}
@@ -603,7 +593,7 @@ static long get_alarm_double(paddr,pad)
 }
 
 
-static void alarm(pcalc)
+static void checkAlarms(pcalc)
 	struct scalcoutRecord	*pcalc;
 {
 	double		val;
@@ -813,7 +803,9 @@ static int fetch_values(pcalc)
 	char		**psvalue;
 	long		status = 0;
 	int			i;
+#if 0
 	TS_STAMP	timeStamp;
+#endif
 
 	for (i=0, plink=&pcalc->inpa, pvalue=&pcalc->a; i<ARG_MAX; 
 			i++, plink++, pvalue++) {
@@ -852,8 +844,7 @@ static void checkLinksCallback(pcallback)
 	if (!interruptAccept) {
 		/* Can't call dbScanLock yet.  Schedule another CALLBACK */
 		prpvt->wd_id_1_LOCK = 1;  /* make sure */
-		wdStart(prpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-			(int)(&prpvt->checkLinkCb));
+		callbackRequestDelayed(&prpvt->checkLinkCb,.5);
 	} else {
 	    dbScanLock((struct dbCommon *)pcalc);
 	    prpvt->wd_id_1_LOCK = 0;
@@ -929,8 +920,7 @@ static void checkLinks(pcalc)
 	if (!prpvt->wd_id_1_LOCK && isCaLinkNc) {
 		/* Schedule another CALLBACK */
 		prpvt->wd_id_1_LOCK = 1;
-		wdStart(prpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-			(int)(&prpvt->checkLinkCb));
+		callbackRequestDelayed(&prpvt->checkLinkCb,.5);
 	}
 }
 

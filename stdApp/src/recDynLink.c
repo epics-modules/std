@@ -18,31 +18,29 @@ of this distribution.
  *               callback
  *
  */
-#include <vxWorks.h>
-#include <taskLib.h>
+
+#include <epicsRingBytes.h>
+#include <epicsMutex.h>
+#include <epicsThread.h>
+#include <epicsEvent.h>
+
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <rngLib.h>
-#include <vxLib.h>
-#include <semLib.h>
-#include <sysLib.h>
 
+#include <taskwd.h>
 #include <dbDefs.h>
 #include <epicsPrint.h>
-#include <taskwd.h>
-#include <fast_lock.h>
 #include <db_access.h>
+#include <db_access_routines.h>
 #include <cadef.h>
 #include <caerr.h>
 #include <caeventmask.h>
 #include <tsDefs.h>
-#include <task_params.h>
 #include "recDynLink.h"
 
 volatile int recDynINPCallPend = 1;
-volatile int recDynOUTCallPend = 0;
+volatile int recDynOUTCallPend = 1;
 
 /*Definitions to map between old and new database access*/
 /*because we are using CA must include db_access.h*/
@@ -76,22 +74,20 @@ static short mapNewToOld[newDBR_ENUM+1] = {
 	DBF_STRING,DBF_CHAR,DBF_CHAR,DBF_SHORT,DBF_SHORT,
 	DBF_LONG,DBF_LONG,DBF_FLOAT,DBF_DOUBLE,DBF_ENUM};
 
-extern int interruptAccept;
-
 int   recDynLinkQsize = 256;
-
-LOCAL int	inpTaskId=0;
-LOCAL int	outTaskId=0;
-LOCAL RING_ID	inpRingQ;
-LOCAL RING_ID	outRingQ;
-LOCAL SEM_ID	wakeUpSem;
+   
+LOCAL epicsThreadId inpTaskId=NULL;
+LOCAL epicsThreadId	outTaskId=NULL;
+LOCAL epicsEventId	wakeUpEvt;
+LOCAL epicsRingBytesId	inpRingQ;
+LOCAL epicsRingBytesId	outRingQ;
 
 typedef enum{cmdSearch,cmdClear,cmdPut,cmdPutCallback} cmdType;
 typedef enum{ioInput,ioOutput}ioType;
 typedef enum{stateStarting,stateSearching,stateGetting,stateConnected}stateType;
 
 typedef struct dynLinkPvt{
-    FAST_LOCK		lock;
+    epicsMutexId	lock;
     char		*pvname;
     chid		chid;
     evid		evid;
@@ -140,16 +136,15 @@ long recDynLinkAddInput(recDynLink *precDynLink,char *pvname,
     struct dbAddr	dbaddr;
     ringBufCmd		cmd;
     
-
     if(options&rdlDBONLY  && db_name_to_addr(pvname,&dbaddr))return(-1);
     if(!inpTaskId) recDynLinkStartInput();
     if(precDynLink->pdynLinkPvt) recDynLinkClear(precDynLink);
     pdynLinkPvt = (dynLinkPvt *)calloc(1,sizeof(dynLinkPvt));
     if(!pdynLinkPvt) {
 	    printf("recDynLinkAddInput can't allocate storage");
-	    taskSuspend(0);
+		epicsThreadSuspendSelf();
     }
-    FASTLOCKINIT(&pdynLinkPvt->lock);
+    pdynLinkPvt->lock = epicsMutexMustCreate();
     precDynLink->pdynLinkPvt = pdynLinkPvt;
     pdynLinkPvt->pvname = pvname;
     pdynLinkPvt->dbrType = dbrType;
@@ -160,8 +155,8 @@ long recDynLinkAddInput(recDynLink *precDynLink,char *pvname,
     pdynLinkPvt->state = stateStarting;
     cmd.data.precDynLink = precDynLink;
     cmd.cmd = cmdSearch;
-    if(rngBufPut(inpRingQ,(void *)&cmd,sizeof(cmd)) != sizeof(cmd))
-	errMessage(0,"recDynLinkAddInput: rngBufPut error");
+    if(epicsRingBytesPut(inpRingQ,(char *)&cmd,sizeof(cmd)) != sizeof(cmd))
+	errMessage(0,"recDynLinkAddInput: epicsRingBytesPut error");
     return(0);
 }
 
@@ -172,16 +167,16 @@ long recDynLinkAddOutput(recDynLink *precDynLink,char *pvname,
     struct dbAddr	dbaddr;
     ringBufCmd		cmd;
     
-
-    if(options&rdlDBONLY  && db_name_to_addr(pvname,&dbaddr))return(-1);
+   if(options&rdlDBONLY  && db_name_to_addr(pvname,&dbaddr))return(-1);
     if(!outTaskId) recDynLinkStartOutput();
     if(precDynLink->pdynLinkPvt) recDynLinkClear(precDynLink);
     pdynLinkPvt = (dynLinkPvt *)calloc(1,sizeof(dynLinkPvt));
     if(!pdynLinkPvt) {
 	    printf("recDynLinkAddOutput can't allocate storage");
-	    taskSuspend(0);
+		epicsThreadSuspendSelf();
     }
-    FASTLOCKINIT(&pdynLinkPvt->lock);
+	/* FIXME remove printfs */
+    pdynLinkPvt->lock = epicsMutexMustCreate();
     precDynLink->pdynLinkPvt = pdynLinkPvt;
     pdynLinkPvt->pvname = pvname;
     pdynLinkPvt->dbrType = dbrType;
@@ -191,31 +186,30 @@ long recDynLinkAddOutput(recDynLink *precDynLink,char *pvname,
     pdynLinkPvt->state = stateStarting;
     cmd.data.precDynLink = precDynLink;
     cmd.cmd = cmdSearch;
-    if(rngBufPut(outRingQ,(void *)&cmd,sizeof(cmd)) != sizeof(cmd))
-	errMessage(0,"recDynLinkAddOutput: rngBufPut error");
-    semGive(wakeUpSem);
-    return(0);
+    if(epicsRingBytesPut(outRingQ,(char *)&cmd,sizeof(cmd)) != sizeof(cmd))
+	    errMessage(0,"recDynLinkAddOutput: epicsRingBytesPut error");
+	epicsEventSignal(wakeUpEvt);
+   return(0);
 }
 
 long recDynLinkClear(recDynLink *precDynLink)
 {
     dynLinkPvt	*pdynLinkPvt;
     ringBufCmd	cmd;
-
     pdynLinkPvt = precDynLink->pdynLinkPvt;
     if(!pdynLinkPvt) {
 	printf("recDynLinkClear. recDynLinkSearch was never called\n");
-	taskSuspend(0);
+	epicsThreadSuspendSelf();
     }
-    if(pdynLinkPvt->chid) ca_puser(pdynLinkPvt->chid) = NULL;
+    if(pdynLinkPvt->chid) ca_set_puser(pdynLinkPvt->chid, NULL);
     cmd.data.pdynLinkPvt = pdynLinkPvt;
     cmd.cmd = cmdClear;
     if(pdynLinkPvt->io==ioInput) {
-	if(rngBufPut(inpRingQ,(void *)&cmd,sizeof(cmd)) != sizeof(cmd))
-	    errMessage(0,"recDynLinkClear: rngBufPut error");
+	if(epicsRingBytesPut(inpRingQ,(char *)&cmd,sizeof(cmd)) != sizeof(cmd))
+	    errMessage(0,"recDynLinkClear: epicsRingBytesPut error");
     } else {
-	if(rngBufPut(outRingQ,(void *)&cmd,sizeof(cmd)) != sizeof(cmd))
-	    errMessage(0,"recDynLinkClear: rngBufPut error");
+	if(epicsRingBytesPut(outRingQ,(char *)&cmd,sizeof(cmd)) != sizeof(cmd))
+	    errMessage(0,"recDynLinkClear: epicsRingBytesPut error");
     }
     precDynLink->pdynLinkPvt = NULL;
     precDynLink->status = 0;
@@ -303,13 +297,13 @@ long recDynLinkGet(recDynLink *precDynLink,void *pbuffer,size_t *nRequest,
     if(*nRequest > pdynLinkPvt->nRequest) {
 	*nRequest = pdynLinkPvt->nRequest;
     }
-    FASTLOCK(&pdynLinkPvt->lock);
+    epicsMutexMustLock(pdynLinkPvt->lock);
     memcpy(pbuffer,pdynLinkPvt->pbuffer,
 	(*nRequest * dbr_size[mapNewToOld[pdynLinkPvt->dbrType]]));
     if(timestamp) *timestamp = pdynLinkPvt->timestamp; /*array copy*/
     if(status) *status = pdynLinkPvt->status;
     if(severity) *severity = pdynLinkPvt->severity;
-    FASTUNLOCK(&pdynLinkPvt->lock);
+    epicsMutexUnlock(pdynLinkPvt->lock);
 all_done:
     return(caStatus);
 }
@@ -346,40 +340,41 @@ long recDynLinkPutCallback(recDynLink *precDynLink,void *pbuffer,size_t nRequest
 	(nRequest * dbr_size[mapNewToOld[pdynLinkPvt->dbrType]]));
     cmd.data.precDynLink = precDynLink;
     cmd.cmd = notifyCallback ? cmdPutCallback : cmdPut;
-    if(rngBufPut(outRingQ,(void *)&cmd,sizeof(cmd)) != sizeof(cmd)) {
-	    errMessage(0,"recDynLinkPut: rngBufPut error");
+    if(epicsRingBytesPut(outRingQ,(char *)&cmd,sizeof(cmd)) != sizeof(cmd)) {
+	    errMessage(0,"recDynLinkPut: epicsRingBytesPut error");
 		status = RINGBUFF_PUT_ERROR;
 	}
-    semGive(wakeUpSem);
+	epicsEventSignal(wakeUpEvt);
 all_done:
-    return(status);
+   return(status);
 }
 
 LOCAL void recDynLinkStartInput(void)
 {
-    if((inpRingQ = rngCreate(sizeof(ringBufCmd) * recDynLinkQsize)) == NULL) {
+    if((inpRingQ = epicsRingBytesCreate(sizeof(ringBufCmd) * recDynLinkQsize)) == NULL) {
 	errMessage(0,"recDynLinkStart failed");
 	exit(1);
     }
-    inpTaskId = taskSpawn("recDynINP",CA_CLIENT_PRI-1,VX_FP_TASK,
-	CA_CLIENT_STACK,(FUNCPTR)recDynLinkInp,0,0,0,0,0,0,0,0,0,0);
-    if(inpTaskId==ERROR) {
+	inpTaskId = epicsThreadCreate("recDynINP",epicsThreadPriorityCAServerHigh+3,
+					20000, (EPICSTHREADFUNC)recDynLinkInp,0);
+	if(inpTaskId==NULL) {
 	errMessage(0,"recDynLinkStartInput: taskSpawn Failure\n");
     }
 }
 
 LOCAL void recDynLinkStartOutput(void)
 {
-    if((wakeUpSem=semBCreate(SEM_Q_FIFO,SEM_EMPTY))==NULL)
-	errMessage(0,"semBcreate failed in recDynLinkStart");
-    if((outRingQ = rngCreate(sizeof(ringBufCmd) * recDynLinkQsize)) == NULL) {
-	errMessage(0,"recDynLinkStartOutput failed");
+    wakeUpEvt = epicsEventCreate(epicsEventEmpty);
+    if (wakeUpEvt==0)
+        errMessage(0, "epicsEventCreate failed in recDynLinkStartOutput");
+    if((outRingQ = epicsRingBytesCreate(sizeof(ringBufCmd) * recDynLinkQsize)) == NULL) {
+       errMessage(0,"recDynLinkStartOutput failed");
 	exit(1);
     }
-    outTaskId = taskSpawn("recDynOUT",CA_CLIENT_PRI-1,VX_FP_TASK,
-	CA_CLIENT_STACK,(FUNCPTR)recDynLinkOut,0,0,0,0,0,0,0,0,0,0);
-    if(outTaskId==ERROR) {
-	errMessage(0,"recDynLinkStart: taskSpawn Failure\n");
+	outTaskId = epicsThreadCreate("recDynOUT",epicsThreadPriorityCAServerHigh+3,
+					20000, (EPICSTHREADFUNC)recDynLinkOut,0);
+	if(outTaskId==NULL) {
+	   errMessage(0,"recDynLinkStart: taskSpawn Failure\n");
     }
 }
 
@@ -452,7 +447,7 @@ LOCAL void monitorCallback(struct event_handler_args eha)
     if(!precDynLink) return;
     pdynLinkPvt = precDynLink->pdynLinkPvt;
     if(pdynLinkPvt->pbuffer) {
-	FASTLOCK(&pdynLinkPvt->lock);
+        epicsMutexMustLock(pdynLinkPvt->lock);
 	if(count>=pdynLinkPvt->nRequest)
 		count = pdynLinkPvt->nRequest;
 	pdbr_time_string = (struct dbr_time_string *)pbuffer;
@@ -463,7 +458,7 @@ LOCAL void monitorCallback(struct event_handler_args eha)
 	pdynLinkPvt->severity = pdbr_time_string->severity;
         memcpy(pdynLinkPvt->pbuffer,pdata,
 	    (count * dbr_size[mapNewToOld[pdynLinkPvt->dbrType]]));
-	FASTUNLOCK(&pdynLinkPvt->lock);
+        epicsMutexUnlock(pdynLinkPvt->lock);
     }
     if(pdynLinkPvt->monitorCallback)
 	(*pdynLinkPvt->monitorCallback)(precDynLink);
@@ -490,13 +485,13 @@ LOCAL void recDynLinkInp(void)
     dynLinkPvt	*pdynLinkPvt;
     ringBufCmd	cmd;
 
-    taskwdInsert(taskIdSelf(),NULL,NULL);
-    SEVCHK(ca_task_initialize(),"ca_task_initialize");
+    taskwdInsert(epicsThreadGetIdSelf(),NULL,NULL);
+    SEVCHK(ca_context_create(ca_enable_preemptive_callback),"ca_context_create");
     while(TRUE) {
-	while (rngNBytes(inpRingQ)>=sizeof(cmd) && interruptAccept){
-	    if(rngBufGet(inpRingQ,(void *)&cmd,sizeof(cmd))
+	while (epicsRingBytesUsedBytes(inpRingQ)>=sizeof(cmd) && interruptAccept){
+	    if(epicsRingBytesGet(inpRingQ,(char *)&cmd,sizeof(cmd))
 	    !=sizeof(cmd)) {
-		errMessage(0,"recDynLinkTask: rngBufGet error");
+		errMessage(0,"recDynLinkTask: epicsRingBytesGet error");
 		continue;
 	    }
 	    if(cmd.cmd==cmdClear) {
@@ -512,9 +507,9 @@ LOCAL void recDynLinkInp(void)
 	    pdynLinkPvt = precDynLink->pdynLinkPvt;
 	    switch(cmd.cmd) {
 	    case(cmdSearch) :
-		SEVCHK(ca_search_and_connect(pdynLinkPvt->pvname,
-		    &pdynLinkPvt->chid, connectCallback,precDynLink),
-		    "ca_search_and_connect");
+		SEVCHK(ca_create_channel(pdynLinkPvt->pvname,
+		    connectCallback,precDynLink, 10 ,&pdynLinkPvt->chid),
+		    "ca_create_channel");
 		break;
 	    default:
 		epicsPrintf("Logic error statement in recDynLinkTask\n");
@@ -536,13 +531,13 @@ LOCAL void recDynLinkOut(void)
     ringBufCmd	cmd;
     int		caStatus;
 
-	taskwdInsert(taskIdSelf(),NULL,NULL);
-	SEVCHK(ca_task_initialize(),"ca_task_initialize");
+    taskwdInsert(epicsThreadGetIdSelf(),NULL,NULL);
+    SEVCHK(ca_context_create(ca_enable_preemptive_callback),"ca_context_create");
 	while(TRUE) {
-		semTake(wakeUpSem,sysClkRateGet());
-		while (rngNBytes(outRingQ)>=sizeof(cmd) && interruptAccept) {
-			if (rngBufGet(outRingQ,(void *)&cmd,sizeof(cmd)) != sizeof(cmd)) {
-				errMessage(0,"recDynLinkTask: rngBufGet error");
+            epicsEventWaitWithTimeout(wakeUpEvt,1.0);
+		while (epicsRingBytesUsedBytes(outRingQ)>=sizeof(cmd) && interruptAccept) {
+			if (epicsRingBytesGet(outRingQ,(void *)&cmd,sizeof(cmd)) != sizeof(cmd)) {
+				errMessage(0,"recDynLinkTask: epicsRingBytesGet error");
 				continue;
 			}
 			if (cmd.cmd==cmdClear) {
@@ -558,12 +553,12 @@ LOCAL void recDynLinkOut(void)
 			pdynLinkPvt = precDynLink->pdynLinkPvt;
 			switch(cmd.cmd) {
 			case (cmdSearch):
-				SEVCHK(ca_search_and_connect(pdynLinkPvt->pvname,
-				&pdynLinkPvt->chid, connectCallback,precDynLink),
-				"ca_search_and_connect");
+		            SEVCHK(ca_create_channel(pdynLinkPvt->pvname,
+		                connectCallback,precDynLink, 10 ,&pdynLinkPvt->chid),
+		                "ca_create_channel");
 				break;
 			case (cmdPut):
-				caStatus = ca_array_put(
+ 				caStatus = ca_array_put(
 					mapNewToOld[pdynLinkPvt->dbrType],
 					pdynLinkPvt->nRequest,pdynLinkPvt->chid,
 					pdynLinkPvt->pbuffer);
