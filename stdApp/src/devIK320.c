@@ -1,4 +1,4 @@
-/* $Id: devIK320.c,v 1.1.1.1 2001-07-03 20:05:27 sluiter Exp $ */
+/* $Id: devIK320.c,v 1.1.1.1.2.1 2003-08-11 19:24:32 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,9 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1  2001/07/03 20:05:27  sluiter
+ * Creating
+ *
  * Revision 1.8  1999/05/05 16:25:16  strauman
  *  - added doc: README
  *
@@ -48,9 +51,9 @@
  *
  * Modification Log:
  * -----------------
- * .01  10.20.99       kag     removed 'ZERO' function from menus
- * 
- *
+ * .01 10.20.99 kag removed 'ZERO' function from menus
+ * .02 08.11.03 rls bug fix for bus error in get_ioint_info() if hardware
+ *			is missing.
  *
  */
 
@@ -831,7 +834,11 @@ cleanup:
 STATIC long
 get_ioint_info(int cmd, dbCommon *prec, IOSCANPVT *ppvt)
 {
-DevIK320Ai		devState = (DevIK320Ai)prec->dpvt;
+DevIK320Ai devState = (DevIK320Ai)prec->dpvt;
+
+	if (devState == NULL)
+	    return ERROR;
+	
 	/* tell the driver we switched on/off io event scanning
 	 * NOTE: no interrupt must occur until the caller of get_iont_info
 	 *		 is in a safe state. Otherwise the result is undefined and
