@@ -1,4 +1,4 @@
-/* $Id: sCalcPerform.c,v 1.1.1.1 2001-07-03 20:05:25 sluiter Exp $ */
+/* $Id: sCalcPerform.c,v 1.2 2003-01-26 21:53:37 rivers Exp $ */
 /*
  *	Author: Julie Sander and Bob Dalesio
  *	Date:	07-27-87
@@ -29,6 +29,7 @@
  * 03-18-98 tmm Essentially rewritten to support string operators
  * 05-21-98 tmm fixed ?: operator
  * 11-12-98 tmm v4.3 added array operators @, @@ 
+ * 10-27-01 mlr added BYTE operator
  */
 
 /* This module contains the code for processing the arithmetic
@@ -1271,6 +1272,14 @@ printf(") \n");
 
 			case TO_STRING:
 				toString(ps);
+				break;
+
+			case BYTE:
+				if (isString(ps)) {
+					ps->d = ps->s[0];
+					free(ps->s);
+					ps->s = NULL;
+				}
 				break;
 
 	 		case PRINTF:
