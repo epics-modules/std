@@ -1,4 +1,4 @@
-/* $Id: drvIK320.c,v 1.1.1.1.2.3 2003-09-11 20:09:09 sluiter Exp $ */
+/* $Id: drvIK320.c,v 1.1.1.1.2.4 2003-09-12 20:56:24 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -1077,7 +1077,7 @@ int wasBusy;
 static long
 drvIK320report()
 {
-  epicsPrintf("drvIK320: sorry, report is not implemented yet\n"); return OK;
+  printf("drvIK320: sorry, report is not implemented yet\n"); return OK;
 }
 
 static long
