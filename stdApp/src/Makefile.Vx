@@ -35,7 +35,7 @@ SRCS.c += ../devEpidSoft.c
 SRCS.c += ../genSubRecord.c
 
 # Override base with local version that uses ca_put_callback
-SRCS.c += ../recDynLink.c ../vxWorks_depen.c
+SRCS.c += ../recDynLink.c
 
 # save scan data stuff
 SRCS.c += ../xdr_stdio.c
@@ -100,7 +100,7 @@ PROD += $(STDLIBOBJS)
 
 LOCAL_SEQOBJS += getFilledBuckets.o
 PROD += ${LOCAL_SEQOBJS}
-SRCS.c += $(LOCAL_SEQOBJS:%.o=$%.c)
+SRCS.c += $(LOCAL_SEQOBJS:%.o=%.c)
 
 include $(TOP)/config/RULES.Vx
 #----------------------------------------
