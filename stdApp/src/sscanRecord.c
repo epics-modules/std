@@ -203,9 +203,10 @@
  *                      a new field ACQT specifies scalar/array.  Improved move-to-peak and related
  *                      algorithms.
  * 5.18 04-07-03  tmm   Converted to 3.14.  Deleted D1*-Df* detectors
+ * 5.19 07-10-03  rls   Bug fix for NUM_DET not matching 70 detectors in *.dbd file.
  */
 
-#define VERSION 5.18
+#define VERSION 5.19
 
 
 
