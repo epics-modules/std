@@ -118,11 +118,16 @@ AutoCount period (TP1) is less than .001 s, we default to the normal
 criteria for determining the count period.  If the AutoCount Display
 Rate (RAT1) is greater than zero (Hz), then the scaler values are
 displayed at that rate while background counting is in progress.
-Background counting is interrupted immediately whenever a normal
+
+<P>Background counting is interrupted immediately whenever a normal
 counting operation is started with the CNT field, and the results of a
 normal counting operation are held for ten seconds after the scaler
 finishes normal counting, before background counting begins again.
-Background counting never affects the state of the CNT field, so this
+The ten-second data-hold period can be changed by setting the integer
+variable 'scaler_wait_time' to the desired hold time in seconds, either
+at the ioc console, or in the ioc-startup file, st.cmd.
+
+<P>Background counting never affects the state of the CNT field, so this
 field can always be used to determine when a normal counting operation
 has begun and finished.
 
@@ -662,7 +667,7 @@ time (DLY1), the scaler can swamp the network with data.<HR>
 Suggestions and comments to: 
 <BR><A HREF="mailto:mooney@aps.anl.gov">Tim Mooney</A> : (mooney@aps.anl.gov)
 <BR>
-Last modified: May 18, 2004
+Last modified: July 16, 2004
 </ADDRESS>
 
 </BODY>
