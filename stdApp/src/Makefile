@@ -123,8 +123,8 @@ std_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 ### The following builds SNL programs as components of std
 # NOTE: for suffix .st, code is run through cpp; for .stt, it's not
-std_SRCS += kohzuCtl.st
-std_SRCS += hrCtl.st
+#std_SRCS += kohzuCtl.st
+#std_SRCS += hrCtl.st
 #std_SRCS += getFilledBuckets.st
 
 # Pete Jemian's support for X-ray Instrumentation Associates
