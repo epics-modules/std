@@ -1,14 +1,14 @@
 
 file {
-	name="/home/oxygen10/GOETZE/epics/synApps_R3.13.1.1_R4.1/kag/kagApp/op/adl/userAve.adl"
-	version=020305
+	name="C:\Program Files\EPICS WIN32 Extensions\synApps_4_3_adl\userAve.adl"
+	version=020306
 }
 display {
 	object {
-		x=624
-		y=408
+		x=762
+		y=532
 		width=380
-		height=130
+		height=150
 	}
 	clr=14
 	bclr=4
@@ -89,47 +89,6 @@ display {
 }
 rectangle {
 	object {
-		x=224
-		y=77
-		width=154
-		height=45
-	}
-	"basic attribute" {
-		clr=1
-	}
-}
-text {
-	object {
-		x=227
-		y=83
-		width=150
-		height=12
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Current Averaged Value:"
-	align="horiz. centered"
-}
-"text update" {
-	object {
-		x=224
-		y=101
-		width=154
-		height=26
-	}
-	monitor {
-		chan="$(P)$(C).VAL"
-		clr=14
-		bclr=1
-	}
-	align="horiz. centered"
-	format="string"
-	limits {
-	}
-}
-rectangle {
-	object {
 		x=0
 		y=0
 		width=380
@@ -177,7 +136,7 @@ menu {
 	control {
 		chan="$(P)$(C).SCAN"
 		clr=14
-		bclr=61
+		bclr=51
 	}
 }
 "message button" {
@@ -190,37 +149,10 @@ menu {
 	control {
 		chan="$(P)$(C).PROC"
 		clr=14
-		bclr=61
+		bclr=51
 	}
 	label="PROC"
 	press_msg="1"
-}
-"text entry" {
-	object {
-		x=154
-		y=108
-		width=30
-		height=20
-	}
-	control {
-		chan="$(P)$(C).PREC"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=6
-		y=114
-		width=143
-		height=10
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="# OF DIGITS TO DISPLAY:"
 }
 "text entry" {
 	object {
@@ -271,8 +203,8 @@ text {
 	object {
 		x=234
 		y=33
-		width=15
-		height=15
+		width=100
+		height=16
 	}
 	display[0] {
 		label="userAverages (all)"
@@ -281,18 +213,7 @@ text {
 	}
 	clr=14
 	bclr=51
-}
-text {
-	object {
-		x=249
-		y=37
-		width=60
-		height=10
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="ENABLE user Averaging"
+	label="-ENABLE ALL"
 }
 polyline {
 	object {
@@ -310,34 +231,6 @@ polyline {
 		(1,27)
 		(382,27)
 	}
-}
-"text entry" {
-	object {
-		x=154
-		y=88
-		width=64
-		height=20
-	}
-	control {
-		chan="$(P)$(C).A"
-		clr=14
-		bclr=51
-	}
-	format="truncated"
-	limits {
-	}
-}
-text {
-	object {
-		x=6
-		y=94
-		width=143
-		height=10
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="# OF SAMPLES TO AVERAGE:"
 }
 text {
 	object {
@@ -360,13 +253,14 @@ text {
 	object {
 		x=224
 		y=59
-		width=90
+		width=80
 		height=12
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Current Value:"
+	textix="Input Value:"
+	align="horiz. right"
 }
 "text update" {
 	object {
@@ -383,22 +277,6 @@ text {
 	format="string"
 	limits {
 	}
-}
-"related display" {
-	object {
-		x=189
-		y=109
-		width=29
-		height=18
-	}
-	display[0] {
-		name="userAve.adl"
-		args="P=$(P),C=$(C)"
-		policy="replace display"
-	}
-	clr=14
-	bclr=51
-	label="-Fix"
 }
 polyline {
 	object {
@@ -417,10 +295,111 @@ polyline {
 		(378,52)
 	}
 }
+menu {
+	object {
+		x=224
+		y=128
+		width=100
+		height=18
+	}
+	control {
+		chan="$(P)$(C)_mode.VAL"
+		clr=14
+		bclr=51
+	}
+}
+"message button" {
+	object {
+		x=328
+		y=128
+		width=50
+		height=18
+	}
+	control {
+		chan="$(P)$(C).C"
+		clr=14
+		bclr=51
+	}
+	label="RESTART"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=154
+		y=128
+		width=30
+		height=20
+	}
+	control {
+		chan="$(P)$(C).PREC"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=6
+		y=134
+		width=143
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="# OF DIGITS TO DISPLAY:"
+	align="horiz. right"
+}
+"text entry" {
+	object {
+		x=154
+		y=108
+		width=64
+		height=20
+	}
+	control {
+		chan="$(P)$(C).A"
+		clr=14
+		bclr=51
+	}
+	format="truncated"
+	limits {
+	}
+}
+text {
+	object {
+		x=6
+		y=114
+		width=143
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="# OF SAMPLES TO AVERAGE:"
+	align="horiz. right"
+}
+"related display" {
+	object {
+		x=189
+		y=129
+		width=29
+		height=18
+	}
+	display[0] {
+		name="userAve.adl"
+		args="P=$(P),C=$(C)"
+		policy="replace display"
+	}
+	clr=14
+	bclr=51
+	label="-Fix"
+}
 polyline {
 	object {
 		x=177
-		y=113
+		y=133
 		width=8
 		height=3
 	}
@@ -432,23 +411,94 @@ polyline {
 		chan="$(P)$(C).PREC"
 	}
 	points {
-		(178,114)
-		(183,114)
+		(178,134)
+		(183,134)
 	}
 }
 polyline {
 	object {
 		x=182
-		y=117
-		width=10
-		height=2
+		y=137
+		width=11
+		height=3
 	}
 	"basic attribute" {
 		clr=50
 		width=3
 	}
 	points {
-		(183,118)
-		(191,118)
+		(183,138)
+		(191,138)
+	}
+}
+text {
+	object {
+		x=4
+		y=94
+		width=143
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="CURRENT SAMPLE #"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=154
+		y=90
+		width=64
+		height=14
+	}
+	monitor {
+		chan="$(P)$(C).E"
+		clr=14
+		bclr=4
+	}
+	format="truncated"
+	limits {
+	}
+}
+composite {
+	object {
+		x=224
+		y=80
+		width=154
+		height=41
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=224
+				y=95
+				width=154
+				height=26
+			}
+			monitor {
+				chan="$(P)$(C).VAL"
+				clr=0
+				bclr=14
+			}
+			clrmod="alarm"
+			align="horiz. centered"
+			format="string"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=227
+				y=80
+				width=150
+				height=12
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Averaged Value:"
+			align="horiz. centered"
+		}
 	}
 }
