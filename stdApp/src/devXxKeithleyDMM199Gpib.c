@@ -1,5 +1,5 @@
 /* devXxKeithleyDMM199Gpib.c */
-/* share/src/devOpt $Id: devXxKeithleyDMM199Gpib.c,v 1.2 2003-12-10 21:41:18 mooney Exp $ */
+/* share/src/devOpt $Id: devXxKeithleyDMM199Gpib.c,v 1.3 2003-12-10 22:55:33 mooney Exp $ */
 /*
  *      Author: John Winans
  *      Date:   02-18-92
@@ -85,8 +85,6 @@
 #include	<devGpib.h>	/* needed to exportAddress the DSETS defined above */
 
 #define STATIC static
-
-static struct devGpibParmBlock devXxKeithleyDMM199Gpib_Parms;
 
 /******************************************************************************
  *
@@ -181,35 +179,6 @@ static struct gpibCmd gpibCmds[] =
 /* The following is the number of elements in the command array above.  */
 #define NUMPARAMS	sizeof(gpibCmds)/sizeof(struct gpibCmd)
 
-/******************************************************************************
- *
- * Structure containing the user's functions and operating parameters needed
- * by the gpib library functions.
- *
- * The magic SRQ parm is the parm number that, if specified on a passive
- * record, will cause the record to be processed automatically when an
- * unsolicited SRQ interrupt is detected from the device.
- *
- * If the parm is specified on a non-passive record, it will NOT be processed
- * when an unsolicited SRQ is detected.
- *
- * In the future, the magic SRQ parm records will be processed as "I/O event
- * scanned"... not passive.
- *
- ******************************************************************************/
-static struct  devGpibParmBlock devXxKeithleyDMM199Gpib_Parms = {
-  &KeithleyDMM199Debug,         /* debugging flag pointer */
-  -1,                   /* device does not respond to writes */
-  TIME_WINDOW,          /* # of clock ticks to skip after a device times out */
-  NULL,                 /* hwpvt list head */
-  gpibCmds,             /* GPIB command array */
-  NUMPARAMS,            /* number of supported parameters */
-  -1,			/* magic SRQ param number (-1 if none) */
-  "devXxKeithleyDMM199Gpib",	/* device support module type name */
-  DMA_TIME,		/* # of clock ticks to wait for DMA completions */
-  NULL,			/* SRQ handler function (NULL if none) */
-  NULL			/* secondary conversion routine (NULL if none) */
-};
 
 /******************************************************************************
  *
@@ -219,8 +188,21 @@ static struct  devGpibParmBlock devXxKeithleyDMM199Gpib_Parms = {
  * with a param value of 1.
  *
  ******************************************************************************/
-STATIC long 
-init_ai(int parm)
+static struct  devGpibParmBlock devSupParms;
+static long init_ai(int parm)
 {
-  return(devGpibLib_initDevSup(parm,&DSET_AI));
+	if (parm==0)  {
+		devSupParms.debugFlag = &KeithleyDMM199Debug;
+		devSupParms.respond2Writes = -1;
+		devSupParms.timeWindow = TIME_WINDOW;
+		devSupParms.hwpvtHead = 0;
+		devSupParms.gpibCmds = gpibCmds;
+		devSupParms.numparams = NUMPARAMS;
+		devSupParms.magicSrq = 0;
+		devSupParms.name = "devXxKeithleyDMM199Gpib";
+		devSupParms.timeout = DMA_TIME;
+		devSupParms.srqHandler = devGpibLib_srqHandler;
+		devSupParms.wrConversion = 0;
+	}
+ 	return(devGpibLib_initDevSup(parm, &DSET_AI));
 }

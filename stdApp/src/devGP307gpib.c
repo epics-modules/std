@@ -81,7 +81,6 @@
 #include	<devCommonGpib.h>
 #include	<devGpib.h>	/* needed to exportAddress the DSETS defined above */
 
-static struct devGpibParmBlock devGP307gpib_Parms;
 
 /******************************************************************************
  *
@@ -286,24 +285,23 @@ static struct gpibCmd gpibCmds[] =
  * scanned"... not passive.
  *
  ******************************************************************************/
-static struct  devGpibParmBlock devGP307gpib_Parms = {
-  &GP307Debug,         /* debugging flag pointer */
-  1,                   /* device does not respond to writes */
-  TIME_WINDOW,          /* # of clock ticks to skip after a device times out */
-  NULL,                 /* hwpvt list head */
-  gpibCmds,             /* GPIB command array */
-  NUMPARAMS,            /* number of supported parameters */
-  -1,			/* magic SRQ param number (-1 if none) */
-  "devXxGP307Gpib",	/* device support module type name */
-  DMA_TIME,		/* # of clock ticks to wait for DMA completions */
-  NULL,			/* SRQ handler function (NULL if none) */
-  NULL			/* secondary conversion routine (NULL if none) */
-};
-
-
+static struct  devGpibParmBlock devSupParms;
 static long init_ai(int parm)
 {
-  return(devGpibLib_initDevSup(parm, &DSET_AI));
+	if (parm==0)  {
+		devSupParms.debugFlag = &GP307Debug;
+		devSupParms.respond2Writes = -1;
+		devSupParms.timeWindow = TIME_WINDOW;
+		devSupParms.hwpvtHead = 0;
+		devSupParms.gpibCmds = gpibCmds;
+		devSupParms.numparams = NUMPARAMS;
+		devSupParms.magicSrq = 0;
+		devSupParms.name = "devXxGP307Gpib";
+		devSupParms.timeout = DMA_TIME;
+		devSupParms.srqHandler = devGpibLib_srqHandler;
+		devSupParms.wrConversion = 0;
+	}
+ 	return(devGpibLib_initDevSup(parm, &DSET_AI));
 }
 
 /**********************************************

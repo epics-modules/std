@@ -84,8 +84,6 @@
 #define VALID_ALARM INVALID_ALARM
 #endif
 
-static struct devGpibParmBlock devXxAX301_Parms;
-
 
 /******************************************************************************
  *
@@ -214,35 +212,6 @@ static struct gpibCmd gpibCmds[] =
 /* The following is the number of elements in the command array above.  */
 #define NUMPARAMS	sizeof(gpibCmds)/sizeof(struct gpibCmd)
 
-/******************************************************************************
- *
- * Structure containing the user's functions and operating parameters needed
- * by the gpib library functions.
- *
- * The magic SRQ parm is the parm number that, if specified on a passive
- * record, will cause the record to be processed automatically when an
- * unsolicited SRQ interrupt is detected from the device.
- *
- * If the parm is specified on a non-passive record, it will NOT be processed
- * when an unsolicited SRQ is detected.
- *
- * In the future, the magic SRQ parm records will be processed as "I/O event
- * scanned"... not passive.
- *
- ******************************************************************************/
-static struct  devGpibParmBlock devXxAX301_Parms = {
-  &AX301Debug,         /* debugging flag pointer */
-  -1,                   /* device does not respond to writes */
-  TIME_WINDOW,          /* # of clock ticks to skip after a device times out */
-  NULL,                 /* hwpvt list head */
-  gpibCmds,             /* GPIB command array */
-  NUMPARAMS,            /* number of supported parameters */
-  -1,			/* magic SRQ param number (-1 if none) */
-  "devXxAX301",		/* device support module type name */
-  DMA_TIME,		/* # of clock ticks to wait for DMA completions */
-  NULL,			/* SRQ handler function (NULL if none) */
-  NULL			/* secondary conversion routine (NULL if none) */
-};
 /****************************************************************************
  *
  * 
@@ -331,7 +300,21 @@ static int writeconvertb(struct gpibDpvt *pdpvt, int p1, int p2, char **p3)
  *
  ******************************************************************************/
 
+static struct  devGpibParmBlock devSupParms;
 static long init_ai(int parm)
 {
-  return(devGpibLib_initDevSup(parm, &DSET_AI));
+	if (parm==0)  {
+		devSupParms.debugFlag = &AX301Debug;
+		devSupParms.respond2Writes = -1;
+		devSupParms.timeWindow = TIME_WINDOW;
+		devSupParms.hwpvtHead = 0;
+		devSupParms.gpibCmds = gpibCmds;
+		devSupParms.numparams = NUMPARAMS;
+		devSupParms.magicSrq = 0;
+		devSupParms.name = "devXxAX301";
+		devSupParms.timeout = DMA_TIME;
+		devSupParms.srqHandler = devGpibLib_srqHandler;
+		devSupParms.wrConversion = 0;
+	}
+	return(devGpibLib_initDevSup(parm, &DSET_AI));
 }
