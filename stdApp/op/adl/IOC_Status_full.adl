@@ -5,10 +5,10 @@ file {
 }
 display {
 	object {
-		x=64
-		y=285
-		width=600
-		height=510
+		x=6
+		y=292
+		width=590
+		height=460
 	}
 	clr=14
 	bclr=2
@@ -919,300 +919,300 @@ composite {
 		}
 	}
 }
-composite {
+text {
+	object {
+		x=10
+		y=73
+		width=270
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="CPU"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=10
+		y=91
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,91)
+		(280,91)
+	}
+}
+polyline {
 	object {
 		x=10
 		y=70
 		width=270
-		height=379
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,70)
+		(280,70)
+	}
+}
+"text update" {
+	object {
+		x=45
+		y=95
+		width=15
+		height=14
+	}
+	monitor {
+		chan="$(P):Load"
+		clr=54
+		bclr=2
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=95
+		width=30
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Load"
+}
+text {
+	object {
+		x=65
+		y=95
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="%"
+}
+composite {
+	object {
+		x=10
+		y=150
+		width=205
+		height=14
 	}
 	"composite name"=""
 	children {
-		text {
-			object {
-				x=10
-				y=73
-				width=270
-				height=18
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="CPU"
-			align="horiz. centered"
-		}
-		polyline {
-			object {
-				x=10
-				y=91
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,91)
-				(280,91)
-			}
-		}
-		polyline {
-			object {
-				x=10
-				y=70
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,70)
-				(280,70)
-			}
-		}
 		"text update" {
 			object {
-				x=45
-				y=95
-				width=15
+				x=115
+				y=150
+				width=100
 				height=14
 			}
 			monitor {
-				chan="$(P):Load"
+				chan="$(P):MemAlloc"
 				clr=54
 				bclr=2
 			}
-			align="horiz. right"
 			limits {
 			}
 		}
 		text {
-			object {
-				x=10
-				y=95
-				width=30
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Load"
-		}
-		text {
-			object {
-				x=65
-				y=95
-				width=10
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="%"
-		}
-		composite {
 			object {
 				x=10
 				y=150
-				width=205
-				height=14
-			}
-			"composite name"=""
-			children {
-				"text update" {
-					object {
-						x=115
-						y=150
-						width=100
-						height=14
-					}
-					monitor {
-						chan="$(P):MemAlloc"
-						clr=54
-						bclr=2
-					}
-					limits {
-					}
-				}
-				text {
-					object {
-						x=10
-						y=150
-						width=100
-						height=14
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="Allocated"
-				}
-			}
-		}
-		text {
-			object {
-				x=10
-				y=165
 				width=100
 				height=14
 			}
 			"basic attribute" {
 				clr=14
 			}
-			textix="Free"
+			textix="Allocated"
 		}
-		"text update" {
-			object {
-				x=115
-				y=165
-				width=100
-				height=14
-			}
-			monitor {
-				chan="$(P):MemFree"
-				clr=54
-				bclr=2
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=10
-				y=180
-				width=100
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Max free block"
-		}
-		"text update" {
-			object {
-				x=115
-				y=180
-				width=100
-				height=14
-			}
-			monitor {
-				chan="$(P):MemMax"
-				clr=54
-				bclr=2
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=10
-				y=128
-				width=270
-				height=18
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Memory (bytes)"
-			align="horiz. centered"
-		}
-		polyline {
-			object {
-				x=10
-				y=125
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,125)
-				(280,125)
-			}
-		}
-		polyline {
-			object {
-				x=10
-				y=145
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,145)
-				(280,145)
-			}
-		}
-		text {
-			object {
-				x=10
-				y=235
-				width=80
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Clients"
-		}
-		text {
-			object {
-				x=10
-				y=250
-				width=80
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Connections"
-		}
-		text {
-			object {
-				x=10
-				y=213
-				width=270
-				height=18
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Channel Access"
-			align="horiz. centered"
-		}
-		polyline {
-			object {
-				x=10
-				y=231
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,231)
-				(280,231)
-			}
-		}
-		polyline {
-			object {
-				x=10
-				y=210
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,210)
-				(280,210)
-			}
-		}
+	}
+}
+text {
+	object {
+		x=10
+		y=165
+		width=100
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Free"
+}
+"text update" {
+	object {
+		x=115
+		y=165
+		width=100
+		height=14
+	}
+	monitor {
+		chan="$(P):MemFree"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=180
+		width=100
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Max free block"
+}
+"text update" {
+	object {
+		x=115
+		y=180
+		width=100
+		height=14
+	}
+	monitor {
+		chan="$(P):MemMax"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=128
+		width=270
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Memory (bytes)"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=10
+		y=125
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,125)
+		(280,125)
+	}
+}
+polyline {
+	object {
+		x=10
+		y=145
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,145)
+		(280,145)
+	}
+}
+text {
+	object {
+		x=10
+		y=235
+		width=80
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Clients"
+}
+text {
+	object {
+		x=10
+		y=250
+		width=80
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Connections"
+}
+text {
+	object {
+		x=10
+		y=213
+		width=270
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Channel Access"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=10
+		y=231
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,231)
+		(280,231)
+	}
+}
+polyline {
+	object {
+		x=10
+		y=210
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,210)
+		(280,210)
+	}
+}
+composite {
+	object {
+		x=100
+		y=235
+		width=40
+		height=29
+	}
+	"composite name"=""
+	children {
 		composite {
 			object {
 				x=100
@@ -1222,92 +1222,443 @@ composite {
 			}
 			"composite name"=""
 			children {
-				composite {
+				"text update" {
 					object {
 						x=100
 						y=235
 						width=40
-						height=29
+						height=14
 					}
-					"composite name"=""
-					children {
-						"text update" {
-							object {
-								x=100
-								y=235
-								width=40
-								height=14
-							}
-							monitor {
-								chan="$(P):CAClnt"
-								clr=54
-								bclr=2
-							}
-							limits {
-							}
-						}
-						"text update" {
-							object {
-								x=100
-								y=250
-								width=40
-								height=14
-							}
-							monitor {
-								chan="$(P):CACnx"
-								clr=54
-								bclr=2
-							}
-							limits {
-							}
-						}
+					monitor {
+						chan="$(P):CAClnt"
+						clr=54
+						bclr=2
+					}
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=100
+						y=250
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P):CACnx"
+						clr=54
+						bclr=2
+					}
+					limits {
 					}
 				}
 			}
 		}
+	}
+}
+text {
+	object {
+		x=10
+		y=283
+		width=270
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Network"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=10
+		y=301
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,301)
+		(280,301)
+	}
+}
+polyline {
+	object {
+		x=10
+		y=280
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,280)
+		(280,280)
+	}
+}
+composite {
+	object {
+		x=10
+		y=335
+		width=200
+		height=29
+	}
+	"composite name"=""
+	children {
 		text {
 			object {
 				x=10
-				y=283
-				width=270
-				height=18
+				y=335
+				width=150
+				height=14
 			}
 			"basic attribute" {
 				clr=14
 			}
-			textix="Network"
-			align="horiz. centered"
+			textix="ifShow input errors"
 		}
-		polyline {
+		text {
 			object {
 				x=10
-				y=301
-				width=270
-				height=0
+				y=350
+				width=150
+				height=14
 			}
 			"basic attribute" {
 				clr=14
 			}
-			points {
-				(10,301)
-				(280,301)
-			}
+			textix="ifShow output errors"
 		}
-		polyline {
+		"text update" {
 			object {
-				x=10
-				y=280
-				width=270
-				height=0
+				x=160
+				y=335
+				width=50
+				height=14
 			}
-			"basic attribute" {
-				clr=14
+			monitor {
+				chan="$(P):IFIErrs"
+				clr=54
+				bclr=2
 			}
-			points {
-				(10,280)
-				(280,280)
+			limits {
 			}
 		}
+		"text update" {
+			object {
+				x=160
+				y=350
+				width=50
+				height=14
+			}
+			monitor {
+				chan="$(P):IFOErrs"
+				clr=54
+				bclr=2
+			}
+			limits {
+			}
+		}
+	}
+}
+text {
+	object {
+		x=10
+		y=405
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="In Use"
+}
+text {
+	object {
+		x=10
+		y=420
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Available"
+}
+text {
+	object {
+		x=10
+		y=435
+		width=70
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Total"
+}
+"text update" {
+	object {
+		x=80
+		y=405
+		width=30
+		height=14
+	}
+	monitor {
+		chan="$(P):FDUsed"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=80
+		y=420
+		width=30
+		height=14
+	}
+	monitor {
+		chan="$(P):FDAv"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=80
+		y=435
+		width=30
+		height=14
+	}
+	monitor {
+		chan="$(P):FDMax"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=383
+		width=270
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="File descriptors"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=10
+		y=380
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,380)
+		(280,380)
+	}
+}
+polyline {
+	object {
+		x=10
+		y=400
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,400)
+		(280,400)
+	}
+}
+"text entry" {
+	object {
+		x=225
+		y=382
+		width=30
+		height=18
+	}
+	control {
+		chan="$(P):R_FD"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=225
+		y=212
+		width=30
+		height=18
+	}
+	control {
+		chan="$(P):R_CA"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=225
+		y=127
+		width=30
+		height=18
+	}
+	control {
+		chan="$(P):R_Mem"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=225
+		y=72
+		width=30
+		height=18
+	}
+	control {
+		chan="$(P):R_Load"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=257
+		y=384
+		width=15
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Hz"
+}
+text {
+	object {
+		x=257
+		y=214
+		width=15
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Hz"
+}
+text {
+	object {
+		x=257
+		y=74
+		width=15
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Hz"
+}
+text {
+	object {
+		x=257
+		y=129
+		width=15
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Hz"
+}
+polygon {
+	object {
+		x=522
+		y=3
+		width=17
+		height=20
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="a%2"
+		chan="$(P):HBt"
+	}
+	points {
+		(530,23)
+		(526,20)
+		(523,16)
+		(522,11)
+		(522,7)
+		(522,4)
+		(524,3)
+		(527,3)
+		(530,5)
+		(529,13)
+		(531,5)
+		(534,3)
+		(537,3)
+		(538,4)
+		(539,7)
+		(539,11)
+		(537,16)
+		(534,20)
+		(531,23)
+		(530,23)
+	}
+}
+"related display" {
+	object {
+		x=530
+		y=435
+		width=50
+		height=20
+	}
+	display[0] {
+		name="IOC_Status.adl"
+		args="P=$(P)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=17
+	label="-Less"
+}
+composite {
+	object {
+		x=10
+		y=305
+		width=220
+		height=29
+	}
+	"composite name"=""
+	children {
 		text {
 			object {
 				x=10
@@ -1366,418 +1717,116 @@ composite {
 		}
 		composite {
 			object {
-				x=10
-				y=335
-				width=200
+				x=135
+				y=305
+				width=95
 				height=29
 			}
 			"composite name"=""
 			children {
 				text {
 					object {
-						x=10
-						y=335
-						width=150
+						x=135
+						y=305
+						width=60
 						height=14
 					}
 					"basic attribute" {
 						clr=14
 					}
-					textix="ifShow input errors"
+					textix="(lowest:"
 				}
 				text {
 					object {
-						x=10
-						y=350
-						width=150
+						x=135
+						y=320
+						width=60
 						height=14
 					}
 					"basic attribute" {
 						clr=14
 					}
-					textix="ifShow output errors"
+					textix="(lowest:"
 				}
-				"text update" {
+				composite {
 					object {
-						x=160
-						y=335
-						width=50
+						x=195
+						y=305
+						width=35
 						height=14
 					}
-					monitor {
-						chan="$(P):IFIErrs"
-						clr=54
-						bclr=2
-					}
-					limits {
+					"composite name"=""
+					children {
+						"text update" {
+							object {
+								x=195
+								y=305
+								width=15
+								height=14
+							}
+							monitor {
+								chan="$(P):minDataMBuf"
+								clr=54
+								bclr=2
+							}
+							align="horiz. right"
+							limits {
+							}
+						}
+						text {
+							object {
+								x=215
+								y=305
+								width=15
+								height=14
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="%)"
+						}
 					}
 				}
-				"text update" {
+				composite {
 					object {
-						x=160
-						y=350
-						width=50
+						x=195
+						y=320
+						width=35
 						height=14
 					}
-					monitor {
-						chan="$(P):IFOErrs"
-						clr=54
-						bclr=2
-					}
-					limits {
+					"composite name"=""
+					children {
+						"text update" {
+							object {
+								x=195
+								y=320
+								width=15
+								height=14
+							}
+							monitor {
+								chan="$(P):minSysMBuf"
+								clr=54
+								bclr=2
+							}
+							align="horiz. right"
+							limits {
+							}
+						}
+						text {
+							object {
+								x=215
+								y=320
+								width=15
+								height=14
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="%)"
+						}
 					}
 				}
 			}
 		}
-		text {
-			object {
-				x=125
-				y=305
-				width=70
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="(min free:"
-		}
-		"text update" {
-			object {
-				x=200
-				y=305
-				width=15
-				height=14
-			}
-			monitor {
-				chan="$(P):minDataMBuf"
-				clr=54
-				bclr=2
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=200
-				y=320
-				width=15
-				height=14
-			}
-			monitor {
-				chan="$(P):minSysMBuf"
-				clr=54
-				bclr=2
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=220
-				y=305
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="%)"
-		}
-		text {
-			object {
-				x=125
-				y=320
-				width=70
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="(min free:"
-		}
-		text {
-			object {
-				x=220
-				y=320
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="%)"
-		}
-		text {
-			object {
-				x=10
-				y=405
-				width=70
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="In Use"
-		}
-		text {
-			object {
-				x=10
-				y=420
-				width=70
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Available"
-		}
-		text {
-			object {
-				x=10
-				y=435
-				width=70
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Total"
-		}
-		"text update" {
-			object {
-				x=80
-				y=405
-				width=30
-				height=14
-			}
-			monitor {
-				chan="$(P):FDUsed"
-				clr=54
-				bclr=2
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=80
-				y=420
-				width=30
-				height=14
-			}
-			monitor {
-				chan="$(P):FDAv"
-				clr=54
-				bclr=2
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=80
-				y=435
-				width=30
-				height=14
-			}
-			monitor {
-				chan="$(P):FDMax"
-				clr=54
-				bclr=2
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=10
-				y=383
-				width=270
-				height=18
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="File descriptors"
-			align="horiz. centered"
-		}
-		polyline {
-			object {
-				x=10
-				y=380
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,380)
-				(280,380)
-			}
-		}
-		polyline {
-			object {
-				x=10
-				y=400
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,400)
-				(280,400)
-			}
-		}
-		"text entry" {
-			object {
-				x=225
-				y=382
-				width=30
-				height=18
-			}
-			control {
-				chan="$(P):R_FD"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=225
-				y=212
-				width=30
-				height=18
-			}
-			control {
-				chan="$(P):R_CA"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=225
-				y=127
-				width=30
-				height=18
-			}
-			control {
-				chan="$(P):R_Mem"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=225
-				y=72
-				width=30
-				height=18
-			}
-			control {
-				chan="$(P):R_Load"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=257
-				y=384
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Hz"
-		}
-		text {
-			object {
-				x=257
-				y=214
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Hz"
-		}
-		text {
-			object {
-				x=257
-				y=74
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Hz"
-		}
-		text {
-			object {
-				x=257
-				y=129
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Hz"
-		}
-	}
-}
-polygon {
-	object {
-		x=522
-		y=3
-		width=17
-		height=20
-	}
-	"basic attribute" {
-		clr=21
-	}
-	"dynamic attribute" {
-		vis="calc"
-		calc="a%2"
-		chan="$(P):HBt"
-	}
-	points {
-		(530,23)
-		(526,20)
-		(523,16)
-		(522,11)
-		(522,7)
-		(522,4)
-		(524,3)
-		(527,3)
-		(530,5)
-		(529,13)
-		(531,5)
-		(534,3)
-		(537,3)
-		(538,4)
-		(539,7)
-		(539,11)
-		(537,16)
-		(534,20)
-		(531,23)
-		(530,23)
 	}
 }

@@ -1,6 +1,6 @@
 
 file {
-	name="/home/oxygen4/MOONEY/epics/synApps_5_1/support/std/cvs/stdApp/op/adl/IOC_Status.adl"
+	name="/home/oxygen/MOONEY/epics/synApps_5_1/support/std/cvs/stdApp/op/adl/IOC_Status.adl"
 	version=030004
 }
 display {
@@ -8,7 +8,7 @@ display {
 		x=529
 		y=285
 		width=290
-		height=515
+		height=535
 	}
 	clr=14
 	bclr=2
@@ -528,308 +528,264 @@ composite {
 		x=10
 		y=365
 		width=270
-		height=139
+		height=54
 	}
 	"composite name"=""
 	children {
+		text {
+			object {
+				x=10
+				y=390
+				width=90
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Current"
+		}
+		"text update" {
+			object {
+				x=110
+				y=390
+				width=170
+				height=14
+			}
+			monitor {
+				chan="$(P):Time"
+				clr=54
+				bclr=2
+			}
+			limits {
+			}
+		}
 		composite {
 			object {
 				x=10
 				y=365
 				width=270
-				height=139
+				height=21
 			}
 			"composite name"=""
 			children {
-				composite {
+				text {
+					object {
+						x=10
+						y=368
+						width=270
+						height=18
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Time"
+					align="horiz. centered"
+				}
+				polyline {
+					object {
+						x=10
+						y=385
+						width=270
+						height=0
+					}
+					"basic attribute" {
+						clr=14
+					}
+					points {
+						(10,385)
+						(280,385)
+					}
+				}
+				polyline {
 					object {
 						x=10
 						y=365
 						width=270
-						height=54
+						height=0
 					}
-					"composite name"=""
-					children {
-						text {
-							object {
-								x=10
-								y=390
-								width=90
-								height=14
-							}
-							"basic attribute" {
-								clr=14
-							}
-							textix="Current"
-						}
-						"text update" {
-							object {
-								x=110
-								y=390
-								width=170
-								height=14
-							}
-							monitor {
-								chan="$(P):Time"
-								clr=54
-								bclr=2
-							}
-							limits {
-							}
-						}
-						composite {
-							object {
-								x=10
-								y=365
-								width=270
-								height=21
-							}
-							"composite name"=""
-							children {
-								text {
-									object {
-										x=10
-										y=368
-										width=270
-										height=18
-									}
-									"basic attribute" {
-										clr=14
-									}
-									textix="Time"
-									align="horiz. centered"
-								}
-								polyline {
-									object {
-										x=10
-										y=385
-										width=270
-										height=0
-									}
-									"basic attribute" {
-										clr=14
-									}
-									points {
-										(10,385)
-										(280,385)
-									}
-								}
-								polyline {
-									object {
-										x=10
-										y=365
-										width=270
-										height=0
-									}
-									"basic attribute" {
-										clr=14
-									}
-									points {
-										(10,365)
-										(280,365)
-									}
-								}
-							}
-						}
-						composite {
-							object {
-								x=10
-								y=405
-								width=270
-								height=14
-							}
-							"composite name"=""
-							children {
-								text {
-									object {
-										x=10
-										y=405
-										width=90
-										height=14
-									}
-									"basic attribute" {
-										clr=14
-									}
-									textix="Boot time"
-								}
-								"text update" {
-									object {
-										x=110
-										y=405
-										width=170
-										height=14
-									}
-									monitor {
-										chan="$(P):BootTime"
-										clr=54
-										bclr=2
-									}
-									limits {
-									}
-								}
-							}
-						}
+					"basic attribute" {
+						clr=14
 					}
-				}
-				composite {
-					object {
-						x=10
-						y=435
-						width=270
-						height=69
-					}
-					"composite name"=""
-					children {
-						text {
-							object {
-								x=10
-								y=438
-								width=270
-								height=18
-							}
-							"basic attribute" {
-								clr=14
-							}
-							textix="Software version"
-							align="horiz. centered"
-						}
-						polyline {
-							object {
-								x=10
-								y=456
-								width=270
-								height=0
-							}
-							"basic attribute" {
-								clr=14
-							}
-							points {
-								(10,456)
-								(280,456)
-							}
-						}
-						polyline {
-							object {
-								x=10
-								y=435
-								width=270
-								height=0
-							}
-							"basic attribute" {
-								clr=14
-							}
-							points {
-								(10,435)
-								(280,435)
-							}
-						}
-						composite {
-							object {
-								x=10
-								y=460
-								width=40
-								height=44
-							}
-							"composite name"=""
-							children {
-								text {
-									object {
-										x=10
-										y=475
-										width=40
-										height=14
-									}
-									"basic attribute" {
-										clr=14
-									}
-									textix="BSP"
-								}
-								text {
-									object {
-										x=10
-										y=490
-										width=40
-										height=14
-									}
-									"basic attribute" {
-										clr=14
-									}
-									textix="EPICS"
-								}
-								text {
-									object {
-										x=10
-										y=460
-										width=40
-										height=14
-									}
-									"basic attribute" {
-										clr=14
-									}
-									textix="kernel"
-								}
-							}
-						}
-						composite {
-							object {
-								x=60
-								y=460
-								width=210
-								height=44
-							}
-							"composite name"=""
-							children {
-								"text update" {
-									object {
-										x=60
-										y=475
-										width=210
-										height=14
-									}
-									monitor {
-										chan="$(P):BSP_rev"
-										clr=54
-										bclr=2
-									}
-									limits {
-									}
-								}
-								"text update" {
-									object {
-										x=60
-										y=490
-										width=210
-										height=14
-									}
-									monitor {
-										chan="$(P):EPICS_vers"
-										clr=54
-										bclr=2
-									}
-									limits {
-									}
-								}
-								"text update" {
-									object {
-										x=60
-										y=460
-										width=210
-										height=14
-									}
-									monitor {
-										chan="$(P):kernel_vers"
-										clr=54
-										bclr=2
-									}
-									limits {
-									}
-								}
-							}
-						}
+					points {
+						(10,365)
+						(280,365)
 					}
 				}
 			}
 		}
+		composite {
+			object {
+				x=10
+				y=405
+				width=270
+				height=14
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=10
+						y=405
+						width=90
+						height=14
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Boot time"
+				}
+				"text update" {
+					object {
+						x=110
+						y=405
+						width=170
+						height=14
+					}
+					monitor {
+						chan="$(P):BootTime"
+						clr=54
+						bclr=2
+					}
+					limits {
+					}
+				}
+			}
+		}
+	}
+}
+text {
+	object {
+		x=10
+		y=438
+		width=270
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Software version"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=10
+		y=456
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,456)
+		(280,456)
+	}
+}
+polyline {
+	object {
+		x=10
+		y=435
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,435)
+		(280,435)
+	}
+}
+composite {
+	object {
+		x=10
+		y=460
+		width=40
+		height=44
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=10
+				y=475
+				width=40
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="BSP"
+		}
+		text {
+			object {
+				x=10
+				y=490
+				width=40
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="EPICS"
+		}
+		text {
+			object {
+				x=10
+				y=460
+				width=40
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="kernel"
+		}
+	}
+}
+"text update" {
+	object {
+		x=60
+		y=475
+		width=210
+		height=14
+	}
+	monitor {
+		chan="$(P):BSP_rev"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=60
+		y=490
+		width=210
+		height=14
+	}
+	monitor {
+		chan="$(P):EPICS_vers"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=60
+		y=460
+		width=210
+		height=14
+	}
+	monitor {
+		chan="$(P):kernel_vers"
+		clr=54
+		bclr=2
+	}
+	limits {
 	}
 }
 text {
@@ -886,58 +842,265 @@ text {
 	limits {
 	}
 }
-composite {
+text {
+	object {
+		x=10
+		y=228
+		width=270
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Network"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=10
+		y=246
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,246)
+		(280,246)
+	}
+}
+polyline {
 	object {
 		x=10
 		y=225
 		width=270
-		height=124
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,225)
+		(280,225)
+	}
+}
+text {
+	object {
+		x=10
+		y=280
+		width=120
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ifShow errors I/O"
+}
+"text update" {
+	object {
+		x=140
+		y=280
+		width=30
+		height=14
+	}
+	monitor {
+		chan="$(P):IFIErrs"
+		clr=54
+		bclr=2
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=180
+		y=280
+		width=30
+		height=14
+	}
+	monitor {
+		chan="$(P):IFOErrs"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=170
+		y=280
+		width=10
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="/"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=10
+		y=335
+		width=50
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="In Use"
+}
+"text update" {
+	object {
+		x=60
+		y=335
+		width=30
+		height=14
+	}
+	monitor {
+		chan="$(P):FDUsed"
+		clr=54
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=313
+		width=270
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="File descriptors"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=10
+		y=310
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,310)
+		(280,310)
+	}
+}
+polyline {
+	object {
+		x=10
+		y=330
+		width=270
+		height=0
+	}
+	"basic attribute" {
+		clr=14
+	}
+	points {
+		(10,330)
+		(280,330)
+	}
+}
+"text entry" {
+	object {
+		x=225
+		y=312
+		width=30
+		height=18
+	}
+	control {
+		chan="$(P):R_FD"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=257
+		y=314
+		width=15
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Hz"
+}
+composite {
+	object {
+		x=140
+		y=335
+		width=100
+		height=14
 	}
 	"composite name"=""
 	children {
 		text {
 			object {
-				x=10
-				y=228
-				width=270
-				height=18
+				x=140
+				y=335
+				width=70
+				height=14
 			}
 			"basic attribute" {
 				clr=14
 			}
-			textix="Network"
-			align="horiz. centered"
+			textix="Available"
 		}
-		polyline {
+		"text update" {
 			object {
-				x=10
-				y=246
-				width=270
-				height=0
+				x=210
+				y=335
+				width=30
+				height=14
 			}
-			"basic attribute" {
-				clr=14
+			monitor {
+				chan="$(P):FDAv"
+				clr=54
+				bclr=2
 			}
-			points {
-				(10,246)
-				(280,246)
-			}
-		}
-		polyline {
-			object {
-				x=10
-				y=225
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,225)
-				(280,225)
+			limits {
 			}
 		}
+	}
+}
+"related display" {
+	object {
+		x=230
+		y=510
+		width=50
+		height=20
+	}
+	display[0] {
+		name="IOC_Status_full.adl"
+		args="P=$(P)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=17
+	label="-More"
+}
+composite {
+	object {
+		x=10
+		y=250
+		width=220
+		height=29
+	}
+	"composite name"=""
+	children {
 		text {
 			object {
 				x=10
@@ -994,273 +1157,115 @@ composite {
 			limits {
 			}
 		}
-		text {
-			object {
-				x=10
-				y=280
-				width=120
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="ifShow errors I/O"
-		}
-		"text update" {
-			object {
-				x=140
-				y=280
-				width=30
-				height=14
-			}
-			monitor {
-				chan="$(P):IFIErrs"
-				clr=54
-				bclr=2
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=180
-				y=280
-				width=30
-				height=14
-			}
-			monitor {
-				chan="$(P):IFOErrs"
-				clr=54
-				bclr=2
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=125
-				y=250
-				width=70
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="(min free:"
-		}
-		"text update" {
-			object {
-				x=200
-				y=250
-				width=15
-				height=14
-			}
-			monitor {
-				chan="$(P):minDataMBuf"
-				clr=54
-				bclr=2
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=200
-				y=265
-				width=15
-				height=14
-			}
-			monitor {
-				chan="$(P):minSysMBuf"
-				clr=54
-				bclr=2
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=220
-				y=250
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="%)"
-		}
-		text {
-			object {
-				x=125
-				y=265
-				width=70
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="(min free:"
-		}
-		text {
-			object {
-				x=220
-				y=265
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="%)"
-		}
-		text {
-			object {
-				x=170
-				y=280
-				width=10
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="/"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=10
-				y=335
-				width=50
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="In Use"
-		}
-		"text update" {
-			object {
-				x=60
-				y=335
-				width=30
-				height=14
-			}
-			monitor {
-				chan="$(P):FDUsed"
-				clr=54
-				bclr=2
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=10
-				y=313
-				width=270
-				height=18
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="File descriptors"
-			align="horiz. centered"
-		}
-		polyline {
-			object {
-				x=10
-				y=310
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,310)
-				(280,310)
-			}
-		}
-		polyline {
-			object {
-				x=10
-				y=330
-				width=270
-				height=0
-			}
-			"basic attribute" {
-				clr=14
-			}
-			points {
-				(10,330)
-				(280,330)
-			}
-		}
-		"text entry" {
-			object {
-				x=225
-				y=312
-				width=30
-				height=18
-			}
-			control {
-				chan="$(P):R_FD"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=257
-				y=314
-				width=15
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Hz"
-		}
 		composite {
 			object {
-				x=140
-				y=335
-				width=100
-				height=14
+				x=135
+				y=250
+				width=95
+				height=29
 			}
 			"composite name"=""
 			children {
 				text {
 					object {
-						x=140
-						y=335
-						width=70
+						x=135
+						y=250
+						width=60
 						height=14
 					}
 					"basic attribute" {
 						clr=14
 					}
-					textix="Available"
+					textix="(lowest:"
 				}
-				"text update" {
+				text {
 					object {
-						x=210
-						y=335
-						width=30
+						x=135
+						y=265
+						width=60
 						height=14
 					}
-					monitor {
-						chan="$(P):FDAv"
-						clr=54
-						bclr=2
+					"basic attribute" {
+						clr=14
 					}
-					limits {
+					textix="(lowest:"
+				}
+				composite {
+					object {
+						x=195
+						y=250
+						width=35
+						height=14
+					}
+					"composite name"=""
+					children {
+						"text update" {
+							object {
+								x=195
+								y=250
+								width=15
+								height=14
+							}
+							monitor {
+								chan="$(P):minDataMBuf"
+								clr=54
+								bclr=2
+							}
+							align="horiz. right"
+							limits {
+							}
+						}
+						text {
+							object {
+								x=215
+								y=250
+								width=15
+								height=14
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="%)"
+						}
+					}
+				}
+				composite {
+					object {
+						x=195
+						y=265
+						width=35
+						height=14
+					}
+					"composite name"=""
+					children {
+						"text update" {
+							object {
+								x=195
+								y=265
+								width=15
+								height=14
+							}
+							monitor {
+								chan="$(P):minSysMBuf"
+								clr=54
+								bclr=2
+							}
+							align="horiz. right"
+							limits {
+							}
+						}
+						text {
+							object {
+								x=215
+								y=265
+								width=15
+								height=14
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="%)"
+						}
 					}
 				}
 			}
