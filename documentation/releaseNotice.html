@@ -1,70 +1,117 @@
-<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en"><html><head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.77 [en] (X11; U; SunOS 5.8 sun4u) [Netscape]"><title></title></head>
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Mozilla/4.77 [en] (X11; U; SunOS 5.8 sun4u) [Netscape]">
+  <title></title>
+</head>
 
 <body text="#000000" bgcolor="#ffffff" link="#0000ee" vlink="#551a8b" alink="#ff0000">
 
 <center>
-<h1>
-Standard Support</h1></center>
+  <h1>Standard Support<BR>Release Notes</h1>
+</center>
 
-<center>
-<h1>
-Release Notes<br>
-Jan 2002</h1></center>
+<h2>Release 1-4,&nbsp;&nbsp;????, 2003</h2>
 
-<h2>
-Release 1-2</h2>
-Added softMotor.db to stdApp/Db, to Makefile.Host and added the following
-softMotor.db related medm displays to stdApp/op/adl; softMotorConfig.adl,
-softMotorHelp.adl and softMotors10.adl.
-<p>Changed DTYP in BunchClkGenA.db from "Soft Record" to "Soft Channel".
-<br>&nbsp;
-<br>
-</p>
-<center>
-<h1>
-Release Notes<br>
-April 2003</h1></center>
-
-
-<h2>
-Release 1-3</h2>
 <ul>
-  <li>XIA_shutter.db - Added records that open and close the shutter by writing
-string commands, rather than requiring the client to write the strings.&nbsp;
-This allows the shutter to be controlled directly by the sscan record, which
-cannot write strings.</li>
-  <li>hrSeq.db - v 3.2 modified to support non-nested dispersive double crystal geometry.</li>
-  <li>scan.db - Added MAXPTSH macro, saveData_comment1, and saveData_comment2. &nbsp;Added scanActive calc.&nbsp; Deleted default detectors and triggers.</li>
-  <li>userAve10.db - add restart, one-shot support, report current sample.</li>
-  <li>XIA_shutter.adl - XIA_shutter_more.adl - XIA_shutter_small.adl - Changed buttons that open and close the shutter so that they process
-records that write string commands, rather than writing the string commands
-directly.&nbsp; This allows the shutter to be controlled directly by the
-sscan record, which cannot write strings.</li>
-  <li>hrSeqCtl_All.adl - Added selector for geometry (nested/symmetric).</li>
-  <li>scan.adl - scan_detectors10.adl - scan_detectorsOld.adl - scan_more.adl
--scan_positioners.adl - dynLink status (e.g., red X's) no longer shows when
-no PV has been entered (requires MEDM v2.3.6 or later).</li>
-  <li>table_setup_GEOCARS.adl - table_setup_NEWPORT.adl - table_setup_PNC.adl
-- table_setup_SRI.adl - RZ field wasn't being displayed for some reason.</li>
-  <li>userAve.adl - Added one-shot/continuous, restart, current sample.</li>
-  <li>dbrestore.c -save_restore.c - fGetDateStr.c added -fGetDateStr.h added
-- V2.7; Added include-file and macro-substitution capabilities.&nbsp; Added
-Frank Lenkszus' modifications (file path, set_passN_restoreFile, reload save
-sets, etc.)</li>
-  <li>hrCtl.st - Added symmetric geometry, fixed phi2 init, phi offsets recalculated
-on transition into Set mode, Set mode no longer wipes world offsets.</li>
-  <li>initHooks.c - Modified to support V2.7 dbrestore.c; add support to restore from a list of save files.</li>
-  <li>sCalcPerform.c - sCalcPostfix.c - sCalcPostfixPvt.h - Added BYTE operator.</li>
-  <li>saveData.c - v1.13 Trigger PV now retains field name; realTime1D was
-treated as int, instead of short, so it seemed to be on at boot; null terminate
-DBR_STRING, so string variables behave right.</li>
-  <li>subAve.c - limit number of samples to average, reset restart field (.A), report current sample number (.E).</li>
-  <li>transformRecord.c - transformRecord.html - v 5.4; New way to determine
-if a value should be recalculated: if not same as old value and if not marked
-in bitmap.&nbsp; Bitmap is marked if value is written to unless PACT was
-true at the time.&nbsp; New debug calc prints info with lower value of transformRecordDebug
-if TPRO is true.</li>
+  <li>
+    Bug fix for bus error in devIK320.c and drvIK320.c if IK320 hardware is missing.
+  </li>				        
+  <li>
+    sseq_settings.req file added to stdApp/Db for auto-saving sseq record fields.
+  </li>				        
 </ul>
-</body></html>
+
+
+<h2>Release 1-3,&nbsp;&nbsp;July 9, 2003</h2>
+<ul>
+  <li>
+    XIA_shutter.db - Added records that open and close the shutter by writing string 
+    commands, rather than requiring the client to write the strings.&nbsp; This 
+    allows the shutter to be controlled directly by the sscan record, which cannot 
+    write strings.
+  </li>
+  <li>
+    hrSeq.db - v 3.2 modified to support non-nested dispersive double crystal 
+    geometry.
+  </li>
+  <li>
+    scan.db - Added MAXPTSH macro, saveData_comment1, and saveData_comment2. &nbsp;Added 
+    scanActive calc.&nbsp; Deleted default detectors and triggers.
+  </li>
+  <li>
+    userAve10.db - add restart, one-shot support, report current sample.
+  </li>
+  <li>
+    XIA_shutter.adl - XIA_shutter_more.adl - XIA_shutter_small.adl - Changed buttons 
+    that open and close the shutter so that they process records that write string 
+    commands, rather than writing the string commands directly.&nbsp; This allows 
+    the shutter to be controlled directly by the sscan record, which cannot write 
+    strings.
+  </li>
+  <li>
+    hrSeqCtl_All.adl - Added selector for geometry (nested/symmetric).
+  </li>
+  <li>
+    scan.adl - scan_detectors10.adl - scan_detectorsOld.adl - scan_more.adl -scan_positioners.adl 
+    - dynLink status (e.g., red X's) no longer shows when no PV has been entered (requires 
+    MEDM v2.3.6 or later).
+  </li>
+  <li>
+    table_setup_GEOCARS.adl - table_setup_NEWPORT.adl - table_setup_PNC.adl - 
+    table_setup_SRI.adl - RZ field wasn't being displayed for some reason.
+  </li>
+  <li>
+    userAve.adl - Added one-shot/continuous, restart, current sample.
+  </li>
+  <li>
+    dbrestore.c -save_restore.c - fGetDateStr.c added -fGetDateStr.h added - V2.7; 
+    Added include-file and macro-substitution capabilities.&nbsp; Added Frank 
+    Lenkszus' modifications (file path, set_passN_restoreFile, reload save sets, etc.)
+  </li>
+  <li>
+    hrCtl.st - Added symmetric geometry, fixed phi2 init, phi offsets recalculated 
+    on transition into Set mode, Set mode no longer wipes world offsets.
+  </li>
+  <li>
+    initHooks.c - Modified to support V2.7 dbrestore.c; add support to restore from 
+    a list of save files.
+  </li>
+  <li>
+    sCalcPerform.c - sCalcPostfix.c - sCalcPostfixPvt.h - Added BYTE operator.
+  </li>
+  <li>
+    saveData.c - v1.13 Trigger PV now retains field name; realTime1D was treated as 
+    int, instead of short, so it seemed to be on at boot; null terminate DBR_STRING, 
+    so string variables behave right.
+  </li>
+  <li>
+    subAve.c - limit number of samples to average, reset restart field (.A), report 
+    current sample number (.E).
+  </li>
+  <li>
+    transformRecord.c - transformRecord.html - v 5.4; New way to determine if a 
+    value should be recalculated: if not same as old value and if not marked in 
+    bitmap.&nbsp; Bitmap is marked if value is written to unless PACT was true at 
+    the time.&nbsp; New debug calc prints info with lower value of 
+    transformRecordDebug if TPRO is true.
+  </li>
+</ul>
+
+
+<h2>Release 1-2,&nbsp;&nbsp;Jan 2002</h2>
+
+<ul>
+  <li>
+    Added softMotor.db to stdApp/Db, to Makefile.Host and added 
+    the following softMotor.db related medm displays to stdApp/op/adl; 
+    softMotorConfig.adl, softMotorHelp.adl and softMotors10.adl.
+  </li>
+  <li>
+    Changed DTYP in BunchClkGenA.db from "Soft Record" to "Soft Channel".
+  </li>
+</ul>
+
+</body>
+</html>
