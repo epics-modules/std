@@ -56,8 +56,10 @@
  *                Replace logMsg with errlogPrintf except in callback routines.
  * 09/04/03  tmm  v3.4 Do manual restore operations (fdbrestore*) in the save_restore
  *                task.  With this change, all CA work is done by the save_restore task.
+ * 04/12/04  tmm  v3.5 Added array support. fdbrestore* was reimplmented as a macro,
+ *                but this meant that user could not invoke from command line.
  */
-#define		SRVERSION "save/restore V3.4"
+#define		SRVERSION "save/restore V3.5"
 
 #ifdef vxWorks
 #include	<vxWorks.h>
@@ -85,7 +87,9 @@ extern int logMsg(char *fmt, ...);
 #include	<time.h>
 
 #include	<dbDefs.h>
-#include	<cadef.h>
+
+
+#include	<cadef.h>		/* includes dbAddr.h */
 #include	<epicsPrint.h>
 #include 	<tsDefs.h>
 #include    <macLib.h>
@@ -93,6 +97,7 @@ extern int logMsg(char *fmt, ...);
 #include 	"fGetDateStr.h"
 
 #define TIME2WAIT 20		/* time to wait for semaphore sem_remove */
+#define BACKWARDS_LIST 0	/* old list order was backwards */
 
 /*** Debugging variables, macros ***/
 /* #define NODEBUG */
@@ -104,14 +109,14 @@ extern int logMsg(char *fmt, ...);
 #define Debug(l,FMT,V) {  if (l <= save_restoreDebug) \
 			{ errlogPrintf("%s(%d):",__FILE__,__LINE__); \
 			  errlogPrintf(FMT,V); } }
-#define DebugNV(l,FMT) {  if (l <= save_restoreDebug) \
+#define Debug2(l,FMT,V,W) {  if(l <= save_restoreDebug) \
+			{ errlogPrintf("%s(%d):",__FILE__,__LINE__); \
+			  errlogPrintf(FMT,V,W); ; } }
+#define Debug0(l,FMT) {  if (l <= save_restoreDebug) \
 			{ errlogPrintf("%s(%d):",__FILE__,__LINE__); \
 			  errlogPrintf(FMT); } }
 #endif
 #define myPrintErrno(errNo) {errlogPrintf("%s(%d): [0x%x]=",__FILE__,__LINE__,errNo); printErrno(errNo);}
-
-#define FLOAT_FMT "%.7g"
-#define DOUBLE_FMT "%.14g"
 
 /*
  * data structure definitions 
@@ -162,13 +167,16 @@ struct chlist {							/* save set list element */
 	chid			time_chid;
 };
 
-struct channel {			/* database channel list element */
-	struct channel *pnext;	/* next channel */
-	char		name[64];	/* channel name */
-	chid 		chid;		/* channel access id */
-	char 		value[64];	/* value string */
-	short		enum_val;	/* short value of an enumerated field */
-	short		valid;		/* we think we got valid data for this channel */
+struct channel {					/* database channel list element */
+	struct channel	*pnext;			/* next channel */
+	char			name[64];		/* channel name */
+	chid			chid;			/* channel access id */
+	char			value[64];		/* value string */
+	short			enum_val;		/* short value of an enumerated field */
+	short			valid;			/* we think we got valid data for this channel */
+	long			num_elements;	/* number of elements, initially from ca, but then from dbAddr */
+	long			field_type;		/* field type from dbAddr */
+	void			*pArray;
 };
 
 struct pathListElement {
@@ -181,7 +189,7 @@ struct pathListElement {
 STATIC short	save_restore_init = 0;
 STATIC char 	*SRversion = SRVERSION;
 STATIC struct pathListElement *reqFilePathList = NULL;
-char			saveRestoreFilePath[PATH_SIZE] = "";	/* path to save files, also used by dbrestore.c */
+char	saveRestoreFilePath[PATH_SIZE] = "";	/* path to save files, also used by dbrestore.c */
 STATIC int		taskPriority =  190;	/* initial task priority */
 STATIC int		taskID = 0;				/* save_restore task tid */
 STATIC char		remove_filename[80];	/* name of list to delete */
@@ -213,17 +221,17 @@ STATIC char	reboot_restoreTime_PV[40];
 STATIC char	reboot_restoreTimeStr[40];
 STATIC chid	reboot_restoreTime_chid;
 
-STATIC int	save_restoreDebug = 0;
-STATIC int	save_restoreNumSeqFiles = 3;
-STATIC int	save_restoreSeqPeriodInSeconds = 60;
-STATIC int	save_restoreIncompleteSetsOk = 1;		/* will save/restore incomplete sets */
-STATIC int	save_restoreDatedBackupFiles = 1;
-STATIC char	save_restoreNFSHostName[40] = "";
-STATIC char	save_restoreNFSHostAddr[40] = "";
+volatile int	save_restoreDebug = 0;
+volatile int	save_restoreNumSeqFiles = 3;
+volatile int	save_restoreSeqPeriodInSeconds = 60;
+volatile int	save_restoreIncompleteSetsOk = 1;		/* will save/restore incomplete sets */
+volatile int	save_restoreDatedBackupFiles = 1;
+char	save_restoreNFSHostName[40] = "";
+char	save_restoreNFSHostAddr[40] = "";
 
 STATIC int	save_restoreNFSOK=0;
 STATIC int	save_restoreIoErrors=0;
-STATIC int	save_restoreRemountThreshold=10;
+volatile int	save_restoreRemountThreshold=10;
 
 /* configuration parameters */
 STATIC int	min_period	= 4;	/* save no more frequently than every 4 seconds */
@@ -645,23 +653,42 @@ STATIC int save_restore(void)
  */
 STATIC int connect_list(struct chlist *plist)
 {
-	struct channel	*pchannel;
+	struct channel	*pchan;
+	int				n, m;
+	long			status, field_size;
 
 	/* connect all channels in the list */
-	for (pchannel = plist->pchan_list; pchannel != 0; pchannel = pchannel->pnext) {
+	for (pchan = plist->pchan_list; pchan != 0; pchan = pchan->pnext) {
 		if (save_restoreDebug >= 10)
-			errlogPrintf("save_restore:connect_list: channel '%s'\n", pchannel->name);
-		if (ca_search(pchannel->name,&pchannel->chid) == ECA_NORMAL) {
-			strcpy(pchannel->value,"Search Issued");
+			errlogPrintf("save_restore:connect_list: channel '%s'\n", pchan->name);
+		if (ca_search(pchan->name,&pchan->chid) == ECA_NORMAL) {
+			strcpy(pchan->value,"Search Issued");
 		} else {
-			strcpy(pchannel->value,"Search Not Issued");
+			strcpy(pchan->value,"Search Failed");
 		}
 	}
 	if (ca_pend_io(5.0) == ECA_TIMEOUT) {
-		errlogPrintf("not all searches successful\n");
+		errlogPrintf("save_restore:connect_list: not all searches successful\n");
 	}
-		
-	sprintf(save_restoreRecentlyStr, "list '%s' connected", plist->save_file);
+
+	for (pchan = plist->pchan_list, n=m=0; pchan != 0; pchan = pchan->pnext, m++) {
+		if (ca_state(pchan->chid) == cs_conn) {
+			strcpy(pchan->value,"Connected");
+			n++;
+		}
+		pchan->num_elements = ca_element_count(pchan->chid); /* just to see if it's an array */
+		if (pchan->num_elements > 1) {
+			/* We use database access for arrays, so get that info */
+			status = SR_get_array_info(pchan->name, &pchan->num_elements, &field_size, &pchan->field_type);
+			if (status == 0)
+				pchan->pArray = calloc(pchan->num_elements, field_size);
+			if (pchan->pArray == NULL) {
+				errlogPrintf("save_restore:connect_list: can't alloc array for '%s'\n", pchan->name);
+				pchan->num_elements = 0;
+			}
+		}
+	}
+	sprintf(save_restoreRecentlyStr, "%s: %d of %d PV's connected", plist->save_file, n, m);
 	return(get_channel_list(plist));
 }
 
@@ -676,7 +703,7 @@ STATIC int enable_list(struct chlist *plist)
 	struct channel	*pchannel;
 	chid 			chid;			/* channel access id */
 
-	DebugNV(4, "enable_list: entry\n");
+	Debug0(4, "enable_list: entry\n");
 	/* enable a periodic set */
 	if ((plist->save_method & PERIODIC) && !(plist->enabled_method & PERIODIC)) {
 		if (wdStart(plist->saveWdId, plist->period, periodic_save, (int)plist) < 0) {
@@ -717,7 +744,7 @@ STATIC int enable_list(struct chlist *plist)
 					pchannel->name,plist->reqFile);
 			}
 		}
-		DebugNV(4 ,"enable_list: done calling ca_add_event for list channels\n");
+		Debug0(4 ,"enable_list: done calling ca_add_event for list channels\n");
 		if (ca_pend_io(5.0) != ECA_NORMAL) {
 			errlogPrintf("timeout on monitored set: %s to monitored scan\n",plist->reqFile);
 		}
@@ -749,27 +776,40 @@ STATIC int get_channel_list(struct chlist *plist)
 	struct channel *pchannel;
 	int				not_connected = 0;
 	unsigned short	num_channels = 0;
-
+	short			field_type;
+	long			num_elements;
+	
 	/* attempt to fetch all channels that are connected */
 	for (pchannel = plist->pchan_list; pchannel != 0; pchannel = pchannel->pnext) {
 		pchannel->valid = 0;
-		if (ca_state(pchannel->chid) == cs_conn) {
-			num_channels++;
+		num_elements = pchannel->num_elements;
+		if ((ca_state(pchannel->chid) == cs_conn) && (num_elements >= 1)) {
+			field_type = ca_field_type(pchannel->chid);
 			strcpy(pchannel->value, INIT_STRING);
-			if (ca_field_type(pchannel->chid) == DBF_FLOAT) {
+			if (field_type == DBF_FLOAT) {
 				ca_array_get(DBR_FLOAT,1,pchannel->chid,(float *)pchannel->value);
-			} else if (ca_field_type(pchannel->chid) == DBF_DOUBLE) {
+			} else if (field_type == DBF_DOUBLE) {
 				ca_array_get(DBR_DOUBLE,1,pchannel->chid,(double *)pchannel->value);
 			} else {
 				ca_array_get(DBR_STRING,1,pchannel->chid,pchannel->value);
 			}
-			if (ca_field_type(pchannel->chid) == DBF_ENUM) {
+			if (field_type == DBF_ENUM) {
 				ca_array_get(DBR_SHORT,1,pchannel->chid,&pchannel->enum_val);
 				num_channels++;
 			}
+			num_channels++;
 			pchannel->valid = 1;
+			if (num_elements > 1) {
+				(void)SR_get_array(pchannel->name, pchannel->pArray, &pchannel->num_elements);
+			}
 		} else {
 			not_connected++;
+			if (ca_state(pchannel->chid) != cs_conn) {
+				Debug(1 ,"get_channel_list: %s not connected\n", pchannel->name);
+			}
+			if ((num_elements < 1)) {
+				Debug2(1 ,"get_channel_list: %s has %d elements\n", pchannel->name, num_elements);
+			}
 		}
 	}
 	if (ca_pend_io(MIN(10.0, .1*num_channels)) != ECA_NORMAL) {
@@ -777,7 +817,7 @@ STATIC int get_channel_list(struct chlist *plist)
 		not_connected++;
 	}
 
-	/* convert floats and doubles, check to see which gets completed */
+	/* convert floats and doubles, check to see which get's completed */
 	for (pchannel = plist->pchan_list; pchannel != 0; pchannel = pchannel->pnext) {
 		if (pchannel->valid) {
 			if (ca_field_type(pchannel->chid) == DBF_FLOAT) {
@@ -787,6 +827,8 @@ STATIC int get_channel_list(struct chlist *plist)
 			}
 			/* then we at least had a CA connection.  Did it produce? */
 			pchannel->valid = strcmp(pchannel->value, INIT_STRING);
+		} else {
+			Debug(1 ,"get_channel_list: invalid channel %s\n", pchannel->name);
 		}
 	}
 
@@ -796,13 +838,14 @@ STATIC int get_channel_list(struct chlist *plist)
 /* Actually write the file
  * NOTE: Assumes that the sr_mutex is taken!!!!!!!!!!
  */
+ 
 STATIC int write_it(char *filename, struct chlist *plist)
 {
 	FILE 			*out_fd;
 	struct channel	*pchannel;
 	int 			n, i;
 	char			datetime[32];
-
+	
 	errno = 0;
 	if ((out_fd = fopen(filename,"w")) == NULL) {
 		errlogPrintf("save_restore:write_it - unable to open file '%s'\n", filename);
@@ -846,15 +889,24 @@ STATIC int write_it(char *filename, struct chlist *plist)
 		}
 
 		errno = 0;
-		if (pchannel->enum_val >= 0) {
-			n = fprintf(out_fd, "%d\n",pchannel->enum_val);
-		} else {
-			n = fprintf(out_fd, "%-s\n", pchannel->value);
-		}
-		if (n <= 0 || errno) {
-			if (n <= 0) errlogPrintf("save_restore:write_it: fprintf returned %d.\n", n);
-			if (errno) myPrintErrno(errno);
-			goto trouble;
+		if (pchannel->num_elements <= 1) {
+			if (pchannel->enum_val >= 0) {
+				n = fprintf(out_fd, "%d\n",pchannel->enum_val);
+			} else {
+				n = fprintf(out_fd, "%-s\n", pchannel->value);
+			}
+			if (n <= 0 || errno) {
+				if (n <= 0) errlogPrintf("save_restore:write_it: fprintf returned %d.\n", n);
+				if (errno) myPrintErrno(errno);
+				goto trouble;
+			}
+		} else if (pchannel->num_elements > 1) {
+			n = SR_write_array_data(out_fd, pchannel->name, (void *)pchannel->pArray, pchannel->num_elements);
+			if (n <= 0 || errno) {
+				if (n <= 0) errlogPrintf("save_restore:write_it: fprintf returned %d.\n", n);
+				if (errno) myPrintErrno(errno);
+				goto trouble;
+			}
 		}
 	}
 #if 0
@@ -1606,8 +1658,15 @@ int reload_manual_set(char * filename, char *macrostring)
 	}
 }
 
-#define fdbrestore(filename) request_manual_restore(filename, FROM_SAVE_FILE)
-#define fdbrestoreX(filename) request_manual_restore(filename, FROM_ASCII_FILE)
+int fdbrestore(char *filename)
+{
+	return(request_manual_restore(filename, FROM_SAVE_FILE));
+}
+
+int fdbrestoreX(char *filename)
+{
+	return(request_manual_restore(filename, FROM_ASCII_FILE));
+}
 
 int request_manual_restore(char *filename, int file_type)
 {
@@ -1640,30 +1699,28 @@ int do_manual_restore(char *filename, int file_type)
 {	
 	struct channel	*pchannel;
 	struct chlist	*plist;
-	int				found;
-	char			channel[80];
+	int				found, is_scalar;
+	char			PVname[80];
 	char			restoreFile[PATH_SIZE+1] = "";
 	char			bu_filename[PATH_SIZE+1] = "";
-	char			buffer[120], *bp, c;
-	char			input_line[120];
+	char			buffer[BUF_SIZE], *bp, c;
+	char			value_string[BUF_SIZE];
 	int				n;
-	long			status;
+	long			status, num_errs=0;
 	FILE			*inp_fd;
 	chid			chanid;
 
 	if (file_type == FROM_SAVE_FILE) {
 		/* if this is the current file name for a save set - restore from there */
-		found = FALSE;
 		semTake(sr_mutex,WAIT_FOREVER);
-		plist = lptr;
-		while ((plist != 0) && !found) { 
+		for (plist=lptr, found=0; plist && !found; ) {
 			if (strcmp(plist->last_save_file,filename) == 0) {
-				found = TRUE;
+				found = 1;
 			}else{
 				plist = plist->pnext;
 			}
 		}
-		if (found ) {
+		if (found) {
 			/* verify quality of the save set */
 			if (plist->not_connected > 0) {
 				errlogPrintf("do_manual_restore: %d channel(s) not connected or fetched\n",
@@ -1677,13 +1734,22 @@ int do_manual_restore(char *filename, int file_type)
 			}
 
 			for (pchannel = plist->pchan_list; pchannel !=0; pchannel = pchannel->pnext) {
-				ca_put(DBR_STRING,pchannel->chid,pchannel->value);
+				if (pchannel->num_elements == 1) {
+					status = ca_put(DBR_STRING,pchannel->chid,pchannel->value);
+				} else {
+					status = SR_put_array_values(pchannel->name, pchannel->pArray, pchannel->num_elements);
+				}
 			}
+			if (status) num_errs++;
 			if (ca_pend_io(1.0) != ECA_NORMAL) {
 				errlogPrintf("do_manual_restore: not all channels restored\n");
 			}
 			semGive(sr_mutex);
-			strncpy(save_restoreRecentlyStr, "Manual restore succeeded",39);
+			if (num_errs == 0) {
+				strncpy(save_restoreRecentlyStr, "Manual restore succeeded",39);
+			} else {
+				sprintf(save_restoreRecentlyStr, "%ld errors during manual restore", num_errs);
+			}
 			return(OK);
 		}
 		semGive(sr_mutex);
@@ -1705,27 +1771,32 @@ int do_manual_restore(char *filename, int file_type)
 	}
 
 	if (file_type == FROM_SAVE_FILE) {
-		(void)fgets(buffer, 120, inp_fd); /* discard header line */
+		(void)fgets(buffer, BUF_SIZE, inp_fd); /* discard header line */
 	}
 	/* restore from data file */
-	while ((bp=fgets(buffer, 120, inp_fd))) {
+	while ((bp=fgets(buffer, BUF_SIZE, inp_fd))) {
 		/* get PV_name, one space character, value */
 		/* (value may be a string with leading whitespace; it may be */
 		/* entirely whitespace; the number of spaces may be crucial; */
 		/* it might also consist of zero characters) */
-		n = sscanf(bp,"%s%c%[^\n]", channel, &c, input_line);
-		if (n < 3) *input_line = 0;
-		if (isalpha(channel[0]) || isdigit(channel[0])) {
-			if (ca_search(channel, &chanid) != ECA_NORMAL) {
-				errlogPrintf("do_manual_restore: ca_search for %s failed\n", channel);
-			} else if (ca_pend_io(0.5) != ECA_NORMAL) {
-				errlogPrintf("do_manual_restore: ca_search for %s timeout\n", channel);
-			} else if (ca_put(DBR_STRING, chanid, input_line) != ECA_NORMAL) {
-				errlogPrintf("do_manual_restore: ca_put of %s to %s failed\n", input_line,channel);
+		n = sscanf(bp,"%s%c%[^\n]", PVname, &c, value_string);
+		if (n < 3) *value_string = 0;
+		if (isalpha(PVname[0]) || isdigit(PVname[0])) {
+			is_scalar = strncmp(value_string, ARRAY_MARKER, ARRAY_MARKER_LEN);
+			if (is_scalar) {
+				if (ca_search(PVname, &chanid) != ECA_NORMAL) {
+					errlogPrintf("do_manual_restore: ca_search for %s failed\n", PVname);
+				} else if (ca_pend_io(0.5) != ECA_NORMAL) {
+					errlogPrintf("do_manual_restore: ca_search for %s timeout\n", PVname);
+				} else if (ca_put(DBR_STRING, chanid, value_string) != ECA_NORMAL) {
+					errlogPrintf("do_manual_restore: ca_put of %s to %s failed\n", value_string,PVname);
+				}
+			} else {
+				status = SR_array_restore(1, inp_fd, PVname, value_string);
 			}
-		} else if (channel[0] == '!') {
-			n = atoi(&channel[1]);
-			errlogPrintf("do_manual_restore: %d channel%c not connected / fetch failed",
+		} else if (PVname[0] == '!') {
+			n = atoi(value_string);	/* value_string actually contains 2nd word of error msg */
+			errlogPrintf("do_manual_restore: %d PV%c had no saved value\n",
 				n, (n==1) ? ' ':'s');
 			if (!save_restoreIncompleteSetsOk) {
 				errlogPrintf("do_manual_restore: aborting restore\n");
@@ -1750,9 +1821,9 @@ int do_manual_restore(char *filename, int file_type)
 
 STATIC int readReqFile(const char *reqFile, struct chlist *plist, char *macrostring)
 {
-	struct channel	*pchannel = NULL;
+	struct channel	*pchannel = NULL, *ptail = NULL;
 	FILE   			*inp_fd = NULL;
-	char			name[40] = "", *t=NULL, line[120]="", eline[120]="";
+	char			name[40] = "", *t=NULL, line[BUF_SIZE]="", eline[BUF_SIZE]="";
 	char            templatefile[80] = "";
 	char            new_macro[80] = "";
 	int             i=0;
@@ -1803,7 +1874,7 @@ STATIC int readReqFile(const char *reqFile, struct chlist *plist, char *macrostr
 	}
 
 	/* place all of the channels in the group */
-	while (fgets(line, 120, inp_fd)) {
+	while (fgets(line, BUF_SIZE, inp_fd)) {
 		/* Expand input line. */
 		if (handle && pairs) {
 			macExpandString(handle, line, eline, 119);
@@ -1852,11 +1923,21 @@ STATIC int readReqFile(const char *reqFile, struct chlist *plist, char *macrostr
 				errlogPrintf("readReqFile: channel calloc failed");
 			} else {
 				/* add new element to the list */
+#if BACKWARDS_LIST
 				pchannel->pnext = plist->pchan_list;
 				plist->pchan_list = pchannel;
+#else
+				if (ptail) {
+					ptail->pnext = pchannel;
+				} else {
+					plist->pchan_list = pchannel;
+				}
+				ptail = pchannel;
+#endif
 				strcpy(pchannel->name, name);
 				strcpy(pchannel->value,"Not Connected");
 				pchannel->enum_val = -1;
+				pchannel->num_elements = 0;
 			}
 		}
 	}
