@@ -1,4 +1,4 @@
-/* $Id: drvIK320.c,v 1.1.1.1 2001-07-03 20:05:28 sluiter Exp $ */
+/* $Id: drvIK320.c,v 1.1.1.1.2.1 2003-08-11 19:30:50 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,9 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1  2001/07/03 20:05:28  sluiter
+ * Creating
+ *
  * Revision 1.9  1999/05/05 16:25:16  strauman
  *  - added doc: README
  *
@@ -50,6 +53,8 @@
  *           doesn't have iround().  Local header files included with
  *           "", rather than <>. 
  *
+ * 2.1  rls  bug fix for bus error when harware is missing; i.e., probe for
+ *           memory. bug fix drvIK320report() trashing all the other reports.
  */
 
 #include <vxWorks.h>
@@ -73,6 +78,12 @@
 #include <dbAccess.h>
 
 #include "drvIK320.h"
+
+#ifdef __cplusplus
+extern "C" long locationProbe(epicsAddressType, char *);
+#else
+extern long locationProbe(epicsAddressType, char *);
+#endif
 
 #ifndef NODEBUG
 int drvIK320Debug=0;
@@ -262,11 +273,15 @@ int			i,needsPOST=1;
 		assert( (unsigned)groupBase == ((unsigned)rval->port & (unsigned)~0xffff ));
 	}
 
-	/* could probe the addresses and check for jumper 3 */
-	if ((status=devConnectInterrupt(intVME,
-									sw1,
-									irqHandler=IK320IrqCatcher,
-									(void*)rval)))
+	/* could check for jumper 3 */
+	status = locationProbe(atVMEA24, (char *) localA24);
+	if (status != 0)
+	{
+            epicsPrintf("drvIK320Connect(): bus error at address = 0x%08.8x\n", (uint_t) localA24);
+	    goto cleanup;
+	}
+
+	if ((status=devConnectInterrupt(intVME, sw1, irqHandler=IK320IrqCatcher, (void*)rval)))
 		goto cleanup;
 
 	rval->record=0;
@@ -1060,7 +1075,7 @@ int wasBusy;
 static long
 drvIK320report()
 {
-  epicsPrintf("drvIK320: sorry, report is not implemented yet\n"); return OK;
+  printf("drvIK320: sorry, report is not implemented yet\n"); return OK;
 }
 
 static long
