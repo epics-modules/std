@@ -1,14 +1,14 @@
 
 file {
-	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/scan_more_5.4.adl"
-	version=020306
+	name="/home/beams/BCDA/epics/synApps_T202_R3_13_5_R4_4/support/std/stdApp/op/adl/tmp/scan_more.adl"
+	version=030003
 }
 display {
 	object {
-		x=81
-		y=392
+		x=392
+		y=117
 		width=370
-		height=452
+		height=465
 	}
 	clr=31
 	bclr=3
@@ -340,7 +340,7 @@ text {
 rectangle {
 	object {
 		x=0
-		y=196
+		y=204
 		width=370
 		height=101
 	}
@@ -351,7 +351,7 @@ rectangle {
 text {
 	object {
 		x=195
-		y=240
+		y=248
 		width=10
 		height=20
 	}
@@ -367,7 +367,7 @@ text {
 text {
 	object {
 		x=195
-		y=240
+		y=248
 		width=10
 		height=20
 	}
@@ -379,7 +379,7 @@ text {
 text {
 	object {
 		x=5
-		y=240
+		y=248
 		width=10
 		height=20
 	}
@@ -395,7 +395,7 @@ text {
 text {
 	object {
 		x=5
-		y=240
+		y=248
 		width=10
 		height=20
 	}
@@ -407,7 +407,7 @@ text {
 text {
 	object {
 		x=280
-		y=144
+		y=152
 		width=80
 		height=10
 	}
@@ -420,7 +420,7 @@ text {
 menu {
 	object {
 		x=280
-		y=154
+		y=162
 		width=80
 		height=14
 	}
@@ -433,7 +433,7 @@ menu {
 "text entry" {
 	object {
 		x=290
-		y=122
+		y=130
 		width=70
 		height=20
 	}
@@ -448,7 +448,7 @@ menu {
 "text entry" {
 	object {
 		x=220
-		y=122
+		y=130
 		width=70
 		height=20
 	}
@@ -463,7 +463,7 @@ menu {
 text {
 	object {
 		x=290
-		y=114
+		y=122
 		width=70
 		height=10
 	}
@@ -476,7 +476,7 @@ text {
 text {
 	object {
 		x=220
-		y=114
+		y=122
 		width=70
 		height=10
 	}
@@ -489,7 +489,7 @@ text {
 "text entry" {
 	object {
 		x=145
-		y=122
+		y=130
 		width=70
 		height=20
 	}
@@ -504,7 +504,7 @@ text {
 "text entry" {
 	object {
 		x=75
-		y=122
+		y=130
 		width=70
 		height=20
 	}
@@ -519,7 +519,7 @@ text {
 "text entry" {
 	object {
 		x=5
-		y=122
+		y=130
 		width=70
 		height=20
 	}
@@ -534,7 +534,7 @@ text {
 text {
 	object {
 		x=145
-		y=114
+		y=122
 		width=70
 		height=10
 	}
@@ -547,7 +547,7 @@ text {
 text {
 	object {
 		x=75
-		y=114
+		y=122
 		width=70
 		height=10
 	}
@@ -560,7 +560,7 @@ text {
 text {
 	object {
 		x=5
-		y=114
+		y=122
 		width=70
 		height=10
 	}
@@ -573,7 +573,7 @@ text {
 "message button" {
 	object {
 		x=255
-		y=54
+		y=62
 		width=110
 		height=18
 	}
@@ -585,23 +585,11 @@ text {
 	label="CLEAR POSITIONERS"
 	press_msg="4"
 }
-text {
-	object {
-		x=5
-		y=54
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Positioners"
-}
 polyline {
 	object {
 		x=-1
 		y=50
-		width=379
+		width=374
 		height=2
 	}
 	"basic attribute" {
@@ -611,15 +599,15 @@ polyline {
 	}
 	points {
 		(0,51)
-		(377,51)
+		(372,51)
 	}
 }
 "related display" {
 	object {
-		x=205
-		y=54
-		width=35
-		height=18
+		x=0
+		y=52
+		width=120
+		height=27
 	}
 	display[0] {
 		label="Positioners 1-4"
@@ -628,12 +616,12 @@ polyline {
 	}
 	clr=0
 	bclr=17
-	label="-MORE"
+	label="-Positioners"
 }
 text {
 	object {
 		x=120
-		y=57
+		y=65
 		width=80
 		height=15
 	}
@@ -645,7 +633,7 @@ text {
 text {
 	object {
 		x=120
-		y=57
+		y=65
 		width=80
 		height=15
 	}
@@ -653,7 +641,8 @@ text {
 		clr=30
 	}
 	"dynamic attribute" {
-		vis="if zero"
+		vis="calc"
+		calc="A#1"
 		chan="$(P)$(S).P2NV"
 	}
 	textix="   2"
@@ -661,7 +650,7 @@ text {
 text {
 	object {
 		x=120
-		y=57
+		y=65
 		width=80
 		height=15
 	}
@@ -669,7 +658,8 @@ text {
 		clr=30
 	}
 	"dynamic attribute" {
-		vis="if zero"
+		vis="calc"
+		calc="A#1"
 		chan="$(P)$(S).P1NV"
 	}
 	textix=" 1"
@@ -677,7 +667,7 @@ text {
 text {
 	object {
 		x=120
-		y=57
+		y=65
 		width=80
 		height=15
 	}
@@ -685,7 +675,8 @@ text {
 		clr=30
 	}
 	"dynamic attribute" {
-		vis="if zero"
+		vis="calc"
+		calc="A#1"
 		chan="$(P)$(S).P3NV"
 	}
 	textix="     3"
@@ -693,7 +684,7 @@ text {
 text {
 	object {
 		x=120
-		y=57
+		y=65
 		width=80
 		height=15
 	}
@@ -701,7 +692,8 @@ text {
 		clr=30
 	}
 	"dynamic attribute" {
-		vis="if zero"
+		vis="calc"
+		calc="A#1"
 		chan="$(P)$(S).P4NV"
 	}
 	textix="       4"
@@ -709,7 +701,7 @@ text {
 text {
 	object {
 		x=5
-		y=195
+		y=203
 		width=130
 		height=20
 	}
@@ -721,8 +713,8 @@ text {
 polyline {
 	object {
 		x=-1
-		y=194
-		width=378
+		y=202
+		width=375
 		height=2
 	}
 	"basic attribute" {
@@ -731,14 +723,14 @@ polyline {
 		width=2
 	}
 	points {
-		(0,195)
-		(376,195)
+		(0,203)
+		(373,203)
 	}
 }
 "text entry" {
 	object {
 		x=150
-		y=174
+		y=182
 		width=35
 		height=18
 	}
@@ -753,7 +745,7 @@ polyline {
 text {
 	object {
 		x=5
-		y=178
+		y=186
 		width=145
 		height=10
 	}
@@ -765,7 +757,7 @@ text {
 text {
 	object {
 		x=185
-		y=178
+		y=186
 		width=15
 		height=10
 	}
@@ -777,7 +769,7 @@ text {
 text {
 	object {
 		x=5
-		y=96
+		y=104
 		width=35
 		height=14
 	}
@@ -785,7 +777,8 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="a>1"
 		chan="$(P)$(S).P1NV"
 	}
 	textix="Drive"
@@ -794,7 +787,7 @@ text {
 text {
 	object {
 		x=5
-		y=96
+		y=104
 		width=35
 		height=14
 	}
@@ -807,7 +800,7 @@ text {
 text {
 	object {
 		x=5
-		y=77
+		y=85
 		width=35
 		height=14
 	}
@@ -815,7 +808,8 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="a>1"
 		chan="$(P)$(S).R1NV"
 	}
 	textix="Read"
@@ -824,7 +818,7 @@ text {
 text {
 	object {
 		x=5
-		y=77
+		y=85
 		width=35
 		height=14
 	}
@@ -837,7 +831,7 @@ text {
 text {
 	object {
 		x=250
-		y=93
+		y=101
 		width=10
 		height=20
 	}
@@ -845,7 +839,8 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="a>1"
 		chan="$(P)$(S).P1NV"
 	}
 	textix="X"
@@ -853,7 +848,7 @@ text {
 "text update" {
 	object {
 		x=260
-		y=93
+		y=101
 		width=80
 		height=20
 	}
@@ -868,7 +863,7 @@ text {
 "text entry" {
 	object {
 		x=40
-		y=93
+		y=101
 		width=210
 		height=20
 	}
@@ -884,7 +879,7 @@ text {
 "text entry" {
 	object {
 		x=40
-		y=73
+		y=81
 		width=210
 		height=20
 	}
@@ -900,7 +895,7 @@ text {
 "text update" {
 	object {
 		x=260
-		y=73
+		y=81
 		width=80
 		height=20
 	}
@@ -915,7 +910,7 @@ text {
 text {
 	object {
 		x=250
-		y=73
+		y=81
 		width=10
 		height=20
 	}
@@ -923,7 +918,8 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="a>1"
 		chan="$(P)$(S).R1NV"
 	}
 	textix="X"
@@ -932,7 +928,7 @@ text {
 text {
 	object {
 		x=215
-		y=177
+		y=185
 		width=110
 		height=10
 	}
@@ -945,7 +941,7 @@ text {
 "text entry" {
 	object {
 		x=325
-		y=172
+		y=180
 		width=35
 		height=18
 	}
@@ -960,14 +956,14 @@ text {
 "text update" {
 	object {
 		x=5
-		y=154
+		y=162
 		width=80
 		height=14
 	}
 	monitor {
 		chan="$(P)$(S).P1EU"
 		clr=53
-		bclr=3
+		bclr=2
 	}
 	limits {
 	}
@@ -975,7 +971,7 @@ text {
 menu {
 	object {
 		x=200
-		y=154
+		y=162
 		width=70
 		height=14
 	}
@@ -988,7 +984,7 @@ menu {
 text {
 	object {
 		x=200
-		y=144
+		y=152
 		width=70
 		height=10
 	}
@@ -1001,7 +997,7 @@ text {
 menu {
 	object {
 		x=130
-		y=154
+		y=162
 		width=60
 		height=14
 	}
@@ -1014,7 +1010,7 @@ menu {
 text {
 	object {
 		x=130
-		y=144
+		y=152
 		width=60
 		height=10
 	}
@@ -1027,7 +1023,7 @@ text {
 rectangle {
 	object {
 		x=0
-		y=411
+		y=422
 		width=280
 		height=40
 	}
@@ -1038,9 +1034,9 @@ rectangle {
 rectangle {
 	object {
 		x=282
-		y=299
+		y=307
 		width=88
-		height=113
+		height=116
 	}
 	"basic attribute" {
 		clr=15
@@ -1053,7 +1049,7 @@ rectangle {
 "related display" {
 	object {
 		x=285
-		y=432
+		y=442
 		width=60
 		height=20
 	}
@@ -1070,7 +1066,7 @@ rectangle {
 "message button" {
 	object {
 		x=285
-		y=315
+		y=326
 		width=80
 		height=27
 	}
@@ -1085,7 +1081,7 @@ rectangle {
 "message button" {
 	object {
 		x=285
-		y=299
+		y=310
 		width=80
 		height=16
 	}
@@ -1100,7 +1096,7 @@ rectangle {
 "message button" {
 	object {
 		x=285
-		y=396
+		y=407
 		width=80
 		height=16
 	}
@@ -1112,22 +1108,10 @@ rectangle {
 	label="ABORT SCAN"
 	press_msg="0"
 }
-text {
-	object {
-		x=5
-		y=305
-		width=100
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Detectors"
-}
 "text entry" {
 	object {
 		x=110
-		y=428
+		y=439
 		width=25
 		height=20
 	}
@@ -1142,7 +1126,7 @@ text {
 text {
 	object {
 		x=110
-		y=419
+		y=430
 		width=25
 		height=10
 	}
@@ -1155,7 +1139,7 @@ text {
 text {
 	object {
 		x=70
-		y=419
+		y=430
 		width=40
 		height=10
 	}
@@ -1164,6 +1148,7 @@ text {
 	}
 	"dynamic attribute" {
 		vis="if not zero"
+		calc="a>1"
 		chan="$(P)$(S).BSNV"
 	}
 	textix="INVALID"
@@ -1171,7 +1156,7 @@ text {
 "text entry" {
 	object {
 		x=0
-		y=428
+		y=439
 		width=110
 		height=20
 	}
@@ -1187,7 +1172,7 @@ text {
 text {
 	object {
 		x=0
-		y=414
+		y=425
 		width=70
 		height=14
 	}
@@ -1200,7 +1185,7 @@ text {
 "text entry" {
 	object {
 		x=250
-		y=428
+		y=439
 		width=25
 		height=20
 	}
@@ -1215,7 +1200,7 @@ text {
 text {
 	object {
 		x=250
-		y=419
+		y=430
 		width=25
 		height=10
 	}
@@ -1228,7 +1213,7 @@ text {
 text {
 	object {
 		x=210
-		y=417
+		y=428
 		width=40
 		height=10
 	}
@@ -1237,6 +1222,7 @@ text {
 	}
 	"dynamic attribute" {
 		vis="if not zero"
+		calc="a>1"
 		chan="$(P)$(S).ASNV"
 	}
 	textix="INVALID"
@@ -1244,7 +1230,7 @@ text {
 "text entry" {
 	object {
 		x=140
-		y=428
+		y=439
 		width=110
 		height=20
 	}
@@ -1260,7 +1246,7 @@ text {
 text {
 	object {
 		x=140
-		y=414
+		y=425
 		width=70
 		height=14
 	}
@@ -1273,7 +1259,7 @@ text {
 polyline {
 	object {
 		x=280
-		y=296
+		y=304
 		width=2
 		height=154
 	}
@@ -1283,15 +1269,15 @@ polyline {
 		width=2
 	}
 	points {
-		(281,297)
-		(281,449)
+		(281,305)
+		(281,457)
 	}
 }
 polyline {
 	object {
 		x=-1
-		y=297
-		width=379
+		y=305
+		width=375
 		height=2
 	}
 	"basic attribute" {
@@ -1300,14 +1286,14 @@ polyline {
 		width=2
 	}
 	points {
-		(0,298)
-		(377,298)
+		(0,306)
+		(373,306)
 	}
 }
 polyline {
 	object {
 		x=-1
-		y=409
+		y=420
 		width=280
 		height=2
 	}
@@ -1317,14 +1303,14 @@ polyline {
 		width=2
 	}
 	points {
-		(0,410)
-		(278,410)
+		(0,421)
+		(278,421)
 	}
 }
 "choice button" {
 	object {
 		x=285
-		y=343
+		y=354
 		width=80
 		height=35
 	}
@@ -1337,7 +1323,7 @@ polyline {
 text {
 	object {
 		x=285
-		y=379
+		y=390
 		width=40
 		height=10
 	}
@@ -1350,7 +1336,7 @@ text {
 "text entry" {
 	object {
 		x=325
-		y=378
+		y=389
 		width=40
 		height=18
 	}
@@ -1365,7 +1351,7 @@ text {
 text {
 	object {
 		x=285
-		y=387
+		y=398
 		width=40
 		height=10
 	}
@@ -1375,36 +1361,10 @@ text {
 	textix="DELAY"
 	align="horiz. right"
 }
-menu {
-	object {
-		x=190
-		y=302
-		width=85
-		height=14
-	}
-	control {
-		chan="$(P)$(S).ACQM"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=140
-		y=307
-		width=45
-		height=10
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="ACQ MODE"
-	align="horiz. centered"
-}
 "related display" {
 	object {
 		x=285
-		y=415
+		y=425
 		width=80
 		height=16
 	}
@@ -1421,7 +1381,7 @@ text {
 "shell command" {
 	object {
 		x=350
-		y=432
+		y=442
 		width=20
 		height=20
 	}
@@ -1435,7 +1395,7 @@ text {
 "text update" {
 	object {
 		x=220
-		y=325
+		y=336
 		width=60
 		height=20
 	}
@@ -1451,7 +1411,7 @@ text {
 text {
 	object {
 		x=210
-		y=328
+		y=339
 		width=10
 		height=14
 	}
@@ -1459,7 +1419,8 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="a>1"
 		chan="$(P)$(S).D01NV"
 	}
 	textix="X"
@@ -1467,7 +1428,7 @@ text {
 "text update" {
 	object {
 		x=220
-		y=345
+		y=356
 		width=60
 		height=20
 	}
@@ -1483,7 +1444,7 @@ text {
 text {
 	object {
 		x=210
-		y=348
+		y=359
 		width=10
 		height=14
 	}
@@ -1491,7 +1452,8 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="a>1"
 		chan="$(P)$(S).D02NV"
 	}
 	textix="X"
@@ -1499,7 +1461,7 @@ text {
 "text update" {
 	object {
 		x=220
-		y=385
+		y=396
 		width=60
 		height=20
 	}
@@ -1515,7 +1477,7 @@ text {
 text {
 	object {
 		x=210
-		y=388
+		y=399
 		width=10
 		height=14
 	}
@@ -1523,7 +1485,8 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="a>1"
 		chan="$(P)$(S).D04NV"
 	}
 	textix="X"
@@ -1531,7 +1494,7 @@ text {
 "text update" {
 	object {
 		x=220
-		y=365
+		y=376
 		width=60
 		height=20
 	}
@@ -1547,7 +1510,7 @@ text {
 text {
 	object {
 		x=210
-		y=368
+		y=379
 		width=10
 		height=14
 	}
@@ -1555,7 +1518,8 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="if not zero"
+		vis="calc"
+		calc="a>1"
 		chan="$(P)$(S).D03NV"
 	}
 	textix="X"
@@ -1563,7 +1527,7 @@ text {
 "message button" {
 	object {
 		x=257
-		y=265
+		y=273
 		width=20
 		height=15
 	}
@@ -1578,7 +1542,7 @@ text {
 text {
 	object {
 		x=190
-		y=267
+		y=275
 		width=65
 		height=10
 	}
@@ -1590,7 +1554,7 @@ text {
 "message button" {
 	object {
 		x=277
-		y=265
+		y=273
 		width=20
 		height=15
 	}
@@ -1605,7 +1569,7 @@ text {
 text {
 	object {
 		x=318
-		y=265
+		y=273
 		width=50
 		height=14
 	}
@@ -1621,7 +1585,7 @@ text {
 "text update" {
 	object {
 		x=302
-		y=265
+		y=273
 		width=10
 		height=15
 	}
@@ -1637,7 +1601,7 @@ text {
 text {
 	object {
 		x=145
-		y=210
+		y=218
 		width=30
 		height=10
 	}
@@ -1650,7 +1614,7 @@ text {
 text {
 	object {
 		x=335
-		y=210
+		y=218
 		width=30
 		height=10
 	}
@@ -1663,7 +1627,7 @@ text {
 text {
 	object {
 		x=5
-		y=220
+		y=228
 		width=10
 		height=20
 	}
@@ -1679,7 +1643,7 @@ text {
 text {
 	object {
 		x=5
-		y=220
+		y=228
 		width=10
 		height=20
 	}
@@ -1691,7 +1655,7 @@ text {
 "text entry" {
 	object {
 		x=145
-		y=219
+		y=227
 		width=30
 		height=20
 	}
@@ -1706,7 +1670,7 @@ text {
 "text entry" {
 	object {
 		x=15
-		y=219
+		y=227
 		width=130
 		height=20
 	}
@@ -1722,7 +1686,7 @@ text {
 text {
 	object {
 		x=195
-		y=220
+		y=228
 		width=10
 		height=20
 	}
@@ -1738,7 +1702,7 @@ text {
 "text entry" {
 	object {
 		x=335
-		y=219
+		y=227
 		width=30
 		height=20
 	}
@@ -1753,7 +1717,7 @@ text {
 "text entry" {
 	object {
 		x=205
-		y=219
+		y=227
 		width=130
 		height=20
 	}
@@ -1769,7 +1733,7 @@ text {
 text {
 	object {
 		x=195
-		y=220
+		y=228
 		width=10
 		height=20
 	}
@@ -1781,7 +1745,7 @@ text {
 "text entry" {
 	object {
 		x=145
-		y=239
+		y=247
 		width=30
 		height=20
 	}
@@ -1796,7 +1760,7 @@ text {
 "text entry" {
 	object {
 		x=15
-		y=239
+		y=247
 		width=130
 		height=20
 	}
@@ -1812,7 +1776,7 @@ text {
 "text entry" {
 	object {
 		x=335
-		y=239
+		y=247
 		width=30
 		height=20
 	}
@@ -1827,7 +1791,7 @@ text {
 "text entry" {
 	object {
 		x=205
-		y=239
+		y=247
 		width=130
 		height=20
 	}
@@ -1843,7 +1807,7 @@ text {
 text {
 	object {
 		x=190
-		y=284
+		y=292
 		width=80
 		height=10
 	}
@@ -1855,7 +1819,7 @@ text {
 "text entry" {
 	object {
 		x=271
-		y=280
+		y=288
 		width=20
 		height=16
 	}
@@ -1870,7 +1834,7 @@ text {
 text {
 	object {
 		x=293
-		y=284
+		y=292
 		width=45
 		height=10
 	}
@@ -1882,8 +1846,8 @@ text {
 rectangle {
 	object {
 		x=184
-		y=262
-		width=190
+		y=270
+		width=185
 		height=35
 	}
 	"basic attribute" {
@@ -1897,7 +1861,7 @@ rectangle {
 composite {
 	object {
 		x=5
-		y=265
+		y=273
 		width=165
 		height=18
 	}
@@ -1906,7 +1870,7 @@ composite {
 		text {
 			object {
 				x=5
-				y=270
+				y=278
 				width=110
 				height=10
 			}
@@ -1918,7 +1882,7 @@ composite {
 		composite {
 			object {
 				x=120
-				y=265
+				y=273
 				width=50
 				height=18
 			}
@@ -1927,7 +1891,7 @@ composite {
 				"text entry" {
 					object {
 						x=120
-						y=265
+						y=273
 						width=35
 						height=18
 					}
@@ -1942,7 +1906,7 @@ composite {
 				text {
 					object {
 						x=155
-						y=269
+						y=277
 						width=15
 						height=10
 					}
@@ -2007,7 +1971,7 @@ composite {
 "related display" {
 	object {
 		x=0
-		y=325
+		y=336
 		width=25
 		height=20
 	}
@@ -2022,22 +1986,12 @@ composite {
 		args="P=$(P),S=$(S),N=01"
 	}
 	display[2] {
-		label="Real-time dets 01-02"
-		name="scanDetPlot2RT.adl"
-		args="P=$(P),S=$(S),N1=01,N2=02"
-	}
-	display[3] {
-		label="After-scan dets 01-02"
-		name="scanDetPlot2.adl"
-		args="P=$(P),S=$(S),N1=01,N2=02"
-	}
-	display[4] {
-		label="Real-time dets 01-08"
+		label="Real-time dets 1-8"
 		name="scanDetPlot8RT.adl"
 		args="P=$(P),S=$(S),N1=01,N2=02,N3=03,N4=04,N5=05,N6=06,N7=07,N8=08"
 	}
-	display[5] {
-		label="After-scan dets 01-08"
+	display[3] {
+		label="After-scan deta 1-8"
 		name="scanDetPlot8.adl"
 		args="P=$(P),S=$(S),N1=01,N2=02,N3=03,N4=04,N5=05,N6=06,N7=07,N8=08"
 	}
@@ -2048,7 +2002,7 @@ composite {
 "related display" {
 	object {
 		x=0
-		y=345
+		y=356
 		width=25
 		height=20
 	}
@@ -2062,16 +2016,6 @@ composite {
 		name="scanDetPlot.adl"
 		args="P=$(P),S=$(S),N=02"
 	}
-	display[2] {
-		label="Real-time dets 02-03"
-		name="scanDetPlot2RT.adl"
-		args="P=$(P),S=$(S),N1=02,N2=03"
-	}
-	display[3] {
-		label="After-scan dets 02-03"
-		name="scanDetPlot3.adl"
-		args="P=$(P),S=$(S),N1=02,N2=03"
-	}
 	clr=0
 	bclr=17
 	label="-02"
@@ -2079,7 +2023,7 @@ composite {
 "related display" {
 	object {
 		x=0
-		y=385
+		y=396
 		width=25
 		height=20
 	}
@@ -2093,16 +2037,6 @@ composite {
 		name="scanDetPlot.adl"
 		args="P=$(P),S=$(S),N=04"
 	}
-	display[2] {
-		label="Real-time dets 04-05"
-		name="scanDetPlot2RT.adl"
-		args="P=$(P),S=$(S),N1=04,N2=05"
-	}
-	display[3] {
-		label="After-scan dets 04-05"
-		name="scanDetPlot2.adl"
-		args="P=$(P),S=$(S),N1=04,N2=05"
-	}
 	clr=0
 	bclr=17
 	label="-04"
@@ -2110,7 +2044,7 @@ composite {
 "related display" {
 	object {
 		x=0
-		y=365
+		y=376
 		width=25
 		height=20
 	}
@@ -2124,16 +2058,6 @@ composite {
 		name="scanDetPlot.adl"
 		args="P=$(P),S=$(S),N=03"
 	}
-	display[2] {
-		label="Real-time dets 03-04"
-		name="scanDetPlot2RT.adl"
-		args="P=$(P),S=$(S),N1=03,N2=04"
-	}
-	display[3] {
-		label="After-scan deta 03-04"
-		name="scanDetPlot2.adl"
-		args="P=$(P),S=$(S),N1=03,N2=04"
-	}
 	clr=0
 	bclr=17
 	label="-03"
@@ -2141,7 +2065,7 @@ composite {
 "text entry" {
 	object {
 		x=25
-		y=325
+		y=336
 		width=185
 		height=20
 	}
@@ -2157,7 +2081,7 @@ composite {
 "text entry" {
 	object {
 		x=25
-		y=345
+		y=356
 		width=185
 		height=20
 	}
@@ -2173,7 +2097,7 @@ composite {
 "text entry" {
 	object {
 		x=25
-		y=385
+		y=396
 		width=185
 		height=20
 	}
@@ -2189,7 +2113,7 @@ composite {
 "text entry" {
 	object {
 		x=25
-		y=365
+		y=376
 		width=185
 		height=20
 	}
@@ -2202,12 +2126,38 @@ composite {
 	limits {
 	}
 }
+text {
+	object {
+		x=5
+		y=152
+		width=80
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNITS"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=1
+		y=324
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PLOT"
+	align="horiz. centered"
+}
 "related display" {
 	object {
-		x=95
-		y=305
-		width=35
-		height=18
+		x=25
+		y=308
+		width=100
+		height=27
 	}
 	display[0] {
 		label="Detectors 01-10"
@@ -2251,5 +2201,31 @@ composite {
 	}
 	clr=0
 	bclr=17
-	label="-MORE"
+	label="-Detectors"
+}
+menu {
+	object {
+		x=195
+		y=320
+		width=80
+		height=14
+	}
+	control {
+		chan="$(P)$(S).ACQM"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=195
+		y=308
+		width=80
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ACQ MODE"
+	align="horiz. centered"
 }
