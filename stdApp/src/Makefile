@@ -49,8 +49,6 @@ DBDINSTALL += ../stdShare.dbd
 
 LIBRARY_IOC += std
 
-std_SRCS += symTable.c
-std_SRCS += symTableTest.c
 std_SRCS += dbrestore.c save_restore.c fGetDateStr.c
 std_SRCS  += initHooks.c
 #std_SRCS += devAiVaroc.c drvVarocB.c
@@ -68,7 +66,7 @@ std_SRCS_vxWorks  += module_types.c
 std_SRCS_vxWorks  += scalerRecord.c devScaler.c
 std_SRCS += sscanRecord.c
 std_SRCS += scanparmRecord.c
-std_SRCS_vxWorks   += tableRecord.c
+std_SRCS += tableRecord.c
 std_SRCS += transformRecord.c
 std_SRCS += sCalcPostfix.c sCalcPerform.c
 std_SRCS_vxWorks += test_sCalc.c
@@ -112,7 +110,7 @@ std_SRCS_vxWorks += stdVXRegister.c
 # that works around the lack of soft links since 3.13.1
 #YACCOPT = -l
 #LEXOPT = -L
-std_SRCS_vxWorks += dbLoadTemplate.c
+#std_SRCS_vxWorks += dbLoadTemplate.c
 HTMLS += dbLoadTemplate.html
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
@@ -144,7 +142,6 @@ pv_DIR     = $(SNCSEQ_LIB)
 # built in the MCA module
 INC += devScaler.h
 INC += fastPID.h
-INC += symTable.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
