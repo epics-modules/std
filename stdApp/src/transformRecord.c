@@ -461,7 +461,8 @@ special(struct dbAddr *paddr, int after)
 
 	Debug(15, "special: special_type = %d\n", special_type);
 	switch (special_type) {
-	case (SPC_CALC):
+	case (SPC_MOD):
+	  if ((fieldIndex >= transformRecordCLCA) && (fieldIndex <= transformRecordCLCP)) {
 		pclcbuf = ptran->clca;
 		prpcbuf = (char *)ptran->rpca;
 		pcalcInvalid = &ptran->cav;
@@ -486,8 +487,7 @@ special(struct dbAddr *paddr, int after)
 			}
 		}
 		return (0);
-
-	case (SPC_MOD):
+	  } else {
 #if 1
 		/* Mark value field as "new", unless we caused the field to be written */
 		if (ptran->pact == 0) {
@@ -538,6 +538,7 @@ special(struct dbAddr *paddr, int after)
 		}
 
 		return(0);
+	  }
 
 	default:
 		recGblDbaddrError(S_db_badChoice, paddr, "transform: special");
