@@ -54,8 +54,10 @@
  *                something that will work under 3.13  
  * 08/19/03  tmm  v3.3 Manage NFS mount.  Replace epicsPrintf with errlogPrintf.
  *                Replace logMsg with errlogPrintf except in callback routines.
+ * 09/04/03  tmm  v3.4 Do manual restore operations (fdbrestore*) in the save_restore
+ *                task.  With this change, all CA work is done by the save_restore task.
  */
-#define		SRVERSION "save/restore V3.3"
+#define		SRVERSION "save/restore V3.4"
 
 #ifdef vxWorks
 #include	<vxWorks.h>
@@ -118,6 +120,7 @@ extern int logMsg(char *fmt, ...);
 STATIC struct chlist *lptr;		/* save-set listhead */
 STATIC SEM_ID 		sr_mutex;	/* mut(ual) ex(clusion) for list of save sets */
 STATIC SEM_ID		sem_remove;	/* delete list semaphore */
+STATIC SEM_ID		sem_do_manual_op;	/* semaphore signalling completion of a manual operation */
 
 /* save_methods - used to determine when a file should be deleted */
 #define PERIODIC	0x01		/* set when timer goes off */
@@ -185,6 +188,13 @@ STATIC char		remove_filename[80];	/* name of list to delete */
 STATIC int		remove_dset = 0;
 STATIC int		remove_status = 0;
 
+#define FROM_SAVE_FILE 1
+#define FROM_ASCII_FILE 2
+STATIC char		manual_restore_filename[80];	/* name of file to restore from */
+/* tells save_restore a manual restore is requested, and identifies the file type */
+STATIC int		manual_restore_type = 0;
+STATIC int		manual_restore_status = 0;		/* result of manual_restore operation */
+
 STATIC char	status_prefix[10];
 
 STATIC long	save_restoreStatus, save_restoreHeartbeat;
@@ -242,7 +252,6 @@ int create_periodic_set(char *filename, int period, char *macrostring);
 int create_triggered_set(char *filename, char *trigger_channel, char *macrostring);
 int create_monitor_set(char *filename, int period, char *macrostring);
 int create_manual_set(char *filename, char *macrostring);
-int fdbrestore(char *filename);
 void save_restoreShow(int verbose);
 int set_requestfile_path(char *path, char *pathsub);
 int set_savefile_path(char *path, char *pathsub);
@@ -252,7 +261,8 @@ int reload_periodic_set(char *filename, int period, char *macrostring);
 int reload_triggered_set(char *filename, char *trigger_channel, char *macrostring);
 int reload_monitor_set(char * filename, int period, char *macrostring);
 int reload_manual_set(char * filename, char *macrostring);
-int fdbrestoreX(char *filename);
+int request_manual_restore(char *filename, int file_type);
+STATIC int do_manual_restore(char *filename, int file_type);
 
 STATIC int readReqFile(const char *file, struct chlist *plist, char *macrostring);
 
@@ -605,17 +615,25 @@ STATIC int save_restore(void)
 		}
 
 		if (remove_dset) {
-			if ((remove_status = remove_data_set(remove_filename))) {
-				errlogPrintf("error removing %s\n", remove_filename);
-			}
+			remove_status = remove_data_set(remove_filename);
 			remove_filename[0] = 0;
 			remove_dset = 0;
 			semGive(sem_remove);
 		}
 
+		if (manual_restore_type) {
+			manual_restore_status = do_manual_restore(manual_restore_filename,
+				manual_restore_type);
+			manual_restore_filename[0] = 0;
+			manual_restore_type = 0;
+			semGive(sem_do_manual_op);
+		}
+
 		/* go to sleep for a while */
 		ca_pend_event((double)min_delay);
     }
+
+	/* We're never going to exit */
 	return(OK);
 }
 	
@@ -1169,6 +1187,10 @@ STATIC int create_data_set(
 			errlogPrintf("create_data_set: could not create delete list semaphore\n");
 			return(ERROR);
 		}
+		if ((sem_do_manual_op = semBCreate(SEM_Q_FIFO, SEM_EMPTY)) == 0) {
+			errlogPrintf("create_data_set: could not create do_manual_op semaphore\n");
+			return(ERROR);
+		}
 		if ((taskID = taskSpawn("save_restore",taskPriority,VX_FP_TASK,
 			10000, save_restore,0,0,0,0,0,0,0,0,0,0))
 		  == ERROR) {
@@ -1223,7 +1245,6 @@ STATIC int create_data_set(
 	semGive(sr_mutex);
 
 	/* create a new channel list */
-	ca_task_initialize();
 	if ((plist = (struct chlist *)calloc(1,sizeof (struct chlist)))
 	  == (struct chlist *)0) {
 		errlogPrintf("create_data_set: channel list calloc failed");
@@ -1277,109 +1298,6 @@ STATIC int create_data_set(
 }
 
 
-/*
- * fdbrestore - restore routine
- *
- * Read a list of channel names and values from an ASCII file,
- * and update database vaules.
- *
- */
-int fdbrestore(char *filename)
-{	
-	struct channel	*pchannel;
-	struct chlist	*plist;
-	int				found;
-	char			channel[80];
-	char			restoreFile[PATH_SIZE+1] = "";
-	char			bu_filename[PATH_SIZE+1] = "";
-	char			buffer[120], *bp, c;
-	char			input_line[120];
-	int				n;
-	long			status;
-	FILE			*inp_fd;
-	chid			chanid;
-
-	/* if this is the current file name for a save set - restore from there */
-	found = FALSE;
-	semTake(sr_mutex,WAIT_FOREVER);
-	plist = lptr;
-	while ((plist != 0) && !found) { 
-		if (strcmp(plist->last_save_file,filename) == 0) {
-			found = TRUE;
-		}else{
-			plist = plist->pnext;
-		}
-	}
-	if (found ) {
-		/* verify quality of the save set */
-		if (plist->not_connected > 0) {
-			errlogPrintf("fdbrestore: %d channel(s) not connected or fetched\n",plist->not_connected);
-			if (!save_restoreIncompleteSetsOk) {
-				errlogPrintf("fdbrestore: aborting restore\n");
-				semGive(sr_mutex);
-				strncpy(save_restoreRecentlyStr, "Manual restore failed",39);
-				return(ERROR);
-			}
-		}
-
-		for (pchannel = plist->pchan_list; pchannel !=0; pchannel = pchannel->pnext) {
-			ca_put(DBR_STRING,pchannel->chid,pchannel->value);
-		}
-		if (ca_pend_io(1.0) != ECA_NORMAL) {
-			errlogPrintf("fdbrestore: not all channels restored\n");
-		}
-		semGive(sr_mutex);
-		strncpy(save_restoreRecentlyStr, "Manual restore succeeded",39);
-		return(OK);
-	}
-	semGive(sr_mutex);
-
-	/* open file */
-	strncpy(restoreFile, saveRestoreFilePath, sizeof(restoreFile) - 1);
-	strncat(restoreFile, filename, MAX(sizeof(restoreFile) -1 - strlen(restoreFile),0));
-	if ((inp_fd = fopen_and_check(restoreFile, "r", &status)) == NULL) {
-		errlogPrintf("fdbrestore: Can't open save file.");
-		strncpy(save_restoreRecentlyStr, "Manual restore failed",39);
-		return(ERROR);
-	}
-
-	(void)fgets(buffer, 120, inp_fd); /* discard header line */
-	/* restore from data file */
-	while ((bp=fgets(buffer, 120, inp_fd))) {
-		/* get PV_name, one space character, value */
-		/* (value may be a string with leading whitespace; it may be */
-		/* entirely whitespace; the number of spaces may be crucial; */
-		/* it might also consist of zero characters) */
-		n = sscanf(bp,"%s%c%[^\n]", channel, &c, input_line);
-		if (n < 3) *input_line = 0;
-		if (isalpha(channel[0]) || isdigit(channel[0])) {
-			if (ca_search(channel, &chanid) != ECA_NORMAL) {
-				errlogPrintf("ca_search for %s failed\n", channel);
-			} else if (ca_pend_io(0.5) != ECA_NORMAL) {
-				errlogPrintf("ca_search for %s timeout\n", channel);
-			} else if (ca_put(DBR_STRING, chanid, input_line) != ECA_NORMAL) {
-				errlogPrintf("ca_put of %s to %s failed\n", input_line,channel);
-			}
-		} else if (channel[0] == '!') {
-			n = atoi(&channel[1]);
-			errlogPrintf("%d channel%c not connected / fetch failed", n, (n==1) ? ' ':'s');
-			if (!save_restoreIncompleteSetsOk) {
-				errlogPrintf("aborting restore\n");
-				fclose(inp_fd);
-				strncpy(save_restoreRecentlyStr, "Manual restore failed",39);
-				return(ERROR);
-			}
-		}
-	}
-	fclose(inp_fd);
-
-	/* make  backup */
-	strcpy(bu_filename,filename);
-	strcat(bu_filename,".bu");
-	(void)myFileCopy(restoreFile,bu_filename);
-	strncpy(save_restoreRecentlyStr, "Manual restore succeeded",39);
-	return(OK);
-}
 
 
 /*
@@ -1687,36 +1605,108 @@ int reload_manual_set(char * filename, char *macrostring)
 		return(create_manual_set(filename, macrostring));
 	}
 }
+
+#define fdbrestore(filename) request_manual_restore(filename, FROM_SAVE_FILE)
+#define fdbrestoreX(filename) request_manual_restore(filename, FROM_ASCII_FILE)
+
+int request_manual_restore(char *filename, int file_type)
+{
+	/* wait until any pending restore completes.  Should probably be a semaphore */
+	while (manual_restore_type) taskDelay(60);
+	strncpy(manual_restore_filename, filename, sizeof(manual_restore_filename) -1);
+	manual_restore_type = file_type;	/* Tell save_restore to do a manual restore */
+	if (semTake(sem_do_manual_op, vxTicksPerSecond*TIME2WAIT) != OK) {
+		errlogPrintf("request_manual_restore: timeout on restore %s\n", filename);
+		return(ERROR);
+	}
+	if (manual_restore_status) {
+		errlogPrintf("request_manual_restore: error restoring %s\n", filename);
+		return(ERROR);
+	} else {
+		sprintf(save_restoreRecentlyStr, "Restored data set '%s'", filename);
+		return(OK);
+	}
+}
 
 
 /*
- * fdbrestoreX - restore routine
+ * do_manual_restore - restore routine
  *
  * Read a list of channel names and values from an ASCII file,
  * and update database vaules.
  *
  */
-int fdbrestoreX(char *filename)
+int do_manual_restore(char *filename, int file_type)
 {	
+	struct channel	*pchannel;
+	struct chlist	*plist;
+	int				found;
 	char			channel[80];
 	char			restoreFile[PATH_SIZE+1] = "";
+	char			bu_filename[PATH_SIZE+1] = "";
 	char			buffer[120], *bp, c;
 	char			input_line[120];
 	int				n;
+	long			status;
 	FILE			*inp_fd;
 	chid			chanid;
 
+	if (file_type == FROM_SAVE_FILE) {
+		/* if this is the current file name for a save set - restore from there */
+		found = FALSE;
+		semTake(sr_mutex,WAIT_FOREVER);
+		plist = lptr;
+		while ((plist != 0) && !found) { 
+			if (strcmp(plist->last_save_file,filename) == 0) {
+				found = TRUE;
+			}else{
+				plist = plist->pnext;
+			}
+		}
+		if (found ) {
+			/* verify quality of the save set */
+			if (plist->not_connected > 0) {
+				errlogPrintf("do_manual_restore: %d channel(s) not connected or fetched\n",
+					plist->not_connected);
+				if (!save_restoreIncompleteSetsOk) {
+					errlogPrintf("do_manual_restore: aborting restore\n");
+					semGive(sr_mutex);
+					strncpy(save_restoreRecentlyStr, "Manual restore failed",39);
+					return(ERROR);
+				}
+			}
+
+			for (pchannel = plist->pchan_list; pchannel !=0; pchannel = pchannel->pnext) {
+				ca_put(DBR_STRING,pchannel->chid,pchannel->value);
+			}
+			if (ca_pend_io(1.0) != ECA_NORMAL) {
+				errlogPrintf("do_manual_restore: not all channels restored\n");
+			}
+			semGive(sr_mutex);
+			strncpy(save_restoreRecentlyStr, "Manual restore succeeded",39);
+			return(OK);
+		}
+		semGive(sr_mutex);
+	}
 
 	/* open file */
 	strncpy(restoreFile, saveRestoreFilePath, sizeof(restoreFile) - 1);
 	strncat(restoreFile, filename, MAX(sizeof(restoreFile) -1 - strlen(restoreFile),0));
 
-	if ((inp_fd = fopen(restoreFile, "r")) == NULL) {
-		errlogPrintf("fdbrestore - unable to open file %s\n",filename);
+	if (file_type == FROM_SAVE_FILE) {
+		inp_fd = fopen_and_check(restoreFile, "r", &status);
+	} else {
+		inp_fd = fopen(restoreFile, "r");
+	}
+	if (inp_fd == NULL) {
+		errlogPrintf("do_manual_restore: Can't open save file.");
 		strncpy(save_restoreRecentlyStr, "Manual restore failed",39);
 		return(ERROR);
 	}
 
+	if (file_type == FROM_SAVE_FILE) {
+		(void)fgets(buffer, 120, inp_fd); /* discard header line */
+	}
 	/* restore from data file */
 	while ((bp=fgets(buffer, 120, inp_fd))) {
 		/* get PV_name, one space character, value */
@@ -1724,20 +1714,21 @@ int fdbrestoreX(char *filename)
 		/* entirely whitespace; the number of spaces may be crucial; */
 		/* it might also consist of zero characters) */
 		n = sscanf(bp,"%s%c%[^\n]", channel, &c, input_line);
-		if (n<3) *input_line = 0;
+		if (n < 3) *input_line = 0;
 		if (isalpha(channel[0]) || isdigit(channel[0])) {
 			if (ca_search(channel, &chanid) != ECA_NORMAL) {
-				errlogPrintf("ca_search for %s failed\n",channel);
+				errlogPrintf("do_manual_restore: ca_search for %s failed\n", channel);
 			} else if (ca_pend_io(0.5) != ECA_NORMAL) {
-				errlogPrintf("ca_search for %s timeout\n",channel);
-			} else if (ca_put(DBR_STRING, chanid,input_line) != ECA_NORMAL) {
-				errlogPrintf("ca_put of %s to %s failed\n",input_line,channel);
+				errlogPrintf("do_manual_restore: ca_search for %s timeout\n", channel);
+			} else if (ca_put(DBR_STRING, chanid, input_line) != ECA_NORMAL) {
+				errlogPrintf("do_manual_restore: ca_put of %s to %s failed\n", input_line,channel);
 			}
 		} else if (channel[0] == '!') {
 			n = atoi(&channel[1]);
-			errlogPrintf("%d %s not connected (or caget failed)\n", n, (n==1)?"channel":"channels");
+			errlogPrintf("do_manual_restore: %d channel%c not connected / fetch failed",
+				n, (n==1) ? ' ':'s');
 			if (!save_restoreIncompleteSetsOk) {
-				errlogPrintf("aborting restore\n");
+				errlogPrintf("do_manual_restore: aborting restore\n");
 				fclose(inp_fd);
 				strncpy(save_restoreRecentlyStr, "Manual restore failed",39);
 				return(ERROR);
@@ -1746,9 +1737,16 @@ int fdbrestoreX(char *filename)
 	}
 	fclose(inp_fd);
 
+	if (file_type == FROM_SAVE_FILE) {
+		/* make  backup */
+		strcpy(bu_filename,restoreFile);
+		strcat(bu_filename,".bu");
+		(void)myFileCopy(restoreFile,bu_filename);
+	}
 	strncpy(save_restoreRecentlyStr, "Manual restore succeeded",39);
 	return(OK);
 }
+
 
 STATIC int readReqFile(const char *reqFile, struct chlist *plist, char *macrostring)
 {
