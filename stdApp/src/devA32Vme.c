@@ -105,6 +105,7 @@
  /**********************************************************************/
 
 #include	<vxWorks.h>
+#include	<vxLib.h>
 #include	<sysLib.h>
 #include	<vme.h>
 #include	<types.h>
@@ -113,29 +114,32 @@
 #include	<intLib.h>
 #include	<string.h>
 #include	<math.h>
-#include        <iv.h>
-#include        <rebootLib.h>
+#include	<iv.h>
+#include	<rebootLib.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
-#include        <recSup.h>
+#include	<recGbl.h>
+#include	<recSup.h>
 #include	<devSup.h>
-#include	<module_types.h>
 #include	<link.h>
-#include	<fast_lock.h>
+
 #include	<epicsPrint.h>
+#include	<epicsExport.h>
 
-#include        <aoRecord.h>
-#include        <aiRecord.h>
-#include        <boRecord.h>
-#include        <biRecord.h>
-#include        <longinRecord.h>
-#include        <longoutRecord.h>
-#include        <mbboRecord.h>
-#include        <mbbiRecord.h>
+#include	<aoRecord.h>
+#include	<aiRecord.h>
+#include	<boRecord.h>
+#include	<biRecord.h>
+#include	<longinRecord.h>
+#include	<longoutRecord.h>
+#include	<mbboRecord.h>
+#include	<mbbiRecord.h>
 
-#include        <dbScan.h>
+#include	<dbScan.h>
+
+#define ERROR (-1)
 
 static long init_ai(), read_ai();
 static long init_ao(), write_ao();
@@ -183,7 +187,7 @@ typedef struct a32Reg {
 typedef struct ioCard {  /* Unique for each card */
   volatile a32Reg  *base;    /* address of this card's registers */
   int               nReg;    /* Number of registers on this card */
-  FAST_LOCK         lock;    /* semaphore */
+  epicsMutexId      lock;    /* semaphore */
   IOSCANPVT         ioscanpvt; /* records to process upon interrupt */
 }ioCard;
 
@@ -218,6 +222,14 @@ A32VME_DSET devLoA32Vme =   {5, NULL, NULL, init_lo, NULL, write_lo, NULL};
 A32VME_DSET devMbbiA32Vme = {5, NULL, NULL, init_mbbi, NULL, read_mbbi,  NULL};
 A32VME_DSET devMbboA32Vme = {5, NULL, NULL, init_mbbo, NULL, write_mbbo, NULL};
 
+epicsExportAddress(A32VME_DSET, devAiA32Vme);
+epicsExportAddress(A32VME_DSET, devAoA32Vme);
+epicsExportAddress(A32VME_DSET, devBiA32Vme);
+epicsExportAddress(A32VME_DSET, devBoA32Vme);
+epicsExportAddress(A32VME_DSET, devLiA32Vme);
+epicsExportAddress(A32VME_DSET, devLoA32Vme);
+epicsExportAddress(A32VME_DSET, devMbbiA32Vme);
+epicsExportAddress(A32VME_DSET, devMbboA32Vme);
 
 /**************************************************************************
  **************************************************************************/
@@ -232,7 +244,7 @@ unsigned long   regData;
       printf("  Card #%d at %p\n", cardNum, cards[cardNum].base);
       for(i=0; i < cards[cardNum].nReg; i++) {
           regData = cards[cardNum].base->reg[i];
-          printf("    Register %d -> 0x%4.4X (%d)\n", i, regData, regData);
+          printf("    Register %d -> 0x%4.4lX (%ld)\n", i, regData, regData);
       }
     }
   }
@@ -261,7 +273,7 @@ int	      iLevel;
   }
 
   if(a32base >= MAX_A32_ADDRESS) {
-      epicsPrintf("devA32VmeConfig: Invalid Card Address %d \n",a32base);
+      epicsPrintf("devA32VmeConfig: Invalid Card Address %ld \n",a32base);
       return(ERROR);
   }
 
@@ -284,8 +296,7 @@ int	      iLevel;
   }
   else {
       cards[card].nReg = nregs;
-      FASTLOCKINIT(&(cards[card].lock));
-      FASTUNLOCK(&(cards[card].lock));  /* Init the board lock */
+      cards[card].lock = epicsMutexMustCreate();
   }
  
   if(iVector) {
@@ -1232,7 +1243,7 @@ unsigned long  *value; /* the value to return from the card */
   *value = cards[card].base->reg[reg] & mask;
 
   if (devA32VmeDebug >= 20)
-    printf("devA32Vme: read 0x%4.4X from card %d\n", *value, card);
+    printf("devA32Vme: read 0x%4.4lX from card %d\n", *value, card);
 
   return(OK);
 }
@@ -1253,13 +1264,13 @@ unsigned long   value;
   if (checkCard(card) == ERROR)
     return(ERROR);
 
-  FASTLOCK(&(cards[card].lock));
+  epicsMutexMustLock(cards[card].lock);
   cards[card].base->reg[reg] = ((cards[card].base->reg[reg] & ~mask) | 
                               (value & mask));
-  FASTUNLOCK(&(cards[card].lock));
+  epicsMutexUnlock(cards[card].lock);
 
   if (devA32VmeDebug >= 15)
-    printf("devA32Vme: wrote 0x%4.4X to card %d\n",
+    printf("devA32Vme: wrote 0x%4.4lX to card %d\n",
             cards[card].base->reg[reg], card);
 
   return(0);

@@ -144,7 +144,6 @@ int    i;
 
 %% #include <math.h>
 %% #include <string.h>
-%% #include <taskLib.h>
 /*
 %% static int i;
 */
@@ -199,13 +198,13 @@ int    i;
    PVPUT(s_idel,  LINE_FEED);		\
    PVPUT(s_odel,  CARRIAGE_RETURN);	\
    PVPUTSTR(s_aout,  HSC_COMMAND);	\
-   taskDelay (1); }
+   delay (.02); }
 
 #define WAIT_AINP()   {		\
    efClear (s_ainp_mon); /* will wait for the record to process */	\
    for (i = 0; i <= 15; i++) { /* wait no more than 0.25 seconds */	\
      if (efTest (s_ainp_mon)) break;	/* input is ready */		\
-     taskDelay (1);	/* wait 1 clock tick before retrying */		\
+     delay (.02);	/* wait 1 clock tick before retrying */		\
    } }
 
 #define READ_HSC()   {		\
@@ -312,11 +311,11 @@ ss xiahsc {
         PVPUTSTR (errMsg, "H & V IDs must be different");
         error++;
       }
-      if (sscanf (hID, "XIAHSC-%*c-%d", &numWords) != 1) { 
+      if (sscanf (hID, "XIAHSC-%*c-%ld", &numWords) != 1) { 
         PVPUTSTR (errMsg, "H ID not a valid HSC ID");
         error++;
       }
-      if (sscanf (vID, "XIAHSC-%*c-%d", &numWords) != 1) { 
+      if (sscanf (vID, "XIAHSC-%*c-%ld", &numWords) != 1) { 
         PVPUTSTR (errMsg, "V ID not a valid HSC ID");
         error++;
       }
@@ -371,7 +370,7 @@ ss xiahsc {
       efClear (new_V_RB);	/* new readback data available */
 
       PVPUT (stop, STOP_IDLE);	/* presume the motors are stopped */
-      taskDelay(1);		/* allow the command to process */
+      delay(.02);		/* allow the command to process */
       efClear (stop_mon);
 
       efClear (t_mon);  efClear (l_mon);  efClear (b_mon);  efClear (r_mon);
@@ -384,9 +383,9 @@ ss xiahsc {
        */
       WAIT_AINP();		/* wait for the record to process or timeout */
       SEND_HSC ("!ALL K");	/* stop all motors */
-      taskDelay (6);		/* wait for record to process */
+      delay (.1);		/* wait for record to process */
       SEND_HSC ("!ALL P");	/* request all motor positions */
-      taskDelay(6);		/* wait for record to process */
+      delay(.1);		/* wait for record to process */
       ainp_fifo_read = 0;	/* next FIFO position to store input */
       ainp_fifo_write = 0;	/* next FIFO position to process */
       while (!s_sevr) {		/* read until no more input data */
@@ -416,7 +415,7 @@ ss xiahsc {
     when (efTest (stop_mon) && stop) { 
       WAIT_AINP();		/* wait for the record to process or timeout */
       SEND_HSC ("!ALL K");
-      taskDelay (6);
+      delay (.1);
       efClear (stop_mon);
     } state idle
 
@@ -440,10 +439,10 @@ ss xiahsc {
           WAIT_AINP();		/* wait for the record to process or timeout */
           sprintf (scratch, "!%s K", hID);	/* stop this axis only */
           SEND_HSC (scratch);		/* do it */
-          taskDelay (30);		/* wait for it to happen */
+          delay (.5);		/* wait for it to happen */
         } else {
           PVPUT (hBusy, MOTOR_BUSY);	/* tell the world we are busy */
-          if (vBusy) taskDelay (15);	/* port may be busy with a READ */
+          if (vBusy) delay (.25);	/* port may be busy with a READ */
         }
         if (hOrient == ORIENT_LEFT_RIGHT) { 
           pos_ag = l;  pos_bg = r;
@@ -459,10 +458,10 @@ ss xiahsc {
           WAIT_AINP();		/* wait for the record to process or timeout */
           sprintf (scratch, "!%s K", vID);	/* stop this axis only */
           SEND_HSC (scratch);		/* do it */
-          taskDelay (30);		/* wait for it to happen */
+          delay (.5);		/* wait for it to happen */
         } else {
           PVPUT (vBusy, MOTOR_BUSY);	/* tell the world we are busy */
-          if (hBusy) taskDelay (15);	/* port may be busy with a READ */
+          if (hBusy) delay (.25);	/* port may be busy with a READ */
         }
         if (vOrient == ORIENT_TOP_BOTTOM) { 
           pos_ag = t;  pos_bg = b;
@@ -476,7 +475,7 @@ ss xiahsc {
       }
       pos_a = DIAL_TO_RAW (pos_ag);	/* convert to raw (motor) coordinates */
       pos_b = DIAL_TO_RAW (pos_bg);	/* convert to raw (motor) coordinates */
-      sprintf (scratch, "!%s M %d %d", word1, pos_a, pos_b);
+      sprintf (scratch, "!%s M %ld %ld", word1, pos_a, pos_b);
       SEND_HSC (scratch);		/* send the command */
       PVPUT (locate, 1);		/* expect a readback */
     } state idle
@@ -487,7 +486,7 @@ ss xiahsc {
     when (locate) { 	/* poll the generic serial port for input */
       PVPUT (locate, 0);
       SEND_HSC ("!ALL P");
-      taskDelay(6);
+      delay(.1);
       while (!s_sevr) {		/* read until no more input data */
         READ_HSC();		/* process generic serial port */
         INPUT_TO_FIFO(s_ainp);	/* put input string into FIFO */
@@ -520,7 +519,7 @@ ss xiahsc {
         if (r     != r_RB)     PVPUT (r, r_RB);
         if (h0    != h0_RB)    PVPUT (h0, h0_RB);
         if (width != width_RB) PVPUT (width, width_RB);
-        taskDelay (1);
+        delay (.02);
         efClear (l_mon);    efClear (r_mon);
         efClear (h0_mon);   efClear (width_mon);
         efClear (wait_H_input);
@@ -541,7 +540,7 @@ ss xiahsc {
         if (b      != b_RB)      PVPUT (b, b_RB);
         if (v0     != v0_RB)     PVPUT (v0, v0_RB);
         if (height != height_RB) PVPUT (height, height_RB);
-        taskDelay (1);
+        delay (.02);
         efClear (t_mon);    efClear (b_mon);
         efClear (v0_mon);   efClear (height_mon);
         efClear (wait_V_input);
@@ -613,7 +612,7 @@ ss xiahsc {
           if (efTest (width_mon)) pvPut (width);
           error = ERROR_SOFT_LIMITS;
           PVPUTSTR (errMsg, "soft limits exceeded");
-          taskDelay (1);
+          delay (.02);
           efClear(l_mon);   efClear(r_mon);
           efClear(h0_mon);  efClear(width_mon);
         } else { 
@@ -625,7 +624,7 @@ ss xiahsc {
           } else {
             pvPut (l);  pvPut (r);
           }
-          taskDelay (1);
+          delay (.02);
           efClear(l_mon);   efClear(r_mon);
           efClear(h0_mon);  efClear(width_mon);
         }
@@ -659,7 +658,7 @@ ss xiahsc {
           if (efTest (height_mon)) pvPut (height);
           error = ERROR_SOFT_LIMITS;
           PVPUTSTR (errMsg, "soft limits exceeded");
-          taskDelay (1);
+          delay (.02);
           efClear(t_mon);   efClear(b_mon);
           efClear(v0_mon);  efClear(height_mon);
         } else { 
@@ -670,7 +669,7 @@ ss xiahsc {
           } else {
             pvPut (t);  pvPut (b);
           }
-          taskDelay (1);
+          delay (.02);
           efClear(t_mon);   efClear(b_mon);
           efClear(v0_mon);  efClear(height_mon);
         }
@@ -717,8 +716,8 @@ ss xiahsc {
      */
     when ( (numWords == 4) && (!strcmp(word4, "DONE;")) ) { 
       /* position info received */
-      sscanf (word2, "%d", &pos_a);   pos_ag = RAW_TO_DIAL(pos_a);
-      sscanf (word3, "%d", &pos_b);   pos_bg = RAW_TO_DIAL(pos_b);
+      sscanf (word2, "%ld", &pos_a);   pos_ag = RAW_TO_DIAL(pos_a);
+      sscanf (word3, "%ld", &pos_b);   pos_bg = RAW_TO_DIAL(pos_b);
       if (error) { /* don't update unless previous error exists */
         PVPUT (error, 0);
         PVPUTSTR (errMsg, "no error");
@@ -726,8 +725,8 @@ ss xiahsc {
     } state update_positions
     when ( (numWords == 5) && (!strcmp(word2, "OK")) ) { 
       /* position info received */
-      sscanf (word3, "%d", &pos_a);   pos_ag = RAW_TO_DIAL(pos_a);
-      sscanf (word4, "%d", &pos_b);   pos_bg = RAW_TO_DIAL(pos_b);
+      sscanf (word3, "%ld", &pos_a);   pos_ag = RAW_TO_DIAL(pos_a);
+      sscanf (word4, "%ld", &pos_b);   pos_bg = RAW_TO_DIAL(pos_b);
       if (error) { /* don't update unless previous error exists */
         PVPUT (error, 0);
         PVPUTSTR (errMsg, "no error");
@@ -786,3 +785,56 @@ ss xiahsc {
 
 }
 
+/*
+#############################################################################
+#  Illinois Open Source License
+#  University of Illinois
+#  Open Source License
+#
+#
+#  Copyright (c) 2004,  UNICAT.  All rights reserved.
+#
+#
+#  Developed by:
+#
+#  UNICAT, Advanced Photon Source, Argonne National Laboratory
+#
+#  Frederick Seitz Materials Research Laboratory,
+#  University of Illinois at Urbana-Champaign
+#
+#  http://www.uni.aps.anl.gov
+#
+#  Permission is hereby granted, free of charge, to any person obtaining a
+#  copy of this software and associated documentation files (the
+#  "Software"), to deal with the Software without restriction, including
+#  without limitation the rights to use, copy, modify, merge, publish,
+#  distribute, sublicense, and/or sell copies of the Software, and to
+#  permit persons to whom the Software is furnished to do so, subject to
+#  the following conditions:
+#
+#
+#  Redistributions of source code must retain the above copyright notice,
+#  this list of conditions and the following disclaimers.
+#
+#
+#  Redistributions in binary form must reproduce the above copyright
+#  notice, this list of conditions and the following disclaimers in the
+#  documentation and/or other materials provided with the distribution.
+#
+#
+#  Neither the names of UNICAT, Frederick Seitz Materials Research
+#  Laboratory, University of Illinois at Urbana-Champaign,
+#  nor the names of its contributors may be used to endorse or promote
+#  products derived from this Software without specific prior written
+#  permission.
+#
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+#  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+#  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+#  IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+#  ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+#  TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+#  SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
+#############################################################################
+ */

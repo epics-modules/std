@@ -30,10 +30,11 @@
  *
  * Modification Log:
  * -----------------
- * .00  06-07-93        kjc     original version, uses 0x0800 from ZIO085 card
- *                              assumes only one card (up to 16 encoders)
- *                              Modeled after drvVmi4100.c
- */
+ * .00  06-07-93  kjc  original version, uses 0x0800 from ZIO085 card
+ *                     assumes only one card (up to 16 encoders)
+ *                     Modeled after drvVmi4100.c
+ *      12-04-03  tmm  converted to EPICS 3.14
+*/
 
 /*
  * Code Portions:
@@ -46,23 +47,32 @@
 
 #include <vxWorks.h>
 #include <vme.h>
+#include <stdlib.h>
+#include <stdioLib.h>
+#include <sysLib.h>
+#include <vxLib.h>
+
 #include <dbDefs.h>
 #include <drvSup.h>
-#include <module_types.h>
+#include <epicsExport.h>
 
 
 static long varoc_io_report();
 long varoc_drv_init();
 
-struct {
-        long    number;
-        DRVSUPFUN       report;
-        DRVSUPFUN       init;
-} drvVaroc={
+typedef struct {
+	long		number;
+	DRVSUPFUN	report;
+	DRVSUPFUN	init;
+} drvVaroc_drvet;
+
+drvVaroc_drvet drvVaroc = {
         2,
         varoc_io_report,
-        varoc_drv_init};
+        varoc_drv_init
+};
 
+epicsExportAddress(drvVaroc_drvet, drvVaroc);
 
 union varoc_reg {
   unsigned short int data;       /* 16 bits of data */ 
@@ -105,11 +115,12 @@ long varoc_drv_init()
   
   pai_varoc = (struct ai_varoc **) calloc(MAX_VAROC_CARDS,sizeof(pai_varoc));
   if (!pai_varoc) {
-	printf("\n%s: pai_varoc = %d! (returning error)\n",__FILE__,pai_varoc);
+	printf("\n%s: pai_varoc = %p! (returning error)\n",__FILE__,pai_varoc);
     return ERROR;
   }
   
-  status = sysBusToLocalAdrs(VME_AM_SUP_SHORT_IO, ADDR, &varoc_addr);
+  status = sysBusToLocalAdrs(VME_AM_SUP_SHORT_IO, (char *)ADDR,
+		(char **)&varoc_addr);
   if (status != 0){
     printf("%s: varoc short address base failure: status = %d \n",
 	   __FILE__,status);
@@ -118,9 +129,9 @@ long varoc_drv_init()
 
   /* find each card that is present in IOC */
   for (i = 0; i < MAX_VAROC_CARDS; i++, varoc_addr+= VAROC_SIZE) {
-    if (vxMemProbe(varoc_addr,VX_READ,sizeof(short int),&value) == 0) {
+    if (vxMemProbe((char *)varoc_addr,VX_READ,sizeof(short int),(char *)&value) == 0) {
         pai_varoc[i] = varoc_addr;
-	 printf("\a\a\a\n%s: card %d present at addr %X.\n",__FILE__,i,varoc_addr); 
+	 printf("\a\a\a\n%s: card %d present at addr %p.\n",__FILE__,i,varoc_addr); 
       }
     else{
         pai_varoc[i] = 0;
@@ -151,14 +162,14 @@ long varoc_io_report(level)
  *
  * interface to the Varoc Absolute Encoder board (16 channels)
  */
-varoc_driver(card, chan, numbits, gray, prbval)
+int varoc_driver(card, chan, numbits, gray, prbval)
 register unsigned short card;
 register unsigned short chan;
 int                     numbits;
 int			gray;
 register long           *prbval;
 {
-  long                   msb=0, lsb=0;
+  long                   msb=0;
   unsigned short int     type;
   volatile unsigned short int   rd1,rd0;
 
@@ -177,7 +188,7 @@ register long           *prbval;
  
   if (card > 1 || !pai_varoc[card]){
     printf("\n %s: Varoc Board Does Not exist!\n",__FILE__);
-    printf(" card = %d --- pai_varoc[card] = %d\n",card,pai_varoc[card]);
+    printf(" card = %d --- pai_varoc[card] = %p\n",card,pai_varoc[card]);
     return (-1);
   }
 

@@ -63,17 +63,9 @@ short   srInjectStatus;
 assign srInjectStatus to  "S:InjectingStatusMBBI";
 monitor srInjectStatus;
 
-/* variables */
-
-%%#include <vxWorks.h>
-%%#include <stddef.h>
-%%#include <stdlib.h>
-%%#include <stdio.h>
 %%#include <string.h>
-%%#include <math.h>
-%%#include <taskLib.h>
-%%#include <sysLib.h>
 
+/* variables */
 %% int getFilledBucketsDebug = 0;
 %% int getFilledBucketsLDebug = 0;
 
@@ -155,7 +147,7 @@ ss autoLoad {
 			} state idle
 			when((srInjectStatus ==  NOTINJECTING) &&
 				(srBeamStatus) == STOREDBEAM) {
-				taskDelay(sysClkRateGet());  /* 1 sec delay */
+				delay(1.0);  /* 1 sec delay */
 				loadPat = 1;
 				pvPut(loadPat);
 %%				if(getFilledBucketsLDebug) {

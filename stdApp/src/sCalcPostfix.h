@@ -29,15 +29,16 @@
  * 
  */
 
-#ifndef INCpostfixh
-#define INCpostfixh
+#ifndef INCsCalcPostfixh
+#define INCsCalcPostfixh
 
-#define		BAD_EXPRESSION	0
-#define		END_STACK	127
+#define	BAD_EXPRESSION	0
+#define	END_STACK		127
 
-long epicsShareAPI sCalcPostfix(char *pinfix, char **pp_postfix, short *perror);
+long epicsShareAPI sCalcPostfix(char *pinfix, char *p_postfix, short *perror);
+
 epicsShareFunc long epicsShareAPI 
 	sCalcPerform(double *parg, int numArgs, char **psarg, int numSArgs, double *presult, char *psresult, int lenSresult, char *post);
 
-#endif /* INCpostfixh */
+#endif /* INCsCalcPostfixh */
 

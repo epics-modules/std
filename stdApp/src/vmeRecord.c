@@ -46,6 +46,7 @@
 
 
 #include        <vxWorks.h>
+#include        <vxLib.h>
 #include        <types.h>
 #include        <stdlib.h>
 #include        <stdioLib.h>
@@ -61,7 +62,9 @@
 #include        <devSup.h>
 #include        <errMdef.h>
 #include        <recSup.h>
+#include        <recGbl.h>
 #include        <vme.h>
+#include        <epicsExport.h>
 #define GEN_SIZE_OFFSET
 #include        <vmeRecord.h>
 #undef GEN_SIZE_OFFSET
@@ -113,6 +116,7 @@ struct rset vmeRSET={
    get_graphic_double,
    get_control_double,
    get_alarm_double };
+epicsExportAddress(rset, vmeRSET);
 
 static void monitor();
 static long doVmeIo();

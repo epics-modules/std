@@ -30,9 +30,9 @@
  *
  * Modification Log:
  * -----------------
- * .00  06-03-93        kjc     original adapted from devAiDvx2502.c
- * .01	03-28-94	rap	now parm field is 
- * 	...
+ * .00  06-03-93	kjc	original adapted from devAiDvx2502.c
+ * .01	03-28-94	rap	now parm field is
+ *      12-04-03	tmm converted to EPICS 3.14
  */
 
 
@@ -41,38 +41,51 @@
 #include	<types.h>
 #include	<stdioLib.h>
 #include	<string.h>
-#include        <ctype.h>
+#include	<ctype.h>
+
+#include	<stdlib.h>
 
 #include	<alarm.h>
 #include	<cvtTable.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
-#include        <recSup.h>
+#include	<recSup.h>
+#include	<recGbl.h>
 #include	<devSup.h>
 #include	<link.h>
-#include	<module_types.h>
+#include	<epicsExport.h>
 #include	<aiRecord.h>
 
-long init_record();
-long read_ai();
-long special_linconv();
 
-struct {
+/* defined in drvVarocB.c */
+extern int varoc_driver(unsigned short card, unsigned short chan, int numbits,
+	int gray, long *prbval);
+
+static long init_record();
+static long read_ai();
+static long special_linconv();
+
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
 	DEVSUPFUN	init_record;
-        DEVSUPFUN       get_ioint_info;
+	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	read_ai;
 	DEVSUPFUN	special_linconv;
-} devAiVaroc={
+} devAiVaroc_dset;
+
+devAiVaroc_dset devAiVaroc = {
 	6,
 	NULL,
 	NULL,
 	init_record,
 	NULL,
 	read_ai,
-	special_linconv	};
+	special_linconv
+};
+
+epicsExportAddress(devAiVaroc_dset, devAiVaroc);
 
 struct dprivate {
   int enc_bits;
@@ -84,7 +97,6 @@ struct dprivate {
 static long init_record(pai)
     struct aiRecord	*pai;
 {
-    unsigned short value;
     int num_bits;
     char sorg[1];
     struct vmeio *pvmeio;

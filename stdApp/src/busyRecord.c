@@ -1,7 +1,3 @@
-#include	<vxWorks.h>
-#include	<types.h>
-#include	<stdioLib.h>
-#include	<lstLib.h>
 #include	<stdlib.h>
 
 #include	<alarm.h>
@@ -10,10 +6,15 @@
 #include	<dbEvent.h>
 #include	<errMdef.h>
 #include	<recSup.h>
+#include	<recGbl.h>
 #include	<special.h>
 #define GEN_SIZE_OFFSET
 #include	<busyRecord.h>
 #undef  GEN_SIZE_OFFSET
+#include        <epicsExport.h>
+
+/* this has been removed from dbDefs.h*/
+#define CLOSED_LOOP 1
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -34,7 +35,7 @@ static long     process();
 #define get_control_double NULL
 #define get_alarm_double NULL
 
-struct rset     busyRSET = {
+rset     busyRSET = {
 	RSETNUMBER,
 	report,
 	initialize,
@@ -54,6 +55,7 @@ struct rset     busyRSET = {
 	get_control_double,
 	get_alarm_double
 };
+epicsExportAddress(rset, busyRSET);
 
 static long 
 init_record(busyRecord *pbusy, int pass)

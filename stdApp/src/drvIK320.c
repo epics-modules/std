@@ -1,4 +1,4 @@
-/* $Id: drvIK320.c,v 1.1.1.1.2.5 2003-09-18 16:24:33 sluiter Exp $ */
+/* $Id: drvIK320.c,v 1.2 2003-12-10 21:41:18 mooney Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -51,16 +51,8 @@
  * --------------------------------------------------------------------
  * 2.0  tmm  changed iround to NINT macro (PowerPC version of vxWorks
  *           doesn't have iround().  Local header files included with
- *           "", rather than <>. 
- * 2.1  09-11-03 rls
- *	     - PowerPC bug fix. For EPICS R3.13.5 and above,
- *	     devDisconnectInterrupt() always returns an error for the PPC
- *	     architecture. Replaced calls to devDisconnectInterrupt() with
- *	     updates to device handler pointer (irqHandler) and a master device
- *	     interrupt handler (IK320IrqMaster).
- *	     - bug fix drvIK320report() trashing all the other reports.
- *	     - bug fix for bus error when harware is missing; i.e., probe for
- *           memory from drvIK320Connect().
+ *           "", rather than <>.
+ *      tmm  Converted to EPICS 3.14
  *
  */
 
@@ -83,15 +75,14 @@
 #include <epicsPrint.h>
 #include <semLib.h>
 #include <dbAccess.h>
+#include <callback.h>
+#include <epicsExport.h>
 
 #include "drvIK320.h"
 
-/* Define for return test on locationProbe() */
-#define PROBE_SUCCESS(STATUS) ((STATUS)==S_dev_addressOverlap)
-extern long locationProbe(epicsAddressType, char *);
-
 #ifndef NODEBUG
 int drvIK320Debug=0;
+epicsExportAddress(int, drvIK320Debug);
 #define DM(LEVEL,FMT,ARGS...) {if (LEVEL<=drvIK320Debug) \
             errPrintf(-1,__FILE__,__LINE__,FMT,## ARGS); }
 #else
@@ -138,26 +129,32 @@ int drvIK320Debug=0;
 /*
  * forward declarations
  */
-static void IK320IrqHandler(void*);
-static void IK320IrqCatcher(void*);
-static void IK320IrqMaster(void*);
+static void
+IK320IrqHandler(void*);
 
-static long cardInit(IK320Card crd);
+static void
+IK320IrqCatcher(void*);
 
-static long cardQuery(IK320Driver drv);
+static long
+cardInit(IK320Card crd);
+
+static long
+cardQuery(IK320Driver drv);
 
 static long drvIK320report();
 static long drvIK320init();
 
-struct {
+typedef struct {
 	long 		number;
 	DRVSUPFUN	report;
 	DRVSUPFUN	init;
-} drvIK320 = {
+} drvIK320_drvet;
+drvIK320_drvet drvIK320 = {
 	2,
 	drvIK320report,
 	drvIK320init
 };
+epicsExportAddress(drvIK320_drvet, drvIK320);
 
 /* we have to lockout interrupts when testing/modifying the busy
  * flag because the interrupt handler also accesses the busy flag.
@@ -193,7 +190,6 @@ static struct {
 } allCards = { 0, 0 };
 
 static unsigned short *groupBase=0;
-static void (*irqHandler)()=0;
 
 
 #ifndef NODEBUG
@@ -205,193 +201,181 @@ static char drvIK320LoggerString[256];
 static int drvIK320IrqLogger();
 #endif
 
-long drvIK320Connect(int sw1, int sw2, int irqLevel, IK320Driver *pDrv)
+long
+drvIK320Connect(int sw1, int sw2, int irqLevel, IK320Driver *pDrv)
 {
-    void *localA24 = 0, *localA16 = 0, *vmeA24;
-    IK320Driver rval=0;
-    int         intEnabled=0;
-    long        status;
-    int         i,needsPOST=1;
+void 		*localA24=0;
+void 		*localA16=0;
+IK320Driver	rval=0;
+void		(*irqHandler)()=0;
+int			intEnabled=0;
+long		status;
+int			i,needsPOST=1;
 
-    if (!pDrv)
-	return (S_drvIK320_invalidParm);
+	if (!pDrv) return S_drvIK320_invalidParm;
 
-    /* lazy init; we hope that this is not called concurrently
-     * by several people.
-     */
-    if (!allCards.mutex)
-	drvIK320init();
+	/* lazy init; we hope that this is not called concurrently
+	 * by several people.
+	 */
+	if (!allCards.mutex) drvIK320init();
 
-    /* is there already a driver struct for this card ? */
+	/* is there already a driver struct for this card ? */
 
-    semTake(allCards.mutex,WAIT_FOREVER);
-    for (rval = allCards.first; rval; rval=rval->next)
-    {
-	if (rval->sw2 == sw2)
-	{
-	    if (rval->sw1 != sw1 || rval->irqLevel!=irqLevel)
-	    {
-		epicsPrintf("drvIK320: other card with same sw2 settings?\n");
-		rval = 0;
-	    }
-	    semGive(allCards.mutex);
-	    *pDrv = rval;
-	    return (OK);
+	semTake(allCards.mutex,WAIT_FOREVER);
+	for (rval = allCards.first; rval; rval=rval->next) {
+		if (rval->sw2 == sw2) {
+			if (rval->sw1 != sw1 || rval->irqLevel!=irqLevel) {
+				epicsPrintf("drvIK320: other card with same sw2 settings?\n");
+				rval = 0;
+			}
+			semGive(allCards.mutex);
+			*pDrv = rval;
+			return OK;
+		}
 	}
-    }
 
-    if (!(rval = (IK320Driver) malloc(sizeof(IK320DriverRec))))
-    {
-	status = S_dev_noMemory;
-	goto cleanup;
-    }
+	if ( ! (rval = (IK320Driver) malloc(sizeof(IK320DriverRec))) ) {
+		status = S_dev_noMemory;
+		goto cleanup;
+	}
 #ifndef USE_INTLOCK
-    if (!(rval->mutex=semMCreate(SEM_Q_FIFO)))
-    {
-	status = S_dev_noMemory;
-	goto cleanup;
-    }
+	if ( ! (rval->mutex=semMCreate(SEM_Q_FIFO))  ) {
+		status = S_dev_noMemory;
+		goto cleanup;
+	}
 #endif
-    /* use counting semaphore, so we are able to keep track of
-     * pending interrupts.
-     */
-    if (!(rval->sync=semCCreate(SEM_Q_FIFO,SEM_EMPTY)))
-    {
-	status = S_dev_noMemory;
-	goto cleanup;
-    }
-
-    vmeA24 = A24BASE(sw2);
-    status = locationProbe(atVMEA24, (char *) vmeA24);
-    if (!PROBE_SUCCESS(status))
-    {
-	epicsPrintf("drvIK320Connect(): bus error at address = 0x%08.8x\n", (uint_t) vmeA24);
-	goto cleanup;
-    }
-
-    if ((status=devRegisterAddress("drvIK320", atVMEA24, vmeA24, 0x4000, &localA24)))
-	goto cleanup;
-    if ((status=devRegisterAddress("drvIK320",atVMEA16,A16PORT(sw1),0x2,&localA16)))
-	goto cleanup;
-    /* we don't bother registering the 'group trigger address' (switch1 & 0xe <<8).
+	/* use counting semaphore, so we are able to keep track of
+	 * pending interrupts.
+	 */
+	if ( ! (rval->sync=semCCreate(SEM_Q_FIFO,SEM_EMPTY))  ) {
+		status = S_dev_noMemory;
+		goto cleanup;
+	}
+	if ((status=devRegisterAddress("drvIK320",atVMEA24,(size_t)(A24BASE(sw2)),(size_t)0x4000,(volatile void **)&localA24)))
+		goto cleanup;
+	if ((status=devRegisterAddress("drvIK320",atVMEA16,(size_t)(A16PORT(sw1)),(size_t)0x2,(volatile void **)&localA16)))
+		goto cleanup;
+	/* we don't bother registering the 'group trigger address' (switch1 & 0xe <<8).
      * It is used by several cards of one group and thus overlap occurs (although
-     * harmless and intentionally). We just assume everything to be alright and
-     * ignore the group trigger address here.
-     */
+	 * harmless and intentionally). We just assume everything to be alright and
+	 * ignore the group trigger address here.
+	 */
 
-    rval->card=(IK320Card)localA24;
-    rval->port=(unsigned short*)localA16;
+	rval->card=(IK320Card)localA24;
+	rval->port=(unsigned short*)localA16;
 
-    /* set the base address for all groups (must be the same for all cards) */
-    if (!groupBase)
-	groupBase = (unsigned short*)( (unsigned)rval->port & (unsigned)~0xffff );
-    else
-	assert( (unsigned)groupBase == ((unsigned)rval->port & (unsigned)~0xffff ));
+	/* set the base address for all groups (must be the same for all cards) */
+	if ( ! groupBase ) {
+		groupBase = (unsigned short*)( (unsigned)rval->port & (unsigned)~0xffff );
+	} else {
+		assert( (unsigned)groupBase == ((unsigned)rval->port & (unsigned)~0xffff ));
+	}
 
-    /* could probe the addresses and check for jumper 3 */
-    irqHandler = IK320IrqCatcher;
-    if ((status=devConnectInterrupt(intVME, sw1, IK320IrqMaster, (void*)rval)))
-	goto cleanup;
+	/* could probe the addresses and check for jumper 3 */
+	if ((status=devConnectInterrupt(intVME,
+									sw1,
+									irqHandler=IK320IrqCatcher,
+									(void*)rval)))
+		goto cleanup;
 
-    rval->record=0;
-    rval->sw1 = sw1;
-    rval->sw2 = sw2;
-    rval->irqLevel=irqLevel;
-    rval->busy = 0;
-    rval->next = allCards.first;
-    rval->waiting = 0;
-    rval->savedMask = IRQ_MASK_INVALID;
-    for (i=0; i<3; i++)
-	rval->scanPvt[i]=0;
+	rval->record=0;
+	rval->sw1 = sw1;
+	rval->sw2 = sw2;
+	rval->irqLevel=irqLevel;
+	rval->busy = 0;
+	rval->next = allCards.first;
+	rval->waiting = 0;
+	rval->savedMask = IRQ_MASK_INVALID;
+	for(i=0; i<3; i++) rval->scanPvt[i]=0;
 
 #define crd (rval->card)
-    needsPOST = (   crd->CRC != crd->actualCRC
-		    ||  crd->CRC1 != crd->actualCRC1
-		    ||  crd->CRC2 != crd->actualCRC2 );
-    /* maybe the card was just powered up ? */
+	needsPOST = ( 	crd->CRC != crd->actualCRC
+		||	crd->CRC1 != crd->actualCRC1
+		||	crd->CRC2 != crd->actualCRC2 );
+	/* maybe the card was just powered up ? */
+	
     /* could set the compVelocities here... if needsPOST */
-    /* unknown
-     *	crd->compDirX1			=
-     *	crd->compDirX2			=
-     */
+	  /* unknown
+	   *	crd->compDirX1			=
+	   *	crd->compDirX2			=
+	   */
 #undef crd
 
-    if ((status = devEnableInterruptLevel(intVME,irqLevel)))
-	goto cleanup;
-    intEnabled = 1;
+	if ((status=devEnableInterruptLevel(intVME,irqLevel)))
+		goto cleanup;
+	intEnabled = 1;
 
-    allCards.first = rval;
+	allCards.first = rval;
 
-    if (!needsPOST)
-    {
-	/* hmmm... the CRC values seem to be OK. However, if the
-	 * card was reset without removing the power (e.g. by hitting
-	 * the crate's reset button) _nothing_ will work without
-	 * a POST, i.e. the driver will hang!
-	 * We better make sure we get a reply from the card.
-	 */
-	needsPOST = cardQuery(rval);
-    }
+	if ( ! needsPOST) {
+		/* hmmm... the CRC values seem to be OK. However, if the
+		 * card was reset without removing the power (e.g. by hitting
+		 * the crate's reset button) _nothing_ will work without
+		 * a POST, i.e. the driver will hang!
+		 * We better make sure we get a reply from the card.
+		 */
+		needsPOST = cardQuery(rval);
+	}
 
-    status=devDisableInterruptLevel(intVME,irqLevel);
-    intEnabled = 0;
-    if (status)
-	goto cleanup;
-
-    /* now install the real irq handler */
-    irqHandler = IK320IrqHandler;
-
-    /* reenable irqs */
-    if ((status=devEnableInterruptLevel(intVME,irqLevel)))
-	goto cleanup;
-    intEnabled = 1;
-
-    if (needsPOST)
-    {
-	/* we need to do a POST, so initialize the card to defaults */
-	cardInit(rval->card);
-	epicsPrintf("drvIK320: doing POST on 0x%x/0x%x\n",sw1,sw2);
-	status = drvIK320Request(rval,
-				 0 /* do sync request */,
-				 FUNC_POST,
-				 0 /* no parm */);
-	/* release */
-	drvIK320Finish(rval);
+	status=devDisableInterruptLevel(intVME,irqLevel);
+	intEnabled = 0;
 	if (status) goto cleanup;
-    }
 
-    epicsPrintf("drvIK320: card at 0x%x/0x%x (version HW: %i SW: %*s) initialized successfully\n",
-		sw1, sw2, rval->card->hwVersion,
-		sizeof(((IK320Card)0)->swVersion) / sizeof(((IK320Card)0)->swVersion[0]),
-		rval->card->swVersion); 
+	/* now install the real irq handler */
+	if ((status=devDisconnectInterrupt(intVME,sw1,irqHandler))) {
+		irqHandler=0;
+		goto cleanup;
+	}
+	if ((status=devConnectInterrupt(intVME,
+									sw1,
+									(irqHandler=IK320IrqHandler),
+									(void*)rval)))
+		goto cleanup;
 
-    semGive(allCards.mutex);
-    *pDrv = rval;
+	/* reenable irqs */
+	if ((status=devEnableInterruptLevel(intVME,irqLevel)))
+		goto cleanup;
+	intEnabled = 1;
 
-    return (OK);
+	if (needsPOST) {
+		/* we need to do a POST, so initialize the card to defaults */
+		cardInit(rval->card);
+		epicsPrintf("drvIK320: doing POST on 0x%x/0x%x\n",sw1,sw2);
+		status = drvIK320Request(rval,
+								 0 /* do sync request */,
+								 FUNC_POST,
+								 0 /* no parm */);
+		/* release */
+		drvIK320Finish(rval);
+		if (status) goto cleanup;
+	}
 
-    cleanup:
-    if (intEnabled)
-	devDisableInterruptLevel(intVME,irqLevel);
-    if (irqHandler)
-	devDisconnectInterrupt(intVME,sw1,irqHandler);
-    if (localA24)
-	devUnregisterAddress(atVMEA24, vmeA24, "drvIK320");
-    if (localA16)
-	devUnregisterAddress(atVMEA16,A16PORT(sw1),"drvIK320");
-    if (rval)
-    {
+	epicsPrintf("drvIK320: card at 0x%x/0x%x (version HW: %i SW: %*s) initialized successfully\n",
+				sw1,sw2,
+				rval->card->hwVersion,
+				(int)(sizeof( ((IK320Card)0)->swVersion ) / sizeof( ((IK320Card)0)->swVersion[0] )),
+				rval->card->swVersion); 
+
+	semGive(allCards.mutex);
+	*pDrv = rval;
+
+	return OK;
+
+cleanup:
+	if (intEnabled)   devDisableInterruptLevel(intVME,irqLevel);
+	if (irqHandler) devDisconnectInterrupt(intVME,sw1,irqHandler);
+	if (localA24) 	  devUnregisterAddress(atVMEA24,(size_t)(A24BASE(sw2)),"drvIK320");
+	if (localA16) 	  devUnregisterAddress(atVMEA16,(size_t)(A16PORT(sw1)),"drvIK320");
+	if (rval)	  	  {
 #ifndef USE_INTLOCK
-	if (rval->mutex)
-	    semDelete(rval->mutex);
+		if (rval->mutex) semDelete(rval->mutex);
 #endif
-	if (rval->sync)
-	    semDelete(rval->sync);
-	free(rval);
-    }
-    semGive(allCards.mutex);
-    *pDrv=0;
-    return(status);
+		if (rval->sync) semDelete(rval->sync);
+		free(rval);
+	}
+	semGive(allCards.mutex);
+	*pDrv=0;
+	return status;
 }
 
 long
@@ -462,8 +446,8 @@ int busy;
 #endif
 	semDelete(drv->sync);
 	devDisconnectInterrupt(intVME,drv->sw1,IK320IrqHandler);
-	devUnregisterAddress(atVMEA24,A24BASE(drv->sw2),"drvIK320");
-	devUnregisterAddress(atVMEA16,A16PORT(drv->sw1),"drvIK320");
+	devUnregisterAddress(atVMEA24,(size_t)(A24BASE(drv->sw2)),"drvIK320");
+	devUnregisterAddress(atVMEA16,(size_t)(A16PORT(drv->sw1)),"drvIK320");
 	free(drv);
 	return 0;
 }
@@ -534,12 +518,6 @@ IK320IrqCatcher(void *parm)
 	semGive(drv->sync);
 }
 
-static void IK320IrqMaster(void *parm)
-{
-    if (irqHandler != 0)
-	(*irqHandler)(parm);
-}
-
 /*
  * this routine tries to trigger the card. It's not
  * important whether the value is valid or not (i.e. if
@@ -580,7 +558,7 @@ long rval;
 	INTERRUPT(drv);
 	rval = semTake(drv->sync, 1 /* this card is fast */);
 	drvIK320Finish(drv);
-	DM(1,"drvIK320: cardQuery status %i\n",rval);
+	DM(1,"drvIK320: cardQuery status %ld\n",rval);
 	return rval;
 }
 
@@ -972,7 +950,7 @@ double			ftmp;
 					status = ((card->X[axis].status & ASTAT_NO_SIGNAL) ?
 								S_drvIK320_noSignal : OK);
 				}
-				DM(2,"ok, status %i...",status);
+				DM(2,"ok, status %ld...",status);
 
 				card->X[axis].xfer=0;
 			}
@@ -1091,7 +1069,7 @@ int wasBusy;
 static long
 drvIK320report()
 {
-  printf("drvIK320: sorry, report is not implemented yet\n"); return OK;
+  epicsPrintf("drvIK320: sorry, report is not implemented yet\n"); return OK;
 }
 
 static long

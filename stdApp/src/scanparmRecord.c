@@ -43,22 +43,22 @@
 
 
 
-#include	<vxWorks.h>
-#include	<types.h>
-#include	<stdioLib.h>
-#include	<lstLib.h>
 #include	<string.h>
+#include        <stdio.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
+#include	<dbEvent.h>
 #include	<dbFldTypes.h>
 #include	<errMdef.h>
 #include	<special.h>
 #include	<recSup.h>
+#include	<recGbl.h>
 #define GEN_SIZE_OFFSET
 #include	"scanparmRecord.h"
 #undef GEN_SIZE_OFFSET
+#include        <epicsExport.h>
 
 volatile int scanparmRecordDebug=0;
 
@@ -101,6 +101,7 @@ struct rset scanparmRSET = {
 	get_control_double,
 	get_alarm_double
 };
+epicsExportAddress(rset, scanparmRSET);
 
 static void monitor();
 

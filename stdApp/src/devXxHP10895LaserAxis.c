@@ -59,6 +59,7 @@
  * -----------------
  * 08-07-95  tmm  initial development
  * 09-29-95  tmm  default number of cards is zero.
+ * 12-04-03  tmm  converted to EPICS 3.14, cleaned up compiler warnings
  */
 
 /************************************************************************
@@ -106,16 +107,18 @@
 #include	<stdioLib.h>
 #include	<string.h>
 #include	<iv.h>
+#include	<stdlib.h>
+#include	<vxLib.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
 #include	<recSup.h>
 #include	<devSup.h>
-#include	<module_types.h>
 #include	<link.h>
-#include	<fast_lock.h>
+#include	<epicsMutex.h>
 
+#include	<recGbl.h>
 #include	<aiRecord.h>
 #include	<aoRecord.h>
 #include	<biRecord.h>
@@ -126,10 +129,28 @@
 #include	<longoutRecord.h>
 
 #include	<dbScan.h>
+#include	<epicsExport.h>
+#include	<iocsh.h>
 
 #define STATIC static
 
-int devHPLaserAxisConfig(int ncards, int a16base);
+void devHPLaserAxisConfig(int ncards, int a16base);
+
+static const iocshArg devHPLaserAxisConfig_Arg0 = { "numCards",iocshArgInt};
+static const iocshArg devHPLaserAxisConfig_Arg1 = { "a16BaseAddr",iocshArgInt};
+static const iocshArg * const devHPLaserAxisConfig_Args[2] =
+	{&devHPLaserAxisConfig_Arg0, &devHPLaserAxisConfig_Arg1};
+static const iocshFuncDef devHPLaserAxisConfig_FuncDef = {"devHPLaserAxisConfig",2,devHPLaserAxisConfig_Args};
+static void devHPLaserAxisConfig_CallFunc(const iocshArgBuf *args)
+{
+    devHPLaserAxisConfig(args[0].ival, args[1].ival);
+}
+void devHPLaserAxis_Register(void)
+{
+    iocshRegister(&devHPLaserAxisConfig_FuncDef, devHPLaserAxisConfig_CallFunc);
+}
+epicsExportRegistrar(devHPLaserAxis_Register);
+
 
 STATIC int devHPLaserAxisReport();
 STATIC long init(int flag);
@@ -146,17 +167,20 @@ STATIC long write_mbbo(struct mbboRecord *p);
 STATIC long write_lo(struct longoutRecord *p);
 STATIC long read_li(struct longinRecord *p);
 
-int devHPLaserAxisDebug = 0; 
+volatile int devHPLaserAxisDebug = 0; 
+epicsExportAddress(int, devHPLaserAxisDebug);
 
 /* Create the DSET for devBiHP10895LaserAxis */
-struct {
+typedef struct {
 	long            number;
 	DEVSUPFUN       report;
 	DEVSUPFUN       init;
 	DEVSUPFUN       init_record;
 	DEVSUPFUN       get_ioint_info;
 	DEVSUPFUN       read;
-}devBiHP10895LaserAxis={
+} devBiHP10895LaserAxis_dset;
+
+devBiHP10895LaserAxis_dset devBiHP10895LaserAxis = {
 	5,
 	NULL,
 	NULL,
@@ -165,15 +189,19 @@ struct {
 	read_bi
 };
 
+epicsExportAddress(devBiHP10895LaserAxis_dset, devBiHP10895LaserAxis);
+
 /* Create the DSET for devBoHP10895LaserAxis */
-struct {
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
 	DEVSUPFUN	init_record;
 	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	write;
-}devBoHP10895LaserAxis={
+} devBoHP10895LaserAxis_dset;
+
+devBoHP10895LaserAxis_dset devBoHP10895LaserAxis = {
 	5,
 	(DEVSUPFUN) devHPLaserAxisReport,
 	init,
@@ -182,15 +210,19 @@ struct {
 	write_bo
 };
 
+epicsExportAddress(devBoHP10895LaserAxis_dset, devBoHP10895LaserAxis);
+
 /* Create the DSET for devMbbiHP10895LaserAxis */
-struct {
+typedef struct {
 	long            number;
 	DEVSUPFUN       report;
 	DEVSUPFUN       init;
 	DEVSUPFUN       init_record;
 	DEVSUPFUN       get_ioint_info;
 	DEVSUPFUN       read;
-}devMbbiHP10895LaserAxis={
+} devMbbiHP10895LaserAxis_dset;
+
+devMbbiHP10895LaserAxis_dset devMbbiHP10895LaserAxis = {
 	5,
 	NULL,
 	NULL,
@@ -199,15 +231,19 @@ struct {
 	read_mbbi
 };
 
+epicsExportAddress(devMbbiHP10895LaserAxis_dset, devMbbiHP10895LaserAxis);
+
 /* Create the DSET for devMbboHP10895LaserAxis */
-struct {
+typedef struct {
 	long		number;
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
 	DEVSUPFUN	init_record;
 	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	write;
-}devMbboHP10895LaserAxis={
+} devMbboHP10895LaserAxis_dset;
+
+devMbboHP10895LaserAxis_dset devMbboHP10895LaserAxis = {
 	5,
 	(DEVSUPFUN) devHPLaserAxisReport,
 	init,
@@ -216,15 +252,19 @@ struct {
 	write_mbbo
 };
 
+epicsExportAddress(devMbboHP10895LaserAxis_dset, devMbboHP10895LaserAxis);
+
 /* Create the DSET for devLiHP10895LaserAxis */
-struct {
+typedef struct {
 	long            number;
 	DEVSUPFUN       report;
 	DEVSUPFUN       init;
 	DEVSUPFUN       init_record;
 	DEVSUPFUN       get_ioint_info;
 	DEVSUPFUN       read;
-}devLiHP10895LaserAxis={
+} devLiHP10895LaserAxis_dset;
+
+devLiHP10895LaserAxis_dset devLiHP10895LaserAxis = {
 	5,
 	NULL,
 	NULL,
@@ -233,15 +273,19 @@ struct {
 	read_li
 };
 
+epicsExportAddress(devLiHP10895LaserAxis_dset, devLiHP10895LaserAxis);
+
 /* Create the DSET for devLoHP10895LaserAxis */
-struct {
+typedef struct {
 	long            number;
 	DEVSUPFUN       report;
 	DEVSUPFUN       init;
 	DEVSUPFUN       init_record;
 	DEVSUPFUN       get_ioint_info;
 	DEVSUPFUN       write;
-}devLoHP10895LaserAxis={
+} devLoHP10895LaserAxis_dset;
+
+devLoHP10895LaserAxis_dset devLoHP10895LaserAxis = {
 	5,
 	NULL,
 	NULL,
@@ -249,6 +293,8 @@ struct {
 	NULL,
 	write_lo
 };
+
+epicsExportAddress(devLoHP10895LaserAxis_dset, devLoHP10895LaserAxis);
 
 struct readHP10895 {
 	volatile unsigned short Status;
@@ -273,7 +319,7 @@ struct ioCard {
 	volatile struct readHP10895 *pread; /* pointer to read registers */
 	volatile struct writeHP10895 *pwrite; /* pointer to write registers */
 	short exists;
-	FAST_LOCK lock;
+	epicsMutexId lock;
 };
 
 static int baseAddress = 0x1000;
@@ -285,7 +331,7 @@ STATIC int devHPLaserAxisReport()
 	return(0);
 }
 
-int devHPLaserAxisConfig(int ncards, int a16base)
+void devHPLaserAxisConfig(int ncards, int a16base)
 {
 	numCards = ncards;
 	card = (struct ioCard *) calloc(numCards,sizeof(struct ioCard));
@@ -303,6 +349,7 @@ STATIC long init(int flag)
 	if (flag != 0) return(OK);
 
 	for (cardNum=0; cardNum < numCards; cardNum++) {
+		card[cardNum].lock = epicsMutexCreate();
 		vmeAddress = (char *) (baseAddress + cardNum*256);
 		if (sysBusToLocalAdrs(VME_AM_SUP_SHORT_IO, vmeAddress, (char **)&pw) == ERROR) {
 			if (devHPLaserAxisDebug >= 5) {
@@ -313,7 +360,7 @@ STATIC long init(int flag)
 		probeVal = 0x1000; /* turn on user LED, disable interrupt generation */
 		if (vxMemProbe((char*) &(pw->Control), VX_WRITE, 2, (char *)&probeVal) < OK) {
 			if (devHPLaserAxisDebug >= 5)
-				printf("devHPLaserAxis:init: vxMemProbe write to 0x%08.8X failed (card %d)\n",
+				printf("devHPLaserAxis:init: vxMemProbe write to %p failed (card %d)\n",
 					&(pw->Control), cardNum);
 			if (cardNum == 0) return(ERROR);
 		} else {
@@ -479,7 +526,7 @@ STATIC long init_mbbo_record(struct mbboRecord *p)
 			p->shft = (signal & 0xf);
 			p->mask <<= p->shft;
 			if (devHPLaserAxisDebug >= 5)
-				printf("devHPLaserAxis: mask = 0x%x\n", p->mask);
+				printf("devHPLaserAxis: mask = 0x%lx\n", p->mask);
 		}
 		break;
 
@@ -586,13 +633,13 @@ STATIC long write_bo(struct boRecord *p)
 	int signal = p->out.value.vmeio.signal;
 	int cardNum = p->out.value.vmeio.card;
 
-	FASTLOCK(&(card[cardNum].lock));
+	epicsMutexMustLock(card[cardNum].lock);
 	if (signal > 15 ) {
 		card[cardNum].pwrite->Command = p->rval;
 	} else {
 		card[cardNum].pwrite->Control = p->rval;
 	}
-	FASTUNLOCK(&(card[cardNum].lock));
+	epicsMutexUnlock(card[cardNum].lock);
 	p->rbv = p->rval;
 	return(0);
 }
@@ -610,13 +657,13 @@ STATIC long write_mbbo(struct mbboRecord *p)
 	int signal = p->out.value.vmeio.signal;
 	int cardNum = p->out.value.vmeio.card;
 
-	FASTLOCK(&(card[cardNum].lock));
+	epicsMutexMustLock(card[cardNum].lock);
 	if (signal > 15 ) {
 		card[cardNum].pwrite->Command = (p->rval & p->mask);
 	} else {
 		card[cardNum].pwrite->Control = (p->rval & p->mask);
 	}
-	FASTUNLOCK(&(card[cardNum].lock));
+	epicsMutexUnlock(card[cardNum].lock);
 	p->rbv = (p->rval & p->mask);
 	return(0);
 }
@@ -647,7 +694,7 @@ STATIC long write_lo(struct longoutRecord *p)
 	int signal = p->out.value.vmeio.signal;
 	int cardNum = p->out.value.vmeio.card;
 
-	FASTLOCK(&(card[cardNum].lock));
+	epicsMutexMustLock(card[cardNum].lock);
 	switch (signal) {
 	case 0:
 		card[cardNum].pwrite->Control = (unsigned short)(p->val&0xff);
@@ -667,6 +714,6 @@ STATIC long write_lo(struct longoutRecord *p)
 	default:
 		break;
 	}
-	FASTUNLOCK(&(card[cardNum].lock));
+	epicsMutexUnlock(card[cardNum].lock);
 	return(0);
 }

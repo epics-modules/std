@@ -4,12 +4,35 @@ grecord(bi,"$(P)scanActive") {
 	field(ZNAM,"Done")
 	field(ONAM,"Scanning")
 }
-grecord(bo,"$(P)AbortScans") {
-	field(DESC,"support AbortScan button")
+grecord(bo,"$(P)AbortScan1") {
 	field(DTYP,"Soft Channel")
-	field(PRIO,"HIGH")
-	field(FLNK,"$(P)AbortScansSEQ.VAL  PP MS")
-	field(OMSL,"closed_loop")
+	field(DISV,"0")
+	field(SDIS,"$(P)scan1.BUSY  NPP NMS")
+	field(OUT,"$(P)scan1.EXSC  CA NMS")
+}
+grecord(bo,"$(P)AbortScan2") {
+	field(DTYP,"Soft Channel")
+	field(DISV,"0")
+	field(SDIS,"$(P)scan2.BUSY  NPP NMS")
+	field(OUT,"$(P)scan2.EXSC  CA NMS")
+}
+grecord(bo,"$(P)AbortScan3") {
+	field(DTYP,"Soft Channel")
+	field(DISV,"0")
+	field(SDIS,"$(P)scan3.BUSY  NPP NMS")
+	field(OUT,"$(P)scan3.EXSC  CA NMS")
+}
+grecord(bo,"$(P)AbortScan4") {
+	field(DTYP,"Soft Channel")
+	field(DISV,"0")
+	field(SDIS,"$(P)scan4.BUSY  NPP NMS")
+	field(OUT,"$(P)scan4.EXSC  CA NMS")
+}
+grecord(bo,"$(P)AbortScanH") {
+	field(DTYP,"Soft Channel")
+	field(DISV,"0")
+	field(SDIS,"$(P)scanH.BUSY  NPP NMS")
+	field(OUT,"$(P)scanH.EXSC  CA NMS")
 }
 grecord(bo,"$(P)saveData_realTime1D") {
 	field(DTYP,"Soft Channel")
@@ -51,6 +74,13 @@ grecord(calcout,"$(P)calcScanActive") {
 	field(CALC,"a>0?1:0")
 	field(OUT,"$(P)scanActive.VAL  PP MS")
 }
+grecord(fanout,"$(P)AbortScans") {
+	field(LNK1,"$(P)AbortScanH.VAL  PP MS")
+	field(LNK2,"$(P)AbortScan1.VAL  PP MS")
+	field(LNK3,"$(P)AbortScan2.VAL  PP MS")
+	field(LNK4,"$(P)AbortScan3.VAL  PP MS")
+	field(LNK5,"$(P)AbortScan4.VAL  PP MS")
+}
 grecord(longout,"$(P)saveData_scanNumber") {
 	field(DTYP,"Soft Channel")
 	field(HOPR,"9999")
@@ -60,13 +90,6 @@ grecord(mbbi,"$(P)saveData_status") {
 	field(ZRST,"Inactive")
 	field(ONST,"Active")
 	field(TWST,"Problem!")
-}
-grecord(seq,"$(P)AbortScansSEQ") {
-	field(LNK1,"$(P)scanH.EXSC  CA MS")
-	field(LNK2,"$(P)scan1.EXSC  CA MS")
-	field(LNK3,"$(P)scan2.EXSC  CA MS")
-	field(LNK4,"$(P)scan3.EXSC  CA MS")
-	field(LNK5,"$(P)scan4.EXSC  CA MS")
 }
 grecord(seq,"$(P)scanPauseSEQ") {
 	field(DISV,"0")
@@ -92,6 +115,15 @@ grecord(seq,"$(P)scanResumeSEQ") {
 	field(LNK4,"$(P)scan3.PAUS  NPP MS")
 	field(LNK5,"$(P)scan4.PAUS  NPP MS")
 }
+grecord(stringout,"$(P)saveData_comment1") {
+	field(DTYP,"Soft Channel")
+}
+grecord(stringout,"$(P)saveData_comment2") {
+	field(DTYP,"Soft Channel")
+}
+grecord(stringout,"$(P)saveData_fileName") {
+	field(DTYP,"Soft Channel")
+}
 grecord(stringout,"$(P)saveData_fileSystem") {
 	field(DTYP,"Soft Channel")
 }
@@ -99,15 +131,6 @@ grecord(stringout,"$(P)saveData_message") {
 	field(DTYP,"Soft Channel")
 }
 grecord(stringout,"$(P)saveData_subDir") {
-	field(DTYP,"Soft Channel")
-}
-grecord(stringout,"$(P)saveData_fileName") {
-	field(DTYP,"Soft Channel")
-}
-grecord(stringout,"$(P)saveData_comment2") {
-	field(DTYP,"Soft Channel")
-}
-grecord(stringout,"$(P)saveData_comment1") {
 	field(DTYP,"Soft Channel")
 }
 grecord(waveform,"$(P)saveData_config") {
@@ -136,14 +159,6 @@ grecord(sscan,"$(P)scan1") {
 	field(P3PR,"5")
 	field(P4HR,"1")
 	field(P4PR,"5")
-	field(D1HR,"1")
-	field(D1PR,"5")
-	field(D2HR,"1")
-	field(D2PR,"5")
-	field(D3HR,"1")
-	field(D3PR,"5")
-	field(D4HR,"1")
-	field(D4PR,"5")
 	field(T1CD,"1")
 	field(T2CD,"1")
 }
@@ -164,14 +179,6 @@ grecord(sscan,"$(P)scan2") {
 	field(P3PR,"5")
 	field(P4HR,"1")
 	field(P4PR,"5")
-	field(D1HR,"1")
-	field(D1PR,"5")
-	field(D2HR,"1")
-	field(D2PR,"5")
-	field(D3HR,"1")
-	field(D3PR,"5")
-	field(D4HR,"1")
-	field(D4PR,"5")
 	field(T1CD,"1")
 	field(T2CD,"1")
 }
@@ -192,14 +199,6 @@ grecord(sscan,"$(P)scan3") {
 	field(P3PR,"5")
 	field(P4HR,"1")
 	field(P4PR,"5")
-	field(D1HR,"1")
-	field(D1PR,"5")
-	field(D2HR,"1")
-	field(D2PR,"5")
-	field(D3HR,"1")
-	field(D3PR,"5")
-	field(D4HR,"1")
-	field(D4PR,"5")
 	field(T1CD,"1")
 	field(T2CD,"1")
 }
@@ -220,14 +219,6 @@ grecord(sscan,"$(P)scan4") {
 	field(P3PR,"5")
 	field(P4HR,"1")
 	field(P4PR,"5")
-	field(D1HR,"1")
-	field(D1PR,"5")
-	field(D2HR,"1")
-	field(D2PR,"5")
-	field(D3HR,"1")
-	field(D3PR,"5")
-	field(D4HR,"1")
-	field(D4PR,"5")
 	field(T1CD,"1")
 	field(T2CD,"1")
 }
@@ -247,17 +238,9 @@ grecord(sscan,"$(P)scanH") {
 	field(P3PR,"5")
 	field(P4HR,"1")
 	field(P4PR,"5")
-	field(D1HR,"1")
-	field(D1PR,"5")
-	field(D2HR,"1")
-	field(D2PR,"5")
-	field(D3HR,"1")
-	field(D3PR,"5")
-	field(D4HR,"1")
-	field(D4PR,"5")
 	field(T1CD,"1")
 	field(T2CD,"1")
-	field(ACQM,"GET ARRAYS")
+	field(ACQT,"1D ARRAY")
 }
 grecord(scalcout,"$(P)ScanDimH1") {
 	field(PINI,"YES")
