@@ -47,8 +47,12 @@ Modification Log:
                         should coincide with scaler-integration period.
 .19  7/14/99    tmm     v3.9 hold time before autocount wipes scalers increased
                         to 5 sec for all count requests.
+.20  ?          ?       v3.10 changed max number of signals from 16 to 32
+.21  11/12/01   tmm     v3.11 hold time before autocount wipes scalers is
+                        volatile int
+.22  01/08/02   tmm     v3.12 Set VAL field to T and post after completed count
 *******************************************************************************/
-#define VERSION 3.8
+#define VERSION 3.12
 
 #include	<vxWorks.h>
 #include	<types.h>
@@ -88,6 +92,7 @@ Modification Log:
 			  printf(FMT,V); } }
 #endif
 volatile int scalerRecordDebug = 0;
+volatile int scaler_wait_time = 10;
 
 #define MIN(a,b) (a)<(b)?(a):(b)
 #define MAX(a,b) (a)>(b)?(a):(b)
@@ -279,7 +284,7 @@ int pass;
 static long process(pscal)
 scalerRecord *pscal;
 {
-	int i, status;
+	int i, status, prev_scaler_state;
 	int card = pscal->out.value.vmeio.card;
 	int justFinishedUserCount=0, justStartedUserCount=0, putNotifyOperation=0;
 	long *ppreset = &(pscal->pr1);
@@ -294,6 +299,7 @@ scalerRecord *pscal;
 	Debug(5, "process: entry\n", 0);
 	pscal->pact = TRUE;
 	pscal->udf = FALSE;
+	prev_scaler_state = pscal->ss;
 
 	/* If we're being called as a result of a done-counting interrupt, */
 	/* (*pdset->done)(card) will return TRUE */
@@ -367,8 +373,13 @@ scalerRecord *pscal;
 		recGblGetTimeStamp(pscal);
 		alarm(pscal);
 		monitor(pscal);
-		if ((pscal->pcnt==0) && (pscal->us == USER_STATE_IDLE))
+		if ((pscal->pcnt==0) && (pscal->us == USER_STATE_IDLE)) {
+			if (prev_scaler_state == SCALER_STATE_COUNTING) {
+				pscal->val = pscal->t;
+				db_post_events(pscal,&(pscal->val),DBE_VALUE);
+			}
 			recGblFwdLink(pscal);
+		}
 	}
 
 	/* Are we in auto-count mode and not already counting? */
@@ -381,8 +392,8 @@ scalerRecord *pscal;
 		 * use the auto-count delay time.
 		 */
 		ticks = vxTicksPerSecond * pscal->dly1;
-		if (justFinishedUserCount) ticks = MAX(ticks, 5*vxTicksPerSecond);
-		if (putNotifyOperation) ticks = MAX(ticks, 5*vxTicksPerSecond);
+		if (justFinishedUserCount) ticks = MAX(ticks, scaler_wait_time*vxTicksPerSecond);
+		if (putNotifyOperation) ticks = MAX(ticks, scaler_wait_time*vxTicksPerSecond);
 
 		/* if (we-have-to-wait && we-haven't-already-waited) { */
 		if (ticks > 0 && pscal->ss != SCALER_STATE_WAITING) {
