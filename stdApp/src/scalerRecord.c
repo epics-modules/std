@@ -446,6 +446,7 @@ scalerRecord *pscal;
 			 * If (.TP1 >= .001 s) we count .TP1 seconds, regardless of any
 			 * presets the user may have set.
 			 */
+			 old_freq = (int)(pscal->freq);
 			(*pdset->reset)(card);
 			if (pscal->tp1 >= 1.e-3) {
 				(*pdset->write_preset)(card, 0, (long)(pscal->tp1*pscal->freq));
@@ -455,6 +456,7 @@ scalerRecord *pscal;
 					if (pgate[i]) (*pdset->write_preset)(card, i, ppreset[i]);
 				}
 			}
+			if (old_freq != (int)(pscal->freq)) db_post_events(pscal,&(pscal->freq),DBE_VALUE);
 			(*pdset->arm)(card, 1);
 			pscal->ss = SCALER_STATE_COUNTING;
 
@@ -525,6 +527,7 @@ static void updateCounts(scalerRecord *pscal)
 	}
 
 	if (!called_by_process) pscal->pact = FALSE;
+	Debug(5, "updateCounts: exit\n", 0);
 }
 
 
