@@ -89,11 +89,15 @@
  * .27 09-24-02  tmm  v1.14 test sending handshake after data have been queued, rather than
  *                    waiting until it has actually been written to disk.
  * .28 04-07-03  tmm  v1.15 Convert to EPICS 3.14; delete D1*-DF* detectors
+ * .29 10-30-03  tmm  v1.16 Added buf-size arg to epicsMessageQueueReceive()
+ *                    for EPICS 3.14.3.  Added epicsExport stuff; changed saveData_Init
+ *                    to return void, because iocsh doesn't support functions that return
+ *                    a value.
  */
 
 
 #define FILE_FORMAT_VERSION (float)1.3
-#define SAVE_DATA_VERSION   "1.15.0"
+#define SAVE_DATA_VERSION   "1.17.0"
 
 
 #ifdef vxWorks
@@ -114,8 +118,6 @@
 #include <cadef.h>
 #include <tsDefs.h>
 #include <epicsMutex.h>
-#include <epicsExport.h>
-#include <iocsh.h>
 #include <epicsMessageQueue.h>
 #include "req_file.h"
 #include "xdr_lib.h"
@@ -133,6 +135,7 @@
 volatile int debug_saveData = 0;
 volatile int debug_saveDataMsg = 0;
 volatile int saveData_MessagePolicy = 0;
+
 
 /*
  * test sending handshake immediately after data is queued, instead of
@@ -702,7 +705,7 @@ LOCAL void sendUserMessage(char* msg) {
 /************************************************************************/
 /*                        TESTS FUNCTIONS    				*/
 
-int saveData_Init(char* fname, char* macros)
+void saveData_Init(char* fname, char* macros)
 {
   strncpy(req_file, fname, 39);
   strncpy(req_macros, macros, 39);
@@ -711,22 +714,22 @@ int saveData_Init(char* fname, char* macros)
     msg_queue = epicsMessageQueueCreate(MAX_MSG, MAX_SIZE);
     if(msg_queue==NULL) {
       Debug0(1, "Unable to create message queue\n");
-      return -1;
+      return;
     }
     printf("saveData: message queue created\n");
     if(taskSpawn("saveDataTask", PRIORITY, VX_FP_TASK, 10000, (FUNCPTR)saveDataTask, 
                        taskIdSelf(),0,0,0,0,0,0,0,0,0)==ERROR) {
       Debug0(1, "Unable to create saveDataTask\n");
       epicsMessageQueueDestroy(msg_queue);
-      return -1;
+      return;
     } else {
       taskSuspend(0);
     }
   }
-  return 0;
+  return;
 }  
 
-int saveData_PrintScanInfo(char* name)
+void saveData_PrintScanInfo(char* name)
 {
   SCAN* pscan;
   
@@ -734,8 +737,6 @@ int saveData_PrintScanInfo(char* name)
   if(pscan) {
     infoScan(pscan);
   }
-
-  return 0;
 }
 
 void saveData_Priority(int p)
@@ -755,7 +756,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.6 2003-11-04 04:39:22 rivers Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.7 2003-11-05 19:39:12 mooney Exp $\n");
 }
 
 void saveData_Info() {
@@ -3191,20 +3192,62 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
   return 0;
 }    
 
-static const iocshArg saveData_InitArg0 = { "filename",iocshArgString};
-static const iocshArg saveData_InitArg1 = { "macro string",iocshArgString};
-static const iocshArg * const saveData_InitArgs[3] = {&saveData_InitArg0,
-                                                      &saveData_InitArg1};
-static const iocshFuncDef saveData_InitFuncDef = {"saveData_Init",2,saveData_InitArgs};
-static void saveData_InitCallFunc(const iocshArgBuf *args)
-{
-    saveData_Init(args[0].sval, args[1].sval);
-}
 
+/****************************** epicsExport ****************************/
+#include "epicsExport.h"
+#include "iocsh.h"
+
+epicsExportAddress(int, debug_saveData);
+epicsExportAddress(int, debug_saveDataMsg);
+epicsExportAddress(int, saveData_MessagePolicy);
+
+/* void saveData_Init(char* fname, char* macros) */
+static const iocshArg saveData_Init_Arg0 = { "fname", iocshArgString};
+static const iocshArg saveData_Init_Arg1 = { "macros", iocshArgString};
+static const iocshArg * const saveData_Init_Args[2] = {&saveData_Init_Arg0, &saveData_Init_Arg1};
+static const iocshFuncDef saveData_Init_FuncDef = {"saveData_Init", 2, saveData_Init_Args};
+static void saveData_Init_CallFunc(const iocshArgBuf *args) {saveData_Init(args[0].sval, args[1].sval);}
+
+/* void saveData_PrintScanInfo(char* name) */
+static const iocshArg saveData_PrintScanInfo_Arg0 = { "name", iocshArgString};
+static const iocshArg * const saveData_PrintScanInfo_Args[1] = {&saveData_PrintScanInfo_Arg0};
+static const iocshFuncDef saveData_PrintScanInfo_FuncDef = {"saveData_PrintScanInfo", 1, saveData_PrintScanInfo_Args};
+static void saveData_PrintScanInfo_CallFunc(const iocshArgBuf *args) {saveData_PrintScanInfo(args[0].sval);}
+
+/* void saveData_Priority(int p) */
+static const iocshArg saveData_Priority_Arg0 = { "priority", iocshArgInt};
+static const iocshArg * const saveData_Priority_Args[1] = {&saveData_Priority_Arg0};
+static const iocshFuncDef saveData_Priority_FuncDef = {"saveData_Priority", 1, saveData_Priority_Args};
+static void saveData_Priority_CallFunc(const iocshArgBuf *args) {saveData_Priority(args[0].ival);}
+
+/* void saveData_SetCptWait_ms(int ms) */
+static const iocshArg saveData_SetCptWait_ms_Arg0 = { "ms", iocshArgInt};
+static const iocshArg * const saveData_SetCptWait_ms_Args[1] = {&saveData_SetCptWait_ms_Arg0};
+static const iocshFuncDef saveData_SetCptWait_ms_FuncDef = {"saveData_SetCptWait_ms", 1, saveData_SetCptWait_ms_Args};
+static void saveData_SetCptWait_ms_CallFunc(const iocshArgBuf *args) {saveData_SetCptWait_ms(args[0].ival);}
+
+/* void saveData_Version(void) */
+static const iocshFuncDef saveData_Version_FuncDef = {"saveData_Version", 0, NULL};
+static void saveData_Version_CallFunc(const iocshArgBuf *args) {saveData_Version();}
+
+/* void saveData_CVS(void) */
+static const iocshFuncDef saveData_CVS_FuncDef = {"saveData_CVS", 0, NULL};
+static void saveData_CVS_CallFunc(const iocshArgBuf *args) {saveData_CVS();}
+
+/* void saveData_Info(void) */
+static const iocshFuncDef saveData_Info_FuncDef = {"saveData_Info", 0, NULL};
+static void saveData_Info_CallFunc(const iocshArgBuf *args) {saveData_Info();}
+
+/* collect all functions */
 void saveDataRegister(void)
 {
-    iocshRegister(&saveData_InitFuncDef, saveData_InitCallFunc);
+    iocshRegister(&saveData_Init_FuncDef, saveData_Init_CallFunc);
+    iocshRegister(&saveData_PrintScanInfo_FuncDef, saveData_PrintScanInfo_CallFunc);
+    iocshRegister(&saveData_Priority_FuncDef, saveData_Priority_CallFunc);
+    iocshRegister(&saveData_SetCptWait_ms_FuncDef, saveData_SetCptWait_ms_CallFunc);
+    iocshRegister(&saveData_Version_FuncDef, saveData_Version_CallFunc);
+    iocshRegister(&saveData_CVS_FuncDef, saveData_CVS_CallFunc);
+    iocshRegister(&saveData_Info_FuncDef, saveData_Info_CallFunc);
 }
 
 epicsExportRegistrar(saveDataRegister);
-
