@@ -1,0 +1,111 @@
+grecord(ao,"$(P)DAC$(D)_$(N)") {
+	field(DTYP,"$(DTYP)")
+	field(FLNK,"$(P)DAC$(D)_$(N)_doit.VAL  PP MS")
+	field(OUT,"#C$(C) S$(S) @")
+	field(PREC,"4")
+}
+grecord(ao,"$(P)DAC$(D)_$(N)_ROC") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"4")
+}
+grecord(ao,"$(P)DAC$(D)_$(N)_out") {
+	field(DTYP,"$(DTYP)")
+	field(FLNK,"$(P)DAC$(D)_$(N)_need.VAL  PP MS")
+	field(OUT,"#C$(C) S$(S) @")
+	field(PREC,"4")
+	field(DRVH,"$(H)")
+	field(DRVL,"$(L)")
+	field(HOPR,"$(H)")
+	field(LOPR,"$(L)")
+}
+grecord(ao,"$(P)DAC$(D)_$(N)_rate") {
+	field(DTYP,"Soft Channel")
+	field(DOL,"10")
+	field(PREC,"4")
+}
+grecord(ao,"$(P)DAC$(D)_$(N)_rawOut") {
+	field(DTYP,"$(DTYP)")
+	field(OUT,"#C$(C) S$(S) @")
+	field(DRVH,"$(H)")
+	field(DRVL,"$(L)")
+}
+grecord(ao,"$(P)DAC$(D)_$(N)_tweakVal") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"4")
+}
+grecord(bo,"$(P)DAC$(D)_$(N)_done") {
+	field(DTYP,"Soft Channel")
+	field(OMSL,"closed_loop")
+	field(DOL,"$(P)DAC$(D)_$(N)_need.VAL  NPP MS")
+	field(OUT,"$(P)DAC$(D)_$(N)_busy.VAL  PP MS")
+}
+grecord(calc,"$(P)DAC$(D)_$(N)_rbv") {
+	field(CALC,"c+((a-e)/(d-e))*(b-c)")
+	field(INPA,"$(P)DAC$(D)_$(N)_out.OVAL  CPP MS")
+	field(INPB,"$(P)DAC$(D)_$(N).DRVH  CPP MS")
+	field(INPC,"$(P)DAC$(D)_$(N).DRVL  CPP MS")
+	field(INPD,"$(P)DAC$(D)_$(N)_out.DRVH  CPP MS")
+	field(INPE,"$(P)DAC$(D)_$(N)_out.DRVL  CPP MS")
+	field(PREC,"4")
+}
+grecord(calcout,"$(P)DAC$(D)_$(N)_need") {
+	field(FLNK,"$(P)DAC$(D)_$(N)_done.VAL  PP MS")
+	field(CALC,"a#b")
+	field(INPA,"$(P)DAC$(D)_$(N)_out.OVAL  NPP MS")
+	field(INPB,"$(P)DAC$(D)_$(N)_out.VAL  NPP MS")
+	field(OUT,"$(P)DAC$(D)_$(N)_out.PROC  CA MS")
+	field(OOPT,"When Non-zero")
+	field(ODLY,"0.1")
+	field(PREC,"4")
+}
+grecord(calcout,"$(P)DAC$(D)_$(N)calc") {
+	field(FLNK,"0")
+	field(CALC,"e+nint(d*((a-c)/(b-c)))")
+	field(INPB,"$(P)DAC$(D)_$(N).DRVH  NPP MS")
+	field(INPC,"$(P)DAC$(D)_$(N).DRVL  NPP MS")
+	field(INPD,"$(P)DAC$(D)_$(N)_out.DRVH  NPP MS")
+	field(INPE,"$(P)DAC$(D)_$(N)_out.DRVL  NPP MS")
+	field(OUT,"$(P)DAC$(D)_$(N)_out.VAL  PP MS")
+	field(PREC,"4")
+}
+grecord(seq,"$(P)DAC$(D)_$(N)_doit") {
+	field(DOL1,"1")
+	field(LNK1,"$(P)DAC$(D)_$(N)_busy.VAL  PP MS")
+	field(DOL2,"$(P)DAC$(D)_$(N).VAL  NPP MS")
+	field(LNK2,"$(P)DAC$(D)_$(N)calc.A  PP MS")
+}
+grecord(transform,"$(P)DAC$(D)_$(N)_ROC_calc") {
+	field(CLCF,"((D-E)/L)*C/(A-B)")
+	field(CLCG,"nint(f)?nint(f):1")
+	field(CLCH,"NINT(F)?1/L:NINT(1/F)/L")
+	field(CLCI,"(F=0)||(F>L*(d-e))?0:G")
+	field(CLCJ,"(F=0)||(F>L*(d-e))?1:H")
+	field(CLCK,"(i/j)*(a-b)/(d-e)")
+	field(INPA,"$(P)DAC$(D)_$(N).DRVH  CPP MS")
+	field(INPB,"$(P)DAC$(D)_$(N).DRVL  CPP MS")
+	field(INPC,"$(P)DAC$(D)_$(N)_ROC.VAL  CPP MS")
+	field(INPD,"$(P)DAC$(D)_$(N)_out.DRVH  CPP MS")
+	field(INPE,"$(P)DAC$(D)_$(N)_out.DRVL  CPP MS")
+	field(INPL,"$(P)DAC$(D)_$(N)_rate.VAL  CPP MS")
+	field(OUTI,"$(P)DAC$(D)_$(N)_out.OROC  NPP MS")
+	field(OUTJ,"$(P)DAC$(D)_$(N)_need.ODLY  NPP MS")
+	field(PREC,"4")
+	field(CMTF,"bits per update")
+	field(CMTG,"OROC trial value")
+	field(CMTH,"DLY trial value")
+	field(CMTI,"OROC")
+	field(CMTJ,"DLY")
+	field(CMTK,"achieved ROC")
+	field(CMTL,"update rate (Hz)")
+}
+grecord(transform,"$(P)DAC$(D)_$(N)_tweak") {
+	field(CLCE,"a?d-c:b?d+c:d")
+	field(INPC,"$(P)DAC$(D)_$(N)_tweakVal.VAL  NPP MS")
+	field(INPD,"$(P)DAC$(D)_$(N).VAL  NPP MS")
+	field(OUTE,"$(P)DAC$(D)_$(N).VAL  PP MS")
+	field(OUTF,"$(P)DAC$(D)_$(N)_tweak.A  NPP MS")
+	field(OUTG,"$(P)DAC$(D)_$(N)_tweak.B  NPP MS")
+	field(PREC,"4")
+}
+grecord(busy,"$(P)DAC$(D)_$(N)_busy") {
+}
