@@ -1,0 +1,594 @@
+<HTML>
+<HEAD>
+<TITLE>gpib - Generic GPIB Record</TITLE>
+</HEAD>
+<BODY>
+<H1>gpib - Generic GPIB Record</H1>
+
+<ADDRESS>Mark Rivers</ADDRESS>
+
+<HR>
+<H2>Contents</H2>
+<UL>
+<LI><A HREF="#Overview">Overview</A>
+<LI><A HREF="#Fields">Field Descriptions</A>
+<LI><A HREF="#Files">Files</A>
+<LI><A HREF="#Restrictions">Restrictions</A>
+<LI><A HREF="#Example">Example</A>
+</UL>
+
+<A NAME="Overview">
+<H2>Overview</H2></A>
+<P>
+The GPIB record is designed to perform generic GPIB I/O.  It is intended to
+allow EPICS to communicate with a new GPIB instrument without even rebooting
+the IOC, i.e. without writing any C code or changing the database.  The GPIB
+record is thus very useful for allowing Channel Access clients to communicate
+with GPIB devices for which no EPICS device support exists.  It is also useful
+for GPIB diagnostics. The GPIB bus address is a field in the record which can
+be modified, so the record can be used to communicate with multiple devices.
+<P>
+The GPIB record communicates with the GPIB controller hardware through the
+standard EPICS GPIB driver.  This means that any supported GPIB controller can
+be used.  These presently include the National Instruments VME board, and the
+Greenspring Industry Pack module.  The latter is supported under Hideos and
+MPF.
+<P>
+There are two output fields, AOUT (ASCII Output) and BOUT (Binary Output). The
+OFMT (Output Format) field is used to select one of these fields or the other
+as the output source to the GPIB device.
+Similarly, there are two input fields, AINP (ASCII Input) 
+and BINP (Binary Input). The 
+IFMT (Input Format) field is used to select one or the other as the
+destination of data sent from the GPIB device. 
+The ASCII fields are type DBF_STRING,
+and are very convenient for typical communication with many GPIB devices.  They
+permit, for example, <CODE>medm</CODE>
+screens where the user can type a string and observe
+the response from the instrument.  The ASCII fields, however are limited
+to 40 characters in length, and cannot be used to read or write binary data.
+The binary input and output fields are DBF_CHAR arrays,
+and can be used to transfer many 
+kilobytes of arbitrary data, either ASCII or binary.
+<P>
+A read
+operation on input continues until 1 of the following 4 conditions is met:
+<OL>
+<LI>The device asserts EOI
+<LI>The input delimiter (EOS) is found.  See note under
+<A HREF="#Restrictions">Restrictions</A> below.
+<LI>The desired number of input characters (NRRD) are received
+<LI>The timeout (TMOT) expires
+</OL>
+<P>
+The GPIB record calls the GPIB driver directly, and does not go through a
+separate device support layer.  
+<P>
+
+<HR>
+<TABLE BORDER CELLPADDING=5>
+<A NAME="Fields"><CAPTION>
+<H2>Record Field Descriptions</H2></CAPTION></A>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>VAL</TD>  <TD>R/W</TD>   <TD>"Value field (unused)"</TD>
+<TD>DBF_STRING</TD>
+<TD>This field is unused.  The functions normally assigned to the VAL
+field in many records are performed by the AOUT, BOUT, AINP, and BINP fields
+in the GPIB record.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>TMOD</TD>    <TD>R/W</TD>   <TD>"Transaction mode"</TD>
+<TD>DBF_RECCHOICE</TD>
+<TD>The type of GPIB transaction which is desired.  The choices are:
+
+<TABLE>
+<TR VALIGN=TOP>
+<TD>"Write/Read" (default)</TD>
+<TD>The output source (AOUT or BOUT as selected by OFMT) is sent
+to the GPIB device.  A response is then read back into AINP or BINP (as
+selected by IFMT).  The response must be received within the time specified by
+TMOT.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>"Write"</TD>
+<TD>The output source (AOUT or BOUT as selected by OFMT) is sent
+to the GPIB device. No response is read back.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>"Read"</TD>
+<TD>Data is read from the GPIB device into the input field (AINP or BINP as 
+selected by IFMT).  The response must be received within the time specified by
+TMOT. No output is sent to the device prior to the read operation.</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>AOUT</TD>  <TD>R/W*</TD> <TD>"Output (command) string"</TD>
+<TD>DBF_STRING</TD>
+<TD>The output string which is sent to the device if OFMT="ASCII". The number
+of bytes sent to the device will be strlen(AOUT).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>BOUT</TD>  <TD>R/W*</TD> <TD>"Output binary data"</TD>
+<TD>DBF_CHAR (array)</TD>
+<TD>The output data which is sent to the device if OFMT="Binary".  The maximum
+length of this field is controlled by OMAX.  
+The actual number of bytes to be sent to the device is controlled by NOWT.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>OMAX</TD>  <TD>R</TD> <TD>"Max. size of output array"</TD>
+<TD>DBF_LONG</TD>
+<TD>The allocated length of the BOUT array. This value cannot be changed after
+IOC initialization. Default=512.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>NOWT</TD>  <TD>R/W</TD> <TD>"Number of bytes to write"</TD>
+<TD>DBF_LONG</TD>
+<TD>The actual number of bytes to send from the BOUT array to the GPIB device
+if OFMT="Binary". This value must be less than or equal to OMAX.
+Default=512.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>OFMT</TD>  <TD>R/W</TD> <TD>"Output format"</TD>
+<TD>DBF_RECCHOICE</TD>
+<TD>The output format.  The choices are:
+
+<TABLE>
+<TR VALIGN=TOP>
+<TD>"ASCII"</TD>
+<TD>The data sent to the device will be taken from the AOUT field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>"Binary"</TD>
+<TD>The data sent to the device will be taken from the BOUT field.</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>AINP</TD>  <TD>R</TD> <TD>"Input (response) string"</TD>
+<TD>DBF_STRING</TD>
+<TD>The input string which is read from the device if IFMT="ASCII". The string
+will be NULL terminated.  Note that due to the maximum size of a string in
+EPICS, the response must be less than 40 characters.  If longer responses are
+required then set IFMT="Binary" and read into the BINP field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>BINP</TD>  <TD>R</TD> <TD>"Input binary data"</TD>
+<TD>DBF_CHAR (array)</TD>
+<TD>The input data which is read from the device if IFMT="Binary".  The maximum
+length of this field is controlled by IMAX.  
+The actual number of bytes read from the device is given by NORD.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>IMAX</TD>  <TD>R</TD> <TD>"Max. size of input array"</TD>
+<TD>DBF_LONG</TD>
+<TD>The allocated length of the BINP array. This value cannot be changed after
+IOC initialization. Default=512.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>EOS</TD>  <TD>R/W</TD> <TD>"Input delimiter"</TD>
+<TD>DBF_LONG</TD>
+<TD>A character which indicates the end of a message on input.  
+Set this field to -1 (the default) if no character should be used 
+as an input delimiter.
+Commonly used values are 10 (Line Feed) or 13 (Carriage Return).
+The input delimiter will be removed from the input buffer on both
+ASCII and binary reads.
+See note under
+<A HREF="#Restrictions">Restrictions</A> below.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>NRRD</TD>  <TD>R/W</TD> <TD>"Number of bytes to read"</TD>
+<TD>DBF_LONG</TD>
+<TD>The requested number of bytes to read. This
+field is valid for both "ASCII" and "Binary" input formats. If this field is
+zero, then the requested number of bytes to read will be the EPICS defined
+MAX_STRING_SIZE=40 (if IFMT="ASCII") or IMAX (if IFMT="Binary").
+Default=0.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>NORD</TD>  <TD>R</TD> <TD>"Number of bytes read"</TD>
+<TD>DBF_LONG</TD>
+<TD>The actual number of bytes read in the last GPIB read operation.  This
+field is valid for both "ASCII" and "Binary" input formats.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>IFMT</TD>  <TD>R/W</TD> <TD>"Input format"</TD>
+<TD>DBF_RECCHOICE</TD>
+<TD>The input format.  The choices are:
+
+<TABLE>
+<TR VALIGN=TOP>
+<TD>"ASCII" (default)</TD>
+<TD>The data read from the device will be placed in the AINP field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>"Binary"</TD>
+<TD>The data read from the device will be placed in the BINP field.</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>INP</TD>  <TD>R</TD> <TD>"Input Specification"</TD>
+<TD>DBF_INLINK</TD>
+<TD>The input link specification.  This field is used to select the GPIB device
+type (National Instruments, HiDEOS, Bitbus), link number, and GPIB address.
+The initial GPIB address can be specified either in the INP field or
+the ADDR field, with the ADDR field taking precedence 
+if both are non-zero.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>SPR</TD>  <TD>R</TD> <TD>"Serial Poll Response"</TD>
+<TD>DBF_UCHAR</TD>
+<TD>The device status byte, which is read during a Serial Poll operation.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>ADDR</TD>  <TD>R/W</TD> <TD>"GPIB address"</TD>
+<TD>DBF_LONG</TD>
+<TD>The GPIB address of the device. This field is can be initialized to a value
+when creating the database.  If the initial value is zero and the GPIB
+address specified in the INP (Input Link) field is non-zero, then the
+input link value will be copied to ADDR. This field can be changed at any time.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>TMOT</TD>  <TD>R/W</TD> <TD>"Timeout (msec)"</TD>
+<TD>DBF_LONG</TD>
+<TD>The timeout value for GPIB read operations in milliseconds. 
+If a response is not received from the device within this time then the record
+sets a major alarm.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>UCMD</TD>  <TD>R/W*</TD> <TD>"Universal command"</TD>
+<TD>DBF_RECCHOICE</TD>
+<TD>A GPIB Universal Command to be executed.  GPIB Universal Commands are
+commands which are directed to all devices on the GPIB bus, not just addressed
+devices.  The choices are:
+<TABLE>
+<TR VALIGN=TOP>
+<TD>"None"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Device Clear (DCL)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Local Lockout (LL0)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Serial Poll Disable (SPD)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Serial Poll Enable (SPE)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Unlisten (UNL)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Untalk (UNT)"</TD>
+</TR>
+</TABLE>
+If the UCMD field is set to any value except 
+"None" then the
+following occurs: the record processes, the appropriate 
+Universal Command is 
+executed, and UCMD is set back to "None".  The record processing 
+only performs the Universal Command, i.e. it does not also 
+perform the GPIB operation indicated by TMOD.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>ACMD</TD>  <TD>R/W*</TD> <TD>"Addressed command"</TD>
+<TD>DBF_RECCHOICE</TD>
+<TD>A GPIB Addressed Command to be executed.  GPIB Addressed Commands are
+commands which are directed to only the addressed devices on the GPIB bus.
+The choices are:
+<TABLE>
+<TR VALIGN=TOP>
+<TD>"None"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Group Execute Trig. (GET)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Go To Local (GTL)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Selected Dev. Clear (SDC)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Take Control (TCT)"</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>"Serial Poll"</TD>
+</TR>
+</TABLE>
+If the ACMD field is set to any value except 
+"None" then the
+following occurs: the record processes, the appropriate 
+Addressed Command is 
+executed, and ACMD is set back to "None".  The record processing 
+only performs the Addressed Command, i.e. it does not also 
+perform the GPIB operation indicated by TMOD.</TD>
+</TR>
+
+
+<TR VALIGN=TOP><TH COLSPAN=5> Private Fields</TH>
+</TR>
+<TR VALIGN=TOP>
+<TD>IPTR</TD>  <TD>N</TD> <TD>"Input buffer pointer"</TD> <TD>DBF_NOACCESS</TD>
+<TD>The pointer to the buffer for the BINP field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>OPTR</TD>  <TD>N</TD> <TD>"Output buffer pointer"</TD> 
+<TD>DBF_NOACCESS</TD>
+<TD>The pointer to the buffer for the BOUT field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>OINP</TD>  <TD>R</TD> <TD>"Previous input string"</TD> <TD>DBF_STRING</TD>
+<TD>The previous input string.  Used for posting events when IFMT="ASCII".</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD COLSPAN=5, ALIGN=LEFT>
+<TABLE>
+<TD COLSPAN=3> Note: In the Access column above: </TD>
+<TR VALIGN=TOP>
+<TD>R</TD>    <TD>Read only<TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>R/W</TD>  <TD>Read and write are allowed</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>R/W*</TD> <TD>Read and write are allowed; write triggers record 
+processing if the record's SCAN field is set to "Passive".</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>N</TD>    <TD>No access allowed</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+</TABLE>
+
+<HR>
+<P>
+<A NAME="Files"><H2>Files</H2></A>
+The following table briefly describes all of the files required to implement
+the GPIB record.  The reader is assumed to be familiar with the 
+<A HREF="http://www.aps.anl.gov/asd/controls/epics/EpicsDocumentation/AppDevManuals/iocScm-3.13.2/index.
+html">
+EPICS IOC Software Configuration Management document</A>
+ which describes how to build an
+EPICS application tree into which these files are to be placed, and how to run
+"gnumake" to build the record support. These files can all be
+obtained in a 
+<A HREF="pub/gpib_record.tar">
+compressed tar file</A>.  This file should be untarred in a 
+<CODE>&lttop&gt/xxxApp/</CODE> directory.
+<P>
+
+<P>
+<TABLE BORDER CELLPADDING=5>
+<TR><TH COLSPAN=2>Files to be placed in 
+<CODE>&lttop&gt/xxxApp/src/</CODE>
+</TH> </TR>
+
+<TR VALIGN=TOP>
+<TD>gpibRecord.c</TD>
+<TD>The source file for the record</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>gpibRecord.dbd</TD>
+<TD>The database definition file for the record</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>Makefile.Vx</TD>
+<TD>This file is not included in the distribution.  However, the user must edit
+this file and add the following lines:
+<PRE>
+SRCS.c += ../gpibRecord.c
+LIBOBJS += gpibRecord.o
+</PRE></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>Makefile.Host</TD>
+<TD>This file is not included in the distribution.  However, the user must edit
+this file and the following line:
+<PRE>
+RECTYPES += gpibRecord.h
+</PRE></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>xxxAppInclude.dbd</TD>
+<TD>This file is not included in the distribution.  However, the user must edit
+this file and add the following lines:
+<PRE>
+include "gpibRecord.dbd"
+
+device(gpib,GPIB_IO,devGPIB,"GPIB (NI or HIDEOS)")
+device(gpib,BBGPIB_IO,devGPIB,"GPIB (BitBusS)")
+</PRE></TD>
+</TR>
+
+<TR><TH COLSPAN=2>Files to be placed in 
+<CODE>&lttop&gt/xxxApp/op/adl/</CODE>
+</TH> </TR>
+
+<TR VALIGN=TOP>
+<TD>GPIB_IO.adl</TD>
+<TD>This file builds an <CODE>medm</CODE> screen to access the GPIB record.
+The <CODE>medm</CODE> screen is most useful for communicating with GPIB devices
+in ASCII.
+To use it from the command line, type the following:
+<PRE>
+&gt medm -x -macro REC=my_gpib_record GPIB_IO.adl
+</PRE>
+<P>
+where <CODE>my_gpib_record</CODE> is the name of a GPIB record in an IOC.
+<P>
+This file can also be used as a related display from other <CODE>medm</CODE>
+screens by passing the argument <CODE>REC=my_gpib_record</CODE>.
+</TD>
+</TR>
+
+<TR><TH COLSPAN=2>Files to be placed in 
+<CODE>&lttop&gt/xxxApp/Db/</CODE>
+</TH> </TR>
+
+<TR VALIGN=TOP>
+<TD>gpib.db</TD>
+<TD>This file loads an instance of a GPIB record.  It is very simple, and it
+will need to be edited if you are not using Hideos or MPF.
+</TD>
+</TR>
+
+
+<TR><TH COLSPAN=2>Files to be placed in 
+<CODE>&lttop&gt/iocBoot/&ltiocName&gt/</CODE>
+</TH> </TR>
+
+<TR VALIGN=TOP>
+<TD>st.cmd</TD>
+<TD>This file is not included in the distribution.  However, this file must be
+edited to enable support for the particular GPIB driver being used. A line like
+the following must be added to load a generic GPIB record:
+<PRE>
+dbLoadRecords "gpib.db", "P=13IDD:"
+</PRE>
+</TD>
+</TR>
+</TABLE>
+
+<HR>
+<A NAME="Restrictions"><H2>Restrictions</H2></A>
+The GPIB record presently has no support for SRQs, which are 
+Service Requests, the GPIB
+equivalent of an interrupt. Support for SRQs may be added in the future.
+<P>
+The EOS (input delimiter) character is presently implmented only for HiDEOS
+or MPF links.  It is not yet implemented for National Instruments or 
+Bitbus links. EOS may be supported for these links in a future release of the 
+EPICS GPIB driver.
+<P>
+
+<HR>
+<A NAME="Example"><H2>Example</H2></A>
+The following is an IDL program which demonstrates the use of the GPIB
+record to communicate with a Tektronix 2432A Digital Oscilloscope.  It
+transfers data in both ASCII and binary formats.
+<PRE>
+; This IDL program demonstrates the use of the GPIB record to
+; communicate with a Tektronix 2432A Digital Oscilloscope.
+
+; The name of the GPIB record which is communicating 
+; with the GPIB bus to which the scope is connected
+rec = 'test_gpib1'
+aout = rec+'.AOUT'   ; Shorthand for the ASCII output field
+ainp = rec+'.AINP'   ; Shorthand for the ASCII input field
+
+; Make sure the record is set up for ASCII input and output 
+; and Write/Read mode
+t = caput(rec+'.OFMT', 'ASCII')
+t = caput(rec+'.IFMT', 'ASCII')
+t = caput(rec+'.TMOD', 'Write/Read')
+
+; Set Channel 1 to 100 mV per division
+t = caput(aout, 'CH1 VOLTS:0.1')
+
+; Confirm that this worked
+t = caput(aout, 'CH1? VOLTS')
+t = caget(ainp, response)
+    print, 'Channel 1 volts=', float(response)
+
+; Set the horizontal time scale to 2 msec/div
+t = caput(aout, 'HOR ASECDIV:2E-3')
+
+; Set the waveform readout format to positive binary
+t = caput(aout, 'DATA ENC:RPB')
+
+; Switch the record to binary input mode
+t = caput(rec+'.IFMT', 'Binary')
+
+; Tell the scope to send the waveform data
+t = caput(aout, 'CURVE?')
+
+; The scope always sends 1028 bytes of data.
+; Make sure the NORD field is 1028.
+t = caget(rec+'.NORD', nord)
+    if (nord eq 1028) then $
+        print, 'Got good data from scope' $
+    else $
+        print, 'Error reading data from scope'
+
+; Read from binary input field, reading only valid data
+t = caget(rec+'.BINP', data, max=nord) 
+
+; The first 3 points and last point are header and checksum.
+data = data(3:1026)
+
+; The data are in offset binary, subtract 127
+data = data - 127
+
+; Plot the data. 
+plot, data
+
+; Put the record back in ASCII input mode
+t = caput(rec+'.IFMT', 'ASCII')
+
+; Ask the scope to report the minimum and maximum values of 
+; the current waveform
+t = caput(aout, 'MINIMUM?; MAXIMUM?')
+t = caget(ainp, response)
+print, 'Range of values in waveform:', response
+
+end
+</PRE>
+
+<HR>
+<ADDRESS>
+Suggestions and comments to: 
+<A HREF="mailto:rivers@cars.uchicago.edu">
+Mark Rivers </A> : (rivers@cars.uchicago.edu)
+<BR>
+Last modified: March 15, 2000
+</ADDRESS>
+
+</BODY>
+</HTML>
