@@ -74,7 +74,7 @@ EPID_SOFT_DSET devEpidSoft = {
     NULL,
     do_pid
 };
-epicsExportAddress(EPID_SOFT_DSET, devEpidSoft);
+epicsExportAddress(dset, devEpidSoft);
 
 static long init_record(epidRecord *pepid)
 {
