@@ -88,7 +88,7 @@ PROD += xia_slit.o
 SRCS.c += xia_slit.c
 
 include ../baseLIBOBJS
-LIBNAME = baseLib
+PROD = baseLib
 
 STD_BIN = .
 include ../stdLIBOBJS		#defines STDLIBOBJS
@@ -110,3 +110,7 @@ include $(TOP)/config/RULES.Vx
 
 stdLib: $(STDLIBOBJS)
 	$(LINK.c) $@ $(STDLIBOBJS)
+
+baseLib: $(BASELIBOBJS)
+	$(LINK.c) $@ $(BASELIBOBJS)
+
