@@ -12,6 +12,166 @@
   <h1>Standard Support<BR>Release Notes</h1>
 </center>
 
+<h2>Release 1-5,&nbsp;&nbsp;Not Yet</h2>
+<ul>
+<li> sscan record v5.18
+    <ul>
+
+	<li>the sscan record can now read array-valued PVs in scalar mode
+	(ACQT=="SCALAR" (0)) as well as in array mode (ACQT=="1D ARRAY" (1)). In
+	scalar mode, array PVs are read after the last data point has been
+	acquired.
+
+	<li>New trigger for array read.  In the event array PVs need a poke to get
+	them to read or otherwise prepare their data for use, the sscan record has
+	an array-read trigger -- a set of fields similar to those of a detector
+	trigger.  The trigger is fired and waited for after the last data point has
+	been acquired, and before any after-scan motions are commanded.
+
+	<li>Handshaking with saveData has been modified to make use of the sscan
+	record's double buffering.  The old data-storage-client handshake method
+	still works, but is no longer recommended.  In the new method, saveData
+	writes "1" to AWAIT (new field) when DATA -> 1.  This allows the sscan
+	record to go on to the next scan up to the point of posting the next scan's
+	data arrays.  When saveData is done with the sscan record's arrays, it
+	writes "0" to AWAIT, allowing the sscan record to post new data.  In one
+	test with 10 1000-point arrays, and a 50 ms detector dwell time, the
+	average total scan overhead per data point was 2.4 ms.  (It took saveData
+	roughly 40 ms to write the data, so the date storage time overlapped
+	completely with the detector dwell time, effectively removing it completely
+	from the scan overhead.)
+
+    </ul>
+<li> saveData v1.14.0
+    <ul>
+	
+	<li>saveData no longer uses the handshake PVs specified in the saveData.req
+	file it reads at startup.  Instead, it now writes to <sscanRecord>.AWAIT.
+
+	<li>saveData now writes the disabling handshake when sscan record data are
+	posted (<i>scanrec</i>.DATA==1), instead of when the scan begins, and it
+	writes to the sscan record that posted, rather than to the PV named in
+	saveData.req
+
+	<li>saveData no longer allocates memory for sscanRecord detector signals
+	that are not in use.  When a valid detector PV has been defined, saveData
+	allocates memory for it, and does not free that memory if the PV becomes
+	invalid.
+
+	</ul>
+
+<li> Scaler record v3.15: support for Joerger VS64 scaler added
+
+    <ul>
+
+	<li>The mamximum number of channels is increased to 64.
+
+	<li>Added semaphore to avoid contention for scanLock between
+	autocount-restart callback and periodic-update callback. 
+	Periodic-update callback no longer scan locks.
+
+    <li>Device support for all scalers but Joerger VS needs the record to tell
+	it the clock rate, but VS device support chooses a clock rate.  To support
+	both, dset->write_preset() is called twice -- once to specify dwell time
+	with whatever value of FREQ is current, and again using the possibly new
+	value chosen by device support.  If device support changed FREQ, the record
+	posts the new value.
+
+    <li>The 'T' field is now posted after all counter values
+
+	</ul>
+
+<li> devScaler_VS v1.0
+
+    <ul>
+	
+	<li>New device support for Joerger VS series read-on-the-fly scalers.  Note
+	this software does not support the "Dead-Time-less" version of the VS
+	scaler.  The device type for this scaler is "Joerger VS".
+
+    <ul>
+
+<li>save_restore v3.5; dbrestore v
+
+    <ul>
+
+	<li>support for array-valued PVs.  Arrays are read and written using
+	database access, and are written only during pass 1 (the second pass --
+	after database initialization).  Array PVs are specified in the request
+	file in the same way as scalar PVs.
+
+	<li>The order in which PVs occur in the .sav file is now the same as in the
+    .req file.
+
+	<li>support for PVs whose field types are changed from DBF_NOACCESS to some
+	accessible type during record initialization (e.g., several gensubRecord
+	fields).
+
+	<li>manual-restore operations now done by the save_restore task (which now
+	does all of the channel-access work.
+
+	</ul>
+
+<li> transform record v5.8
+
+    <ul>
+	
+	<li>New field, IVL<i>n</i>, specifies what the record should do if an
+	invalid-link error (NSEV==INVALID_ALARM) is encountered.  Options are
+	("Ignore error" (0); "Do Nothing" (1)).  "Ignore", the default, is what
+	previous versions did. "Do Nothing" means don't even start evaluating
+	expressions; just post alarms and exit.
+
+	<li>The first valid calculation posts it result even if the value didn't
+	changed from the initial value of zero.  (Otherwise, clients don't know if
+	they should use the zero value, or wait for a monitor that may never come.)
+	
+	<li>Test for new value had a typo that made zero always look old (no recalc)
+	
+	<li>Values are now posted with DBE_VALUE | DBE_LOG.  Previously, values
+    were posted with DBE_VALUE.
+
+	<li>Postfix buffers are now allocated at boot time.  Previously,
+	sCalcPostfix() allocated a new postfix buffer each time it was called.
+	
+	<li>CLC<i>n</i> fields are no longer checked by dbStaticLib (i.e., by
+	database-configuration tools, and at boot time) because EPICS base
+	doesn't know how to check them.
+	
+	</ul>
+
+<li>kohzuCtl.st v3.2
+
+    <ul>
+	
+	<li>Allow boot-time choice (the BOOLEAN variable kohzuCtlCalibYZ) of
+	whether or not Y and Z motors shhould be recalibrated when in SET mode. 
+	Previously, they were recalibrated unconditionally.
+
+	</ul>
+
+<li>test_sCalc.py - new python program to check sCalc expression evaluation.
+
+<li>test_sCalc.c - new timing tests for sCalcPostfix, sCalcPerform.
+
+<li>sCalcPostfix, sCalcPerform
+
+    <ul>
+	
+	<li>Much faster than previous versions, with better defense against
+	illegal expressions
+	
+	<li>now requires caller to allocate storage for postfix array, and pass it
+	as char* instead of char**.
+
+    <li>MAX and MIN now take two or more arguments
+	
+	<li>operators "<?" and ">?" added
+	
+	</ul>
+	
+</ul>
+
 <h2>Release 1-4,&nbsp;&nbsp;January 29, 2004</h2>
 
 <ul>
