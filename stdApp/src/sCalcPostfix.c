@@ -1,4 +1,4 @@
-/* $Id: sCalcPostfix.c,v 1.2 2003-01-26 21:53:48 rivers Exp $
+/* $Id: sCalcPostfix.c,v 1.1.1.1 2001-07-03 20:05:25 sluiter Exp $
  * Subroutines used to convert an infix expression to a postfix expression
  *
  *      Author:          Bob Dalesio
@@ -55,7 +55,6 @@
  * .19  03-18-98	tmm	Added string operators
  * .20  11-12-98	tmm	v4.2 Added array operators @, @@.  Changed ICP of
  *					[ and { operators from 8 to 7.
- * .21  11-27-01	mlr	Added BYTE unary function
  */
 
 /* 
@@ -199,7 +198,6 @@ element	 i_s_p	i_c_p	type_element	internal_rep */
 "STR",		7,	8,	UNARY_OPERATOR, TO_STRING, /* convert to string */
 "$P",		7,	8,	UNARY_OPERATOR,	PRINTF,    /* formatted print to string */
 "PRINTF",	7,	8,	UNARY_OPERATOR,	PRINTF,    /* formatted print to string */
-"BYTE",		7,	8,	UNARY_OPERATOR,	BYTE,      /* string[0] to byte */
 "$S",		7,	8,	UNARY_OPERATOR,	SSCANF,    /* scan string argument */
 "SSCANF",	7,	8,	UNARY_OPERATOR,	SSCANF,    /* scan string argument */
 "@@",		7,	8,	UNARY_OPERATOR, A_SFETCH,  /* fetch string argument */

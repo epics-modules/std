@@ -6,21 +6,9 @@
  * 11/24/99  tmm  v2.3 file-ok marker is now <END> and is placed at end of file.
  *                allow caller to choose whether boot-backup file is written,
  *                provide option of dated boot-backup files.
- * 02/27/02  tmm  v2.4 Added some features from Frank Lenkszus's (FRL) code:
- *                added path to request files
- *                added set_pass0_restoreFile( char *filename)
- *                added set_pass1_restoreFile( char *filename)
- *                a few more tweaks: 
- *                changed date-time stamp suffix to use FRL's fGetDateStr()
- *                don't write redundant backup files
- * 03/15/02  tmm  v2.5 check saveRestoreFilePath before using it.
- * 03/19/02  tmm  v2.6 initialize fname before using it.
- * 04/05/02  tmm  v2.7 Don't use copy for backup file.  It uses mode 640.
  */
-#define VERSION "2.7"
+#define VERSION "2.3"
 
-#include	<vxWorks.h>
-#include	<stdio.h>
 #include	<stdioLib.h>
 #include	<stdlib.h>
 #include	<sys/stat.h>
@@ -29,58 +17,25 @@
 #include	<usrLib.h>
 #include	<time.h>
 
-#include	<dbDefs.h>
-#include	<dbStaticLib.h>
-#include	<initHooks.h>
-#include 	"fGetDateStr.h"
-#include	"save_restore.h"
+#include	"dbDefs.h"
+#include	"dbStaticLib.h"
+#include	"initHooks.h"
 
-extern	DBBASE *pdbbase;
+extern	DBBASE		*pdbbase;
 
 extern unsigned int	sr_restore_incomplete_sets_ok;
-extern char *saveRestoreFilePath;              /* path to save files */
 
 #ifdef NODEBUG
 #define Debug(l,FMT,V) ;
 #else
-#define Debug0(l,FMT) {  if(l <= reboot_restoreDebug) \
-			{ epicsPrintf("%s(%d):",__FILE__,__LINE__); \
-			  epicsPrintf(FMT); } }
 #define Debug(l,FMT,V) {  if(l <= reboot_restoreDebug) \
-			{ epicsPrintf("%s(%d):",__FILE__,__LINE__); \
-			  epicsPrintf(FMT,V); } }
+			{ printf("%s(%d):",__FILE__,__LINE__); printf(FMT,V); } }
 #define Debug2(l,FMT,V,W) {  if(l <= reboot_restoreDebug) \
-			{ epicsPrintf("%s(%d):",__FILE__,__LINE__); \
-			  epicsPrintf(FMT,V,W); } }
+			{ printf("%s(%d):",__FILE__,__LINE__); printf(FMT,V,W); } }
 #endif
 volatile int    reboot_restoreDebug = 0;
 volatile int    reboot_restoreDatedBU = 0;
 
-struct restoreList restoreFileList = {0, 0, 
-			{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
-			{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}};
-
-
-static int myCopy(char *source, char *dest)
-{
-	FILE 	*source_fd, *dest_fd;
-	char	buffer[120], *bp;
-
-	if ((source_fd = fopen(source,"r")) == NULL) {
-		printf("reboot_restore: Can't open file %s\n", source);
-		return(-1);
-	}
-	if ((dest_fd = fopen(dest,"w")) == NULL) {
-		printf("reboot_restore: Can't open file %s\n", dest);
-		return(-1);
-	}
-	while ((bp=fgets(buffer, 120, source_fd))) {
-		fprintf(dest_fd, "%s", bp);
-	}
-	fclose(source_fd);
-	fclose(dest_fd);
-	return(0);
-}
 
 /*
  * file_restore
@@ -90,14 +45,13 @@ static int myCopy(char *source, char *dest)
  * Must use static database access routines.
  *
  */
-int reboot_restore(char *filename, initHookState init_state)
+int reboot_restore(char *filename, initHookState init_state, int noWrite)
 {
 	char		channel[80];
-	char		bu_filename[258];
-	char		fname[256] = "";
+	char		bu_filename[120];
+	char		fname[120];
 	char		buffer[120], *bp;
 	char		input_line[120];
-	char		datetime[32];
 	char		*s;
 	FILE		*inp_fd;
 	char		c;
@@ -105,28 +59,55 @@ int reboot_restore(char *filename, initHookState init_state)
 	DBENTRY		dbentry;
 	DBENTRY		*pdbentry= &dbentry;
 	long		status;
-	char		*endp;
-	int			n;
+	char		*endp, tmpstr[30];
+	int			n, try_backup=0;
+	time_t		sec;
 
-	epicsPrintf("reboot_restore (v%s): entry\n", VERSION);
+	logMsg("reboot_restore (v%s): entry\n", VERSION);
 	/* initialize database access routines */
 	if (!pdbbase) {
 		printf("No Database Loaded\n");
-		return(OK);
+		return(0);
 	}
 
 	dbInitEntry(pdbbase,pdbentry);
 
 	/* open file */
-	if (saveRestoreFilePath) {
-		strncpy(fname, saveRestoreFilePath, sizeof(fname) -1);
+	strncpy(fname, filename, 118);
+	if ((inp_fd = fopen(fname, "r")) == NULL) {
+		logMsg("reboot_restore - unable to open file '%s'\n",fname);
+		try_backup = 1;
+	} else {
+		/* check out "successfully written" marker */
+		if ((fseek(inp_fd, -6, SEEK_END)) ||
+			(fgets(tmpstr, 6, inp_fd) == 0) ||
+			(strncmp(tmpstr, "<END>", 5) != 0)) {
+			fclose(inp_fd);
+			try_backup = 1;
+		} else {
+			fseek(inp_fd, 0, SEEK_SET); /* file is ok.  go to beginning */
+		}
 	}
-	strncat(fname, filename, MAX(sizeof(fname) -1 - strlen(fname),0));
-	epicsPrintf("*** restoring from '%s' at initHookState %d ***\n",
-		fname, (int)init_state);
-	if ((inp_fd = fopen_and_check(fname, "r")) == NULL) {
-		epicsPrintf("reboot_restore: Can't open save file.");
-		return(ERROR);
+
+	if (try_backup) {
+		/* try the backup file */
+		strncat(fname, "B", 1);
+		logMsg("reboot_restore - trying backup file '%s'\n",fname);
+		if ((inp_fd = fopen(fname, "r")) == NULL) {
+			logMsg("reboot_restore - unable to open file '%s'\n",fname);
+			dbFinishEntry(pdbentry);
+			return(-1);
+		} else {
+			if ((fseek(inp_fd, -6, SEEK_END)) ||
+				(fgets(tmpstr, 6, inp_fd) == 0) ||
+				(strncmp(tmpstr, "<END>", 5) != 0)) {
+				logMsg("reboot_restore - file '%s' was not successfully written.\n",fname);
+				fclose(inp_fd);
+				return(-1);
+			} else {
+				fseek(inp_fd, 0, SEEK_SET); /* file is ok.  go to beginning */
+			}
+		}
 	}
 
 	(void)fgets(buffer, 120, inp_fd); /* discard header line */
@@ -147,11 +128,11 @@ int reboot_restore(char *filename, initHookState init_state)
 			Debug2(5,"attempting to put '%s' to '%s'\n", input_line, channel);
 			status = dbFindRecord(pdbentry,channel);
 			if (status < 0) {
-				epicsPrintf("dbFindRecord for '%s' failed\n", channel);
+				logMsg("dbFindRecord for '%s' failed\n", channel);
 				errMessage(status,"");
 			} else {
 				if (!dbFoundField(pdbentry)) {
-					epicsPrintf("reboot_restore: dbFindRecord did not find field '%s'\n",
+					logMsg("reboot_restore: dbFindRecord did not find field '%s'\n",
 						channel);
 				}
 				Debug(5,"field type %s\n",
@@ -171,7 +152,7 @@ int reboot_restore(char *filename, initHookState init_state)
 					Debug(5,"dbPutString() returns %d:", status);
 					if (reboot_restoreDebug >= 5) errMessage(status, "");
 					if ((s = dbVerify(pdbentry, input_line))) {
-						epicsPrintf("reboot_restore: for %s, dbVerify() says %s\n", channel, s);
+						logMsg("reboot_restore: for %s, dbVerify() says %s\n", channel, s);
 					}
 					break;
 
@@ -184,7 +165,7 @@ int reboot_restore(char *filename, initHookState init_state)
 						Debug(5,"dbPutString() returns %d:",status);
 						if (reboot_restoreDebug >= 5) errMessage(status,"");
 						if ((s = dbVerify(pdbentry,input_line))) {
-							epicsPrintf("reboot_restore: for %s, dbVerify() says %s\n", channel, s);
+							logMsg("reboot_restore: for %s, dbVerify() says %s\n", channel, s);
 						}
 					}
 					break;
@@ -202,7 +183,7 @@ int reboot_restore(char *filename, initHookState init_state)
 					break;
 				}
 				if (status < 0) {
-					epicsPrintf("dbPutString/dbPutMenuIndex of '%s' for '%s' failed\n",
+					logMsg("dbPutString/dbPutMenuIndex of '%s' for '%s' failed\n",
 					  input_line,channel);
 					errMessage(status,"");
 				}
@@ -213,12 +194,12 @@ int reboot_restore(char *filename, initHookState init_state)
 			for (j = 0; (input_line[i] != ' ') && (input_line[i] != 0); i++,j++)
 				channel[j] = input_line[i];
 			channel[j] = 0;
-			epicsPrintf("%s channel(s) not connected / fetch failed\n",channel);
+			logMsg("%s channel(s) not connected / fetch failed\n",channel);
 			if (!sr_restore_incomplete_sets_ok) {
-				epicsPrintf("aborting restore\n");
+				logMsg("aborting restore\n");
 				fclose(inp_fd);
 				dbFinishEntry(pdbentry);
-				return(ERROR);
+				return(-1);
 			}
 		} else if (channel[0] == '<') {
 			/* end of file */
@@ -228,104 +209,23 @@ int reboot_restore(char *filename, initHookState init_state)
 	fclose(inp_fd);
 	dbFinishEntry(pdbentry);
 
-	/* If this is the second pass for a restore file, don't write backup file again.*/
-	if (init_state >= INITHOOKafterInitDatabase) {
-		for(i = 0; i < restoreFileList.pass0cnt; i++) {
-			if (strcmp(filename, restoreFileList.pass0files[i]) == 0)
-				return(OK);
-		}
-	}
+	if (noWrite) return(0);
 
-	/* write  backup file*/
-	Debug0(1, "reboot_restore: writing BU file.\n");
-	strcpy(bu_filename,fname);
-	if (reboot_restoreDatedBU && (fGetDateStr(datetime) == 0)) {
-		strcat(bu_filename, datetime);
+	/* make  backup */
+	strcpy(bu_filename,filename);
+	if (reboot_restoreDatedBU) {
+		sec = time (NULL);
+		s = ctime (&sec);
+		strncpy(tmpstr, s, 29);
+		for (s=tmpstr; *s; s++) {
+			if (*s == '\n') *s = 0;
+			if isspace(*s) *s = '_';
+		}
+		strncat(bu_filename, &tmpstr[3], 29);
 	} else {
 		strcat(bu_filename, ".bu");
 	}
-	status = (long)myCopy(fname,bu_filename);
-	if (status) printf("reboot_restore: Can't write backup file.\n");
+	copy(fname,bu_filename);
 
-	return(OK);
-}
-
-int set_pass0_restoreFile( char *filename)
-{
-	
-	if(restoreFileList.pass0cnt >= MAXRESTOREFILES) {
-		epicsPrintf("set_pass0_restoreFile: MAXFILE count exceeded\n");
-		return(ERROR);
-	}
-        if ((restoreFileList.pass0files[restoreFileList.pass0cnt] =
-		 (char *)calloc(strlen(filename) + 4,sizeof(char))) == NULL){
-                epicsPrintf("set_pass0_restoreFile: calloc failed\n");
-                return(ERROR);
-        }
-        strcpy(restoreFileList.pass0files[restoreFileList.pass0cnt++],
-		 filename);
-        return(OK);
-}
-
-int set_pass1_restoreFile( char *filename)
-{
-	
-	if(restoreFileList.pass1cnt >= MAXRESTOREFILES) {
-		epicsPrintf("set_pass1_restoreFile: MAXFILE count exceeded\n");
-		return(ERROR);
-	}
-        if ((restoreFileList.pass1files[restoreFileList.pass1cnt] =
-		 (char *)calloc(strlen(filename) + 4,sizeof(char))) == NULL){
-                epicsPrintf("set_pass1_restoreFile: calloc failed\n");
-                return(ERROR);
-        }
-        strcpy(restoreFileList.pass1files[restoreFileList.pass1cnt++],
-		 filename);
-        return(OK);
-}
-
-FILE *fopen_and_check(const char *fname, const char *mode)
-{
-	FILE *inp_fd = NULL;
-	int try_backup = 0;
-	char tmpstr[30];
-	char file[256];
-
-	strcpy(file, fname);
-	if ((inp_fd = fopen(file, "r")) == NULL) {
-		epicsPrintf("fopen_and_check: Can't open file '%s'.\n", file);
-		try_backup = 1;
-	} else {
-		/* check out "successfully written" marker */
-		if ((fseek(inp_fd, -6, SEEK_END)) ||
-				(fgets(tmpstr, 6, inp_fd) == 0) ||
-				(strncmp(tmpstr, "<END>", 5) != 0)) {
-			fclose(inp_fd);
-			try_backup = 1;
-		} else {
-			fseek(inp_fd, 0, SEEK_SET); /* file is ok.  go to beginning */
-		}
-	}
-
-	if (try_backup) {
-		/* try the backup file */
-		strncat(file, "B", 1);
-		epicsPrintf("fopen_and_check: Trying backup file '%s'\n", file);
-		if ((inp_fd = fopen(file, "r")) == NULL) {
-			epicsPrintf("fopen_and_check: Can't open file '%s'\n", file);
-			return(NULL);
-		} else {
-			if ((fseek(inp_fd, -6, SEEK_END)) ||
-					(fgets(tmpstr, 6, inp_fd) == 0) ||
-					(strncmp(tmpstr, "<END>", 5) != 0)) {
-				epicsPrintf("fopen_and_check: File '%s' is not trusted.\n",
-					file);
-				fclose(inp_fd);
-				return(NULL);
-			} else {
-				fseek(inp_fd, 0, SEEK_SET); /* file is ok.  go to beginning */
-			}
-		}
-	}
-	return(inp_fd);
+	return(0);
 }

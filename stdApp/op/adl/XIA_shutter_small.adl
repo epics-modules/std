@@ -1,6 +1,6 @@
 
 file {
-	name="C:\Program Files\EPICS WIN32 Extensions\synApps_4_3_adl\XIA_shutter_small.adl"
+	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/XIA_shutter_small.adl"
 	version=020306
 }
 display {
@@ -106,12 +106,12 @@ rectangle {
 		height=20
 	}
 	control {
-		chan="$(P)$(S)openShutter.PROC"
+		chan="$(P)$(S)sendCommand.VAL"
 		clr=14
 		bclr=51
 	}
 	label="Open shutter"
-	press_msg="1"
+	press_msg="O"
 }
 "message button" {
 	object {
@@ -121,12 +121,12 @@ rectangle {
 		height=20
 	}
 	control {
-		chan="$(P)$(S)closeShutter.PROC"
+		chan="$(P)$(S)sendCommand.VAL"
 		clr=14
 		bclr=51
 	}
 	label="Close shutter"
-	press_msg="1"
+	press_msg="C"
 }
 polyline {
 	object {

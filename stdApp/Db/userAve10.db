@@ -1,145 +1,85 @@
-grecord(bo,"$(P)userAve9_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)userAve8_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)userAve7_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)userAve6_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)userAve5_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)userAve4_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)userAve3_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)userAve2_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)userAve10_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
-grecord(bo,"$(P)DisableUserAves") {
-	field(DTYP,"Soft Channel")
-	field(OMSL,"closed_loop")
-	field(OUT,"$(P)userAveEnable.VAL  PP MS")
-}
-grecord(bo,"$(P)EnableUserAves") {
-	field(DTYP,"Soft Channel")
-	field(OUT,"$(P)userAveEnable.VAL  PP MS")
-}
-grecord(bo,"$(P)userAve1_mode") {
-	field(DTYP,"Soft Channel")
-	field(ZNAM,"CONTINUOUS")
-	field(ONAM,"ONE-SHOT")
-}
 grecord(bo,"$(P)userAveEnable") {
 	field(DESC,"userAve Enable")
 	field(DTYP,"Soft Channel")
 	field(ZNAM,"Disable")
 	field(ONAM,"Enable")
 }
+grecord(bo,"$(P)EnableUserAves") {
+	field(DTYP,"Soft Channel")
+	field(OUT,"$(P)userAveEnable.VAL  PP MS")
+}
+grecord(bo,"$(P)DisableUserAves") {
+	field(DTYP,"Soft Channel")
+	field(OMSL,"closed_loop")
+	field(OUT,"$(P)userAveEnable.VAL  PP MS")
+}
 grecord(sub,"$(P)userAve1") {
 	field(DESC,"User Average 1")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve1_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve10") {
 	field(DESC,"User Average 10")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve10_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve2") {
 	field(DESC,"User Average 2")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve2_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve3") {
 	field(DESC,"User Average 3")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve3_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve4") {
 	field(DESC,"User Average 4")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve4_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve5") {
 	field(DESC,"User Average 5")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve5_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve6") {
 	field(DESC,"User Average 6")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve6_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve7") {
 	field(DESC,"User Average 7")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve7_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve8") {
 	field(DESC,"User Average 8")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve8_mode.VAL  NPP NMS")
 }
 grecord(sub,"$(P)userAve9") {
 	field(DESC,"User Average 9")
 	field(DISV,"0")
-	field(SDIS,"$(P)userAveEnable.VAL  NPP NMS")
+	field(SDIS,"$(P)userAveEnable.VAL  NPP MS")
 	field(INAM,"initSubAve")
 	field(SNAM,"SubAve")
-	field(INPD,"$(P)userAve9_mode.VAL  NPP NMS")
 }

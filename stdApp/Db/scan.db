@@ -33,7 +33,7 @@ grecord(calcout,"$(P)ScanDim") {
 	field(INPF,"$(P)scanH.BUSY  CP MS")
 	field(INPG,"0")
 	field(INPH,"0")
-	field(OUT,"$(P)calcScanActive.A  PP MS")
+	field(OUT,"0")
 }
 grecord(calcout,"$(P)ScanDim1") {
 	field(CALC,"d?4:c?3:b?2:a?1:0")
@@ -46,10 +46,6 @@ grecord(calcout,"$(P)ScanDim1") {
 	field(INPG,"0")
 	field(INPH,"0")
 	field(OUT,"0")
-}
-grecord(calcout,"$(P)calcScanActive") {
-	field(CALC,"a>0?1:0")
-	field(OUT,"$(P)scanActive.VAL  PP MS")
 }
 grecord(longout,"$(P)saveData_scanNumber") {
 	field(DTYP,"Soft Channel")
@@ -101,15 +97,6 @@ grecord(stringout,"$(P)saveData_message") {
 grecord(stringout,"$(P)saveData_subDir") {
 	field(DTYP,"Soft Channel")
 }
-grecord(stringout,"$(P)saveData_fileName") {
-	field(DTYP,"Soft Channel")
-}
-grecord(stringout,"$(P)saveData_comment2") {
-	field(DTYP,"Soft Channel")
-}
-grecord(stringout,"$(P)saveData_comment1") {
-	field(DTYP,"Soft Channel")
-}
 grecord(waveform,"$(P)saveData_config") {
 	field(DTYP,"Soft Channel")
 	field(NELM,"1000")
@@ -125,9 +112,13 @@ grecord(sscan,"$(P)scan1") {
 	field(PINI,"YES")
 	field(PRIO,"HIGH")
 	field(MPTS,"$(MAXPTS1)")
-	field(NPTS,"10")
 	field(FPTS,"NO")
 	field(FFO,"OVERRIDE")
+	field(D1PV,"$(P)scaler1.T")
+	field(D2PV,"$(P)scaler1.S2")
+	field(D3PV,"$(P)scaler1.S3")
+	field(D4PV,"$(P)scaler1.S4")
+	field(T1PV,"$(P)scaler1.CNT")
 	field(P1HR,"1")
 	field(P1PR,"5")
 	field(P2HR,"1")
@@ -152,7 +143,6 @@ grecord(sscan,"$(P)scan2") {
 	field(PINI,"YES")
 	field(PRIO,"HIGH")
 	field(MPTS,"$(MAXPTS2)")
-	field(NPTS,"10")
 	field(FPTS,"NO")
 	field(FFO,"OVERRIDE")
 	field(T1PV,"$(P)scan1.EXSC")
@@ -235,8 +225,8 @@ grecord(sscan,"$(P)scanH") {
 	field(DESC,"Scan H")
 	field(PINI,"YES")
 	field(PRIO,"HIGH")
-	field(MPTS,"$(MAXPTSH)")
-	field(NPTS,"10")
+	field(MPTS,"2000")
+	field(NPTS,"1000")
 	field(FPTS,"NO")
 	field(FFO,"OVERRIDE")
 	field(P1HR,"0")

@@ -1,7 +1,7 @@
 
 file {
 	name="/home/beams/BCDA/epics/synApps_T202_R3_13_5_R4_4/support/std/stdApp/op/adl/table_setup_PNC.adl"
-	version=030003
+	version=030000
 }
 display {
 	object {
@@ -1624,19 +1624,30 @@ text {
 	}
 	textix="'FIXED' POINT"
 }
-"text entry" {
+composite {
 	object {
 		x=495
-		y=92
+		y=131
 		width=60
 		height=18
 	}
-	control {
-		chan="$(P)$(T).RX"
-		clr=14
-		bclr=51
-	}
-	limits {
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=495
+				y=92
+				width=60
+				height=18
+			}
+			control {
+				chan="$(P)$(T).RX"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
 	}
 }
 "text entry" {
@@ -1699,77 +1710,88 @@ text {
 	limits {
 	}
 }
-text {
+composite {
 	object {
 		x=460
 		y=91
-		width=20
-		height=20
+		width=140
+		height=60
 	}
-	"basic attribute" {
-		clr=30
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=460
+				y=91
+				width=20
+				height=20
+			}
+			"basic attribute" {
+				clr=30
+			}
+			textix="Rx'"
+		}
+		text {
+			object {
+				x=460
+				y=131
+				width=20
+				height=20
+			}
+			"basic attribute" {
+				clr=30
+			}
+			textix="Rz'"
+		}
+		text {
+			object {
+				x=460
+				y=111
+				width=20
+				height=20
+			}
+			"basic attribute" {
+				clr=30
+			}
+			textix="Ry'"
+		}
+		text {
+			object {
+				x=580
+				y=91
+				width=20
+				height=20
+			}
+			"basic attribute" {
+				clr=30
+			}
+			textix="Sx'"
+		}
+		text {
+			object {
+				x=580
+				y=131
+				width=20
+				height=20
+			}
+			"basic attribute" {
+				clr=30
+			}
+			textix="Sz'"
+		}
+		text {
+			object {
+				x=580
+				y=111
+				width=20
+				height=20
+			}
+			"basic attribute" {
+				clr=30
+			}
+			textix="Sy'"
+		}
 	}
-	textix="Rx'"
-}
-text {
-	object {
-		x=460
-		y=131
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=30
-	}
-	textix="Rz'"
-}
-text {
-	object {
-		x=460
-		y=111
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=30
-	}
-	textix="Ry'"
-}
-text {
-	object {
-		x=580
-		y=91
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=30
-	}
-	textix="Sx'"
-}
-text {
-	object {
-		x=580
-		y=131
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=30
-	}
-	textix="Sz'"
-}
-text {
-	object {
-		x=580
-		y=111
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=30
-	}
-	textix="Sy'"
 }
 text {
 	object {
@@ -2264,20 +2286,5 @@ polyline {
 	points {
 		(593,191)
 		(468,242)
-	}
-}
-"text entry" {
-	object {
-		x=495
-		y=131
-		width=60
-		height=18
-	}
-	control {
-		chan="$(P)$(T).RZ"
-		clr=14
-		bclr=51
-	}
-	limits {
 	}
 }

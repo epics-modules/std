@@ -38,20 +38,10 @@ grecord(stringin,"$(P)$(S)getReply") {
 	field(DTYP,"Hideos si stringParm")
 	field(INP,"#C$(C) S0 @$(IPSLOT)-Serial[$(CHAN)],TERM=0d")
 }
-grecord(stringout,"$(P)$(S)closeShutter") {
-	field(DTYP,"Soft Channel")
-	field(VAL,"C")
-	field(OUT,"$(P)$(S)sendCommand.VAL  PP MS")
-}
 grecord(stringout,"$(P)$(S)init") {
 	field(PINI,"YES")
 	field(DTYP,"Soft Channel")
 	field(VAL,"2")
-	field(OUT,"$(P)$(S)sendCommand.VAL  PP MS")
-}
-grecord(stringout,"$(P)$(S)openShutter") {
-	field(DTYP,"Soft Channel")
-	field(VAL,"O")
 	field(OUT,"$(P)$(S)sendCommand.VAL  PP MS")
 }
 grecord(stringout,"$(P)$(S)sendCommand") {

@@ -1,7 +1,7 @@
 
 file {
-	name="/home/oxygen/MOONEY/epics/3.13.5/tmm/tmmApp/op/adl/scan_detectorsOld.adl"
-	version=030003
+	name="/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta12_shareR1.0/stdApp/op/adl/scan_detectors_2.4.adl"
+	version=020303
 }
 display {
 	object {
@@ -98,8 +98,7 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D4NV"
 	}
 	textix="X"
@@ -117,8 +116,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -131,8 +128,7 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D3NV"
 	}
 	textix="X"
@@ -150,8 +146,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -164,8 +158,7 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D2NV"
 	}
 	textix="X"
@@ -183,8 +176,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 "text update" {
 	object {
@@ -199,8 +190,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -213,8 +202,7 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D1NV"
 	}
 	textix="X"
@@ -230,8 +218,7 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D8NV"
 	}
 	textix="X"
@@ -249,8 +236,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -263,8 +248,7 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D7NV"
 	}
 	textix="X"
@@ -282,8 +266,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -296,8 +278,7 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D6NV"
 	}
 	textix="X"
@@ -315,8 +296,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 "text update" {
 	object {
@@ -331,8 +310,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -345,8 +322,7 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D5NV"
 	}
 	textix="X"
@@ -362,8 +338,7 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).DCNV"
 	}
 	textix="X"
@@ -381,8 +356,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -395,8 +368,7 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).DBNV"
 	}
 	textix="X"
@@ -414,8 +386,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -428,8 +398,7 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).DANV"
 	}
 	textix="X"
@@ -447,8 +416,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 "text update" {
 	object {
@@ -463,8 +430,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -477,8 +442,7 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).D9NV"
 	}
 	textix="X"
@@ -494,8 +458,7 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).DFNV"
 	}
 	textix="X"
@@ -513,8 +476,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -527,8 +488,7 @@ text {
 		clr=20
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).DENV"
 	}
 	textix="X"
@@ -546,8 +506,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 "text update" {
 	object {
@@ -562,8 +520,6 @@ text {
 		bclr=3
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 text {
 	object {
@@ -576,8 +532,7 @@ text {
 		clr=21
 	}
 	"dynamic attribute" {
-		vis="calc"
-		calc="A>1"
+		vis="if not zero"
 		chan="$(P)$(S).DDNV"
 	}
 	textix="X"
@@ -595,8 +550,6 @@ text {
 		bclr=0
 	}
 	align="horiz. centered"
-	limits {
-	}
 }
 polyline {
 	object {
@@ -644,7 +597,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-1"
+	label=-1
 }
 "related display" {
 	object {
@@ -660,7 +613,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-2"
+	label=-2
 }
 "related display" {
 	object {
@@ -676,7 +629,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-3"
+	label=-3
 }
 "related display" {
 	object {
@@ -692,7 +645,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-4"
+	label=-4
 }
 "related display" {
 	object {
@@ -708,7 +661,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-5"
+	label=-5
 }
 "related display" {
 	object {
@@ -724,7 +677,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-6"
+	label=-6
 }
 "related display" {
 	object {
@@ -740,7 +693,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-7"
+	label=-7
 }
 "related display" {
 	object {
@@ -756,7 +709,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-8"
+	label=-8
 }
 "related display" {
 	object {
@@ -772,7 +725,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-9"
+	label=-9
 }
 "related display" {
 	object {
@@ -788,7 +741,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-10"
+	label=-10
 }
 "related display" {
 	object {
@@ -804,7 +757,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-11"
+	label=-11
 }
 "related display" {
 	object {
@@ -820,7 +773,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-12"
+	label=-12
 }
 "related display" {
 	object {
@@ -836,7 +789,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-13"
+	label=-13
 }
 "related display" {
 	object {
@@ -852,7 +805,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-14"
+	label=-14
 }
 "related display" {
 	object {
@@ -868,7 +821,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label="-15"
+	label=-15
 }
 composite {
 	object {
@@ -878,6 +831,8 @@ composite {
 		height=313
 	}
 	"composite name"=""
+	vis="static"
+	chan=""
 	children {
 		"text entry" {
 			object {
@@ -892,8 +847,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -908,8 +861,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -924,8 +875,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -940,8 +889,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -956,8 +903,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -972,8 +917,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -988,8 +931,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -1004,8 +945,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -1020,8 +959,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -1036,8 +973,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -1052,8 +987,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -1068,8 +1001,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -1084,8 +1015,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -1100,8 +1029,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		"text entry" {
 			object {
@@ -1116,8 +1043,6 @@ composite {
 				bclr=35
 			}
 			format="string"
-			limits {
-			}
 		}
 		text {
 			object {

@@ -26,7 +26,6 @@
  * Modification Log:
  * -----------------
  * .01  03-18-98 tmm derived from postfix.h
- * .02  10-27-01 mlr added BYTE
  * 
  */
 
@@ -111,7 +110,6 @@
 #define		REPLACE		65
 #define		A_FETCH		66
 #define		A_SFETCH	67
-#define		BYTE		68
 /* #define		END_STACK	127 */
 
 #define USES_STRING 126
