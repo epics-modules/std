@@ -1,6 +1,6 @@
 /*******************************************************************************
 scalerRecord.c
-Record-support routines for <= 32-channel, 32-bit scaler
+Record-support routines for <= 64-channel, 32-bit scaler
 
 Original Author: Tim Mooney
 Date: 1/16/95
@@ -55,9 +55,18 @@ Modification Log:
 .22  01/08/02   tmm     v3.12 Set VAL field to T and post after completed count
 .23  05/08/03   tmm     v3.13 Kate Feng's OSI version, with a new version number
 .24  10/22/03   tmm     v3.14 3.13 compatibility removed
+.23  09/22/03   tmm     v3.13 changed max number of signals from 32 to 64
+.24  09/26/03   tmm     v3.14 Make sure channel-1 preset count agrees with time
+                        preset and freq.  (Required for VS64, because it changes
+                        freq, and uses pr1/freq to infer count time.)
+.25  02/19/04   tmm     v3.15 Added semaphore to avoid contention for scanLock
+                        between autocount-restart callback and periodic update
+                        callback.  More mods for Joerger VS64
+.26  05/17/04   tmm     v3.16 merged VS64-capable 3.13 version with 3.14 version
+
 
 *******************************************************************************/
-#define VERSION 3.14
+#define VERSION 3.16
 
 #include        <epicsVersion.h>
 
@@ -65,7 +74,7 @@ Modification Log:
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include <string.h>
+#include	<string.h>
 #include <math.h>
 #include <float.h>
 #include <ctype.h>
@@ -176,12 +185,13 @@ static void updateCounts(scalerRecord *pscal);
 
 static void deviceCallbackFunc(CALLBACK *pcb)
 {
-    struct dbCommon *precord;
+	scalerRecord *pscal;
 
-	callbackGetUser(precord, pcb);
-    dbScanLock(precord);
-    process(precord);
-    dbScanUnlock(precord);
+	callbackGetUser(pscal, pcb);
+	Debug(5, "scaler deviceCallbackFunc: entry for '%s'\n", pscal->name);
+	dbScanLock((struct dbCommon *)pscal);
+	process((struct dbCommon *)pscal);
+	dbScanUnlock((struct dbCommon *)pscal);
 }
 
 
@@ -191,9 +201,10 @@ static void updateCallbackFunc(CALLBACK *pcb)
 	struct rpvtStruct *prpvt;
 
 	callbackGetUser(pscal, pcb);
+	Debug(5, "scaler updateCallbackFunc: entry for '%s'\n", pscal->name);
 	prpvt = (struct rpvtStruct *)pscal->rpvt;
 	epicsMutexLock(prpvt->updateMutex);
-    updateCounts(pscal);
+	updateCounts(pscal);
 	epicsMutexUnlock(prpvt->updateMutex);
 }
 
@@ -207,6 +218,7 @@ static void delayCallbackFunc(CALLBACK *pcb)
 	 * process() to start counting.
 	 */
 	callbackGetUser(pscal, pcb);
+	Debug(5, "scaler delayCallbackFunc: entry for '%s'\n", pscal->name);
 	if (pscal->us == USER_STATE_WAITING && pscal->cnt) {
 		pscal->us = USER_STATE_REQSTART;
 		(void)scanOnce((void *)pscal);
@@ -218,6 +230,7 @@ static void autoCallbackFunc(CALLBACK *pcb)
     scalerRecord *pscal;
 
 	callbackGetUser(pscal, pcb);
+	Debug(5, "scaler autoCallbackFunc: entry for '%s'\n", pscal->name);
 	(void)scanOnce((void *)pscal);
 }
 
@@ -229,7 +242,7 @@ int pass;
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
 	CALLBACK *pcallbacks, *pupdateCallback, *pdelayCallback,
 		*pautoCallback, *pdeviceCallback;
-    struct rpvtStruct	*prpvt;
+    struct rpvtStruct *prpvt;
 
 	Debug(5, "scaler init_record: pass = %d\n", pass);
 	Debug(5, "init_record: .PR1 = %ld\n", (long)pscal->pr1);
@@ -284,7 +297,7 @@ int pass;
 		return(S_dev_noDSET);
 	}
 
-	Debug(2, "init_record: calling dset->init_record%c\n", '.');
+	Debug(2, "init_record: calling dset->init_record\n");
 	if (pdset->init_record)
 	{
 		status=(*pdset->init_record)(pscal);
@@ -328,7 +341,8 @@ int pass;
 static long process(pscal)
 scalerRecord *pscal;
 {
-	int i, status, prev_scaler_state;
+	int i, status, prev_scaler_state, save_pr1, old_pr1;
+	double old_freq;
 	int card = pscal->out.value.vmeio.card;
 	int justFinishedUserCount=0, justStartedUserCount=0, putNotifyOperation=0;
 	long *ppreset = (long *)&(pscal->pr1);
@@ -341,8 +355,8 @@ scalerRecord *pscal;
 	CALLBACK *pautoCallback = (CALLBACK *)&(pcallbacks[2]);
     struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
 
-
-	Debug(5, "process: entry%c\n", '.');
+	
+	Debug(5, "process: entry\n");
 	epicsMutexLock(prpvt->updateMutex);
 
 	pscal->pact = TRUE;
@@ -374,9 +388,28 @@ scalerRecord *pscal;
 
 			if (pscal->us == USER_STATE_REQSTART) {
 				/*** start counting ***/
+
 				/* disarm, disable interrupt generation, reset disarm-on-cout, */
 				/* clear mask register, clear direction register, clear counters */
 				(*pdset->reset)(card);
+
+				/*
+				 * We tell device support how long to count by giving it a preset,
+				 * because the Joerger VSCx device support doesn't know the clock
+				 * frequency.  But the VS64 sets its own clock frequency, and adjusts
+				 * the preset correspondingly.  We don't want to include the algorithm
+				 * that calculates it here, but we do want to ensure that we've specified
+				 * the count time with the best achievable precision, so if device support
+				 * has changed the preset, we recalc the preset from tp, using the freq
+				 * set by device support, and call write_preset again.
+				 */
+				old_pr1 = pscal->pr1;
+				old_freq = pscal->freq;
+				/* Make sure channel-1 preset count agrees with time preset and freq */
+				if (pscal->pr1 != (long) (pscal->tp * pscal->freq)) {
+					pscal->pr1 = (long) (pscal->tp * pscal->freq);
+				}
+				save_pr1 = pscal->pr1;
 				for (i=0; i<pscal->nch; i++) {
 					pdir[i] = pgate[i];
 					if (pgate[i]) {
@@ -384,6 +417,15 @@ scalerRecord *pscal;
 						(*pdset->write_preset)(card, i, ppreset[i]);
 					}
 				}
+				if (save_pr1 != pscal->pr1) {
+					pscal->pr1 = (long) (pscal->tp * pscal->freq);
+					(*pdset->write_preset)(card, 0, pscal->pr1);
+				}
+				if (old_pr1 != pscal->pr1) db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
+				if (old_freq != pscal->freq) {
+					db_post_events(pscal,&(pscal->freq),DBE_VALUE);
+				}
+
 				(*pdset->arm)(card, 1);
 				pscal->ss = SCALER_STATE_COUNTING;
 				pscal->us = USER_STATE_COUNTING;
@@ -400,7 +442,7 @@ scalerRecord *pscal;
 		}
 		if (handled) {
 			pscal->pcnt = pscal->cnt;
-			Debug(2, "process: posting done flag (%d)\n", pscal->cnt);
+			Debug(2, "process: posting .CNT field (%d)\n", pscal->cnt);
 			db_post_events(pscal,&(pscal->cnt),DBE_VALUE);
 		}
 	}
@@ -421,7 +463,6 @@ scalerRecord *pscal;
 		recGblGetTimeStamp(pscal);
 		do_alarm(pscal);
 		monitor(pscal);
-		
 		if ((pscal->pcnt==0) && (pscal->us == USER_STATE_IDLE)) {
 			if (prev_scaler_state == SCALER_STATE_COUNTING) {
 				pscal->val = pscal->t;
@@ -440,7 +481,7 @@ scalerRecord *pscal;
 		if (putNotifyOperation) dly_sec = MAX(pscal->dly1, scaler_wait_time);
 		/* if (we-have-to-wait && we-haven't-already-waited) { */
 		if (dly_sec > 0 && pscal->ss != SCALER_STATE_WAITING) {
-			Debug(5, "process: scheduling autocount restart%c\n", '.');
+			Debug(5, "process: scheduling autocount restart\n");
 			/*
 			 * Schedule a callback, and make a note that counting should start
 			 * the next time we process (if pscal->ss is still SCALER_STATE_WAITING
@@ -449,13 +490,14 @@ scalerRecord *pscal;
 			pscal->ss = SCALER_STATE_WAITING;  /* tell ourselves to start next time */
 			callbackRequestDelayed(pautoCallback, dly_sec);
 		} else {
-			Debug(5, "process: restarting autocount%c\n", '.');
+			Debug(5, "process: restarting autocount\n");
 			/* Either the delay time is zero, or pscal->ss = SCALER_STATE_WAITING
 			 * (we've already waited), so start auto-count counting.
 			 * Different rules apply for auto-count counting:
 			 * If (.TP1 >= .001 s) we count .TP1 seconds, regardless of any
 			 * presets the user may have set.
 			 */
+			 old_freq = pscal->freq;
 			(*pdset->reset)(card);
 			if (pscal->tp1 >= 1.e-3) {
 				(*pdset->write_preset)(card, 0, (long)(pscal->tp1*pscal->freq));
@@ -465,6 +507,7 @@ scalerRecord *pscal;
 					if (pgate[i]) (*pdset->write_preset)(card, i, ppreset[i]);
 				}
 			}
+			if (old_freq != pscal->freq) db_post_events(pscal,&(pscal->freq),DBE_VALUE);
 			(*pdset->arm)(card, 1);
 			pscal->ss = SCALER_STATE_COUNTING;
 
@@ -490,6 +533,7 @@ static void updateCounts(scalerRecord *pscal)
 	long counts[MAX_SCALER_CHANNELS];
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
 	CALLBACK *pupdateCallback = (CALLBACK *)pscal->dpvt;
+	double old_t;
 
 	called_by_process = (pscal->pact == TRUE);
 	Debug(5, "updateCounts: %s called by process()\n", called_by_process ? " " : "NOT");
@@ -507,23 +551,22 @@ static void updateCounts(scalerRecord *pscal)
 		for (i=0; i<pscal->nch; i++) {counts[i] = 0;}
 	}
 
-	Debug(5, "updateCounts: posting scaler values%c\n", '.');
+	Debug(5, "updateCounts: posting scaler values\n");
 	/* post scaler values */
 	for (i=0; i<pscal->nch; i++) {
 		if (counts[i] != pscaler[i]) {
 			pscaler[i] = counts[i];
 			db_post_events(pscal,&(pscaler[i]),DBE_VALUE);
-			if (i==0) {
-				/* convert clock ticks to time */
-				pscal->t = pscaler[i] / pscal->freq;
-				db_post_events(pscal,&(pscal->t),DBE_VALUE);
-			}
 		}
 	}
+	/* convert clock ticks to time. Note device support may have changed freq. */
+	old_t = pscal->t;
+	pscal->t = pscaler[0] / pscal->freq;
+	if (pscal->t != old_t) db_post_events(pscal,&(pscal->t),DBE_VALUE);
 
 	if (pscal->ss == SCALER_STATE_COUNTING) {
 		/* arrange to call this routine again after user-specified time */
-		Debug(5, "updateCounts: arranging for callback%c\n", '.');
+		Debug(5, "updateCounts: arranging for callback\n");
 		rate = ((pscal->us == USER_STATE_COUNTING) ? pscal->rate : pscal->rat1);
 		if (rate > .1) {
 			callbackRequestDelayed(pupdateCallback, 1.0/rate);
@@ -531,6 +574,7 @@ static void updateCounts(scalerRecord *pscal)
 	}
 
 	if (!called_by_process) pscal->pact = FALSE;
+	Debug(5, "updateCounts: exit\n");
 }
 
 
@@ -539,7 +583,6 @@ struct dbAddr *paddr;
 int	after;
 {
 	scalerRecord *pscal = (scalerRecord *)(paddr->precord);
-	/* int special_type = paddr->special; */
 	int i=0;
 	unsigned short *pdir, *pgate;
 	long *ppreset;
@@ -622,7 +665,7 @@ int	after;
 
 	default:
 		if ((fieldIndex >= scalerRecordPR2) &&
-				(fieldIndex <= scalerRecordPR32)) {
+				(fieldIndex <= scalerRecordPR64)) {
 			i = (paddr->pfield - (void *)&(pscal->pr1)) / sizeof(long);
 			Debug(4, "special: channel %d preset\n", i);
 			pdir = (unsigned short *) &(pscal->d1);
@@ -635,7 +678,7 @@ int	after;
 			}
 		}
 		else if ((fieldIndex >= scalerRecordG1) &&
-				(fieldIndex <= scalerRecordG32)) {
+				(fieldIndex <= scalerRecordG64)) {
 			/* If user set gate field, make sure preset counter has some */
 			/* reasonable value. */
 			i = (int)((paddr->pfield - (void *)&(pscal->g1)) / sizeof(short));
