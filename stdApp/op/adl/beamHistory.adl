@@ -1,7 +1,7 @@
 
 file {
-	name="/tmp_mnt/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta7_shareR1.0/stdApp/op/adl/beamHistory_2.0.adl"
-	version=020205
+	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/beamHistory.adl"
+	version=020306
 }
 display {
 	object {
@@ -13,6 +13,9 @@ display {
 	clr=14
 	bclr=3
 	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
 }
 "color map" {
 	ncolors=65
@@ -110,6 +113,8 @@ text {
 		bclr=1
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 "cartesian plot" {
 	object {
@@ -130,6 +135,7 @@ text {
 		data_clr=53
 	}
 	x_axis {
+		rangeStyle="auto-scale"
 		maxRange=0.000000
 	}
 	y1_axis {
@@ -163,4 +169,6 @@ text {
 		bclr=1
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
