@@ -1,7 +1,7 @@
 
 file {
-	name="/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta11_shareR1.0/ipApp/op/adl/DAC_4.1.adl"
-	version=020303
+	name="/home/oxygen4/MOONEY/epics/3.13.2/tmm/xxxApp/op/adl/DAC.adl"
+	version=030002
 }
 display {
 	object {
@@ -110,6 +110,8 @@ rectangle {
 		clr=14
 		bclr=0
 	}
+	limits {
+	}
 }
 text {
 	object {
@@ -135,6 +137,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -147,6 +151,8 @@ text {
 		chan="$(P)DAC$(D)_$(N).VAL"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "text update" {
@@ -162,6 +168,8 @@ text {
 		bclr=4
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 text {
 	object {
@@ -226,6 +234,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 text {
 	object {
@@ -260,8 +270,6 @@ composite {
 		height=20
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		"text entry" {
 			object {
@@ -274,6 +282,8 @@ composite {
 				chan="$(P)DAC$(D)_$(N).DRVL"
 				clr=14
 				bclr=51
+			}
+			limits {
 			}
 		}
 		text {
@@ -298,8 +308,6 @@ composite {
 		height=20
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		"message button" {
 			object {
@@ -343,6 +351,8 @@ composite {
 				clr=14
 				bclr=51
 			}
+			limits {
+			}
 		}
 	}
 }
@@ -369,9 +379,19 @@ composite {
 		name="yyTransform_full.adl"
 		args="P=$(P),T=DAC$(D)_$(N)_ROC_calc"
 	}
+	display[3] {
+		label="output calc (debug)"
+		name="yysCalcoutRecord.adl"
+		args="P=$(P),D=$(D),N=$(N),C=DAC$(D)_$(N)calc"
+	}
+	display[4] {
+		label="need calc (debug)"
+		name="yysCalcoutRecord.adl"
+		args="P=$(P),D=$(D),N=$(N),C=DAC$(D)_$(N)_need"
+	}
 	clr=14
 	bclr=51
-	label=More
+	label="More"
 }
 composite {
 	object {
@@ -381,8 +401,6 @@ composite {
 		height=20
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -468,4 +486,6 @@ text {
 		bclr=15
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
