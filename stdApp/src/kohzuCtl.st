@@ -1225,10 +1225,14 @@ state stopKohzu {
 		pvPut(thetaMotStop);
 		pvPut(yStop);
 		pvPut(zStop);
-		/*delay(1.);*/
-	} state updateRdbk
-
+	} state stoppedKohzuWait
 }
+
+state stoppedKohzuWait {
+	when(delay(1.)) {
+	} state updateRdbk
+}
+
 } /* end of state set kohzuCtl  */
 
 
