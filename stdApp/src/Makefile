@@ -103,6 +103,10 @@ std_SRCS_vxWorks  += subAve.c
 # ioc status checking stuff
 std_SRCS_vxWorks   += iocCheck.c
 
+# temporary, until we locate a released version of the vxStats module
+# for 3.14.
+std_SRCS_vxWorks   += devVXStats.c
+
 # gensub-based interpolation routines
 std_SRCS += interp.c
 
