@@ -105,6 +105,7 @@
  /**********************************************************************/
 
 #include	<vxWorks.h>
+#include        <vxLib.h>
 #include	<sysLib.h>
 #include	<vme.h>
 #include	<types.h>
@@ -126,6 +127,7 @@
 #include	<link.h>
 
 #include	<epicsPrint.h>
+#include        <epicsExport.h>
 
 #include        <aoRecord.h>
 #include        <aiRecord.h>
@@ -221,6 +223,14 @@ A32VME_DSET devLoA32Vme =   {5, NULL, NULL, init_lo, NULL, write_lo, NULL};
 A32VME_DSET devMbbiA32Vme = {5, NULL, NULL, init_mbbi, NULL, read_mbbi,  NULL};
 A32VME_DSET devMbboA32Vme = {5, NULL, NULL, init_mbbo, NULL, write_mbbo, NULL};
 
+epicsExportAddress(A32VME_DSET, devAiA32Vme);
+epicsExportAddress(A32VME_DSET, devAoA32Vme);
+epicsExportAddress(A32VME_DSET, devBiA32Vme);
+epicsExportAddress(A32VME_DSET, devBoA32Vme);
+epicsExportAddress(A32VME_DSET, devLiA32Vme);
+epicsExportAddress(A32VME_DSET, devLoA32Vme);
+epicsExportAddress(A32VME_DSET, devMbbiA32Vme);
+epicsExportAddress(A32VME_DSET, devMbboA32Vme);
 
 /**************************************************************************
  **************************************************************************/
@@ -235,7 +245,7 @@ unsigned long   regData;
       printf("  Card #%d at %p\n", cardNum, cards[cardNum].base);
       for(i=0; i < cards[cardNum].nReg; i++) {
           regData = cards[cardNum].base->reg[i];
-          printf("    Register %d -> 0x%4.4X (%d)\n", i, regData, regData);
+          printf("    Register %d -> 0x%4.4lX (%ld)\n", i, regData, regData);
       }
     }
   }
@@ -1234,7 +1244,7 @@ unsigned long  *value; /* the value to return from the card */
   *value = cards[card].base->reg[reg] & mask;
 
   if (devA32VmeDebug >= 20)
-    printf("devA32Vme: read 0x%4.4X from card %d\n", *value, card);
+    printf("devA32Vme: read 0x%4.4lX from card %d\n", *value, card);
 
   return(OK);
 }
@@ -1261,7 +1271,7 @@ unsigned long   value;
   epicsMutexUnlock(cards[card].lock);
 
   if (devA32VmeDebug >= 15)
-    printf("devA32Vme: wrote 0x%4.4X to card %d\n",
+    printf("devA32Vme: wrote 0x%4.4lX to card %d\n",
             cards[card].base->reg[reg], card);
 
   return(0);
