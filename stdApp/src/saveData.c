@@ -114,6 +114,8 @@
 #include <cadef.h>
 #include <tsDefs.h>
 #include <epicsMutex.h>
+#include <epicsExport.h>
+#include <iocsh.h>
 #include <epicsMessageQueue.h>
 #include "req_file.h"
 #include "xdr_lib.h"
@@ -753,7 +755,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.5 2003-05-28 22:44:52 bcda Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.6 2003-11-04 04:39:22 rivers Exp $\n");
 }
 
 void saveData_Info() {
@@ -3103,7 +3105,7 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
   while(1) {
     
     /* waiting for messages						*/
-    if (epicsMessageQueueReceive(msg_queue, pmsg) ==
+    if (epicsMessageQueueReceive(msg_queue, pmsg, MAX_SIZE) ==
 		S_objLib_OBJ_DELETED) {
       break;
     }
@@ -3183,10 +3185,26 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
       break;
 
     default: 
-      Debug1(2, "Unknow message: #%d", *ptype);
+      Debug1(2, "Unknown message: #%d", *ptype);
     }
   }
   return 0;
 }    
 
+static const iocshArg saveData_InitArg0 = { "filename",iocshArgString};
+static const iocshArg saveData_InitArg1 = { "macro string",iocshArgString};
+static const iocshArg * const saveData_InitArgs[3] = {&saveData_InitArg0,
+                                                      &saveData_InitArg1};
+static const iocshFuncDef saveData_InitFuncDef = {"saveData_Init",2,saveData_InitArgs};
+static void saveData_InitCallFunc(const iocshArgBuf *args)
+{
+    saveData_Init(args[0].sval, args[1].sval);
+}
+
+void saveDataRegister(void)
+{
+    iocshRegister(&saveData_InitFuncDef, saveData_InitCallFunc);
+}
+
+epicsExportRegistrar(saveDataRegister);
 
