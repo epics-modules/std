@@ -40,6 +40,7 @@ DBDINC += epidRecord
 DBD += std.dbd
 DBD += stdVX.dbd
 DBD += stdSupport.dbd
+DBD += stdVXSupport.dbd
 DBDINSTALL += ../shareBase.dbd
 DBDINSTALL += ../stdShare.dbd
 
