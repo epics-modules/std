@@ -67,14 +67,23 @@ DEVELOPMENT CENTER AT ARGONNE NATIONAL LABORATORY (708-252-2000).
 /*  subroutine to average data */
 /*  F. Lenkszus */
 
+#ifdef vxWorks
 #include <vxWorks.h>
 #include <stdlib.h>
+#endif
+
 #include <stdio.h>
-#include <dbDefs.h>
-#include <dbEvent.h>
-#include <devLib.h>
+
 #include <alarm.h>
+#include <cvtTable.h>
+#include <dbDefs.h>
+#include <dbAccess.h>
+#include <recGbl.h>
 #include <recSup.h>
+#include <devSup.h>
+#include <link.h>
+#include <devLib.h>
+#include <dbEvent.h>
 #include <subRecord.h>
 
 #define	CIRBUFSIZE	10000

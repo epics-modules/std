@@ -44,11 +44,12 @@
 
 #define VERSION 5.13
 
+#ifdef vxWorks
 #include	<vxWorks.h>
+#endif
 #include	<types.h>
 #include	<stdioLib.h>
 #include	<stdlib.h>
-/*#include	<lstLib.h>*/
 #include	<string.h>
 #include	<math.h>
 
@@ -59,6 +60,7 @@
 #include	<dbEvent.h>
 #include	<errMdef.h>
 #include	<recSup.h>
+#include	<recGbl.h>
 #include	<special.h>
 #define GEN_SIZE_OFFSET
 #include	"tableRecord.h"

@@ -30,14 +30,13 @@
  * -----------------
  *  .01 05-17-99  tmm  Created from seq record (by John Winans)
  */
+#ifdef vxWorks
 #include	<vxWorks.h>
+#endif
 #include	<stdlib.h>
 #include	<stdio.h>
 #include	<string.h>
-#include	<lstLib.h>
-#include	<string.h>
 #include	<memLib.h>
-#include	<wdLib.h>
 #include	<sysLib.h>
 
 #include	<dbDefs.h>
@@ -50,6 +49,7 @@
 #include	<devSup.h>
 #include	<errMdef.h>
 #include	<recSup.h>
+#include	<recGbl.h>
 #include	<special.h>
 #include	<callback.h>
 #include	<cvtFast.h>
@@ -82,12 +82,10 @@ struct	linkDesc {
 #define LINKS_NOT_OK	1
 struct callbackSeq {
 	CALLBACK		callback;	/* used for the callback task */
-	WDOG_ID			wd_id;		/* Watchdog ID's for delays */
 	struct linkDesc	*plinks[NUM_LINKS+1]; /* Pointers to links to process */
 	int				index;
 	CALLBACK		checkLinksCB;
-	WDOG_ID			wd_id_1;
-	short			wd_id_1_LOCK;
+	short			pending_checkLinksCB;
 	short			linkStat; /* LINKS_ALL_OK, LINKS_NOT_OK */
 };
 
@@ -95,7 +93,6 @@ static long init_record(sseqRecord *pR, int pass);
 static long process(sseqRecord *pR);
 static int processNextLink(sseqRecord *pR);
 static long asyncFinish(sseqRecord *pR);
-static void watchDog(CALLBACK *pcallback);
 static void processCallback(CALLBACK *pCallback);
 static long get_precision(struct dbAddr *paddr, long *precision);
 static void checkLinksCallback(CALLBACK *pCallback);
@@ -157,13 +154,11 @@ init_record(sseqRecord *pR, int pass)
 	callbackSetCallback(processCallback, &pdpvt->callback);
 	callbackSetPriority(pR->prio, &pdpvt->callback);
 	callbackSetUser(pR, &pdpvt->callback);
-	pdpvt->wd_id = wdCreate();
 
 	callbackSetCallback(checkLinksCallback, &pdpvt->checkLinksCB);
 	callbackSetPriority(0, &pdpvt->checkLinksCB);
 	callbackSetUser(pR, &pdpvt->checkLinksCB);
-	pdpvt->wd_id_1 = wdCreate();
-	pdpvt->wd_id_1_LOCK = 0;
+	pdpvt->pending_checkLinksCB = 0;
 
 	/* Get link selection if sell is a constant and nonzero */
 	if (pR->sell.type==CONSTANT) {
@@ -216,9 +211,8 @@ init_record(sseqRecord *pR, int pass)
 	}
 
 	if (pdpvt->linkStat == LINKS_NOT_OK) {
-		wdStart(pdpvt->wd_id_1, 60, (FUNCPTR)callbackRequest,
-			(int)(&pdpvt->checkLinksCB));
-		pdpvt->wd_id_1_LOCK = 1;
+		callbackRequestDelayed(&pdpvt->checkLinksCB, 1.0);
+		pdpvt->pending_checkLinksCB = 1;
 	}
 
 	return(0);
@@ -349,7 +343,6 @@ static int processNextLink(sseqRecord *pR)
 {
 	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
 	struct linkDesc		*plink = (struct linkDesc *)(pcb->plinks[pcb->index]);
-	int					wdDelay;
 
 	if (sseqRecDebug > 5) {
 		printf("processNextLink(%s) looking for work to do, index = %d\n",
@@ -361,13 +354,10 @@ static int processNextLink(sseqRecord *pR)
 		(*(struct rset *)(pR->rset)).process(pR);
 	} else {
 		if (plink->dly > 0.0) {
-			/* Use the watch-dog as a delay mechanism */
-			wdDelay = plink->dly * sysClkRateGet();
-			wdStart(pcb->wd_id, wdDelay, (FUNCPTR)watchDog,
-				(int)(&(pcb->callback)));
+			callbackRequestDelayed(&pcb->callback, plink->dly);
 		} else {
 			/* No delay, do it now.  Avoid recursion;  use callback task */
-			watchDog(&(pcb->callback));
+			callbackRequest(&pcb->callback);
 		}
 	}
   return(0);
@@ -404,20 +394,6 @@ asyncFinish(sseqRecord *pR)
 	pR->pact = FALSE;
 
 	return(0);
-}
-/*****************************************************************************
- *
- * Schedule the process continuation via the callback tasks.
- *
- * This function is called by the watchdog task when it is time to process the
- * "next" link-group in the sequence record.
- *
- ******************************************************************************/
-static void
-watchDog(CALLBACK *pcallback)
-{
-	callbackRequest(pcallback);
-	return;
 }
 /*****************************************************************************
  *
@@ -553,12 +529,11 @@ static void checkLinksCallback(CALLBACK *pCallback)
     
 	if (!interruptAccept) {
 		/* Can't call dbScanLock yet.  Schedule another CALLBACK */
-		pdpvt->wd_id_1_LOCK = 1;  /* make sure */
-		wdStart(pdpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-			(int)(&pdpvt->checkLinksCB));
+		pdpvt->pending_checkLinksCB = 1;  /* make sure */
+		callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 	} else {
 	    dbScanLock((struct dbCommon *)pR);
-	    pdpvt->wd_id_1_LOCK = 0;
+	    pdpvt->pending_checkLinksCB = 0;
 	    checkLinks(pR);
 	    dbScanUnlock((struct dbCommon *)pR);
 	}
@@ -592,11 +567,11 @@ static void checkLinks(sseqRecord *pR)
 				pamapdbfType[plink->lnk_field_type].strvalue);
 		}
 	}
-	if (!pdpvt->wd_id_1_LOCK && (pdpvt->linkStat == LINKS_NOT_OK)) {
+	if (!pdpvt->pending_checkLinksCB && (pdpvt->linkStat == LINKS_NOT_OK)) {
 		/* Schedule another CALLBACK */
-		pdpvt->wd_id_1_LOCK = 1;
-		wdStart(pdpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-			(int)(&pdpvt->checkLinksCB));
+		pdpvt->pending_checkLinksCB = 1;
+		callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
+
 	}
 }
 
@@ -633,10 +608,9 @@ static long special(struct dbAddr *paddr, int after)
 			plink->dol_field_type = dbGetLinkDBFtype(&plink->dol);
 			if (plink->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 		}
-		if (!pdpvt->wd_id_1_LOCK && (pdpvt->linkStat == LINKS_NOT_OK)) {
-			pdpvt->wd_id_1_LOCK = 1;
-			wdStart(pdpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-				(int)(&pdpvt->checkLinksCB));
+		if (!pdpvt->pending_checkLinksCB && (pdpvt->linkStat == LINKS_NOT_OK)) {
+			pdpvt->pending_checkLinksCB = 1;
+			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 		}
 		if (sseqRecDebug) printf("sseq:special:dol_field_type=%d (%s)\n",
 			plink->dol_field_type,
@@ -668,10 +642,9 @@ static long special(struct dbAddr *paddr, int after)
 			plink->lnk_field_type = dbGetLinkDBFtype(&plink->lnk);
 			if (plink->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 		}
-		if (!pdpvt->wd_id_1_LOCK && (pdpvt->linkStat == LINKS_NOT_OK)) {
-			pdpvt->wd_id_1_LOCK = 1;
-			wdStart(pdpvt->wd_id_1, 30, (FUNCPTR)callbackRequest,
-				(int)(&pdpvt->checkLinksCB));
+		if (!pdpvt->pending_checkLinksCB && (pdpvt->linkStat == LINKS_NOT_OK)) {
+			pdpvt->pending_checkLinksCB = 1;
+			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 		}
 		if (sseqRecDebug) printf("sseq:special:lnk_field_type=%d (%s)\n",
 			plink->lnk_field_type,

@@ -74,39 +74,38 @@
 
 
 
-#include	<vxWorks.h> 
-#include	<types.h>
-#include	<stdioLib.h>
-#include	<lstLib.h>
-#include	<string.h>
-#include	<math.h>
-#include	<tickLib.h>
-#include	<semLib.h>
-#include	<taskLib.h>
-#include	<wdLib.h>
-#include	<sysLib.h>
-#include	<ctype.h>
+#ifdef vxWorks
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#endif
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <ctype.h>
 
-#include	<alarm.h>
-#include	<dbDefs.h>
-#include	<dbAccess.h>
-#include	<dbEvent.h>
-#include	<dbScan.h>
-#include	<dbDefs.h>
-#include	<dbFldTypes.h>
-#include	<devSup.h>
-#include	<errMdef.h>
-#include	<rngLib.h>
-#include	<recSup.h>
-#include	<special.h>
-#include	<callback.h>
-#include	<taskwd.h>
-#include	<postfix.h>
+#include <epicsRingBytes.h>
+
+#include <alarm.h>
+#include <dbDefs.h>
+#include <dbAccess.h>
+#include <dbEvent.h>
+#include <dbScan.h>
+#include <dbDefs.h>
+#include <dbFldTypes.h>
+#include <devSup.h>
+#include <errMdef.h>
+#include <recSup.h>
+#include <recGbl.h>
+#include <special.h>
+#include <callback.h>
+#include <taskwd.h>
+#include <postfix.h>
 
 #define GEN_SIZE_OFFSET
-#include	"swaitRecord.h"
+#include "swaitRecord.h"
 #undef  GEN_SIZE_OFFSET
-#include	"recDynLink.h"
+#include "recDynLink.h"
 
 
 #define PRIVATE_FUNCTIONS 1	/* normal:1, debug:0 */
@@ -199,9 +198,8 @@ struct cbStruct {
     CALLBACK           doOutCb;   /* cback struct for doing the OUT link*/
     CALLBACK           ioProcCb;  /* cback struct for io_event scanning */
     swaitRecord *pwait;     /* pointer to wait record */
-    WDOG_ID            wd_id;     /* Watchdog used for delays */
     recDynLink         caLinkStruct[NUM_LINKS]; /* req'd for recDynLink*/
-    RING_ID            monitorQ;  /* queue to store ca callback data */
+    epicsRingBytesId   monitorQ;  /* queue to store ca callback data */
     IOSCANPVT          ioscanpvt; /* used for IO_EVENT scanning */
     int                outputWait;/* waiting to do output */
     int                procPending;/*record processing is pending */
@@ -309,8 +307,7 @@ STATIC long init_record(pwait,pass)
     callbackSetPriority(pwait->prio, &pcbst->ioProcCb);
     callbackSetUser(pwait, &pcbst->ioProcCb);
     pcbst->pwait = pwait;
-    pcbst->wd_id = wdCreate();
-    if ((pcbst->monitorQ=rngCreate(sizeof(struct qStruct)*Q_SIZE)) == NULL) {
+    if ((pcbst->monitorQ=epicsRingBytesCreate(sizeof(struct qStruct)*Q_SIZE)) == NULL) {
         errMessage(0,"recWait can't create ring buffer");
         exit(1);
     }
@@ -334,7 +331,7 @@ STATIC long init_record(pwait,pass)
 			ppvn[0] = '\0';
 			db_post_events(pwait, ppvn, DBE_VALUE);
 			*pPvStat = NO_PV;
-		} else if (ppvn[0] != NULL) {
+		} else if (ppvn[0] != 0) {
             *pPvStat = PV_NC;
             if (i<OUT_INDEX) {
                 recDynLinkAddInput(&pcbst->caLinkStruct[i], ppvn, 
@@ -344,7 +341,7 @@ STATIC long init_record(pwait,pass)
                 recDynLinkAddOutput(&pcbst->caLinkStruct[i], ppvn,
                 DBR_DOUBLE, rdlSCALAR, pvSearchCallback);
             }
-            if (swaitRecordDebug > 5) printf("%s:Search during init\n", pwait->name);
+            if (swaitRecordDebug > 5) errlogPrintf("%s:Search during init\n", pwait->name);
         }
         else {
             *pPvStat = NO_PV;
@@ -360,7 +357,7 @@ notifyCallback(recDynLink * precDynLink)
 	recDynLinkPvt  *puserPvt = (recDynLinkPvt *) precDynLink->puserPvt;
 	swaitRecord *pwait = puserPvt->pwait;
 
-	if (swaitRecordDebug >= 10) printf("swaitRecord:notifyCallback: entry\n");
+	if (swaitRecordDebug >= 10) errlogPrintf("swaitRecord:notifyCallback: entry\n");
     recGblFwdLink(pwait);
 }
 STATIC long process(swaitRecord	*pwait)
@@ -473,7 +470,7 @@ STATIC long special(paddr,after)
     int				fieldIndex = dbGetFieldIndex(paddr);
     short error_number;
 
-    if (swaitRecordDebug) printf("entering special %d \n",after);
+    if (swaitRecordDebug) errlogPrintf("entering special %d \n",after);
 
     if (!after) {  /* this is called before ca changes the field */
         
@@ -494,8 +491,8 @@ STATIC long special(paddr,after)
 			ppvn[0] = '\0';
 			db_post_events(pwait, ppvn, DBE_VALUE);
 		} 
-        if (ppvn[0] != NULL) {
-            if (swaitRecordDebug > 5) printf("Search during special \n");
+        if (ppvn[0] != 0) {
+            if (swaitRecordDebug > 5) errlogPrintf("Search during special \n");
             *pPvStat = PV_NC;
             /* need to post_event before recDynLinkAddXxx because
                SearchCallback could happen immediatley */
@@ -661,7 +658,7 @@ swaitRecord *pwait;
 
             /* if any input should be connected, but is not, return */
             if (*pPvStat == PV_NC) {
-                 status = ERROR;
+                 status = -1;
             }
 
             /* only fetch a value if the connection is valid */
@@ -671,7 +668,7 @@ swaitRecord *pwait;
             else if ((*pPvStat == PV_OK)&&
                     ((pwait->scan != SCAN_IO_EVENT) || 
                      ((pwait->scan == SCAN_IO_EVENT) && !*piointInc))) {
-               if (swaitRecordDebug > 5) printf("Fetching input %d \n",i);
+               if (swaitRecordDebug > 5) errlogPrintf("Fetching input %d \n",i);
                status = recDynLinkGet(&pcbst->caLinkStruct[i], pvalue,
                                       &nRequest, 0, 0, 0);
             }
@@ -693,13 +690,10 @@ STATIC void schedOutput(swaitRecord *pwait)
 {
 	struct cbStruct *pcbst = (struct cbStruct *)pwait->cbst;
 
-	int	wdDelay;
- 
 	if (pwait->odly > 0.0) {
 		/* Use the watch-dog as a delay mechanism */
 		pcbst->outputWait = 1;
-		wdDelay = pwait->odly * sysClkRateGet();
-		wdStart(pcbst->wd_id, wdDelay, (FUNCPTR)callbackRequest, (int)(&pcbst->doOutCb));
+        callbackRequestDelayed(&pcbst->doOutCb, pwait->odly);
 	} else {
 		execOutput(pwait);
 	}
@@ -734,7 +728,7 @@ STATIC void execOutput(swaitRecord *pwait)
 	struct cbStruct *pcbst = pwait->cbst;
 
 	if (swaitRecordDebug >= 10)
-		printf("swaitRecord(%s)execOutput: entry\n", pwait->name);
+		errlogPrintf("swaitRecord(%s)execOutput: entry\n", pwait->name);
 	/* if output link is valid , decide between VAL and DOL */
 	if (!pwait->outv) {
 		if (pwait->dopt) {
@@ -750,7 +744,7 @@ STATIC void execOutput(swaitRecord *pwait)
 			outValue = pwait->val;
 		}
 		if (swaitRecordDebug >= 10)
-			printf("swaitRecord(%s)execOutput: calling recDynLinkPutCallback()\n",
+			errlogPrintf("swaitRecord(%s)execOutput: calling recDynLinkPutCallback()\n",
 				pwait->name);
 		status = recDynLinkPutCallback(&pcbst->caLinkStruct[OUT_INDEX],
 			&outValue, 1, notifyCallback);
@@ -766,7 +760,7 @@ STATIC void execOutput(swaitRecord *pwait)
 		}
 	} else {
 		if (swaitRecordDebug >= 10)
-			printf("swaitRecord(%s)execOutput: calling recGblFwdLink()\n", pwait->name);
+			errlogPrintf("swaitRecord(%s)execOutput: calling recGblFwdLink()\n", pwait->name);
 		recGblFwdLink(pwait);
 	}
 
@@ -777,7 +771,7 @@ STATIC void execOutput(swaitRecord *pwait)
 	/* If I/O Interrupt scanned, see if any inputs changed during delay */
 	if ((pwait->scan == SCAN_IO_EVENT) && (pcbst->procPending == 1)) {
 		if (swaitRecordDebug >= 10)
-			printf("swaitRecord(%s)execOutput: calling scanOnce()\n", pwait->name);
+			errlogPrintf("swaitRecord(%s)execOutput: calling scanOnce()\n", pwait->name);
 		scanOnce(pwait);
 	}
 	return;
@@ -810,14 +804,14 @@ STATIC void inputChanged(recDynLink *precDynLink)
     /* put input index and monitored data on processing queue */
     recDynLinkGet(precDynLink, &monData, &nRequest, 0, 0, 0); 
     if (swaitRecordDebug>5)
-        printf("swaitRecord(%s)inputChanged: queuing monitor on %d = %f\n",pwait->name,index,monData);
-    if (rngBufPut(pcbst->monitorQ, (void *)&index, sizeof(char))
+        errlogPrintf("swaitRecord(%s)inputChanged: queuing monitor on %d = %f\n",pwait->name,index,monData);
+    if (epicsRingBytesPut(pcbst->monitorQ, (char *)&index, sizeof(char))
         != sizeof(char)) errMessage(0,"recWait rngBufPut error");
-    if (rngBufPut(pcbst->monitorQ, (void *)&monData, sizeof(double))
+    if (epicsRingBytesPut(pcbst->monitorQ, (char *)&monData, sizeof(double))
         != sizeof(double)) errMessage(0,"recWait rngBufPut error");
 	if (swaitRecordDebug>5) {
-		printf("swaitRecord(%s)inputChanged: %d entries left in monitorQ\n", pwait->name,
-			(int)(rngFreeBytes(pcbst->monitorQ)/sizeof(struct qStruct)));
+		errlogPrintf("swaitRecord(%s)inputChanged: %d entries left in monitorQ\n", pwait->name,
+			(int)(epicsRingBytesFreeBytes(pcbst->monitorQ)/sizeof(struct qStruct)));
 	}
     callbackRequest(&pcbst->ioProcCb);
 }
@@ -843,13 +837,13 @@ STATIC void ioIntProcess(CALLBACK *pioProcCb)
 	if (pwait->scan != SCAN_IO_EVENT) return;
 
 	if (!swaitRecordCacheMode) {
-		if (rngBufGet(pcbst->monitorQ, (void *)&inputIndex, sizeof(char))
+		if (epicsRingBytesGet(pcbst->monitorQ, (char *)&inputIndex, sizeof(char))
 			!= sizeof(char)) errMessage(0, "recWait: rngBufGet error");
-		if (rngBufGet(pcbst->monitorQ, (void *)&monData, sizeof(double))
+		if (epicsRingBytesGet(pcbst->monitorQ, (char *)&monData, sizeof(double))
 			!= sizeof(double)) errMessage(0, "recWait: rngBufGet error");
 
 		if (swaitRecordDebug>=5)
-			printf("swaitRecord(%s)ioIntProcess: processing on %d = %f  (%f)\n",
+			errlogPrintf("swaitRecord(%s)ioIntProcess: processing on %d = %f  (%f)\n",
 				pwait->name, inputIndex, monData,pwait->val);
 		pInput += inputIndex;   /* pointer arithmetic for appropriate input */ 
 		dbScanLock((struct dbCommon *)pwait);
@@ -859,14 +853,14 @@ STATIC void ioIntProcess(CALLBACK *pioProcCb)
 		if (pcbst->outputWait) {
 			pcbst->procPending = 1;
 			if (swaitRecordDebug)
-				printf("swaitRecord(%s)ioIntProcess:record busy, setting procPending\n", 
+				errlogPrintf("swaitRecord(%s)ioIntProcess:record busy, setting procPending\n", 
 					pwait->name);
 		} else {
 			dbProcess((struct dbCommon *)pwait);     /* process the record */
 		}
 		dbScanUnlock((struct dbCommon *)pwait);
 	} else {
-		if (swaitRecordDebug>=5) printf("%s:processing (cached)\n", pwait->name);
+		if (swaitRecordDebug>=5) errlogPrintf("%s:processing (cached)\n", pwait->name);
 		dbScanLock((struct dbCommon *)pwait);
 		dbProcess((struct dbCommon *)pwait);     /* process the record */
 		dbScanUnlock((struct dbCommon *)pwait);
@@ -889,11 +883,11 @@ STATIC void pvSearchCallback(recDynLink *precDynLink)
     oldValid = *pPvStat;
     if (recDynLinkConnectionStatus(precDynLink)) {
         *pPvStat = PV_NC;
-        if (swaitRecordDebug) printf("%s:Search Callback: No Connection\n", pwait->name);
+        if (swaitRecordDebug) errlogPrintf("%s:Search Callback: No Connection\n", pwait->name);
     }
     else {
         *pPvStat = PV_OK;
-        if (swaitRecordDebug) printf("%s:Search Callback: Success\n", pwait->name);
+        if (swaitRecordDebug) errlogPrintf("%s:Search Callback: Success\n", pwait->name);
     }
     if (*pPvStat != oldValid) {
         db_post_events(pwait, pPvStat, DBE_VALUE);
