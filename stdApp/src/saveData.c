@@ -80,11 +80,17 @@
  *                    the current data file.  Write char array with xdr_vector()
  *                    instead of xdr_bytes(), which wasn't working.
  * .23 03-24-02  tmm  v1.10 Increased stack from 5000 to 10000.
+ * .24 04-02-02  tmm  v1.11 trigger PV now retains field name.  Trig command now
+ *                    written correctly
+ * .25 04-23-02  tmm  v1.12 realTime1D wasn't received as DBR_SHORT but treated as int.
+ *                    This caused saveData to behave as if realTime1D were on at boot.
+ *                    Added code to print file-write time if debug_saveData==1.
+ * .26 07-22-02  tmm  v1.13 null terminate DBR_STRING variables
  */
 
 
 #define FILE_FORMAT_VERSION (float)1.3
-#define SAVE_DATA_VERSION   "1.10.0"
+#define SAVE_DATA_VERSION   "1.13.0"
 
 
 #include "req_file.h"
@@ -360,6 +366,7 @@ typedef struct scan {
   chid  ctxpv[SCAN_NBT];
   float txcd[SCAN_NBT];		/* trigger X command			*/
   chid  ctxcd[SCAN_NBT];
+  char  txpvRec[SCAN_NBT][40];	/* trigger X pv name minus field	*/
 
 } SCAN;		/****** end of structure SCAN ******/
 
@@ -752,7 +759,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.3 2002-03-26 17:20:11 bcda Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.4 2002-07-22 22:16:50 bcda Exp $\n");
 }
 
 void saveData_Info() {
@@ -966,6 +973,7 @@ LOCAL int connectScan(char* name, char* handShake)
         ca_clear_channel(pscan->ctxpv[i]);
         pscan->ctxpv[i]= NULL;
         pscan->txpv[i][0]= '\0';
+        pscan->txpvRec[i][0]= '\0';
         ca_clear_channel(pscan->ctxcd[i]);
         pscan->ctxcd[i]= NULL;
       }
@@ -1198,7 +1206,7 @@ LOCAL void updateScan(SCAN* pscan)
   pscan->nxt=0;
   for(i=0; i<SCAN_NBT; i++) {
     if(pscan->txsc[i]==0 && pscan->txcd[i]!=0) {
-      pscan->nxt= searchScan(pscan->txpv[i]);
+      pscan->nxt= searchScan(pscan->txpvRec[i]);
       if(pscan->nxt) break;
     }
   }
@@ -1477,7 +1485,7 @@ LOCAL void txnvMonitor(struct event_handler_args eha)
 /*                                                			*/
 LOCAL void txcdMonitor(struct event_handler_args eha)
 {
-    sendScanIndexMsg(MSG_SCAN_TXCD, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((short *) eha.dbr), WAIT_FOREVER);
+    sendScanIndexMsg(MSG_SCAN_TXCD, (SCAN *) ca_puser(eha.chid), (int) eha.usr, *((float *) eha.dbr), WAIT_FOREVER);
 }
 
 /*----------------------------------------------------------------------*/
@@ -1574,7 +1582,7 @@ LOCAL int connectRealTime1D(char* rt)
     printf("saveData: Unable to connect %s\n", rt);
     return -1;
   } else {
-    if(ca_add_event(DBR_SHORT, realTime1D_chid,
+    if(ca_add_event(DBR_LONG, realTime1D_chid,
                     realTime1DMonitor, NULL, NULL)!= ECA_NORMAL) {
       printf("saveData: Unable to post monitor on %s\n", rt);
       ca_clear_channel(realTime1D_chid);
@@ -1591,6 +1599,7 @@ LOCAL void extraValCallback(struct event_handler_args eha)
   long type = eha.type;
   long count = eha.count;
   DBR_VAL * pval = eha.dbr;
+  char *string;
 
   size_t size=0;
 
@@ -1599,6 +1608,7 @@ LOCAL void extraValCallback(struct event_handler_args eha)
   switch(type) {
   case DBR_STRING:
     size= strlen((char*)pval);
+    /* logMsg("extraValCallback: count=%d, strlen=%d\n", count, size); */
     break;
   case DBR_CTRL_CHAR:
     size= dbr_size[DBR_CTRL_CHAR]+(count-1);
@@ -1622,6 +1632,11 @@ LOCAL void extraValCallback(struct event_handler_args eha)
   }
 
   memcpy(pnode->pval, pval, size);
+  if (type == DBR_STRING) {
+    string = pnode->pval;
+    string[size>39?39:size] = '\0';
+    /* logMsg("extraValCallback: string is >%s<\n", (char *)(pnode->pval)); */
+  }
   pnode->count= count;
 
   semGive(pnode->lock);
@@ -2045,6 +2060,7 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
   long  lval;
   long  scan_offset;
   long  data_size;
+  long  openTick=0;
 
   pscan= pmsg->pscan;  
 
@@ -2145,10 +2161,12 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
       }
 
       Debug1(3, "Open file: %s\n", pscan->ffname);
+      openTick = tickGet();
       fd= fopen(pscan->ffname, "wb+");
 
     } else {
       Debug1(3, "Open file: %s\n", pscan->ffname);
+      openTick = tickGet();
       fd= fopen(pscan->ffname, "rb+");
       if (fd != NULL) fseek(fd, 0, SEEK_END);
     }
@@ -2356,7 +2374,8 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
 
     xdr_destroy(&xdrs);
     fclose(fd);
-    Debug0(3, "scan Header written\n");
+    Debug2(1, "%s header written (%.3fs)\n", pscan->name,
+              ((float)(tickGet()-openTick))/vxTicksPerSecond);
       
     DebugMsg2(2, "%s MSG_SCAN_DATA(0)= %f\n", pscan->name,
               ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
@@ -2367,6 +2386,7 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
 
     /* process the message */
 
+    openTick = tickGet();
     fd= fopen(pscan->ffname, "rb+");
     if ((fd == NULL) || (fileStatus(pscan->ffname) == ERROR)) {
       printf("saveData:proc_scan_data: can't open data file!!\n");
@@ -2463,6 +2483,8 @@ LOCAL void proc_scan_data(SCAN_SHORT_MSG* pmsg)
 
     xdr_destroy(&xdrs);
     fclose(fd);
+    Debug2(1, "%s data written (%.3fs)\n", pscan->name,
+              ((float)(tickGet()-openTick))/vxTicksPerSecond);
 
     if(pscan->nxt) {
       pscan->nxt->first_scan=TRUE;
@@ -2505,6 +2527,7 @@ LOCAL void proc_scan_cpt(SCAN_SHORT_MSG* pmsg)
   SCAN* pscan;
   FILE* fd;
   XDR   xdrs;
+  long openTick=0;
 
   pscan= pmsg->pscan;
 
@@ -2537,7 +2560,7 @@ LOCAL void proc_scan_cpt(SCAN_SHORT_MSG* pmsg)
     printf("saveData: unable to get current values !!!\n");
     pscan->all_pts= FALSE;
   } else {
-      
+    openTick = tickGet();
     fd= fopen(pscan->ffname, "rb+");
     xdrstdio_create(&xdrs, fd, XDR_ENCODE);
       
@@ -2563,6 +2586,8 @@ LOCAL void proc_scan_cpt(SCAN_SHORT_MSG* pmsg)
       
     xdr_destroy(&xdrs);
     fclose(fd);
+    Debug2(1, "%s data point written (%.3fs)\n", pscan->name,
+              ((float)(tickGet()-openTick))/vxTicksPerSecond);
   }
 
   DebugMsg3(2, "%s MSG_SCAN_CPT(%d)= %f\n", pscan->name, pscan->cpt, 
@@ -2805,16 +2830,19 @@ LOCAL void proc_scan_txnv(SCAN_INDEX_MSG* pmsg)
   pscan->txsc[i]= 1;
   pscan->txnv[i]= val;
   pscan->txpv[i][0]= '\0';
+  pscan->txpvRec[i][0]= '\0';
 
   if(val==XXNV_OK) {
     ca_array_get(DBR_STRING, 1, pscan->ctxpv[i], pscan->txpv[i]);
     if(ca_pend_io(2.0)!=ECA_NORMAL) {
       Debug2(2, "Unable to get %s.%s\n", pscan->name, txpv[i]);
       pscan->txpv[i][0]='\0';
+      pscan->txpvRec[i][0]='\0';
     } else {
-      len= strcspn(pscan->txpv[i], ".");
+      strcpy(pscan->txpvRec[i], pscan->txpv[i]);
+      len= strcspn(pscan->txpvRec[i], ".");
       pscan->txsc[i]= strncmp(&pscan->txpv[i][len], ".EXSC", 6);
-      pscan->txpv[i][len]='\0';
+      pscan->txpvRec[i][len]='\0';
     }
   }
 
@@ -2995,7 +3023,7 @@ LOCAL void proc_realTime1D(INTEGER_MSG* pmsg)
     realTime1D= pmsg->val;
     updateScans();
   }
-  DebugMsg2(2, "MSG_REALTIME1D(%d)= %f\n", pmsg->val, 
+  DebugMsg2(2, "proc_realTime1D: MSG_REALTIME1D(%d)= %f\n", pmsg->val, 
             ((float)(tickGet()-pmsg->time))/vxTicksPerSecond);
 }
 
@@ -3085,6 +3113,7 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
       /*--------------------------------------------------------------*/
       /* TxCD has changed						*/
     case MSG_SCAN_TXCD:
+      Debug1(1, "saveDataTask: MSG_SCAN_TXCD, val=%f\n", ((SCAN_INDEX_MSG*)pmsg)->val);
       proc_scan_txcd((SCAN_INDEX_MSG*)pmsg);
       break;
 
@@ -3105,6 +3134,7 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
       break;
 
     case MSG_REALTIME1D:
+      Debug0(2, "saveDataTask: message MSG_REALTIME1D\n");
       proc_realTime1D((INTEGER_MSG*)pmsg);
       break;
 
