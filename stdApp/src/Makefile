@@ -22,7 +22,6 @@ include $(TOP)/configure/CONFIG
 # xxxRecord.h will be created from xxxRecord.dbd
 
 DBDINC += scalerRecord
-#DBDINC += gpibRecord
 DBDINC += sseqRecord
 DBDINC += epidRecord
 DBDINC += timestampRecord
@@ -44,7 +43,6 @@ std_SRCS_vxWorks+= devXxKeithleyDMM199Gpib.c
 std_SRCS_vxWorks += aiCvtDouble.c
 
 std_SRCS += scalerRecord.c
-#std_SRCS += gpibRecord.c
 std_SRCS += epidRecord.c
 std_SRCS += fastPID.cc
 std_SRCS += devEpidSoft.c
@@ -65,7 +63,7 @@ INC += aiCvtDouble.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
-std_LIBS += mpf mpfEpics gpib
+std_LIBS += mpf gpib
 std_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
@@ -82,7 +80,7 @@ stdApp_SRCS_vxWorks += -nil-
 stdApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 stdApp_LIBS += std
-stdApp_LIBS += mpf mpfEpics gpib
+stdApp_LIBS += mpf gpib
 stdApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
