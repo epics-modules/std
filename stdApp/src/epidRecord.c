@@ -64,12 +64,14 @@
                                 in implementing algorithms.
  */
 
-#include    <vxWorks.h>
-#include    <types.h>
-#include    <stdioLib.h>
-#include    <lstLib.h>
-#include    <string.h>
-#include    <tickLib.h>
+#ifdef vxWorks
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#endif
+#include <stdio.h>
+#include <string.h>
+
 #include    <alarm.h>
 #include    <dbDefs.h>
 #include    <dbAccess.h>
@@ -77,10 +79,12 @@
 #include    <dbFldTypes.h>
 #include    <errMdef.h>
 #include    <recSup.h>
+#include    <recGbl.h>
 #include    <devSup.h>
 #define GEN_SIZE_OFFSET
 #include    "epidRecord.h"
 #undef  GEN_SIZE_OFFSET
+#include "menuOmsl.h"
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -171,7 +175,7 @@ static long process(epidRecord *pepid)
 
     if (!pact) { /* If this is not a callback from device support */
         /* fetch the setpoint */
-        if(pepid->smsl == CLOSED_LOOP){
+        if(pepid->smsl == menuOmslclosed_loop){
             status = dbGetLink(&(pepid->stpl),DBR_FLOAT, &(pepid->val),0,0);
             if (RTN_SUCCESS(status)) pepid->udf=FALSE;
         }
