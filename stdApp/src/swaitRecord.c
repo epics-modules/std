@@ -70,7 +70,7 @@
  *                       ppvn pointer problem.
  */
 
-#define VERSION 4.5
+#define VERSION 4.6
 
 
 
