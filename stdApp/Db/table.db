@@ -65,14 +65,22 @@ grecord(calc,"$(P)$(Q):geomIsSRI") {
 	field(CALC,"a=0")
 	field(INPA,"$(P)$(T).GEOM  CP MS")
 }
-grecord(transform,"$(P)$(Q):dmov") {
-	field(DESC,"Get DMOV and check links")
-	field(INPA,"$(P)$(M0X).DMOV  CP MS")
-	field(INPB,"$(P)$(M0Y).DMOV  CP MS")
-	field(INPC,"$(P)$(M1Y).DMOV  CP MS")
-	field(INPD,"$(P)$(M2X).DMOV  CP MS")
-	field(INPE,"$(P)$(M2Y).DMOV  CP MS")
-	field(INPF,"$(P)$(M2Z).DMOV  CP MS")
+grecord(calcout,"$(P)$(Q):monLimSw") {
+	field(CALC,"a|b|c|d|e|f|g|h|i|j|k|l")
+	field(INPA,"$(P)$(M0X).HLS.VAL  CP NMS")
+	field(INPB,"$(P)$(M0X).LLS.VAL  CP NMS")
+	field(INPC,"$(P)$(M0Y).HLS.VAL  CP NMS")
+	field(INPD,"$(P)$(M0Y).LLS.VAL  CP NMS")
+	field(INPE,"$(P)$(M1Y).HLS.VAL  CP NMS")
+	field(INPF,"$(P)$(M1Y).LLS.VAL  CP NMS")
+	field(INPG,"$(P)$(M2X).HLS.VAL  CP NMS")
+	field(INPH,"$(P)$(M2X).LLS.VAL  CP NMS")
+	field(INPI,"$(P)$(M2Y).HLS.VAL  CP NMS")
+	field(INPJ,"$(P)$(M2Y).LLS.VAL  CP NMS")
+	field(INPK,"$(P)$(M2Z).HLS.VAL  CP NMS")
+	field(INPL,"$(P)$(M2Z).LLS.VAL  CP NMS")
+	field(OUT,"$(P)$(Q):stop1.A  PP NMS")
+	field(OOPT,"Transition To Non-zero")
 }
 grecord(calcout,"$(P)$(Q):done") {
 	field(CALC,"A&(I||!J)&(K||!L)")
@@ -94,6 +102,23 @@ grecord(calcout,"$(P)$(Q):done1") {
 	field(INPF,"$(P)$(Q):dmov.ICV  CP MS")
 	field(INPG,"$(P)$(Q):dmov.D  CP MS")
 	field(INPH,"$(P)$(Q):dmov.IDV  CP MS")
+}
+grecord(calcout,"$(P)$(Q):monLimits") {
+	field(CALC,"a|b|c|d|e|f|g|h|i|j|k|l")
+	field(INPA,"$(P)$(M0X).HLM  CP NMS")
+	field(INPB,"$(P)$(M0X).LLM  CP NMS")
+	field(INPC,"$(P)$(M0Y).HLM  CP NMS")
+	field(INPD,"$(P)$(M0Y).LLM  CP NMS")
+	field(INPE,"$(P)$(M1Y).HLM  CP NMS")
+	field(INPF,"$(P)$(M1Y).LLM  CP NMS")
+	field(INPG,"$(P)$(M2X).HLM  CP NMS")
+	field(INPH,"$(P)$(M2X).LLM  CP NMS")
+	field(INPI,"$(P)$(M2Y).HLM  CP NMS")
+	field(INPJ,"$(P)$(M2Y).LLM  CP NMS")
+	field(INPK,"$(P)$(M2Z).HLM  CP NMS")
+	field(INPL,"$(P)$(M2Z).LLM  CP NMS")
+	field(OUT,"$(P)$(Q):stop1.A  PP NMS")
+	field(OOPT,"Transition To Non-zero")
 }
 grecord(table,"$(P)$(T)") {
 	field(DESC,"Optical Table")
@@ -202,6 +227,15 @@ grecord(transform,"$(P)$(Q):az_tweak") {
 	field(CMTE,"put new value")
 	field(CMTF,"zero tweak button")
 	field(CMTG,"zero tweak button")
+}
+grecord(transform,"$(P)$(Q):dmov") {
+	field(DESC,"Get DMOV and check links")
+	field(INPA,"$(P)$(M0X).DMOV  CP MS")
+	field(INPB,"$(P)$(M0Y).DMOV  CP MS")
+	field(INPC,"$(P)$(M1Y).DMOV  CP MS")
+	field(INPD,"$(P)$(M2X).DMOV  CP MS")
+	field(INPE,"$(P)$(M2Y).DMOV  CP MS")
+	field(INPF,"$(P)$(M2Z).DMOV  CP MS")
 }
 grecord(transform,"$(P)$(Q):stop1") {
 	field(DESC,"Table-stop distribution")
