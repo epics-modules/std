@@ -166,7 +166,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
           if( ufunct[0] != '_')
             strcpy(temp,"_");
           strcat(temp, ufunct);
-          ret = symFindByName( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
+          ret = symFindByNameEPICS( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
           if( ret < 0 || ((sub_type & N_TEXT) == 0) )
           {
             recGblRecordError(S_db_BadSub,(void *)pgsub,"genSubRecord(init_record)");
@@ -385,7 +385,7 @@ static long init_record( struct genSubRecord *pgsub, int pass )
           if( pgsub->inam[0] != '_')
             strcpy(temp,"_");
           strcat(temp,pgsub->inam);
-          ret = symFindByName( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
+          ret = symFindByNameEPICS( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
           if( ret < 0 || ((sub_type & N_TEXT) == 0) )
           {
 	    recGblRecordError(S_db_BadSub,(void *)pgsub,"genSubRecord(init_record)");
@@ -409,9 +409,9 @@ static long init_record( struct genSubRecord *pgsub, int pass )
             if( pgsub->snam[0] != '_' )
               strcpy(temp,"_");
             strcat(temp,pgsub->snam);
-            ret = symFindByName( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
+            ret = symFindByNameEPICS( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
 #if DEBUG
-            printf("Calling symFindByName from init_record: %s\n", temp);
+            printf("Calling symFindByNameEPICS from init_record: %s\n", temp);
 #endif
             if( (ret < 0) || ((sub_type & N_TEXT) == 0) )
             {
@@ -468,13 +468,13 @@ static long process( struct genSubRecord *pgsub )
           if( pgsub->snam[0] != '_' )
             strcpy(temp,"_");
           strcat(temp,pgsub->snam);
-          ret = symFindByName( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
+          ret = symFindByNameEPICS( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
 #if DEBUG
-          printf("Calling symFindByName from process\n");
+          printf("Calling symFindByNameEPICS from process\n");
 #endif
           if( (ret < 0) || ((sub_type & N_TEXT) == 0) )
           {
-            recGblRecordError(S_db_BadSub,(void *)pgsub,"genSubRecord(process) symFindByName failed");
+            recGblRecordError(S_db_BadSub,(void *)pgsub,"genSubRecord(process) symFindByNameEPICS failed");
             status = S_db_BadSub;
           }
           else
@@ -746,13 +746,13 @@ static long special( struct dbAddr *paddr, int after )
         if( pgsub->snam[0] != '_' )
           strcpy(temp,"_");
         strcat(temp,pgsub->snam);
-        ret = symFindByName( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
+        ret = symFindByNameEPICS( sysSymTbl, temp, (void *)&sub_addr, (void *)&sub_type );
 #if DEBUG
-        printf("Calling symFindByName from special\n");
+        printf("Calling symFindByNameEPICS from special\n");
 #endif
         if( (ret < 0) || ((sub_type & N_TEXT) == 0) )
         {
-          recGblRecordError(S_db_BadSub,(void *)pgsub,"genSubRecord(process) symFindByName failed");
+          recGblRecordError(S_db_BadSub,(void *)pgsub,"genSubRecord(process) symFindByNameEPICS failed");
           return(S_db_BadSub);
         }
         else
