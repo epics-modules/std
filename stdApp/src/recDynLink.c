@@ -42,7 +42,8 @@ of this distribution.
 #include "recDynLink.h"
 
 volatile int recDynINPCallPend = 1;
-volatile int recDynOUTCallPend = 1;
+volatile int recDynOUTCallPend = 0;
+volatile int recDynOUTCallFlush = 1;
 
 #ifdef NODEBUG
 #define DEBUG(l,f,v...) ;
@@ -619,6 +620,7 @@ LOCAL void recDynLinkOut(void)
 				epicsPrintf("Logic error statement in recDynLinkTask\n");
 			}
 		}
+		if (recDynOUTCallFlush) ca_flush_io();
 		if (recDynOUTCallPend) {
 			status = ca_pend_event(.00001);
 			if (status!=ECA_NORMAL && status!=ECA_TIMEOUT)
