@@ -2,6 +2,7 @@ program kohzuCtl  ("P=nda, M_THETA=m9, M_Y=m10, M_Z=m11, GEOM=1")
 
 
 %%volatile short kohzuCtlDebug;
+%%volatile short kohzuCtlCalibYZ;
 
 /* arguments on the command line  :
  * 
@@ -35,6 +36,8 @@ program kohzuCtl  ("P=nda, M_THETA=m9, M_Y=m10, M_Z=m11, GEOM=1")
  *                assert "done"; this allows dbPutNotify to detect completion).
  *                Combined two monochromator geometries (kohzu/PSL & kohzu2).
  * 11-02-00 tmm   v3.1 if a motor is frozen, ignore its limit conditions
+ * 02-10-04 tmm   v3.2 Allow choice of whether or not to recalibrate Y,Z motors
+ *                when in SET mode
  */
 
 /* General Purpose PV's used by sequence */
@@ -490,6 +493,7 @@ state initSequence {
 %%		if (kohzuCtlDebug) printf("kohzuCtl:initSequence:initSeq=0\n");
 		hc = 12.3984244;
 		radConv = 57.2958;
+		kohzuCtlCalibYZ = 0;
 		thetaMotStop = 1;
 		yStop = 1;
 		zStop = 1;
@@ -1338,13 +1342,15 @@ state update {
 			thetaMotSet = useSetMode;
 			pvPut(thetaMotSet);
 		}
-		if (yMotSet != useSetMode) {
-			yMotSet = useSetMode;
-			pvPut(yMotSet);
-		}
-		if (zMotSet != useSetMode) {
-			zMotSet = useSetMode;
-			pvPut(zMotSet);
+		if (kohzuCtlCalibYZ) {
+			if (yMotSet != useSetMode) {
+				yMotSet = useSetMode;
+				pvPut(yMotSet);
+			}
+			if (zMotSet != useSetMode) {
+				zMotSet = useSetMode;
+				pvPut(zMotSet);
+			}
 		}
 		efClear(useSetMode_mon);
 	} state update
@@ -1357,21 +1363,23 @@ state update {
 		efClear(thetaMotSet_mon);
 	} state update
 
-	when (efTest(yMotSet_mon)) {
-		if (useSetMode != yMotSet) {
-			useSetMode = yMotSet;
-			pvPut(useSetMode);
-		}
-		efClear(yMotSet_mon);
-	} state update
+	if (kohzuCtlCalibYZ) {
+		when (efTest(yMotSet_mon)) {
+			if (useSetMode != yMotSet) {
+				useSetMode = yMotSet;
+				pvPut(useSetMode);
+			}
+			efClear(yMotSet_mon);
+		} state update
 
-	when (efTest(zMotSet_mon)) {
-		if (useSetMode != zMotSet) {
-			useSetMode = zMotSet;
-			pvPut(useSetMode);
-		}
-		efClear(zMotSet_mon);
-	} state update
+		when (efTest(zMotSet_mon)) {
+			if (useSetMode != zMotSet) {
+				useSetMode = zMotSet;
+				pvPut(useSetMode);
+			}
+			efClear(zMotSet_mon);
+		} state update
+	}
 }
 }
 
