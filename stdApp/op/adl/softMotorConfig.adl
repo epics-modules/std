@@ -1,7 +1,7 @@
 
 file {
-	name="/home/sricat/BCDA/epics/synApps_R3.13.1.1_R4.1/4id/4tstApp/op/adl/softMotorConfig_3.0.adl"
-	version=020303
+	name="/home/oxygen4/MOONEY/epics/synApps_4_6/support/std/stdApp/op/adl/softMotorConfig.adl"
+	version=030004
 }
 display {
 	object {
@@ -173,12 +173,12 @@ text {
 	}
 	display[0] {
 		label="Calc"
-		name="yysCalcoutRecord.adl"
+		name="yyCalcoutRecord.adl"
 		args="P=$(P), C=$(SM)CalcFrwd"
 	}
 	clr=14
 	bclr=16
-	label=-Forward Calc
+	label="-Forward"
 }
 "related display" {
 	object {
@@ -189,12 +189,12 @@ text {
 	}
 	display[0] {
 		label="Calc"
-		name="yysCalcoutRecord.adl"
+		name="yyCalcoutRecord.adl"
 		args="P=$(P), C=$(SM)CalcRevs"
 	}
 	clr=14
 	bclr=16
-	label=-Reverse Calc
+	label="-Reverse"
 }
 rectangle {
 	object {
@@ -232,6 +232,8 @@ text {
 		clr=14
 		bclr=50
 	}
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -246,6 +248,8 @@ text {
 		bclr=50
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -260,6 +264,8 @@ text {
 		bclr=2
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 composite {
 	object {
@@ -269,8 +275,6 @@ composite {
 		height=9
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polygon {
 			object {
@@ -376,6 +380,8 @@ polyline {
 		bclr=2
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -390,6 +396,8 @@ polyline {
 		bclr=2
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 composite {
 	object {
@@ -399,8 +407,6 @@ composite {
 		height=9
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polyline {
 			object {
@@ -446,8 +452,6 @@ composite {
 		height=9
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polygon {
 			object {
@@ -493,8 +497,6 @@ composite {
 		height=10
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polygon {
 			object {
@@ -540,8 +542,6 @@ composite {
 		height=10
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polygon {
 			object {
@@ -654,6 +654,8 @@ rectangle {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -685,6 +687,8 @@ rectangle {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -716,6 +720,8 @@ rectangle {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -747,6 +753,8 @@ rectangle {
 		bclr=40
 	}
 	format="string"
+	limits {
+	}
 }
 composite {
 	object {
@@ -756,8 +764,6 @@ composite {
 		height=10
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polygon {
 			object {
@@ -837,6 +843,8 @@ composite {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 composite {
 	object {
@@ -846,8 +854,6 @@ composite {
 		height=10
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		polygon {
 			object {
@@ -898,7 +904,7 @@ composite {
 	}
 	clr=13
 	bclr=35
-	label=-Help
+	label="-Help"
 }
 "choice button" {
 	object {
@@ -953,7 +959,7 @@ composite {
 	}
 	clr=14
 	bclr=16
-	label=-Debug
+	label="-Debug"
 }
 text {
 	object {
@@ -1043,7 +1049,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label=-More
+	label="-More"
 }
 "message button" {
 	object {
