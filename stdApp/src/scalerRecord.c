@@ -55,9 +55,12 @@ Modification Log:
 .24  09/26/03   tmm     v3.14 Make sure channel-1 preset count agrees with time
                         preset and freq.  (Required for VS64, because it changes
                         freq, and uses pr1/freq to infer count time.)
+.25  02/19/04   tmm     v3.15 Added semaphore to avoid contention for scanLock
+                        between autocount-restart callback and periodic update
+                        callback.  More mods for Joerger VS64
 
 *******************************************************************************/
-#define VERSION 3.13
+#define VERSION 3.15
 
 #include	<vxWorks.h>
 #include	<types.h>
