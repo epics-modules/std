@@ -104,7 +104,7 @@ epicsExportAddress(dset, devEpidFast);
 
 static long init_record(epidRecord *pepid)
 {
-    struct vmeio *pvmeio;
+    struct instio *pinstio;
     asynStatus status;
     asynUser *pasynUser;
     asynInterface *pasynInterface;
@@ -121,13 +121,11 @@ static long init_record(epidRecord *pepid)
     pPvt->lowLimit = 1.;
     pPvt->highLimit =-1.;
 
-    /* Get the VME link field */
-    /* Get the signal from the VME signal */
-    pvmeio = (struct vmeio*)&(pepid->inp.value);
-    /* Parse the parm field to get inputName, inputChannel, 
+    pinstio = (struct instio*)&(pepid->inp.value);
+    /* Parse to get inputName, inputChannel, 
      * outputName, outputChannel 
-     * Copy parm to temp, since strtok_r overwrites it */
-    strncpy(temp, pvmeio->parm, sizeof(temp));
+     * Copy to temp, since strtok_r overwrites it */
+    strncpy(temp, pinstio->string, sizeof(temp));
     tok_save = NULL;
     p = strtok_r(temp, ", ", &tok_save);
     pPvt->inputName = epicsStrDup(p);
@@ -144,17 +142,17 @@ static long init_record(epidRecord *pepid)
     status = pasynManager->connectDevice(pasynUser, pPvt->inputName, 
                                          pPvt->inputChannel);
     if (status != asynSuccess) {
-        errlogPrintf("devEpidFast::init_record, error in connectDevice"
+        errlogPrintf("devEpidFast::init_record, %s error in connectDevice"
                      " to input %s\n",
-                     pasynUser->errorMessage);
+                     pepid->name, pasynUser->errorMessage);
         goto bad;
     }
     pasynInterface = pasynManager->findInterface(pasynUser,
                                                  asynFloat64Type, 1);
     if (!pasynInterface) {
-        errlogPrintf("devEpidFast::init_record, cannot find "
+        errlogPrintf("devEpidFast::init_record %s, cannot find "
                      "asynFloat64 interface %s\n",
-                     pasynUser->errorMessage);
+                     pepid->name, pasynUser->errorMessage);
         goto bad;
     }
     pPvt->pfloat64Input = (asynFloat64 *) pasynInterface->pinterface;
@@ -163,9 +161,9 @@ static long init_record(epidRecord *pepid)
     pasynInterface = pasynManager->findInterface(pasynUser,
                                                  asynFloat64CallbackType, 1);
     if (!pasynInterface) {
-        errlogPrintf("devEpidFast::init_record, cannot find "
+        errlogPrintf("devEpidFast::init_record %s, cannot find "
                      "asynFloat64Callback interface %s\n",
-                     pasynUser->errorMessage);
+                     pepid->name, pasynUser->errorMessage);
         goto bad;
     }
     pPvt->pfloat64Callback = (asynFloat64Callback *) pasynInterface->pinterface;
@@ -174,9 +172,9 @@ static long init_record(epidRecord *pepid)
     pasynInterface = pasynManager->findInterface(pasynUser,
                                                  asynDrvUserType, 1);
     if (!pasynInterface) {
-        errlogPrintf("devEpidFast::init_record, cannot find "
+        errlogPrintf("devEpidFast::init_record %s, cannot find "
                      "asynDrvUser interface %s\n",
-                     pasynUser->errorMessage);
+                     pepid->name, pasynUser->errorMessage);
         goto bad;
     }
     pPvt->pdrvUser = (asynDrvUser *)pasynInterface->pinterface;
@@ -187,17 +185,17 @@ static long init_record(epidRecord *pepid)
     status = pasynManager->connectDevice(pasynUser, pPvt->outputName, 
                                          pPvt->outputChannel);
     if (status != asynSuccess) {
-        errlogPrintf("devEpidFast::init_record, error in connectDevice"
+        errlogPrintf("devEpidFast::init_record %s, error in connectDevice"
                      " to output %s\n",
-                     pasynUser->errorMessage);
+                     pepid->name, pasynUser->errorMessage);
         goto bad;
     }
     pasynInterface = pasynManager->findInterface(pasynUser,
                                                  asynFloat64Type, 1);
     if (!pasynInterface) {
-        errlogPrintf("devEpidFast::init_record, cannot find "
+        errlogPrintf("devEpidFast::init_record %s, cannot find "
                      "asynFloat64 interface %s\n",
-                     pasynUser->errorMessage);
+                     pepid->name, pasynUser->errorMessage);
         goto bad;
     }
     pPvt->pfloat64Output = (asynFloat64 *)pasynInterface->pinterface;
@@ -206,9 +204,9 @@ static long init_record(epidRecord *pepid)
     pPvt->pdrvUser->create(pPvt->drvUserPvt, pPvt->pcallbackDataAsynUser, 
                            "data", &drvUserName, &drvUserSize);
     if (!drvUserSize) {
-        errlogPrintf("devEpidFast::init_record, asynDrvUser->create "
+        errlogPrintf("devEpidFast::init_record %s, asynDrvUser->create "
                      "failed for data %s\n",
-                     pPvt->pcallbackDataAsynUser->errorMessage);
+                     pepid->name, pPvt->pcallbackDataAsynUser->errorMessage);
         goto bad;
     }
     pPvt->pfloat64Callback->registerCallback(pPvt->float64CallbackPvt, 
@@ -220,9 +218,9 @@ static long init_record(epidRecord *pepid)
     pPvt->pdrvUser->create(pPvt->drvUserPvt, pPvt->pcallbackIntervalAsynUser, 
                            "SCAN_PERIOD", &drvUserName, &drvUserSize);
     if (!drvUserSize) {
-        errlogPrintf("devEpidFast::init_record, asynDrvUser->create "
+        errlogPrintf("devEpidFast::init_record %s, asynDrvUser->create "
                      "failed for SCAN_PERIOD %s\n",
-                     pPvt->pcallbackIntervalAsynUser->errorMessage);
+                     pepid->name, pPvt->pcallbackIntervalAsynUser->errorMessage);
         goto bad;
     }
     pPvt->pfloat64Callback->registerCallback(pPvt->float64CallbackPvt, 
