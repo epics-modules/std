@@ -190,9 +190,13 @@
  *                      one positioner could begin before all monitor callbacks had come in if a
  *                      particular ordering (maybe an impossible ordering) of search and monitor
  *                      callbacks occurred.
+ * 5.13 04-27-01  tmm   Fixed various problems with PAUS, WAIT, and scan aborts, for example, what
+ *                      happens when you abort a scan that was paused during a detector wait. 
+ * 5.14 06-27-01  tmm   Macro for db_post_events.  If we can't get current positioner values in 
+ *                      initScan(), abort.
  */
 
-#define VERSION 5.12
+#define VERSION 5.14
 
 
 
@@ -228,6 +232,9 @@
 #include	<drvTS.h>	/* also includes timers.h and tsDefs.h */
 
 #include	"recDynLink.h"
+
+/* The following macro assumes psscan points to an instance of the sscan record */
+#define POST(A) (db_post_events(psscan, (A), DBE_VALUE))
 
 /************ begin special values.  These must agree with the .dbd file! *********/
 #define SPC_SC_S                111   /* start position   */
@@ -280,8 +287,7 @@
 /* Added four recDynLinks at the end of PV's for positioner outs */
 #define P1_OUT      (NUM_PVS)
 
-#define MIN_MON         3	/* # of ticks between monitor postings. 3 =
-				 * 50 ms */
+#define MIN_MON         3	/* # of ticks between monitor postings. */
 
 /* PV status: if (PvStat & PV_NC) then PV link is bad */
 /* NOTE: the following must agree with .dbd file */
@@ -298,8 +304,7 @@
 #define CHECK_LIMITS        1
 #define PREVIEW_SCAN        2	/* Preview the SCAN positions */
 #define CLEAR_RECORD        3	/* Clear PV's, frzFlags, modes, abs/rel, etc */
-#define CLEAR_POSITIONERS   4	/* Clear positioner PV's, frzFlags, modes,
-				 * abs/rel, etc */
+#define CLEAR_POSITIONERS   4	/* Clear positioner PV's, frzFlags, modes, abs/rel, etc */
 
 #define DBE_VAL_LOG     (DBE_VALUE | DBE_LOG)
 
@@ -436,42 +441,37 @@ typedef struct detFields {
 #define DS_POSTED	2
 
 typedef struct recPvtStruct {
-	/*
-	 * THE CODE ASSUMES doPutsCallback is THE FIRST THING IN THIS
-	 * STRUCTURE!
-	 */
+	/* THE CODE ASSUMES doPutsCallback is THE FIRST THING IN THIS STRUCTURE! */
 	CALLBACK        doPutsCallback;	/* do output links callback structure */
-	WDOG_ID         wd_id;	/* watchdog for delay if PV_NC and .EXSC */
-	CALLBACK        dlyCallback;	/* implement delays callback
-					 * structure */
-	WDOG_ID         wd1_id;	/* watchdog for delayCallback */
-	sscanRecord *psscan;	/* ptr to record which needs work
-					 * done */
-	short           validBuf;	/* which data array buffer is valid */
+	WDOG_ID         wd_id;			/* watchdog for delay if PV_NC and .EXSC */
+	CALLBACK        dlyCallback;	/* implement delays callback structure */
+	WDOG_ID         wd1_id;			/* watchdog for delayCallback */
+	sscanRecord    *psscan;			/* ptr to record which needs work done */
+	short           validBuf;		/* which data array buffer is valid */
 	recDynLink      caLinkStruct[NUM_LINKS];	/* req'd for recDynLink */
 	posBuffers      posBufPtr[NUM_POS];
 	detBuffers      detBufPtr[NUM_DET];
-	unsigned short  valPosPvs;	/* # of valid positioners */
-	unsigned short  valRdbkPvs;	/* # of valid Readbacks   */
-	unsigned short  valDetPvs;	/* # of valid Detectors */
-	unsigned short  valTrigPvs;	/* # of valid Det Triggers  */
+	unsigned short  valPosPvs;		/* # of valid positioners */
+	unsigned short  valRdbkPvs;		/* # of valid Readbacks   */
+	unsigned short  valDetPvs;		/* # of valid Detectors */
+	unsigned short  valTrigPvs;		/* # of valid Det Triggers  */
 	unsigned short  acqDet[NUM_DET];	/* which detectors to acquire */
 	dynLinkInfo    *pDynLinkInfo;
-	short           pffo;	/* previous state of ffo */
-	short           fpts;	/* backup copy of all freeze flags */
+	short           pffo;			/* previous state of ffo */
+	short           fpts;			/* backup copy of all freeze flags */
 	unsigned short  prevSm[NUM_POS];	/* previous states of p_sm */
 	posFields       posParms[NUM_POS];	/* backup copy of all pos parms */
 	unsigned long   tablePts[NUM_POS];	/* # of pts loaded in P_PA */
 	short           onTheFly;
 	short           flying;
 	float          *nullArray;
-	unsigned long   tickStart;	/* used to time the scan */
+	unsigned long   tickStart;			/* used to time the scan */
 	char            movPos[NUM_POS];	/* used to indicate
 						 * interactive move */
 	unsigned char   scanErr;
 	unsigned char   badOutputPv;	/* positioner, detector trig, readbk */
-	unsigned char   badInputPv;	/* detector BAD_PV */
-	char            nptsCause;	/* who caused the "# of points to
+	unsigned char   badInputPv;		/* detector BAD_PV */
+	char            nptsCause;		/* who caused the "# of points to
 					 * change: -1:operator; 0-3
 					 * Positioners */
 	short           numPositionerCallbacks;	/* count positioner callbacks */
@@ -546,8 +546,7 @@ init_record(psscan, pass)
 		psscan->rpvt = calloc(1, sizeof(recPvtStruct));
 		precPvt = (recPvtStruct *) psscan->rpvt;
 
-		psscan->faze = sscanFAZE_IDLE;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		psscan->faze = sscanFAZE_IDLE; POST(&psscan->faze);
 		precPvt->numPositionerCallbacks = 0;
 		precPvt->numTriggerCallbacks = 0;
 
@@ -598,11 +597,8 @@ init_record(psscan, pass)
 		psscan->p3pa = (double *) calloc(psscan->mpts, sizeof(double));
 		psscan->p4pa = (double *) calloc(psscan->mpts, sizeof(double));
 
-		/*
-		 * Readbacks need double buffering. Allocate space and
-		 * initialize
-		 */
-		/* fill pointer and readback array pointers */
+		/* Readbacks need double buffering. Allocate space and initialize */
+		/* Fill pointer and readback array pointers */
 		precPvt->validBuf = A_BUFFER;
 		pPos = (posFields *) & psscan->p1pp;
 		for (i = 0; i < NUM_RDKS; i++, pPos++) {
@@ -705,9 +701,9 @@ process(psscan)
 
 	if (psscan->kill) {
 		if (sscanRecordDebug>=5) printf("%s:process: kill\n", psscan->name);
-		if (psscan->wait) {psscan->wait = 0;db_post_events(psscan, &psscan->wait, DBE_VALUE);}
-		if (psscan->wcnt) {psscan->wcnt = 0;db_post_events(psscan, &psscan->wcnt, DBE_VALUE);}
-		if (psscan->wtng) {psscan->wtng = 0;db_post_events(psscan, &psscan->wtng, DBE_VALUE);}
+		if (psscan->wait) {psscan->wait = 0; POST(&psscan->wait);}
+		if (psscan->wcnt) {psscan->wcnt = 0; POST(&psscan->wcnt);}
+		if (psscan->wtng) {psscan->wtng = 0; POST(&psscan->wtng);}
 		sprintf(psscan->smsg, " ");
 		if (precPvt->numPositionerCallbacks) {
 			sprintf(psscan->smsg, "NOTE: positioner still active");
@@ -716,12 +712,12 @@ process(psscan)
 		} else {
 			sprintf(psscan->smsg, " ");
 		}
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-		psscan->alrt = 0; db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+		POST(&psscan->smsg);
+		psscan->alrt = 0; POST(&psscan->alrt);
 		precPvt->numPositionerCallbacks = 0;
 		precPvt->numTriggerCallbacks = 0;
-		psscan->faze = sscanFAZE_IDLE; db_post_events(psscan, &psscan->faze, DBE_VALUE);
-		psscan->busy = 0; db_post_events(psscan, &psscan->busy, DBE_VALUE);
+		psscan->faze = sscanFAZE_IDLE; POST(&psscan->faze);
+		psscan->busy = 0; POST(&psscan->busy);
 		if (precPvt->dataState == DS_UNPACKED) {
 			packData(psscan);
 			checkMonitors(psscan);
@@ -733,6 +729,20 @@ process(psscan)
 		psscan->kill = 0;
 		psscan->pact = FALSE;
 		return (status);
+	}
+
+	if (psscan->xsc) {
+		/* Make sure it's ok to go */
+		if (psscan->paus) {
+			sprintf(psscan->smsg, "Scan is paused ...");
+			POST(&psscan->smsg);
+			return(-1);
+		}
+		if (psscan->wtng) {
+			sprintf(psscan->smsg, "waiting for client ...");
+			POST(&psscan->smsg);
+			return(-1);
+		}
 	}
 
 	if (precPvt->scanBySearchCallback) {
@@ -761,8 +771,7 @@ process(psscan)
 			return (status);
 		} else {
 			if (sscanRecordDebug) printf("%s:process: unpending scan\n", psscan->name);
-			psscan->alrt = 0;
-			db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+			psscan->alrt = 0; POST(&psscan->alrt);
 		}
 	}
 
@@ -770,7 +779,7 @@ process(psscan)
 			(precPvt->numPositionerCallbacks || precPvt->numTriggerCallbacks)) {
 		if (sscanRecordDebug>=5) printf("%s:process: already busy\n", psscan->name);
 		sprintf(psscan->smsg, psscan->paus ? "Scan is paused" : "Already busy!");
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+		POST(&psscan->smsg);
 		return(0);
 	}
 
@@ -780,17 +789,15 @@ process(psscan)
 		/* use TimeStamp to record beginning of scan */
 		recGblGetTimeStamp(psscan);
 		precPvt->dataState = DS_UNPACKED;
-		psscan->data = 0; db_post_events(psscan, &psscan->data, DBE_VALUE);
+		psscan->data = 0; POST(&psscan->data);
 		if (sscanRecordDebug>=5) printf("%s:process: new sscan\n", psscan->name);
-		if (psscan->wait) {psscan->wait = 0;db_post_events(psscan, &psscan->wait, DBE_VALUE);}
-		if (psscan->wcnt) {psscan->wcnt = 0;db_post_events(psscan, &psscan->wcnt, DBE_VALUE);}
-		if (psscan->wtng) {psscan->wtng = 0;db_post_events(psscan, &psscan->wtng, DBE_VALUE);}
+		if (psscan->wait) {psscan->wait = 0; POST(&psscan->wait);}
+		if (psscan->wcnt) {psscan->wcnt = 0; POST(&psscan->wcnt);}
+		if (psscan->wtng) {psscan->wtng = 0; POST(&psscan->wtng);}
 		precPvt->numPositionerCallbacks = 0;
 		precPvt->numTriggerCallbacks = 0;
-		psscan->faze = sscanFAZE_INIT_SCAN;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
-		psscan->busy = 1;
-		db_post_events(psscan, &psscan->busy, DBE_VALUE);
+		psscan->faze = sscanFAZE_INIT_SCAN; POST(&psscan->faze);
+		psscan->busy = 1; POST(&psscan->busy);
 		initScan(psscan);
 	} else if ((psscan->pxsc == 1) && (psscan->xsc == 0)) {
 		/* Operator abort */
@@ -806,14 +813,16 @@ process(psscan)
 				checkMonitors(psscan);
 			}
 			sprintf(psscan->smsg, "Abort: waiting for callback");
-			db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+			POST(&psscan->smsg);
 			return(status);
 		} else {
 			sprintf(psscan->smsg, "Scan aborted by operator");
-			db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-			if (psscan->wait) {psscan->wait = 0;db_post_events(psscan, &psscan->wait, DBE_VALUE);}
-			if (psscan->wcnt) {psscan->wcnt = 0;db_post_events(psscan, &psscan->wcnt, DBE_VALUE);}
-			if (psscan->wtng) {psscan->wtng = 0;db_post_events(psscan, &psscan->wtng, DBE_VALUE);}
+			POST(&psscan->smsg);
+			if (psscan->wait) {psscan->wait = 0; POST(&psscan->wait);}
+			if (psscan->wcnt) {psscan->wcnt = 0; POST(&psscan->wcnt);}
+			if (psscan->wtng) {psscan->wtng = 0; POST(&psscan->wtng);}
+			if (psscan->paus) {psscan->paus = 0; POST(&psscan->paus);}
+			printf("%s:process: Scan aborted by operator\n", psscan->name);
 			endScan(psscan);
 		}
 	} else if (psscan->faze == sscanFAZE_BEFORE_SCAN_WAIT) {
@@ -822,14 +831,12 @@ process(psscan)
 	} else if (psscan->xsc == 1) {
 		if (sscanRecordDebug>=5) printf("%s:process: continuing sscan\n", psscan->name);
 		if (precPvt->badOutputPv) {
-			psscan->alrt = 1;
-			db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+			psscan->alrt = 1; POST(&psscan->alrt);
 			sprintf(psscan->smsg, "Lost connection to Control PV");
-			db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-			psscan->exsc = 0;
-			db_post_events(psscan, &psscan->exsc, DBE_VALUE);
-			psscan->xsc = 0;
-			db_post_events(psscan, &psscan->xsc, DBE_VALUE);
+			POST(&psscan->smsg);
+			psscan->exsc = 0; POST(&psscan->exsc);
+			psscan->xsc = 0; POST(&psscan->xsc);
+			printf("%s:process: Lost connection to Control PV\n", psscan->name);
 			endScan(psscan);
 		} else {
 			contScan(psscan);
@@ -839,8 +846,7 @@ process(psscan)
 			afterScan(psscan);
 		} else if ((psscan->faze == sscanFAZE_AFTER_SCAN_WAIT) ||
 			   (psscan->faze == sscanFAZE_SCAN_DONE)) {
-			psscan->faze = sscanFAZE_SCAN_DONE;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			psscan->faze = sscanFAZE_SCAN_DONE; POST(&psscan->faze);
 		} else {
 			printf("%s:process: How did I get here? (faze=%d)\n",
 				psscan->name, (int)psscan->faze);
@@ -850,10 +856,8 @@ process(psscan)
 
 	/* do forward link on last scan aquisition */
 	if ((psscan->faze == sscanFAZE_SCAN_DONE) && psscan->busy) {
-		psscan->busy = 0;
-		db_post_events(psscan, &psscan->busy, DBE_VALUE);
-		psscan->faze = sscanFAZE_IDLE;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		psscan->busy = 0; POST(&psscan->busy);
+		psscan->faze = sscanFAZE_IDLE; POST(&psscan->faze);
 		recGblFwdLink(psscan);
 		if (sscanRecordDebug) {
 			printf("%s:Scan Time = %.2f ms\n\n", psscan->name, 
@@ -925,141 +929,125 @@ special(paddr, after)
 	case (SPC_MOD):
 		switch (fieldIndex) {
 		case sscanRecordEXSC:
-			if (psscan->exsc == psscan->xsc) {
+			if (psscan->exsc) {
 				if (psscan->paus) {
-					sprintf(psscan->smsg, "Scan is paused");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					sprintf(psscan->smsg, "Scan is paused"); POST(&psscan->smsg);
+					if (!psscan->xsc) {psscan->exsc = 0; POST(&psscan->exsc);}
 					return(-1);
-				} else if (psscan->exsc) {
+				} else if (psscan->xsc || psscan->busy) {
 					/* redundant request to start scan */
-					sprintf(psscan->smsg, "Already scanning");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					sprintf(psscan->smsg, "Already scanning"); POST(&psscan->smsg);
 					return(-1);
+				} else {
+					/* New scan.  Renew old positioner links so we get current limits data */
+					if ((psscan->faze != sscanFAZE_IDLE) && (psscan->faze != sscanFAZE_PREVIEW)) {
+						printf("Starting new scan with unexpected scan phase.\n");
+					}
+					for (i=0; i<NUM_POS; i++) {
+						puserPvt = (recDynLinkPvt *) precPvt->caLinkStruct[i].puserPvt;
+						if ((tickGet() - puserPvt->lookupTicks) >= sscanRecordLookupTicks) {
+							*ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
+							if (*ppvn[0] != NULL) {
+								if (sscanRecordDebug > 5)
+									printf("%s:special: renewing link %d\n", psscan->name, i);
+								/* force flags to indicate PV_NC until callback happens */
+								pPvStat = &psscan->p1nv + i;	/* pointer arithmetic */
+								*pPvStat = PV_NC;
+								precPvt->badOutputPv = 1;
+								if (precPvt->caLinkStruct[i].pdynLinkPvt) {
+									recDynLinkClear(&precPvt->caLinkStruct[i]);
+									/* Positioners have two recDynLinks */
+									if (precPvt->caLinkStruct[i + NUM_PVS].pdynLinkPvt) {
+										recDynLinkClear(&precPvt->caLinkStruct[i + NUM_PVS]);
+									}
+								}
+								/* remember when we did this lookup */
+								puserPvt->lookupTicks = tickGet();
+								lookupPV(psscan, i);
+							}
+						}
+					}
+					psscan->xsc = 1; POST(&psscan->xsc);
+					checkConnections(psscan);
+					if (precPvt->badOutputPv || precPvt->badInputPv) {
+						if (sscanRecordDebug)
+							printf("%s:special:scan pending PV connection.\n", psscan->name);
+						psscan->alrt = 1; POST(&psscan->alrt);
+						strcpy(psscan->smsg, "Waiting for PV's to connect"); POST(&psscan->smsg);
+						psscan->faze = sscanFAZE_SCAN_PENDING; POST(&psscan->faze);
+					} else {
+						psscan->alrt = 0; POST(&psscan->alrt);
+					}
+					return(0);
+				}
+			} else {
+				/* EXSC == 0 */
+				if (psscan->xsc) {
+					psscan->xsc = 0; POST(&psscan->xsc);
+					sprintf(psscan->smsg, "Abort in progress..."); POST(&psscan->smsg);
+					return(0);
 				} else if (psscan->faze != sscanFAZE_IDLE) {
 					/* The first abort didn't succeed, or is taking too long */
 					printf("%s:special(),killing scan.\n", psscan->name);
 					psscan->kill = 1;
-					/* Cancel any outstanding watchdog timers */
-					wdCancel(precPvt->wd1_id);
+					wdCancel(precPvt->wd1_id); /* Cancel any outstanding watchdog timers */
 					return(0);
 				} else {
 					/* request to abort scan that is not active */
-					sprintf(psscan->smsg, " ");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					sprintf(psscan->smsg, " "); POST(&psscan->smsg);
 					return(-1);
 				}
-			}
-			if (psscan->exsc && psscan->busy) {
-				sprintf(psscan->smsg, psscan->paus ? "Scan is paused" : "Already scanning");
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-				return(-1);
-			}
-			if (psscan->paus && !psscan->xsc && psscan->exsc) {
-				psscan->exsc = 0;
-				db_post_events(psscan, &psscan->exsc, DBE_VALUE);
-				sprintf(psscan->smsg, "Scan is paused!");
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-				return(-1);
-			}
-			if (psscan->exsc && !psscan->xsc && !psscan->paus &&
-					((psscan->faze == sscanFAZE_IDLE) ||
-					 (psscan->faze == sscanFAZE_PREVIEW))) {
-
-#if 1
-				/* renew old positioner links so we get current limits data */
-				for (i=0; i<NUM_POS; i++) {
-					puserPvt = (recDynLinkPvt *) precPvt->caLinkStruct[i].puserPvt;
-					if ((tickGet() - puserPvt->lookupTicks) >= sscanRecordLookupTicks) {
-						*ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
-						if (*ppvn[0] != NULL) {
-							if (sscanRecordDebug > 5)
-								printf("%s:special: renewing link %d\n", psscan->name, i);
-							/* force flags to indicate PV_NC until callback happens */
-							pPvStat = &psscan->p1nv + i;	/* pointer arithmetic */
-							*pPvStat = PV_NC;
-							precPvt->badOutputPv = 1;
-							if (precPvt->caLinkStruct[i].pdynLinkPvt) {
-								recDynLinkClear(&precPvt->caLinkStruct[i]);
-								/* Positioners have two recDynLinks */
-								if (precPvt->caLinkStruct[i + NUM_PVS].pdynLinkPvt) {
-									recDynLinkClear(&precPvt->caLinkStruct[i + NUM_PVS]);
-								}
-							}
-							/* remember when we did this lookup */
-							puserPvt->lookupTicks = tickGet();
-							lookupPV(psscan, i);
-						}
-					}
-				}
-#endif
-
-				psscan->xsc = 1;
-				db_post_events(psscan, &psscan->xsc, DBE_VALUE);
-				checkConnections(psscan);
-				if (precPvt->badOutputPv || precPvt->badInputPv) {
-					if (sscanRecordDebug)
-						printf("%s:special:scan pending PV connection.\n", psscan->name);
-					psscan->alrt = 1;
-					db_post_events(psscan, &psscan->alrt, DBE_VALUE);
-					strcpy(psscan->smsg, "Waiting for PV's to connect");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-					psscan->faze = sscanFAZE_SCAN_PENDING;
-					db_post_events(psscan, &psscan->faze, DBE_VALUE);
-				} else {
-					psscan->alrt = 0;
-					db_post_events(psscan, &psscan->alrt, DBE_VALUE);
-				}
-			}
-			if (!psscan->exsc && psscan->xsc) {
-				psscan->xsc = 0;
-				db_post_events(psscan, &psscan->xsc, DBE_VALUE);
-				sprintf(psscan->smsg, "Abort in progress...");
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
 			}
 			break;
 		case sscanRecordDDLY:
 			psscan->ddly = NINT(psscan->ddly * ticsPerSecond) / (double) ticsPerSecond;
-			db_post_events(psscan, &psscan->ddly, DBE_VALUE);
+			POST(&psscan->ddly);
 			break;
 		case sscanRecordPDLY:
 			psscan->pdly = NINT(psscan->pdly * ticsPerSecond) / (double) ticsPerSecond;
-			db_post_events(psscan, &psscan->pdly, DBE_VALUE);
+			POST(&psscan->pdly);
 			break;
 		case sscanRecordRDLY:
 			psscan->rdly = NINT(psscan->rdly * ticsPerSecond) / (double) ticsPerSecond;
-			db_post_events(psscan, &psscan->pdly, DBE_VALUE);
+			POST(&psscan->pdly);
 			break;
 		case sscanRecordPAUS:
 			if (psscan->paus != psscan->lpau) {
 				if (psscan->paus == 0) {
 					sprintf(psscan->smsg, "Scan pause rescinded");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					POST(&psscan->smsg);
 					if ((precPvt->numTriggerCallbacks == 0) &&
 						(precPvt->numPositionerCallbacks == 0)) {
-						/* The callback that would have sent us to the next scan phase
-						 * came in while we were paused.
+						/* The P or T callback that would have sent us to the next scan
+						 * phase came in while we were paused.
 						 */
-						if (psscan->rdly == 0.) {
-							scanOnce(psscan);
+						if (psscan->wtng) {
+							sprintf(psscan->smsg, "Waiting for client");
+							POST(&psscan->smsg);
 						} else {
-							tics = psscan->rdly * ticsPerSecond; tics = NINT(tics)+1.e-6;
-							wdStart(precPvt->wd1_id, (int) tics,
-								(FUNCPTR) callbackRequest, (int) (&precPvt->dlyCallback));
+							if (psscan->rdly == 0.) {
+								scanOnce(psscan);
+							} else {
+								tics = psscan->rdly * ticsPerSecond;
+								tics = NINT(tics)+1.e-6;
+								wdStart(precPvt->wd1_id, (int) tics,
+									(FUNCPTR) callbackRequest, (int) (&precPvt->dlyCallback));
+							}
 						}
 					}
 				} else {
+					wdCancel(precPvt->wd1_id); /* Cancel any outstanding delayed unpause */
 					sprintf(psscan->smsg, "Scan pause asserted");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					POST(&psscan->smsg);
 				}
 			}
 			psscan->lpau = psscan->paus;
 			break;
 		case sscanRecordCMND:
 			if (psscan->cmnd == CLEAR_MSG) {
-				psscan->alrt = 0;
-				db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+				psscan->alrt = 0; POST(&psscan->alrt);
 				strcpy(psscan->smsg, "");
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+				POST(&psscan->smsg);
 			}
 			if (psscan->xsc || psscan->busy) {
 				psscan->cmnd = 0;
@@ -1070,33 +1058,29 @@ special(paddr, after)
 				prevAlrt = psscan->alrt;
 				psscan->alrt = 0;
 				checkScanLimits(psscan);
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-				if (psscan->alrt != prevAlrt) {
-					db_post_events(psscan, &psscan->alrt, DBE_VALUE);
-				}
+				POST(&psscan->smsg);
+				if (psscan->alrt != prevAlrt) POST(&psscan->alrt);
 				break;
 			case PREVIEW_SCAN:
 				/* get_array_info() needs to know that we're just previewing */
-				psscan->faze = sscanFAZE_PREVIEW;
-				db_post_events(psscan, &psscan->faze, DBE_VALUE);
+				psscan->faze = sscanFAZE_PREVIEW; POST(&psscan->faze);
 				previewScan(psscan);
 				break;
 			case CLEAR_RECORD:
 			case CLEAR_POSITIONERS:
 				/* clear PV's, frzFlags, modes, etc */
-				psscan->scan = 0;
-				db_post_events(psscan, &psscan->scan, DBE_VALUE);
+				psscan->scan = 0; POST(&psscan->scan);
 				resetFrzFlags(psscan);
-				psscan->p1sm = 0; db_post_events(psscan, &psscan->p1sm, DBE_VALUE);
-				psscan->p1ar = 0; db_post_events(psscan, &psscan->p1ar, DBE_VALUE);
-				psscan->p2sm = 0; db_post_events(psscan, &psscan->p2sm, DBE_VALUE);
-				psscan->p2ar = 0; db_post_events(psscan, &psscan->p2ar, DBE_VALUE);
-				psscan->p3sm = 0; db_post_events(psscan, &psscan->p3sm, DBE_VALUE);
-				psscan->p3ar = 0; db_post_events(psscan, &psscan->p3ar, DBE_VALUE);
-				psscan->p4sm = 0; db_post_events(psscan, &psscan->p4sm, DBE_VALUE);
-				psscan->p4ar = 0; db_post_events(psscan, &psscan->p4ar, DBE_VALUE);
-				psscan->pasm = 0; db_post_events(psscan, &psscan->pasm, DBE_VALUE);
-				psscan->ffo = 0; db_post_events(psscan, &psscan->ffo, DBE_VALUE);
+				psscan->p1sm = 0; POST(&psscan->p1sm);
+				psscan->p1ar = 0; POST(&psscan->p1ar);
+				psscan->p2sm = 0; POST(&psscan->p2sm);
+				psscan->p2ar = 0; POST(&psscan->p2ar);
+				psscan->p3sm = 0; POST(&psscan->p3sm);
+				psscan->p3ar = 0; POST(&psscan->p3ar);
+				psscan->p4sm = 0; POST(&psscan->p4sm);
+				psscan->p4ar = 0; POST(&psscan->p4ar);
+				psscan->pasm = 0; POST(&psscan->pasm);
+				psscan->ffo = 0; POST(&psscan->ffo);
 				for (i = 0; i < NUM_PVS; i++) {
 					puserPvt = (recDynLinkPvt *) precPvt->caLinkStruct[i].puserPvt;
 					if ((psscan->cmnd == CLEAR_RECORD) ||
@@ -1106,14 +1090,11 @@ special(paddr, after)
 						pPvStat = &psscan->p1nv + i;	/* pointer arithmetic */
 						oldStat = *pPvStat;
 						*ppvn = &psscan->p1pv[0] + (i * PVN_SIZE);
-						*ppvn[0] = NULL;
-						db_post_events(psscan, *ppvn, DBE_VALUE);
+						*ppvn[0] = NULL; POST(*ppvn);
 						if (*pPvStat != NO_PV) {
 							/* PV is now NULL but didn't used to be */
 							*pPvStat = NO_PV;
-							if (*pPvStat != oldStat) {
-								db_post_events(psscan, pPvStat, DBE_VALUE);
-							}
+							if (*pPvStat != oldStat) POST(pPvStat);
 							if (precPvt->caLinkStruct[i].pdynLinkPvt /*puserPvt->dbAddrNv*/) {
 								recDynLinkClear(&precPvt->caLinkStruct[i]);
 								/* Positioners have two recDynLinks */
@@ -1126,8 +1107,7 @@ special(paddr, after)
 							/* PV is NULL, but previously MAY have been "time" */
 							if (puserPvt->ts) {
 								puserPvt->ts = 0;
-								/* Give client a poke */
-								db_post_events(psscan, pPvStat, DBE_VALUE);
+								POST(pPvStat); /* Give client a poke */
 							}
 						}
 						semGive(precPvt->pvStatSem);
@@ -1141,25 +1121,26 @@ special(paddr, after)
 			break;
 		case sscanRecordAWCT:
 			if (psscan->awct < 0) {
-				psscan->awct = 0;
-				db_post_events(psscan, &psscan->awct, DBE_VALUE);
+				psscan->awct = 0; POST(&psscan->awct);
 			}
 			break;
 		case sscanRecordWAIT:
 			if (psscan->wait) {
-				psscan->wcnt++;
-				db_post_events(psscan, &psscan->wcnt, DBE_VALUE);
+				psscan->wcnt++; POST(&psscan->wcnt);
 			} else {
 				if (psscan->wcnt > 0) {
-					psscan->wcnt--;
-					db_post_events(psscan, &psscan->wcnt, DBE_VALUE);
+					psscan->wcnt--; POST(&psscan->wcnt);
 				}
 				if (psscan->wtng && (psscan->wcnt == 0)) {
-					psscan->wtng = 0;
-					db_post_events(psscan, &psscan->wtng, DBE_VALUE);
-					sprintf(psscan->smsg, "Scanning ...");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-					(void) scanOnce((void *)psscan);
+					psscan->wtng = 0; POST(&psscan->wtng);
+					if (psscan->paus) {
+						sprintf(psscan->smsg, "Scan is paused ...");
+						POST(&psscan->smsg);
+					} else {
+						sprintf(psscan->smsg, "Scanning ...");
+						POST(&psscan->smsg);
+						(void) scanOnce((void *)psscan);
+					}
 				}
 			}
 			break;
@@ -1168,11 +1149,9 @@ special(paddr, after)
 			break;
 		case sscanRecordREFD:
 			if (psscan->refd < 1) {
-				psscan->refd = 1;
-				db_post_events(psscan, &psscan->refd, DBE_VALUE);
+				psscan->refd = 1; POST(&psscan->refd);
 			} else if (psscan->refd > NUM_DET) {
-				psscan->refd = NUM_DET;
-				db_post_events(psscan, &psscan->refd, DBE_VALUE);
+				psscan->refd = NUM_DET; POST(&psscan->refd);
 			}
 			break;
 
@@ -1200,18 +1179,14 @@ special(paddr, after)
 					 * need to post_event before lookupPV calls recDynLinkAddXxx
 					 * because SearchCallback could happen immediately
 					 */
-					if (*pPvStat != oldStat) {
-						db_post_events(psscan, pPvStat, DBE_VALUE);
-					}
+					if (*pPvStat != oldStat) POST(pPvStat);
 					/* save time of this lookup so we don't end up doing another unnecessarily */
 					puserPvt->lookupTicks = tickGet();
 					lookupPV(psscan, i);
 				} else if (*pPvStat != NO_PV) {
 					/* PV is now NULL but didn't used to be */
 					*pPvStat = NO_PV;
-					if (*pPvStat != oldStat) {
-						db_post_events(psscan, pPvStat, DBE_VALUE);
-					}
+					if (*pPvStat != oldStat) POST(pPvStat);
 					if (precPvt->caLinkStruct[i].pdynLinkPvt /*puserPvt->dbAddrNv*/) {
 						recDynLinkClear(&precPvt->caLinkStruct[i]);
 						/* Positioners have two recDynLinks */
@@ -1225,10 +1200,10 @@ special(paddr, after)
 					if (puserPvt->ts) {
 						puserPvt->ts = 0;
 						/* Client may need a poke to realize PV has gone from apparently invalid state
-						 *  ("time" is flagged as "No PV", but it does generate readback data) to a
+						 * ("time" is flagged as "No PV", but it does generate readback data) to a
 						 * really invalid state (no PV name at all, no generated data).
 						 */
-						db_post_events(psscan, pPvStat, DBE_VALUE);
+						POST(pPvStat);
 					}
 				}
 				semGive(precPvt->pvStatSem);
@@ -1252,10 +1227,9 @@ special(paddr, after)
 					precPvt->prevSm[i] = pPos->p_sm;
 					if (precPvt->tablePts[i] < psscan->npts) {
 						sprintf(psscan->smsg, "Pts in P%d Table < # of Steps", i + 1);
-						db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+						POST(&psscan->smsg);
 						if (!psscan->alrt) {
-							psscan->alrt = 1;
-							db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+							psscan->alrt = 1; POST(&psscan->alrt);
 						}
 					}
 				}
@@ -1266,10 +1240,8 @@ special(paddr, after)
 					prevAlrt = psscan->alrt;
 					precPvt->nptsCause = -1;
 					changedNpts(psscan);
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-					if (psscan->alrt != prevAlrt) {
-						db_post_events(psscan, &psscan->alrt, DBE_VALUE);
-					}
+					POST(&psscan->smsg);
+					if (psscan->alrt != prevAlrt) POST(&psscan->alrt);
 					precPvt->prevSm[i] = pPos->p_sm;
 				}
 			}
@@ -1286,10 +1258,8 @@ special(paddr, after)
 		psscan->alrt = 0;
 		strcpy(psscan->smsg, "");
 		adjLinParms(paddr);
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-		if (psscan->alrt != prevAlrt) {
-			db_post_events(psscan, &psscan->alrt, DBE_VALUE);
-		}
+		POST(&psscan->smsg);
+		if (psscan->alrt != prevAlrt) POST(&psscan->alrt);
 		if (sscanRecordViewPos) {
 			previewScan(psscan);
 		}
@@ -1298,18 +1268,15 @@ special(paddr, after)
 	case (SPC_SC_N):
 		/* adjust all linear scan parameters per new # of steps */
 		if (psscan->npts > psscan->mpts) {
-			psscan->npts = psscan->mpts;
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			psscan->npts = psscan->mpts; POST(&psscan->npts);
 		}
 		prevAlrt = psscan->alrt;
 		psscan->alrt = 0;
 		strcpy(psscan->smsg, "");
 		precPvt->nptsCause = -1;	/* resolve all positioner parameters */
 		changedNpts(psscan);
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-		if (psscan->alrt != prevAlrt) {
-			db_post_events(psscan, &psscan->alrt, DBE_VALUE);
-		}
+		POST(&psscan->smsg);
+		if (psscan->alrt != prevAlrt) POST(&psscan->alrt);
 		if (sscanRecordViewPos) {
 			previewScan(psscan);
 		}
@@ -1463,17 +1430,15 @@ put_array_info(paddr, nNew)
 			precPvt->tablePts[i] = nNew;
 			if (nNew < psscan->npts) {
 				sprintf(psscan->smsg, "Pts in P%d Table < # of Steps", i + 1);
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+				POST(&psscan->smsg);
 				if (!psscan->alrt) {
-					psscan->alrt = 1;
-					db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+					psscan->alrt = 1; POST(&psscan->alrt);
 				}
 			} else {
 				strcpy(psscan->smsg, "");
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+				POST(&psscan->smsg);
 				if (psscan->alrt) {
-					psscan->alrt = 0;
-					db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+					psscan->alrt = 0; POST(&psscan->alrt);
 				}
 			}
 			return (0);
@@ -1672,7 +1637,7 @@ checkMonitors(sscanRecord *psscan)
 		/* check all detectors */
 		for (i = 0; i < NUM_DET; i++, pDet++) {
 			if (fabs(pDet->d_lv - pDet->d_cv) > 0) {
-				db_post_events(psscan, &pDet->d_cv, DBE_VALUE);
+				POST(&pDet->d_cv);
 				pDet->d_lv = pDet->d_cv;
 			}
 		}
@@ -1680,19 +1645,19 @@ checkMonitors(sscanRecord *psscan)
 		/* check all positioners and readbacks  */
 		for (i = 0; i < NUM_POS; i++, pPos++) {
 			if (fabs(pPos->p_lv - pPos->p_dv) > 0) {
-				db_post_events(psscan, &pPos->p_dv, DBE_VALUE);
+				POST(&pPos->p_dv);
 				pPos->p_lv = pPos->p_dv;
 			}
 			if (fabs(pPos->r_lv - pPos->r_cv) > 0) {
-				db_post_events(psscan, &pPos->r_cv, DBE_VALUE);
+				POST(&pPos->r_cv);
 				pPos->r_lv = pPos->r_cv;
 			}
 		}
 
 		if (psscan->pcpt != psscan->cpt) {
-			db_post_events(psscan, &psscan->cpt, DBE_VALUE);
+			POST(&psscan->cpt);
 			psscan->pcpt = psscan->cpt;
-			if (psscan->cpt) db_post_events(psscan, &psscan->val, DBE_VALUE);
+			if (psscan->cpt) POST(&psscan->val);
 		}
 	}
 	/* if this is the end of a sscan, post data arrays */
@@ -1706,31 +1671,27 @@ checkMonitors(sscanRecord *psscan)
 			db_post_events(psscan, precPvt->posBufPtr[i].pBufB, DBE_VAL_LOG);
 		}
 		for (i = 0; i < NUM_DET; i++) {
-if (precPvt->acqDet[i]) {
-			db_post_events(psscan, precPvt->detBufPtr[i].pBufA, DBE_VAL_LOG);
-			db_post_events(psscan, precPvt->detBufPtr[i].pBufB, DBE_VAL_LOG);
-}
+			if (precPvt->acqDet[i]) {
+				db_post_events(psscan, precPvt->detBufPtr[i].pBufA, DBE_VAL_LOG);
+				db_post_events(psscan, precPvt->detBufPtr[i].pBufB, DBE_VAL_LOG);
+			}
 		}
 		/*
 		 * I must also post a monitor on the NULL array, because some
 		 * clients connected to D?PV's without valid PV's !
 		 */
-		db_post_events(psscan, precPvt->nullArray, DBE_VALUE);
+		POST(precPvt->nullArray);
 
 		/* post alert if changed */
 		if (precPvt->scanErr) {
-			psscan->alrt = precPvt->scanErr;
-			db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+			psscan->alrt = precPvt->scanErr; POST(&psscan->alrt);
 		}
-		if (psscan->xsc != psscan->pxsc) {
-			db_post_events(psscan, &psscan->xsc, DBE_VALUE);
-		}
+		if (psscan->xsc != psscan->pxsc) POST(&psscan->xsc);
 		if (psscan->exsc != psscan->xsc) {
-			psscan->exsc = psscan->xsc;
-			db_post_events(psscan, &psscan->exsc, DBE_VALUE);
+			psscan->exsc = psscan->xsc; POST(&psscan->exsc);
 		}
 
-		psscan->data = 1; db_post_events(psscan, &psscan->data, DBE_VALUE);
+		psscan->data = 1; POST(&psscan->data);
 	}
 }
 
@@ -1788,7 +1749,7 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 	if (pdot != NULL) {
 		if (strncmp(pdot, pdesc, 5) == 0) {
 			strcpy(pdot, pval);
-			db_post_events(psscan, *ppvn, DBE_VALUE);
+			POST(*ppvn);
 		}
 	}
 	/* See if it's a local PV */
@@ -1811,8 +1772,7 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 		/* Check to see if it equals "time" */
 		if ((strncmp(*ppvn, pTIME, 4) == 0) || (strncmp(*ppvn, ptime, 4) == 0)) {
 			puserPvt->ts = 1;
-			*pPvStat = NO_PV;
-			db_post_events(psscan, pPvStat, DBE_VALUE);
+			*pPvStat = NO_PV; POST(pPvStat);
 			break;	/* don't do lookups or pvSearchCallback */
 		} else {
 			puserPvt->ts = 0;
@@ -1835,21 +1795,9 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 		break;
 
 	case TRIGGER:
-		if (1 /* puserPvt->dbAddrNv || puserPvt->useDynLinkAlways */ ) {
-			recDynLinkAddOutput(&precPvt->caLinkStruct[i], *ppvn,
-						  DBR_FLOAT, rdlSCALAR, pvSearchCallback);
-		} else {
-			pvSearchCallback(&precPvt->caLinkStruct[i]);
-		}
-		break;
-
 	case BS_AS_LINK:
-		if (1 /* puserPvt->dbAddrNv || puserPvt->useDynLinkAlways */ ) {
-			recDynLinkAddOutput(&precPvt->caLinkStruct[i], *ppvn,
+		recDynLinkAddOutput(&precPvt->caLinkStruct[i], *ppvn,
 			      DBR_FLOAT, rdlSCALAR, pvSearchCallback);
-		} else {
-			pvSearchCallback(&precPvt->caLinkStruct[i]);
-		}
 		break;
 
 	case POSITIONER_OUT:	/* case POSITIONER did everything */
@@ -1859,16 +1807,16 @@ lookupPV(sscanRecord * psscan, unsigned short i)
 }
 
 static void 
-delayCallback(CALLBACK * pCB)
+delayCallback(CALLBACK *pCB)
 {
 	sscanRecord     *psscan;
 
 	callbackGetUser(psscan, pCB);
+	if (sscanRecordDebug > 10) logMsg("%s:delayCallback:entry\n", psscan->name);
 	if (psscan->wcnt) {
-		psscan->wtng = 1;
-		db_post_events(psscan, &psscan->wtng, DBE_VALUE);
+		psscan->wtng = 1; POST(&psscan->wtng);
 		sprintf(psscan->smsg, "Waiting for client");
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+		POST(&psscan->smsg);
 	} else {
 		(void) scanOnce((void *) psscan);
 	}
@@ -1890,7 +1838,7 @@ notifyCallback(recDynLink * precDynLink)
 	if (psscan->faze == sscanFAZE_IDLE) {
 		/* we must have been aborted */
 		sprintf(psscan->smsg, " ");
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+		POST(&psscan->smsg);
 		return;
 	}
 
@@ -1902,15 +1850,14 @@ notifyCallback(recDynLink * precDynLink)
 		    (--(precPvt->numTriggerCallbacks) == 0)) {
 			if (psscan->paus) {
 				sprintf(psscan->smsg, "Scan paused by operator");
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+				POST(&psscan->smsg);
 				return;
 			}
 			if (psscan->ddly == 0.) {
 				if (psscan->wcnt) {
-					psscan->wtng = 1;
-					db_post_events(psscan, &psscan->wtng, DBE_VALUE);
+					psscan->wtng = 1; POST(&psscan->wtng);
 					sprintf(psscan->smsg, "Waiting for client");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					POST(&psscan->smsg);
 				} else {
 					(void) scanOnce((void *)psscan);
 				}
@@ -1925,7 +1872,7 @@ notifyCallback(recDynLink * precDynLink)
 		    (--(precPvt->numPositionerCallbacks) == 0)) {
 			if (psscan->paus) {
 				sprintf(psscan->smsg, "Scan paused by operator");
-				db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+				POST(&psscan->smsg);
 				return;
 			}
 			if ((psscan->faze != sscanFAZE_CHECK_MOTORS) || (psscan->pdly == 0.)) {
@@ -2028,10 +1975,10 @@ pvSearchCallback(recDynLink * precDynLink)
 				pPos->p_lr = precPvt->pDynLinkInfo->lower_ctrl_limit;
 			}
 		}
-		db_post_events(psscan, &pPos->p_eu, DBE_VALUE);
-		db_post_events(psscan, &pPos->p_pr, DBE_VALUE);
-		db_post_events(psscan, &pPos->p_hr, DBE_VALUE);
-		db_post_events(psscan, &pPos->p_lr, DBE_VALUE);
+		POST(&pPos->p_eu);
+		POST(&pPos->p_pr);
+		POST(&pPos->p_hr);
+		POST(&pPos->p_lr);
 
 		break;
 
@@ -2060,10 +2007,10 @@ pvSearchCallback(recDynLink * precDynLink)
 				pDet->d_lr = precPvt->pDynLinkInfo->lower_disp_limit;
 			}
 		}
-		db_post_events(psscan, &pDet->d_eu, DBE_VALUE);
-		db_post_events(psscan, &pDet->d_pr, DBE_VALUE);
-		db_post_events(psscan, &pDet->d_hr, DBE_VALUE);
-		db_post_events(psscan, &pDet->d_lr, DBE_VALUE);
+		POST(&pDet->d_eu);
+		POST(&pDet->d_pr);
+		POST(&pDet->d_hr);
+		POST(&pDet->d_lr);
 
 		/* get # of elements, re-allocate array as necessary */
 		if (puserPvt->dbAddrNv || puserPvt->useDynLinkAlways) {
@@ -2074,7 +2021,7 @@ pvSearchCallback(recDynLink * precDynLink)
 
 		if (nelem > 1) {
 			sprintf(psscan->smsg, "Array-valued detector");
-			db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+			POST(&psscan->smsg);
 		}
 		if (puserPvt->nelem == 0) {
 			printf("%s: Allocating memory for detector %d (link %d)\n",
@@ -2112,8 +2059,7 @@ pvSearchCallback(recDynLink * precDynLink)
 
 	/* Announce link status to the rest of the world */
 	if (*pPvStat != PvStat) {
-		*pPvStat = PvStat;
-		db_post_events(psscan, pPvStat, DBE_VALUE);
+		*pPvStat = PvStat; POST(pPvStat);
 	}
 	semGive(precPvt->pvStatSem);
 
@@ -2130,8 +2076,7 @@ pvSearchCallback(recDynLink * precDynLink)
 		} else if (!psscan->xsc) {
 			if (sscanRecordDebug) printf("%s:pvSearchCallback: pending scan was aborted\n",
 					psscan->name);
-			psscan->faze = sscanFAZE_IDLE;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			psscan->faze = sscanFAZE_IDLE; POST(&psscan->faze);
 		} else {
 			/* If monitors have come in for all positioners, start scan. */
 			pPvStat = &psscan->p1nv;
@@ -2184,7 +2129,7 @@ posMonCallback(recDynLink * precDynLink)
 	 */
 	status = recDynLinkGet(&precPvt->caLinkStruct[linkIndex],
 			       &pPos->p_cv, &nRequest, 0, 0, 0);
-	db_post_events(psscan, &pPos->p_cv, DBE_VALUE);
+	POST(&pPos->p_cv);
 	if (sscanRecordDebug > 5) {
 		printf("%s:posMonCallback: pvIndex=%d, cv=%f, taskId=0x%x\n", psscan->name, pvIndex,
 				pPos->p_cv, taskIdSelf());
@@ -2201,8 +2146,7 @@ posMonCallback(recDynLink * precDynLink)
 		if (!psscan->xsc) {
 			if (sscanRecordDebug) printf("%s:posMonCallback: pending scan was aborted\n",
 					psscan->name);
-			psscan->faze = sscanFAZE_IDLE;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			psscan->faze = sscanFAZE_IDLE; POST(&psscan->faze);
 			return;
 		}
 
@@ -2324,15 +2268,12 @@ initScan(psscan)
 	 */
 
 	if ((status = checkScanLimits(psscan))) {
-		/* limits didn't pass, abort scan */
-		psscan->xsc = 0;
-		db_post_events(psscan, &psscan->xsc, DBE_VALUE);
-		psscan->exsc = 0;
-		db_post_events(psscan, &psscan->exsc, DBE_VALUE);
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-		db_post_events(psscan, &psscan->alrt, DBE_VALUE);
-		psscan->faze = sscanFAZE_SCAN_DONE;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		/* limits didn't pass, or couldn't get current positioner value.  abort scan */
+		psscan->xsc = 0; POST(&psscan->xsc);
+		psscan->exsc = 0; POST(&psscan->exsc);
+		POST(&psscan->smsg);
+		POST(&psscan->alrt);
+		psscan->faze = sscanFAZE_SCAN_DONE; POST(&psscan->faze);
 		return (status);
 	}
 	/* Then calculate the starting position */
@@ -2348,7 +2289,7 @@ initScan(psscan)
 			/* tmm v3.15 some positioners must see a change in their drive value to move */
 			if (pPos->p_dv == pPos->p_pp) pPos->p_dv *= (1 + DBL_EPSILON);
 
-			db_post_events(psscan, &pPos->p_dv, DBE_VALUE);
+			POST(&pPos->p_dv);
 			if (pPos->p_sm == sscanP1SM_On_The_Fly) {
 				precPvt->onTheFly |= 1;	/* set flag if onTheFly */
 			}
@@ -2356,15 +2297,13 @@ initScan(psscan)
 	}
 
 	if ((psscan->bsnv == PV_OK) && (psscan->faze == sscanFAZE_INIT_SCAN)) {
-		psscan->faze = sscanFAZE_BEFORE_SCAN;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		psscan->faze = sscanFAZE_BEFORE_SCAN; POST(&psscan->faze);
 		sprintf(psscan->smsg, "Before Scan FLNK ...");
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+		POST(&psscan->smsg);
 	} else {
-		psscan->faze = sscanFAZE_MOVE_MOTORS;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		psscan->faze = sscanFAZE_MOVE_MOTORS; POST(&psscan->faze);
 		sprintf(psscan->smsg, "Scanning ...");
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+		POST(&psscan->smsg);
 	}
 	/* request callback to do dbPutFields */
 	callbackRequest(&precPvt->doPutsCallback);
@@ -2417,18 +2356,20 @@ contScan(psscan)
 
 				if ((pPos->r_dl > 0) &&
 				    (fabs(pPos->p_dv - pPos->r_cv) > pPos->r_dl)) {
-					sprintf(psscan->smsg, "SCAN Aborted: P1 Error > delta");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					sprintf(psscan->smsg, "SCAN Aborted: P%1d Error > delta", i+1);
+					POST(&psscan->smsg);
 					precPvt->scanErr = 1;
+					printf("%s: P%1d Error > delta.  Ending scan.\n", psscan->name, i+1);
 					endScan(psscan);
 					return;
-				} else if ((pPos->p_sm != sscanP1SM_Table) && (
-						fabs(pPos->p_dv - pPos->r_cv) >
-						fabs(pPos->p_si * NINT(pPos->r_dl))
-					)) {
-					sprintf(psscan->smsg, "SCAN Aborted: P1 Error > stepsize");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+				} else if ((pPos->r_dl < 0) && (pPos->p_sm != sscanP1SM_Table) &&
+						(fabs(pPos->p_dv - pPos->r_cv) >
+						fabs(pPos->p_si * NINT(pPos->r_dl)))
+					) {
+					sprintf(psscan->smsg, "SCAN Aborted: P%1d Error > stepsize", i+1);
+					POST(&psscan->smsg);
 					precPvt->scanErr = 1;
+					printf("%s: P%1d Error > stepsize.  Ending scan.\n", psscan->name, i+1);
 					endScan(psscan);
 					return;
 				}
@@ -2469,7 +2410,7 @@ contScan(psscan)
 		if (precPvt->valTrigPvs && !precPvt->flying) {
 			/* do detector trigger fields */
 			psscan->faze = precPvt->onTheFly ? sscanFAZE_START_FLY : sscanFAZE_TRIG_DETCTRS;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			POST(&psscan->faze);
 			callbackRequest(&precPvt->doPutsCallback);
 			return;
 		}
@@ -2652,15 +2593,14 @@ contScan(psscan)
 			}
 
 			/* request callback to move motors to new positions */
-			psscan->faze = sscanFAZE_MOVE_MOTORS;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			psscan->faze = sscanFAZE_MOVE_MOTORS; POST(&psscan->faze);
 			/* For onTheFly, doPuts will fall through to TRIG_DETCTRS after MOVE_MOTORS */
 			callbackRequest(&precPvt->doPutsCallback);
 			return;
 		} else {
 			endScan(psscan);	/* scan is successfully complete */
 			sprintf(psscan->smsg, "SCAN Complete");
-			db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+			POST(&psscan->smsg);
 			precPvt->scanErr = 0;
 			return;
 		}
@@ -2677,8 +2617,7 @@ endScan(sscanRecord *psscan)
 	psscan->xsc = 0;	/* done with scan */
 
 	if (psscan->pasm && precPvt->valPosPvs) {
-		psscan->faze = sscanFAZE_RETRACE_MOVE;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		psscan->faze = sscanFAZE_RETRACE_MOVE; POST(&psscan->faze);
 		/* request callback to do dbPutFields */
 		callbackRequest(&precPvt->doPutsCallback);
 	} else {
@@ -2812,7 +2751,7 @@ packData(sscanRecord *psscan)
 				(psscan->pasm==sscanPASM_Peak_Pos)?"Peak":
 				(psscan->pasm==sscanPASM_Valley_Pos)?"Valley":
 				(psscan->pasm==sscanPASM_RisingEdge_Pos)?"+Edge":"-Edge");
-			db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+			POST(&psscan->smsg);
 		} else {
 			/* Can't find an optimal value.  Go to prior position. */
 			pPos = (posFields *) & psscan->p1pp;
@@ -2823,8 +2762,8 @@ packData(sscanRecord *psscan)
 				(psscan->pasm==sscanPASM_Peak_Pos)?"Peak":
 				(psscan->pasm==sscanPASM_Valley_Pos)?"Valley":
 				(psscan->pasm==sscanPASM_RisingEdge_Pos)?"+Edge":"-Edge");
-			db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-			psscan->alrt = 1; db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+			POST(&psscan->smsg);
+			psscan->alrt = 1; POST(&psscan->alrt);
 
 		}
 	}
@@ -2863,13 +2802,11 @@ afterScan(psscan)
 	/* See if there is an After Scan Link to process */
 
 	if (psscan->asnv == PV_OK) {
-		psscan->faze = sscanFAZE_AFTER_SCAN_DO;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		psscan->faze = sscanFAZE_AFTER_SCAN_DO; POST(&psscan->faze);
 		/* request callback to do dbPutFields */
 		callbackRequest(&precPvt->doPutsCallback);
 	} else {
-		psscan->faze = sscanFAZE_SCAN_DONE;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		psscan->faze = sscanFAZE_SCAN_DONE; POST(&psscan->faze);
 	}
 	return;
 }
@@ -2904,7 +2841,7 @@ doPuts(precPvt)
 
 	if (psscan->paus) {
 		sprintf(psscan->smsg, "Scan paused by operator");
-		db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+		POST(&psscan->smsg);
 		return;
 	}
 
@@ -2938,17 +2875,16 @@ doPuts(precPvt)
 						    &(pPos->p_dv), 1, notifyCallback);
 					if (status) precPvt->numPositionerCallbacks--;
 					if (status == NOTIFY_IN_PROGRESS) {
-						psscan->alrt = NOTIFY_IN_PROGRESS;
-						db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+						psscan->alrt = NOTIFY_IN_PROGRESS; POST(&psscan->alrt);
 						sprintf(psscan->smsg, "Positioner %1d is already busy", i);
-						db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+						POST(&psscan->smsg);
 					}
 				}
 			}
 		}
 
 		if (psscan->faze == sscanFAZE_CHECK_MOTORS) {
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			POST(&psscan->faze);
 			if (!precPvt->flying)
 				break;
 		}
@@ -2963,11 +2899,10 @@ doPuts(precPvt)
 			printf("%s:TRIG_DETCTRS - Point %d\n", psscan->name, psscan->cpt);
 		}
 		psscan->faze = precPvt->onTheFly ? sscanFAZE_CHECK_MOTORS : sscanFAZE_READ_DETCTRS;
-		db_post_events(psscan, &psscan->faze, DBE_VALUE);
+		POST(&psscan->faze);
 
 		if (psscan->awct) {
-			psscan->wcnt = psscan->awct;
-			db_post_events(psscan, &psscan->wcnt, DBE_VALUE);
+			psscan->wcnt = psscan->awct; POST(&psscan->wcnt);
 		}
 
 		if (precPvt->valTrigPvs == 0) {
@@ -3002,10 +2937,9 @@ doPuts(precPvt)
 					if (sscanRecordDebug >= 5) {
 						printf("%s:...TRIG_DETCTRS: notify in progress\n", psscan->name);
 					}
-					psscan->alrt = NOTIFY_IN_PROGRESS;
-					db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+					psscan->alrt = NOTIFY_IN_PROGRESS; POST(&psscan->alrt);
 					sprintf(psscan->smsg, "Detector %d is busy", i+1);
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					POST(&psscan->smsg);
 				}
 			}
 		}
@@ -3015,8 +2949,7 @@ doPuts(precPvt)
 		if (sscanRecordDebug >= 5)
 			printf("%s:BEFORE_SCAN Link\n", psscan->name);
 		if (psscan->bsnv == OK) {
-			psscan->faze = sscanFAZE_BEFORE_SCAN_WAIT;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			psscan->faze = sscanFAZE_BEFORE_SCAN_WAIT; POST(&psscan->faze);
 			puserPvt = precPvt->caLinkStruct[BS_OUT].puserPvt;
 			if (1 /* puserPvt->dbAddrNv || puserPvt->useDynLinkAlways */ ) {
 				precPvt->numPositionerCallbacks++;
@@ -3024,10 +2957,9 @@ doPuts(precPvt)
 						&(psscan->bscd), 1, notifyCallback);
 				if (status) precPvt->numPositionerCallbacks--;
 				if (status == NOTIFY_IN_PROGRESS) {
-					psscan->alrt = NOTIFY_IN_PROGRESS;
-					db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+					psscan->alrt = NOTIFY_IN_PROGRESS; POST(&psscan->alrt);
 					sprintf(psscan->smsg, "Before-scan link is busy");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					POST(&psscan->smsg);
 				}
 			} else {
 				status = dbPutField(puserPvt->pAddr, DBF_FLOAT,
@@ -3065,8 +2997,7 @@ doPuts(precPvt)
 					}
 					if (pPos->p_dv == oldPos) pPos->p_dv *= (1 + DBL_EPSILON);
 
-					psscan->faze = sscanFAZE_RETRACE_WAIT;
-					db_post_events(psscan, &psscan->faze, DBE_VALUE);
+					psscan->faze = sscanFAZE_RETRACE_WAIT; POST(&psscan->faze);
 					/* Command motor */
 					puserPvt = precPvt->caLinkStruct[i].puserPvt;
 					if (1 /* puserPvt->dbAddrNv || puserPvt->useDynLinkAlways */ ) {
@@ -3075,10 +3006,9 @@ doPuts(precPvt)
 						    &(pPos->p_dv), 1, notifyCallback);
 						if (status) precPvt->numPositionerCallbacks--;
 						if (status == NOTIFY_IN_PROGRESS) {
-							psscan->alrt = NOTIFY_IN_PROGRESS;
-							db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+							psscan->alrt = NOTIFY_IN_PROGRESS; POST(&psscan->alrt);
 							sprintf(psscan->smsg, "Positioner %1d is busy", i);
-							db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+							POST(&psscan->smsg);
 						}
 					} else {
 						status = dbPutField(puserPvt->pAddr, DBF_DOUBLE,
@@ -3088,8 +3018,7 @@ doPuts(precPvt)
 			}
 		}
 		if (psscan->faze == sscanFAZE_RETRACE_MOVE) {
-			psscan->faze = sscanFAZE_AFTER_SCAN_DO;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			psscan->faze = sscanFAZE_AFTER_SCAN_DO; POST(&psscan->faze);
 			/* Didn't have to do any retrace.  Fall through to sscanFAZE_AFTER_SCAN_DO */
 		} else {
 			break;
@@ -3098,8 +3027,7 @@ doPuts(precPvt)
 	case sscanFAZE_AFTER_SCAN_DO:
 		/* If an After Scan Link PV is valid, execute it */
 		if (psscan->asnv == PV_OK) {
-			psscan->faze = sscanFAZE_AFTER_SCAN_WAIT;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			psscan->faze = sscanFAZE_AFTER_SCAN_WAIT; POST(&psscan->faze);
 			if (sscanRecordDebug >= 5)
 				printf("%s:AFTER_SCAN Fwd Lnk\n", psscan->name);
 			puserPvt = precPvt->caLinkStruct[AS_OUT].puserPvt;
@@ -3109,10 +3037,9 @@ doPuts(precPvt)
 						&(psscan->ascd), 1, notifyCallback);
 				if (status) precPvt->numPositionerCallbacks--;
 				if (status == NOTIFY_IN_PROGRESS) {
-					psscan->alrt = NOTIFY_IN_PROGRESS;
-					db_post_events(psscan, &psscan->alrt, DBE_VALUE);
+					psscan->alrt = NOTIFY_IN_PROGRESS; POST(&psscan->alrt);
 					sprintf(psscan->smsg, "After-scan link is busy");
-					db_post_events(psscan, &psscan->smsg, DBE_VALUE);
+					POST(&psscan->smsg);
 				}
 			} else {
 				status = dbPutField(puserPvt->pAddr, DBF_FLOAT,
@@ -3121,8 +3048,7 @@ doPuts(precPvt)
 		}
 		if (psscan->faze == sscanFAZE_AFTER_SCAN_DO) {
 			/* Didn't have to do anything after all. */
-			psscan->faze = sscanFAZE_SCAN_DONE;
-			db_post_events(psscan, &psscan->faze, DBE_VALUE);
+			psscan->faze = sscanFAZE_SCAN_DONE; POST(&psscan->faze);
 			/* Scan must end in the process() routine. */
 			scanOnce(psscan);
 		}
@@ -3192,16 +3118,13 @@ adjLinParms(paddr)
 		/* if step increment/center/width are not frozen, change them  */
 		if (!pParms->p_fi && !pParms->p_fc && !pParms->p_fw) {
 			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			return;
-			/*
-			 * if # of points/center/width are not frozen, change
-			 * them
-			 */
+			/* If npts/center/width aren't frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fc && !pParms->p_fw) {
 			psscan->npts = ((pParms->p_ep - pParms->p_sp) / (pParms->p_si)) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3209,25 +3132,24 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points!", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_sp = pParms->p_ep - (pParms->p_si * (psscan->npts - 1));
-				db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+				POST(&pParms->p_sp);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
 			return;
 			/* if end/center are not frozen, change them  */
 		} else if (!pParms->p_fe && !pParms->p_fc) {
-			pParms->p_ep = pParms->p_sp +
-				((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
+			POST(&pParms->p_ep);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			return;
 			/*
 			 * if step increment/end/width are not frozen, change
@@ -3235,16 +3157,13 @@ adjLinParms(paddr)
 			 */
 		} else if (!pParms->p_fi && !pParms->p_fe && !pParms->p_fw) {
 			pParms->p_wd = (pParms->p_cp - pParms->p_sp) * 2;
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			pParms->p_si = pParms->p_wd / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			pParms->p_ep = (pParms->p_sp + pParms->p_wd);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			return;
-			/*
-			 * if # of points/end/width are not frozen, change
-			 * them
-			 */
+			/* If npts/end/width aren't frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fe && !pParms->p_fw) {
 			psscan->npts = ((pParms->p_cp - pParms->p_sp) * 2 / (pParms->p_si)) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3252,14 +3171,14 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points!", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_sp = pParms->p_cp - ((pParms->p_si * (psscan->npts - 1)) / 2);
-				db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+				POST(&pParms->p_sp);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
@@ -3268,7 +3187,7 @@ adjLinParms(paddr)
 		break;
 
 	case (SPC_SC_I):	/* step increment changed */
-		/* if # of points is not frozen, change it  */
+		/* if npts is not frozen, change it  */
 		if (!psscan->fpts) {
 			psscan->npts = ((pParms->p_ep - pParms->p_sp) / (pParms->p_si)) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3276,10 +3195,10 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
-				db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+				POST(&pParms->p_si);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
@@ -3287,33 +3206,33 @@ adjLinParms(paddr)
 			/* if end/center/width are not frozen, change them */
 		} else if (!pParms->p_fe && !pParms->p_fc && !pParms->p_fw) {
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			return;
 			/* if start/center/width are not frozen, change them */
 		} else if (!pParms->p_fs && !pParms->p_fc && !pParms->p_fw) {
 			pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			return;
 			/* if start/end/width are not frozen, change them */
 		} else if (!pParms->p_fs && !pParms->p_fe && !pParms->p_fw) {
 			pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			return;
 		} else {	/* too constrained !! */
 			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			sprintf(psscan->smsg, "P%1d SCAN Parameters Too Constrained !", i + 1);
 			psscan->alrt = 1;
 			return;
@@ -3324,16 +3243,13 @@ adjLinParms(paddr)
 		/* if step increment/center/width are not frozen, change them */
 		if (!pParms->p_fi && !pParms->p_fc && !pParms->p_fw) {
 			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			return;
-			/*
-			 * if # of points/center/width are not frozen, change
-			 * them
-			 */
+			/* If npts/center/width are not frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fc && !pParms->p_fw) {
 			psscan->npts = ((pParms->p_ep - pParms->p_sp) / (pParms->p_si)) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3341,14 +3257,14 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_ep = pParms->p_sp + (pParms->p_si * (psscan->npts - 1));
-				db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+				POST(&pParms->p_ep);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
@@ -3356,26 +3272,20 @@ adjLinParms(paddr)
 			/* if start/center are not frozen, change them  */
 		} else if (!pParms->p_fs && !pParms->p_fc) {
 			pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			return;
-			/*
-			 * if step start/width/increment are not frozen,
-			 * change them
-			 */
+			/* If start/width/increment aren't frozen, change them */
 		} else if (!pParms->p_fs && !pParms->p_fw && !pParms->p_fi) {
 			pParms->p_wd = (pParms->p_ep - pParms->p_cp) * 2;
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			pParms->p_sp = pParms->p_ep - pParms->p_wd;
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			return;
-			/*
-			 * if # of points/start/width are not frozen, change
-			 * them
-			 */
+			/* If npts/start/width are not frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fs && !pParms->p_fw) {
 			psscan->npts = (((pParms->p_ep - pParms->p_cp) * 2) / (pParms->p_si)) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3383,21 +3293,21 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_ep = pParms->p_cp + (pParms->p_si * (psscan->npts - 1) / 2);
-				db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+				POST(&pParms->p_ep);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_wd = (pParms->p_ep - pParms->p_cp) * 2;
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			pParms->p_sp = pParms->p_ep - pParms->p_wd;
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
 			return;
 		} else {	/* too constrained !! */
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			sprintf(psscan->smsg, "P%1d SCAN Parameters Too Constrained !", i + 1);
 			psscan->alrt = 1;
 			return;
@@ -3408,27 +3318,27 @@ adjLinParms(paddr)
 		/* if start/end are not frozen, change them */
 		if (!pParms->p_fs && !pParms->p_fe) {
 			pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			return;
 			/* if end/inc/width are not frozen, change them */
 		} else if (!pParms->p_fe && !pParms->p_fi && !pParms->p_fw) {
 			pParms->p_wd = (pParms->p_cp - pParms->p_sp) * 2;
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			pParms->p_ep = pParms->p_sp + pParms->p_wd;
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			return;
 			/* if start/inc/width are not frozen, change them */
 		} else if (!pParms->p_fs && !pParms->p_fi && !pParms->p_fw) {
 			pParms->p_wd = (pParms->p_ep - pParms->p_cp) * 2;
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			pParms->p_sp = pParms->p_ep - pParms->p_wd;
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			return;
 			/*
 			 * if # of points/end/width are not frozen, change
@@ -3441,22 +3351,19 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_cp = pParms->p_sp + (pParms->p_si * (psscan->npts - 1) / 2);
-				db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+				POST(&pParms->p_cp);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_wd = (pParms->p_cp - pParms->p_sp) * 2;
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			pParms->p_ep = pParms->p_sp + pParms->p_wd;
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
 			return;
-			/*
-			 * if # of points/start/width are not frozen, change
-			 * them
-			 */
+			/* If npts/start/width are not frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fs && !pParms->p_fw) {
 			psscan->npts = (((pParms->p_ep - pParms->p_cp) * 2) / (pParms->p_si)) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3464,21 +3371,21 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_cp = pParms->p_ep - (pParms->p_si * (psscan->npts - 1) / 2);
-				db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+				POST(&pParms->p_cp);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_wd = (pParms->p_ep - pParms->p_cp) * 2;
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			pParms->p_sp = pParms->p_ep - pParms->p_wd;
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
 			return;
 		} else {	/* too constrained !! */
 			pParms->p_cp = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			sprintf(psscan->smsg, "P%1d SCAN Parameters Too Constrained !", i + 1);
 			psscan->alrt = 1;
 			return;
@@ -3489,16 +3396,13 @@ adjLinParms(paddr)
 		/* if step start/inc/end are not frozen, change them */
 		if (!pParms->p_fs && !pParms->p_fi && !pParms->p_fe) {
 			pParms->p_si = pParms->p_wd / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			return;
-			/*
-			 * if # of points/start/end are not frozen, change
-			 * them
-			 */
+			/* If npts/start/end are not frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fs && !pParms->p_fe) {
 			psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3506,14 +3410,14 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_wd = (pParms->p_si * (psscan->npts - 1));
-				db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+				POST(&pParms->p_wd);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
@@ -3521,25 +3425,22 @@ adjLinParms(paddr)
 			/* if center/end/inc are not frozen, change them */
 		} else if (!pParms->p_fc && !pParms->p_fe && !pParms->p_fi) {
 			pParms->p_si = pParms->p_wd / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			return;
 			/* if start/center/inc are not frozen, change them */
 		} else if (!pParms->p_fs && !pParms->p_fc && !pParms->p_fi) {
 			pParms->p_si = pParms->p_wd / (psscan->npts - 1);
-			db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+			POST(&pParms->p_si);
 			pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			return;
-			/*
-			 * if # of points/center/end are not frozen, change
-			 * them
-			 */
+			/* If npts/center/end aren't frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fc && !pParms->p_fe) {
 			psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3547,22 +3448,19 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_wd = (pParms->p_si * (psscan->npts - 1));
-				db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+				POST(&pParms->p_wd);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+			POST(&pParms->p_ep);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
 			return;
-			/*
-			 * if # of points/start/center are not frozen, change
-			 * them
-			 */
+			/* If npts/start/center aren't frozen, change them */
 		} else if (!psscan->fpts && !pParms->p_fs && !pParms->p_fc) {
 			psscan->npts = (pParms->p_wd / pParms->p_si) + 1;
 			if (psscan->npts > psscan->mpts) {
@@ -3570,21 +3468,21 @@ adjLinParms(paddr)
 				sprintf(psscan->smsg, "P%1d Request Exceeded Maximum Points !", i + 1);
 				/* adjust changed field to be consistent */
 				pParms->p_wd = (pParms->p_si * (psscan->npts - 1));
-				db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+				POST(&pParms->p_wd);
 				psscan->alrt = 1;
 			}
-			db_post_events(psscan, &psscan->npts, DBE_VALUE);
+			POST(&psscan->npts);
 			pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
-			db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+			POST(&pParms->p_sp);
 			pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-			db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+			POST(&pParms->p_cp);
 			precPvt->nptsCause = i;	/* indicate cause of # of
 						 * points changed */
 			changedNpts(psscan);
 			return;
 		} else {	/* too constrained !! */
 			pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-			db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+			POST(&pParms->p_wd);
 			sprintf(psscan->smsg, "P%1d SCAN Parameters Too Constrained !", i + 1);
 			psscan->alrt = 1;
 			return;
@@ -3679,38 +3577,35 @@ changedNpts(psscan)
 			case (22):
 			case (23):
 				pParms->p_si = (pParms->p_ep - pParms->p_sp) / (psscan->npts - 1);
-				db_post_events(psscan, &pParms->p_si, DBE_VALUE);
+				POST(&pParms->p_si);
 				break;
 
-			case (8):	/* end/center/width unfrozen, change
-					 * them */
+			case (8):	/* end/center/width unfrozen, change them */
 			case (24):
 				pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-				db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+				POST(&pParms->p_ep);
 				pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-				db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+				POST(&pParms->p_cp);
 				pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-				db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+				POST(&pParms->p_wd);
 				break;
 
-			case (12):	/* start/center/width are not frozen,
-					 * change them  */
+			case (12):	/* start/center/width aren't frozen, change them  */
 				pParms->p_sp = pParms->p_ep - ((psscan->npts - 1) * pParms->p_si);
-				db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+				POST(&pParms->p_sp);
 				pParms->p_cp = (pParms->p_ep + pParms->p_sp) / 2;
-				db_post_events(psscan, &pParms->p_cp, DBE_VALUE);
+				POST(&pParms->p_cp);
 				pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-				db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+				POST(&pParms->p_wd);
 				break;
 
-			case (10):	/* if center is frozen, but not
-					 * width/start/end , ...  */
+			case (10):	/* if center is frozen, but not width/start/end , ...  */
 				pParms->p_sp = pParms->p_cp - ((psscan->npts - 1) * pParms->p_si) / 2;
-				db_post_events(psscan, &pParms->p_sp, DBE_VALUE);
+				POST(&pParms->p_sp);
 				pParms->p_ep = pParms->p_sp + ((psscan->npts - 1) * pParms->p_si);
-				db_post_events(psscan, &pParms->p_ep, DBE_VALUE);
+				POST(&pParms->p_ep);
 				pParms->p_wd = (pParms->p_ep - pParms->p_sp);
-				db_post_events(psscan, &pParms->p_wd, DBE_VALUE);
+				POST(&pParms->p_wd);
 				break;
 
 				/*
@@ -3775,11 +3670,16 @@ checkScanLimits(psscan)
 				status |= dbGet(puserPvt->pAddr, DBR_DOUBLE, &pPos->p_pp,
 						0, 0, NULL);
 			}
-			if (status) printf("%s:checkScanLimits: could not get current value\n", psscan->name);
-			db_post_events(psscan, &pPos->p_pp, DBE_VALUE);
+			POST(&pPos->p_pp);
 			if (sscanRecordDebug)
 				printf("%s:checkScanLimits: P%1d pp=%f (status=%ld)\n",
 					psscan->name, j, pPos->p_pp, status);
+			if (status) {
+				printf("%s:checkScanLimits: could not get current value\n", psscan->name);
+				sprintf(psscan->smsg, "Can't get current position"); POST(&psscan->smsg);
+				if (!psscan->alrt) {psscan->alrt = 1; POST(&psscan->alrt);}
+				return(ERROR);
+			}
 		}
 	}
 
@@ -3787,10 +3687,7 @@ checkScanLimits(psscan)
 	if (sscanRecordDontCheckLimits && psscan->xsc)
 		return (OK);
 
-	/*
-	 * First check if any pos'rs are in Table mode with insufficient
-	 * points
-	 */
+	/* First check if any pos'rs are in Table mode with insufficient points */
 	pPvStat = &psscan->p1nv;
 	pPos = (posFields *) & psscan->p1pp;
 	for (i = 0; i < NUM_POS; i++, pPos++, pPvStat++) {
@@ -3798,11 +3695,8 @@ checkScanLimits(psscan)
 		    (pPos->p_sm == sscanP1SM_Table) &&
 		    (precPvt->tablePts[i] < psscan->npts)) {
 			sprintf(psscan->smsg, "Pts in P%d Table < # of Steps", i + 1);
-			db_post_events(psscan, &psscan->smsg, DBE_VALUE);
-			if (!psscan->alrt) {
-				psscan->alrt = 1;
-				db_post_events(psscan, &psscan->alrt, DBE_VALUE);
-			}
+			POST(&psscan->smsg);
+			if (!psscan->alrt) {psscan->alrt = 1; POST(&psscan->alrt);}
 			return (ERROR);
 		}
 	}
@@ -3815,10 +3709,7 @@ checkScanLimits(psscan)
 	for (i = 0; i < NUM_POS; i++, pPos++, pPvStat++) {
 		if (*pPvStat == PV_OK) {
 			for (j = 0; j < psscan->npts; j++) {
-				/*
-				 * determine next desired position for each
-				 * positioner
-				 */
+				/* determine next desired position for each positioner */
 				switch (pPos->p_sm) {
 				case sscanP1SM_Linear:
 					if (pPos->p_ar) {
@@ -3913,7 +3804,7 @@ previewScan(psscan)
 				status |= dbGet(puserPvt->pAddr, DBR_DOUBLE, &pPos->p_pp,
 						0, 0, NULL);
 			}
-			db_post_events(psscan, &pPos->p_pp, DBE_VALUE);
+			POST(&pPos->p_pp);
 		}
 	}
 
@@ -3982,16 +3873,15 @@ previewScan(psscan)
 				pPosBuf[j] = pPosBuf[j - 1];
 				pDetBuf[j] = pDetBuf[j - 1];
 			}
-			db_post_events(psscan, precPvt->posBufPtr[i].pBufA, DBE_VALUE);
-			db_post_events(psscan, precPvt->posBufPtr[i].pBufB, DBE_VALUE);
-			db_post_events(psscan, precPvt->detBufPtr[i].pBufA, DBE_VALUE);
-			db_post_events(psscan, precPvt->detBufPtr[i].pBufB, DBE_VALUE);
+			POST(precPvt->posBufPtr[i].pBufA);
+			POST(precPvt->posBufPtr[i].pBufB);
+			POST(precPvt->detBufPtr[i].pBufA);
+			POST(precPvt->detBufPtr[i].pBufB);
 			/*
-			 * I must also post a monitor on the NULL array,
-			 * because some clients connected to D?PV's without
-			 * valid PV's !
+			 * I must also post a monitor on the NULL array, because
+			 * some clients connected to D?PV's without valid PV's !
 			 */
-			db_post_events(psscan, precPvt->nullArray, DBE_VALUE);
+			POST(precPvt->nullArray);
 		}
 	}
 }
@@ -4041,16 +3931,11 @@ zeroPosParms(sscanRecord * psscan, unsigned short i)
 
 	/* set them to 0 */
 	/* Do this when in table mode so operator is not confused */
-	pPos->p_sp = 0;
-	db_post_events(psscan, &pPos->p_sp, DBE_VALUE);
-	pPos->p_si = 0;
-	db_post_events(psscan, &pPos->p_si, DBE_VALUE);
-	pPos->p_ep = 0;
-	db_post_events(psscan, &pPos->p_ep, DBE_VALUE);
-	pPos->p_cp = 0;
-	db_post_events(psscan, &pPos->p_cp, DBE_VALUE);
-	pPos->p_wd = 0;
-	db_post_events(psscan, &pPos->p_wd, DBE_VALUE);
+	pPos->p_sp = 0; POST(&pPos->p_sp);
+	pPos->p_si = 0; POST(&pPos->p_si);
+	pPos->p_ep = 0; POST(&pPos->p_ep);
+	pPos->p_cp = 0; POST(&pPos->p_cp);
+	pPos->p_wd = 0; POST(&pPos->p_wd);
 }
 
 static void 
@@ -4065,29 +3950,14 @@ resetFrzFlags(psscan)
 
 	if (psscan->fpts) {
 		psscan->fpts = 0;
-		db_post_events(psscan, &psscan->fpts, DBE_VALUE);
+		POST(&psscan->fpts);
 	}
 	for (i = 0; i < NUM_POS; i++, pPos++) {
-		if (pPos->p_fs) {
-			pPos->p_fs = 0;
-			db_post_events(psscan, &pPos->p_fs, DBE_VALUE);
-		}
-		if (pPos->p_fi) {
-			pPos->p_fi = 0;
-			db_post_events(psscan, &pPos->p_fi, DBE_VALUE);
-		}
-		if (pPos->p_fc) {
-			pPos->p_fc = 0;
-			db_post_events(psscan, &pPos->p_fc, DBE_VALUE);
-		}
-		if (pPos->p_fe) {
-			pPos->p_fe = 0;
-			db_post_events(psscan, &pPos->p_fe, DBE_VALUE);
-		}
-		if (pPos->p_fw) {
-			pPos->p_fw = 0;
-			db_post_events(psscan, &pPos->p_fw, DBE_VALUE);
-		}
+		if (pPos->p_fs) {pPos->p_fs = 0; POST(&pPos->p_fs);}
+		if (pPos->p_fi) {pPos->p_fi = 0; POST(&pPos->p_fi);}
+		if (pPos->p_fc) {pPos->p_fc = 0; POST(&pPos->p_fc);}
+		if (pPos->p_fe) {pPos->p_fe = 0; POST(&pPos->p_fe);}
+		if (pPos->p_fw) {pPos->p_fw = 0; POST(&pPos->p_fw);}
 	}
 }
 
@@ -4105,30 +3975,18 @@ restoreFrzFlags(psscan)
 
 	/* restore state of each freeze flag, post if changed */
 	psscan->fpts = precPvt->fpts;
-	if (psscan->fpts) {
-		db_post_events(psscan, &psscan->fpts, DBE_VALUE);
-	}
+	if (psscan->fpts) POST(&psscan->fpts);
 	for (i = 0; i < NUM_POS; i++, pPos++) {
 		pPos->p_fs = precPvt->posParms[i].p_fs;
-		if (pPos->p_fs) {
-			db_post_events(psscan, &pPos->p_fs, DBE_VALUE);
-		}
+		if (pPos->p_fs) POST(&pPos->p_fs);
 		pPos->p_fi = precPvt->posParms[i].p_fi;
-		if (pPos->p_fi) {
-			db_post_events(psscan, &pPos->p_fi, DBE_VALUE);
-		}
+		if (pPos->p_fi) POST(&pPos->p_fi);
 		pPos->p_fc = precPvt->posParms[i].p_fc;
-		if (pPos->p_fc) {
-			db_post_events(psscan, &pPos->p_fc, DBE_VALUE);
-		}
+		if (pPos->p_fc) POST(&pPos->p_fc);
 		pPos->p_fe = precPvt->posParms[i].p_fe;
-		if (pPos->p_fe) {
-			db_post_events(psscan, &pPos->p_fe, DBE_VALUE);
-		}
+		if (pPos->p_fe) POST(&pPos->p_fe);
 		pPos->p_fw = precPvt->posParms[i].p_fw;
-		if (pPos->p_fw) {
-			db_post_events(psscan, &pPos->p_fw, DBE_VALUE);
-		}
+		if (pPos->p_fw) POST(&pPos->p_fw);
 	}
 }
 
@@ -4140,121 +3998,103 @@ restorePosParms(sscanRecord * psscan, unsigned short i)
 	recPvtStruct   *precPvt = (recPvtStruct *) psscan->rpvt;
 	posFields      *pPos = (posFields *) & psscan->p1pp + i;
 
-	pPos->p_sp = precPvt->posParms[i].p_sp;
-	db_post_events(psscan, &pPos->p_sp, DBE_VALUE);
-
-	pPos->p_si = precPvt->posParms[i].p_si;
-	db_post_events(psscan, &pPos->p_si, DBE_VALUE);
-
-	pPos->p_ep = precPvt->posParms[i].p_ep;
-	db_post_events(psscan, &pPos->p_ep, DBE_VALUE);
-
-	pPos->p_cp = precPvt->posParms[i].p_cp;
-	db_post_events(psscan, &pPos->p_cp, DBE_VALUE);
-
-	pPos->p_wd = precPvt->posParms[i].p_wd;
-	db_post_events(psscan, &pPos->p_wd, DBE_VALUE);
-
+	pPos->p_sp = precPvt->posParms[i].p_sp; POST(&pPos->p_sp);
+	pPos->p_si = precPvt->posParms[i].p_si; POST(&pPos->p_si);
+	pPos->p_ep = precPvt->posParms[i].p_ep; POST(&pPos->p_ep);
+	pPos->p_cp = precPvt->posParms[i].p_cp; POST(&pPos->p_cp);
+	pPos->p_wd = precPvt->posParms[i].p_wd; POST(&pPos->p_wd);
 }
 
-
-
-
-
-
-
-/*  Memo from Tim Mooney suggesting change in order of precedence */
-
-/*
-
-Ned,
-
-Current effects of sscan-parameter changes are summarized below, along
-with the effects I think might be preferable.  The ideas are to make NPTS
-nearly as easy to change as is INCR, to make END easier to change than
-is START, and to prefer changing INCR in response to a change of NPTS
-whenever permissible.
-
-If an indirect change in NPTS would make it larger than MPTS, I think
-NPTS ideally should be regarded as frozen, rather than being set to
-MPTS.  I don't feel all that strongly about this, since I think it
-might be more of a pain to code than it's worth.
-
-Comments on any of this?
-
-Tim
-
-====================================================================
-changing	now affects		should affect
---------------------------------------------------------------
-START	->	INCR CENTER WIDTH	INCR CENTER WIDTH
-	or	END CENTER		CENTER NPTS WIDTH
-	or	INCR END WIDTH		END CENTER
-	or	NPTS CENTER WIDTH	INCR END WIDTH
-	or	NPTS END WIDTH		NPTS END WIDTH
-	or	CENTER END		<punt>
-	or	<punt>
-INCR	->	CENTER END WIDTH	NPTS
-	or	START CENTER WIDTH	CENTER END WIDTH
-	or	START END WIDTH		START CENTER WIDTH
-	or	NPTS			START END WIDTH
-	or	<punt>			<punt>
-CENTER	->	START END		START END
-	or	START INCR WIDTH	END INCR WIDTH
-	or	END INCR WIDTH		START INCR WIDTH
-	or	NPTS START WIDTH	NPTS END WIDTH
-	or	NPTS END WIDTH		NPTS START WIDTH
-	or	<punt>
-END	->	INCR CENTER WIDTH	INCR CENTER WIDTH
-	or	START CENTER WIDTH	NPTS CENTER WIDTH
-	or	START WIDTH INCR	START CENTER
-	or	NPTS START WIDTH	START WIDTH INCR
-	or	NPTS CENTER WIDTH	NPTS START WIDTH
-	or	START CENTER		<punt>
-	or	<punt>
-WIDTH	->	START END INCR		START END INCR
-	or	CENTER END INCR		START END NPTS
-	or	START CENTER INCR	CENTER END INCR
-	or	NPTS START END		START CENTER INCR
-	or	NPTS CENTER END		NPTS CENTER END
-	or	NPTS START CENTER	NPTS START CENTER
-	or	<punt>			<punt>
-
-NPTS: given
-SIECW (Start,Incr,End,Center,Width freeze-switch states; '1' = 'frozen')
----------------------------------------------------------------
-00000	 (0)	END CENTER WIDTH	INCR
-00001	 (1)	INCR			INCR
-00010	 (2)	START END WIDTH		INCR
-00011	 (3)	INCR			INCR
-00100	 (4)	START CENTER WIDTH	INCR
-00101	 (5)	INCR			INCR
-00110	 (6)	INCR			INCR
-00111	 (7)	INCR			INCR
-01000	 (8)	END CENTER WIDTH	END CENTER WIDTH
-01001	 (9)	<punt>			<punt>
-01010	(10)	START END WIDTH		START END WIDTH
-01011	(11)	<punt>			<punt>
-01100	(12)	START CENTER WIDTH	START CENTER WIDTH
-01101	(13)	<punt>			<punt>
-01110	(14)	<punt>			<punt>
-01111	(15)	<punt>			<punt>
-10000	(16)	END CENTER WIDTH	INCR
-10001	(17)	INCR			INCR
-10010	(18)	INCR			INCR
-10011	(19)	INCR			INCR
-10100	(20)	INCR			INCR
-10101	(21)	INCR			INCR
-10110	(22)	INCR			INCR
-10111	(23)	INCR			INCR
-11000	(24)	END CENTER WIDTH	END CENTER WIDTH
-11001	(25)	<punt>			<punt>
-11010	(26)	<punt>			<punt>
-11011	(27)	<punt>			<punt>
-11100	(28)	<punt>			<punt>
-11101	(29)	<punt>			<punt>
-11110	(30)	<punt>			<punt>
-11111	(31)	<punt>			<punt>
-
-
-*/
+/*  Memo from Tim Mooney suggesting change in order of precedence
+ * 
+ *
+ * 
+ * Ned,
+ * 
+ * Current effects of sscan-parameter changes are summarized below, along
+ * with the effects I think might be preferable.  The ideas are to make NPTS
+ * nearly as easy to change as is INCR, to make END easier to change than
+ * is START, and to prefer changing INCR in response to a change of NPTS
+ * whenever permissible.
+ * 
+ * If an indirect change in NPTS would make it larger than MPTS, I think
+ * NPTS ideally should be regarded as frozen, rather than being set to
+ * MPTS.  I don't feel all that strongly about this, since I think it
+ * might be more of a pain to code than it's worth.
+ * 
+ * Comments on any of this?
+ * 
+ * Tim
+ * 
+ * ====================================================================
+ * changing	now affects		should affect
+ * --------------------------------------------------------------
+ * START	->	INCR CENTER WIDTH	INCR CENTER WIDTH
+ * 	or	END CENTER		CENTER NPTS WIDTH
+ * 	or	INCR END WIDTH		END CENTER
+ * 	or	NPTS CENTER WIDTH	INCR END WIDTH
+ * 	or	NPTS END WIDTH		NPTS END WIDTH
+ * 	or	CENTER END		<punt>
+ * 	or	<punt>
+ * INCR	->	CENTER END WIDTH	NPTS
+ * 	or	START CENTER WIDTH	CENTER END WIDTH
+ * 	or	START END WIDTH		START CENTER WIDTH
+ * 	or	NPTS			START END WIDTH
+ * 	or	<punt>			<punt>
+ * CENTER	->	START END		START END
+ * 	or	START INCR WIDTH	END INCR WIDTH
+ * 	or	END INCR WIDTH		START INCR WIDTH
+ * 	or	NPTS START WIDTH	NPTS END WIDTH
+ * 	or	NPTS END WIDTH		NPTS START WIDTH
+ * 	or	<punt>
+ * END	->	INCR CENTER WIDTH	INCR CENTER WIDTH
+ * 	or	START CENTER WIDTH	NPTS CENTER WIDTH
+ * 	or	START WIDTH INCR	START CENTER
+ * 	or	NPTS START WIDTH	START WIDTH INCR
+ * 	or	NPTS CENTER WIDTH	NPTS START WIDTH
+ * 	or	START CENTER		<punt>
+ * 	or	<punt>
+ * WIDTH	->	START END INCR		START END INCR
+ * 	or	CENTER END INCR		START END NPTS
+ * 	or	START CENTER INCR	CENTER END INCR
+ * 	or	NPTS START END		START CENTER INCR
+ * 	or	NPTS CENTER END		NPTS CENTER END
+ * 	or	NPTS START CENTER	NPTS START CENTER
+ * 	or	<punt>			<punt>
+ * 
+ * NPTS: given
+ * SIECW (Start,Incr,End,Center,Width freeze-switch states; '1' = 'frozen')
+ * ---------------------------------------------------------------
+ * 00000	 (0)	END CENTER WIDTH	INCR
+ * 00001	 (1)	INCR			INCR
+ * 00010	 (2)	START END WIDTH		INCR
+ * 00011	 (3)	INCR			INCR
+ * 00100	 (4)	START CENTER WIDTH	INCR
+ * 00101	 (5)	INCR			INCR
+ * 00110	 (6)	INCR			INCR
+ * 00111	 (7)	INCR			INCR
+ * 01000	 (8)	END CENTER WIDTH	END CENTER WIDTH
+ * 01001	 (9)	<punt>			<punt>
+ * 01010	(10)	START END WIDTH		START END WIDTH
+ * 01011	(11)	<punt>			<punt>
+ * 01100	(12)	START CENTER WIDTH	START CENTER WIDTH
+ * 01101	(13)	<punt>			<punt>
+ * 01110	(14)	<punt>			<punt>
+ * 01111	(15)	<punt>			<punt>
+ * 10000	(16)	END CENTER WIDTH	INCR
+ * 10001	(17)	INCR			INCR
+ * 10010	(18)	INCR			INCR
+ * 10011	(19)	INCR			INCR
+ * 10100	(20)	INCR			INCR
+ * 10101	(21)	INCR			INCR
+ * 10110	(22)	INCR			INCR
+ * 10111	(23)	INCR			INCR
+ * 11000	(24)	END CENTER WIDTH	END CENTER WIDTH
+ * 11001	(25)	<punt>			<punt>
+ * 11010	(26)	<punt>			<punt>
+ * 11011	(27)	<punt>			<punt>
+ * 11100	(28)	<punt>			<punt>
+ * 11101	(29)	<punt>			<punt>
+ * 11110	(30)	<punt>			<punt>
+ * 11111	(31)	<punt>			<punt>
+ */
