@@ -16,10 +16,40 @@
 
 <ul>
   <li>
-    Bug fix for bus error in devIK320.c and drvIK320.c if IK320 hardware is missing.
-  </li>				        
+    Heidenhain IK320 bug fixes.
+    <ul>
+      <li>
+	Bug fix for bus error in devIK320.c and drvIK320.c if IK320 hardware
+	is missing.
+      </li>				        
+      <li>
+	PowerPC bug fix. For EPICS R3.13.5 and above, devDisconnectInterrupt()
+	always returns an error for the PPC architecture. Replaced calls to
+	devDisconnectInterrupt() with updates to device handler pointer
+	(irqHandler) and a master device interrupt handler (IK320IrqMaster).
+      </li>
+      <li>
+	Fix drvIK320report() trashing all the other reports.
+      </li>				        
+    </ul>
+  </li>
   <li>
     sseq_settings.req file added to stdApp/Db for auto-saving sseq record fields.
+  </li>				        
+  <li>
+    save/restore V3.3
+    <ul>
+      <li>
+	Updated from V2.7 to V3.3.
+      </li>				            
+      <li>
+	new save/restore files; save_restoreStatus.db, save_restoreStatus.adl,
+	autoSaveRestore.README
+      </li>				        
+    </ul>
+  </li>				        
+  <li>
+    transformRecord test for new value bug fix.
   </li>				        
 </ul>
 
