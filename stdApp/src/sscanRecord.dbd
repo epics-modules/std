@@ -59,7 +59,10 @@ menu(sscanACQM) {
 	choice(sscanACQM_NORMAL,"NORMAL")
 	choice(sscanACQM_ACC,"ACCUMULATE")
 	choice(sscanACQM_ADD,"ADD TO PREV")
-	choice(sscanACQM_ARRAY,"GET ARRAYS")
+}
+menu(sscanACQT) {
+	choice(sscanACQT_SCALAR,"SCALAR")
+	choice(sscanACQT_1D_ARRAY,"1D ARRAY")
 }
 recordtype(sscan) {
 	include "dbCommon.dbd" 
@@ -6596,5 +6599,14 @@ recordtype(sscan) {
 		interest(1)
 		menu(sscanACQM)
 		initial("NORMAL")
+	}
+	field(ACQT,DBF_MENU) {
+		prompt("Acquisition type")
+		promptgroup(GUI_COMMON)
+		asl(ASL0)
+		special(SPC_MOD)
+		interest(1)
+		menu(sscanACQT)
+		initial("SCALAR")
 	}
 }
