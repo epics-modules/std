@@ -1,7 +1,7 @@
 
 file {
-	name="/home/oxygen/MOONEY/epics/3.13.5/tmm/tmmApp/op/adl/scan_positioners.adl"
-	version=030003
+	name="C:\Program Files\EPICS WIN32 Extensions\synApps_5_1_adl\scan_positioners.adl"
+	version=020306
 }
 display {
 	object {
@@ -215,9 +215,9 @@ text {
 }
 text {
 	object {
-		x=60
+		x=83
 		y=22
-		width=210
+		width=130
 		height=14
 	}
 	"basic attribute" {
@@ -751,9 +751,9 @@ text {
 }
 text {
 	object {
-		x=60
+		x=83
 		y=208
-		width=210
+		width=130
 		height=14
 	}
 	"basic attribute" {
@@ -1094,9 +1094,9 @@ menu {
 }
 text {
 	object {
-		x=60
+		x=83
 		y=301
-		width=210
+		width=130
 		height=14
 	}
 	"basic attribute" {
@@ -1557,9 +1557,9 @@ text {
 }
 text {
 	object {
-		x=61
+		x=83
 		y=115
-		width=210
+		width=130
 		height=14
 	}
 	"basic attribute" {
@@ -1716,5 +1716,117 @@ composite {
 			textix="Drive"
 			align="horiz. right"
 		}
+	}
+}
+"text update" {
+	object {
+		x=280
+		y=22
+		width=80
+		height=14
+	}
+	monitor {
+		chan="$(P)$(S).P1EU"
+		clr=53
+		bclr=2
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=240
+		y=25
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNITS:"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=240
+		y=118
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNITS:"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=240
+		y=211
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNITS:"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=240
+		y=304
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNITS:"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=280
+		y=115
+		width=80
+		height=14
+	}
+	monitor {
+		chan="$(P)$(S).P2EU"
+		clr=53
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=280
+		y=208
+		width=80
+		height=14
+	}
+	monitor {
+		chan="$(P)$(S).P3EU"
+		clr=53
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=280
+		y=301
+		width=80
+		height=14
+	}
+	monitor {
+		chan="$(P)$(S).P4EU"
+		clr=53
+		bclr=2
+	}
+	limits {
 	}
 }
