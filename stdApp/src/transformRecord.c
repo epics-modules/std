@@ -79,8 +79,9 @@
  *                     client  (e.g. soft motor) to determine if the zero it
  *                     received during init is real or will soon be amended.
  * .22  04-09-03  tmm  v5.6: Change arg list to sCalcPostfix.
+ * .23  06-01-03  tmm  v5.7: Added DBE_LOG to all db_post_events() calls..
  */
-#define VERSION 5.6
+#define VERSION 5.7
 
 #ifdef vxWorks
 #include <stddef.h>
@@ -243,7 +244,7 @@ init_record(transformRecord *ptran, int pass)
 		/*** check input links ***/
 		if (pinlink->type == CONSTANT) {
 			recGblInitConstantLink(pinlink,DBF_DOUBLE,pvalue);
-			db_post_events(ptran, pvalue, DBE_VALUE);
+			db_post_events(ptran, pvalue, DBE_VALUE|DBE_LOG);
             *pInLinkValid = transformIAV_CON;
 		}
         /* see if the PV resides on this ioc */
@@ -255,7 +256,7 @@ init_record(transformRecord *ptran, int pass)
             *pInLinkValid = transformIAV_EXT_NC;
              prpvt->caLinkStat = CA_LINKS_NOT_OK;
         }
-        db_post_events(ptran,pInLinkValid,DBE_VALUE);
+        db_post_events(ptran,pInLinkValid,DBE_VALUE|DBE_LOG);
 
 		/*** check output links ***/
 		if (poutlink->type == CONSTANT) {
@@ -270,7 +271,7 @@ init_record(transformRecord *ptran, int pass)
             *pOutLinkValid = transformIAV_EXT_NC;
              prpvt->caLinkStat = CA_LINKS_NOT_OK;
         }
-        db_post_events(ptran,pOutLinkValid,DBE_VALUE);
+        db_post_events(ptran,pOutLinkValid,DBE_VALUE|DBE_LOG);
 
 		/*** check and convert calc expressions ***/
 		*pcalcInvalid = 0; /* empty expression is valid */
@@ -283,7 +284,7 @@ init_record(transformRecord *ptran, int pass)
 				recGblRecordError(S_db_badField,(void *)ptran,
 					"transform: init_record: Illegal CALC field");
 			}
-			db_post_events(ptran,pcalcInvalid,DBE_VALUE);
+			db_post_events(ptran,pcalcInvalid,DBE_VALUE|DBE_LOG);
 		}
 		*plvalue = *pvalue;
 	}
@@ -476,7 +477,7 @@ special(struct dbAddr *paddr, int after)
 			}
 			if (*pcalcInvalid != status) {
 				*pcalcInvalid = status;
-				db_post_events(ptran, pcalcInvalid, DBE_VALUE);
+				db_post_events(ptran, pcalcInvalid, DBE_VALUE|DBE_LOG);
 			}
 		}
 		return (0);
@@ -503,7 +504,7 @@ special(struct dbAddr *paddr, int after)
 				/* get initial value if this is an input link */
 	            if (fieldIndex < transformRecordOUTA) {
 	                recGblInitConstantLink(plink,DBF_DOUBLE,pvalue);
-	                db_post_events(ptran,pvalue,DBE_VALUE);
+	                db_post_events(ptran,pvalue,DBE_VALUE|DBE_LOG);
 	            }
 				Debug(15, "special: ...constant link, i=%d\n", i);
 	            *plinkValid = transformIAV_CON;
@@ -525,7 +526,7 @@ special(struct dbAddr *paddr, int after)
 					Debug(15, "special: ...CA link, i=%d, req. callback\n", i);
 	            }
 	        }
-	        db_post_events(ptran,plinkValid,DBE_VALUE);
+	        db_post_events(ptran,plinkValid,DBE_VALUE|DBE_LOG);
 		}
 
 		return(0);
@@ -574,7 +575,7 @@ monitor(transformRecord *ptran)
     struct rpvtStruct   *prpvt = (struct rpvtStruct *)ptran->rpvt;
 
 	monitor_mask = recGblResetAlarms(ptran);
-	monitor_mask = DBE_VALUE;
+	monitor_mask = DBE_VALUE|DBE_LOG;
 
 	/* check all value fields for changes */
 	for (i = 0, pnew = &ptran->a, pprev = &ptran->la; i < ARG_MAX; i++, pnew++, pprev++) {
@@ -638,12 +639,12 @@ static void checkLinks(struct transformRecord *ptran)
             }
             else if (!stat && (*plinkValid == transformIAV_EXT)) {
                 *plinkValid = transformIAV_EXT_NC;
-                db_post_events(ptran,plinkValid,DBE_VALUE);
+                db_post_events(ptran,plinkValid,DBE_VALUE|DBE_LOG);
                 caLinkNc = 1;
             } 
             else if (stat && (*plinkValid == transformIAV_EXT_NC)) {
                 *plinkValid = transformIAV_EXT;
-                db_post_events(ptran,plinkValid,DBE_VALUE);
+                db_post_events(ptran,plinkValid,DBE_VALUE|DBE_LOG);
             } 
         }
         
