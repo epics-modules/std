@@ -8,7 +8,7 @@ include $(TOP)/configure/CONFIG
 # For Kate Feng's implementation of devScaler.c, which uses Till
 # Straumann's basicIoOps.h to bridge any mismatch between endianness
 # of Joerger scaler hardware and endianness of processor.
-USR_CFLAGS += -DHAS_IOOPS_H
+#USR_CFLAGS += -DHAS_IOOPS_H
 
 #PROD_HOST += caExample
 #caExample_SRCS	+= caExample.c
@@ -27,7 +27,7 @@ DBDINC += scanparmRecord
 #DBDINC += serialRecord
 DBDINC += tableRecord
 DBDINC += transformRecord
-#DBDINC += vmeRecord
+DBDINC += vmeRecord
 #DBDINC += gpibRecord
 DBDINC += sscanRecord
 DBDINC += sCalcoutRecord
@@ -40,6 +40,7 @@ DBDINC += epidRecord
 # <name>.dbd will be created from <name>Include.dbd
 DBD += std.dbd
 DBD += stdVX.dbd
+DBD += stdSupport.dbd
 DBDINSTALL += ../shareBase.dbd
 DBDINSTALL += ../stdShare.dbd
 
@@ -65,25 +66,26 @@ std_SRCS_vxWorks  += aiCvtDouble.c
 std_SRCS_vxWorks  += module_types.c
 std_SRCS_vxWorks  += scalerRecord.c devScaler.c
 std_SRCS   += sscanRecord.c
-std_SRCS_vxWorks   += scanparmRecord.c
+std_SRCS   += scanparmRecord.c
 #std_SRCS += serialRecord.c
 std_SRCS_vxWorks   += tableRecord.c
 std_SRCS += transformRecord.c
 std_SRCS += sCalcPostfix.c sCalcPerform.c
 std_SRCS_vxWorks += test_sCalc.c
 std_SRCS   += sCalcoutRecord.c
-#std_SRCS += vmeRecord.c
+std_SRCS_vxWorks += vmeRecord.c
 #std_SRCS += gpibRecord.c
 #std_SRCS += camacRecord.c
 std_SRCS   += epidRecord.c
 std_SRCS_vxWorks  += fastPID.cc
 std_SRCS += devEpidSoft.c
+std_SRCS += devEpidMpf.cc
 std_SRCS  += swaitRecord.c
 #std_SRCS += devBunchClkGen.c
 #std_SRCS += devGP307gpib.c
 #std_SRCS += devXxAX301.c
 std_SRCS  += busyRecord.c
-std_SRCS_vxWorks  += sseqRecord.c
+std_SRCS  += sseqRecord.c
 #std_SRCS += genSubRecord.c
 #std_SRCS += devAoVMI4116.c
 #std_SRCS += devAvme9440.c
@@ -102,9 +104,8 @@ std_SRCS_vxWorks  += subAve.c
 # ioc status checking stuff
 std_SRCS_vxWorks   += iocCheck.c
 
-# Try out Eric Norum's message stuff.  Should be in base by 3.14.2
-#std_SRCS += epicsMessageQueue.cpp
-#std_SRCS += osdMessageQueue.cpp
+# Register stuff
+std_SRCS_vxWorks   += stdVXRegister.c
 
 # Override dbLoadTemplate from base with new version
 # that works around the lack of soft links since 3.13.1
@@ -112,9 +113,6 @@ std_SRCS_vxWorks   += iocCheck.c
 #LEXOPT = -L
 std_SRCS_vxWorks += dbLoadTemplate.c
 HTMLS += dbLoadTemplate.html
-dbLoadTemplate.c: dbLoadTemplate_lex.c
-clean::
-	@$(RM) dbLoadTemplate.c dbLoadTemplate_lex.c
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 std_SRCS += std_registerRecordDeviceDriver.cpp
@@ -148,6 +146,7 @@ INC += fastPID.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
+std_LIBS += mpf mpfEpics
 std_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
@@ -156,3 +155,7 @@ include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
 
+dbLoadTemplate.c: dbLoadTemplate_lex.c 
+
+clean::
+	@$(RM) dbLoadTemplate_lex.c dbLoadTemplate.c 
