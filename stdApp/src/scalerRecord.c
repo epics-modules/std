@@ -1,6 +1,6 @@
 /*******************************************************************************
 scalerRecord.c
-Record-support routines for <= 32-channel, 32-bit scaler
+Record-support routines for <= 64-channel, 32-bit scaler
 
 Original Author: Tim Mooney
 Date: 1/16/95
@@ -51,8 +51,13 @@ Modification Log:
 .21  11/12/01   tmm     v3.11 hold time before autocount wipes scalers is
                         volatile int
 .22  01/08/02   tmm     v3.12 Set VAL field to T and post after completed count
+.23  09/22/03   tmm     v3.13 changed max number of signals from 32 to 64
+.24  09/26/03   tmm     v3.14 Make sure channel-1 preset count agrees with time
+                        preset and freq.  (Required for VS64, because it changes
+                        freq, and uses pr1/freq to infer count time.)
+
 *******************************************************************************/
-#define VERSION 3.12
+#define VERSION 3.13
 
 #include	<vxWorks.h>
 #include	<types.h>
@@ -147,6 +152,8 @@ static void deviceCallbackFunc(struct callback *pcb)
     struct dbCommon *precord=pcb->precord;
 
     dbScanLock(precord);
+	if (scalerRecordDebug)
+		logMsg("scalerRecord:deviceCallbackFunc: calling process\n");
     process(precord);
     dbScanUnlock(precord);
 }
@@ -284,7 +291,7 @@ int pass;
 static long process(pscal)
 scalerRecord *pscal;
 {
-	int i, status, prev_scaler_state;
+	int i, status, prev_scaler_state, save_pr1, old_pr1, old_freq;
 	int card = pscal->out.value.vmeio.card;
 	int justFinishedUserCount=0, justStartedUserCount=0, putNotifyOperation=0;
 	long *ppreset = &(pscal->pr1);
@@ -326,9 +333,28 @@ scalerRecord *pscal;
 
 			if (pscal->us == USER_STATE_REQSTART) {
 				/*** start counting ***/
+
 				/* disarm, disable interrupt generation, reset disarm-on-cout, */
 				/* clear mask register, clear direction register, clear counters */
 				(*pdset->reset)(card);
+
+				/*
+				 * We tell device support how long to count by giving it a preset,
+				 * because the Joerger VSCx device support doesn't know the clock
+				 * frequency.  But the VS64 sets its own clock frequency, and adjusts
+				 * the preset correspondingly.  We don't want to include the algorithm
+				 * that calculates it here, but we do want to ensure that we've specified
+				 * the count time with the best achievable precision, so if device support
+				 * has changed the preset, we recalc the preset from tp, using the freq
+				 * set by device support, and call write_preset again.
+				 */
+				old_pr1 = pscal->pr1;
+				old_freq = (int)(pscal->freq);
+				/* Make sure channel-1 preset count agrees with time preset and freq */
+				if (pscal->pr1 != (long) (pscal->tp * pscal->freq)) {
+					pscal->pr1 = (long) (pscal->tp * pscal->freq);
+				}
+				save_pr1 = pscal->pr1;
 				for (i=0; i<pscal->nch; i++) {
 					pdir[i] = pgate[i];
 					if (pgate[i]) {
@@ -336,6 +362,13 @@ scalerRecord *pscal;
 						(*pdset->write_preset)(card, i, ppreset[i]);
 					}
 				}
+				if (save_pr1 != pscal->pr1) {
+					pscal->pr1 = (long) (pscal->tp * pscal->freq);
+					(*pdset->write_preset)(card, 0, pscal->pr1);
+				}
+				if (old_pr1 != pscal->pr1) db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
+				if (old_freq != (int)(pscal->freq)) db_post_events(pscal,&(pscal->freq),DBE_VALUE);
+
 				(*pdset->arm)(card, 1);
 				pscal->ss = SCALER_STATE_COUNTING;
 				pscal->us = USER_STATE_COUNTING;
@@ -406,7 +439,7 @@ scalerRecord *pscal;
 					(int)pautoCallback);
 			if (status != OK) printf("process: wdStart(autoCallback) returns ERROR\n");
 		} else {
-			Debug(5, "process: restarting autocount\n", 0);
+			Debug(1, "process: restarting autocount\n", 0);
 			/* Either the delay time is zero, or pscal->ss = SCALER_STATE_WAITING
 			 * (we've already waited), so start auto-count counting.
 			 * Different rules apply for auto-count counting:
@@ -585,7 +618,7 @@ int	after;
 
 	default:
 		if ((fieldIndex >= scalerRecordPR2) &&
-				(fieldIndex <= scalerRecordPR32)) {
+				(fieldIndex <= scalerRecordPR64)) {
 			i = (paddr->pfield - (void *)&(pscal->pr1)) / sizeof(long);
 			Debug(4, "special: channel %d preset\n", i);
 			pdir = (unsigned short *) &(pscal->d1);
@@ -598,7 +631,7 @@ int	after;
 			}
 		}
 		else if ((fieldIndex >= scalerRecordG1) &&
-				(fieldIndex <= scalerRecordG32)) {
+				(fieldIndex <= scalerRecordG64)) {
 			/* If user set gate field, make sure preset counter has some */
 			/* reasonable value. */
 			i = (int)((paddr->pfield - (void *)&(pscal->g1)) / sizeof(short));
