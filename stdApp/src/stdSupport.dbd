@@ -5,7 +5,7 @@ include "transformRecord.dbd"
 include "busyRecord.dbd"
 include "swaitRecord.dbd"
 include "scanparmRecord.dbd"
-#include "tableRecord.dbd"
+include "tableRecord.dbd"
 #include "gpibRecord.dbd"
 include "sscanRecord.dbd"
 include "sCalcoutRecord.dbd"
@@ -75,10 +75,8 @@ device(epid,VME_IO,devEpidMpf,"MPF EPID")
 # DRIVER SUPPORT
 ################
 
-registrar(symTableRegister)
-registrar(symTableTestRegister)
-registrar(fastPIDRegister)
 registrar(save_restoreRegister)
 registrar(dbrestoreRegister)
 registrar(stdInitHooksRegister)
 registrar(stdRegister)
+variable("fastPIDDebug", int)
