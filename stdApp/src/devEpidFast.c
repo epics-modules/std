@@ -18,6 +18,7 @@
 #include <link.h>
 #include <epicsPrint.h>
 #include <epicsExport.h>
+#include <epicsMutex.h>
 #include <epicsString.h>
 #include <dbCommon.h>
 #include <recSup.h>
@@ -47,7 +48,9 @@ typedef struct {
     double P;
     double I;
     double D;
-    double secondsPerScan;
+    double callbackInterval;
+    double timePerPointRequested;
+    double timePerPointActual;
     asynFloat64Callback *pinput;
     void *inputPvt;
     int inputChannel;
@@ -61,12 +64,18 @@ typedef struct {
     double averageStore;
     int numAverage;
     int accumulated;
+    epicsMutexId mutexId;
 } epidFastPvt;
 
+/* These functions are called from the record */
 static long init_record(epidRecord *pepid);
 static long update_params(epidRecord *epid);
-static void callback(void *drvPvt, double readback);
+/* These are private functions */
+static void computeNumAverage(epidFastPvt *pPvt);
 static void do_PID(epidFastPvt *pPvt, double readback);
+/* These are callback functions, called from the driver */
+static void dataCallback(void *drvPvt, double readback);
+static void intervalCallback(void *drvPvt, double seconds);
 
 typedef struct {
     long            number;
@@ -120,6 +129,7 @@ static long init_record(epidRecord *pepid)
     pPvt->outputName = epicsStrDup(p);
     p = strtok_r(NULL, ", ", &tok_save);
     pPvt->outputChannel = atoi(p);
+    pPvt->mutexId = epicsMutexCreate();
 
     pasynUser = pasynManager->createAsynUser(0, 0);
     pPvt->pinputAsynUser = pasynUser;
@@ -163,8 +173,10 @@ static long init_record(epidRecord *pepid)
     pPvt->poutput = (asynFloat64 *)pasynInterface->pinterface;
     pPvt->outputPvt = pasynInterface->drvPvt;
 
-    pPvt->pinput->registerCallback(pPvt->inputPvt, pPvt->pinputAsynUser,
-                                   callback, pPvt);
+    pPvt->pinput->registerCallbacks(pPvt->inputPvt, pPvt->pinputAsynUser,
+                                   dataCallback, intervalCallback, pPvt);
+    pPvt->callbackInterval = pPvt->pinput->getCallbackInterval(pPvt->inputPvt,
+                                                 pPvt->pinputAsynUser);
     update_params(pepid);
     return(0);
 bad:
@@ -176,16 +188,13 @@ bad:
 static long update_params(epidRecord *pepid)
 {
     epidFastPvt *pPvt = (epidFastPvt *)pepid->dpvt;
-    double time;
 
+    epicsMutexLock(pPvt->mutexId);
     /* If the user has changed the value of dt, requested time per point, 
-     * then update numAverage*/
-    if (pepid->dt != pPvt->secondsPerScan) {
-        time = pPvt->pinput->getCallbackInterval(pPvt->inputPvt, 
-                                                 pPvt->pinputAsynUser);
-        pPvt->numAverage = 0.5 + pepid->dt / time;
-        if (pPvt->numAverage < 1) pPvt->numAverage = 1;
-        pPvt->secondsPerScan = pPvt->numAverage * time;
+     * then update numAverage */
+    if (pepid->dt != pPvt->timePerPointActual) {
+        pPvt->timePerPointRequested = pepid->dt;
+        computeNumAverage(pPvt);
     }
     /* Copy values from private structure to record */
     pepid->cval = pPvt->actual;
@@ -194,7 +203,7 @@ static long update_params(epidRecord *pepid)
     pepid->p    = pPvt->P;
     pepid->i    = pPvt->I;
     pepid->d    = pPvt->D;
-    pepid->dt   = pPvt->secondsPerScan;
+    pepid->dt   = pPvt->timePerPointActual;
 
     /* Copy values from record to private structure */
     pPvt->feedbackOn = pepid->fbon;
@@ -204,6 +213,7 @@ static long update_params(epidRecord *pepid)
     pPvt->KI = pepid->ki;
     pPvt->KD = pepid->kd;
     pPvt->setPoint = pepid->val;
+    epicsMutexUnlock(pPvt->mutexId);
 
     asynPrint(pPvt->pinputAsynUser, ASYN_TRACEIO_DEVICE,
               "devEpidFast::update_params, record=%s\n "
@@ -219,25 +229,48 @@ static long update_params(epidRecord *pepid)
     return(0);
 }
 
-
-/* This is the function that is called back from the driver when a new readback
- * value is obtained */
+static void computeNumAverage(epidFastPvt *pPvt)
+{
+    pPvt->numAverage = 0.5 + pPvt->timePerPointRequested / 
+                             pPvt->callbackInterval;
+    if (pPvt->numAverage < 1) pPvt->numAverage = 1;
+    pPvt->timePerPointActual = pPvt->numAverage * pPvt->callbackInterval;
+}
 
-static void callback(void *drvPvt, double readBack)
+
+/* This is the function that is called back from the driver when the time
+ * interval changes */
+static void intervalCallback(void *drvPvt, double seconds)
 {
     epidFastPvt *pPvt = (epidFastPvt *)drvPvt;
+
+    epicsMutexLock(pPvt->mutexId);
+    pPvt->callbackInterval = seconds;
+    computeNumAverage(pPvt);
+    epicsMutexUnlock(pPvt->mutexId);
+}
+
+/* This is the function that is called back from the driver when a new readback
+ * value is obtained */
+static void dataCallback(void *drvPvt, double readBack)
+{
+    epidFastPvt *pPvt = (epidFastPvt *)drvPvt;
+
+    epicsMutexLock(pPvt->mutexId);
     /* No need to average if collecting every point */
     if (pPvt->numAverage == 1) {
         do_PID(pPvt, readBack);
-        return;
+        goto done;
     }
     pPvt->averageStore += readBack;
-    if (++pPvt->accumulated < pPvt->numAverage) return;
+    if (++pPvt->accumulated < pPvt->numAverage) goto done;
     /* We have now collected the desired number of points to average */
     pPvt->averageStore /= pPvt->accumulated;
     do_PID(pPvt, pPvt->averageStore);
     pPvt->averageStore = 0.;
     pPvt->accumulated = 0;
+done:
+    epicsMutexUnlock(pPvt->mutexId);
 }
 
 static void do_PID(epidFastPvt *pPvt, double readBack)
@@ -269,7 +302,7 @@ static void do_PID(epidFastPvt *pPvt, double readBack)
     double derror;
     double dI;
 
-    dt = pPvt->pinput->getCallbackInterval(pPvt->inputPvt, pPvt->pinputAsynUser);
+    dt = pPvt->callbackInterval;
     pPvt->actual = readBack;
     pPvt->prevError = pPvt->error;
     pPvt->error = pPvt->setPoint - pPvt->actual;
