@@ -684,3 +684,9 @@ scalerRecord *pscal;
 	/* check all value fields for changes */
 	return;
 }
+
+
+#include <epicsExport.h>
+
+epicsExportAddress(int, scalerRecordDebug);
+epicsExportAddress(int, scaler_wait_time);
