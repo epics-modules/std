@@ -55,10 +55,14 @@ DEVELOPMENT CENTER AT ARGONNE NATIONAL LABORATORY (708-252-2000).
 */
 /*
 * Modification Log:
- * -----------------
- * .01  9-29-93        frl     initial
- * .02  4-27-95	       frl     added RESTART and MODE
- */
+* -----------------
+* .01  9-29-93  frl  initial
+* .02  4-27-95  frl  added RESTART and MODE
+*  03  9-05-02  tmm  If NUM_2_AVE (.A) is greater than allowed, set it
+*                    to the maximum allowed number, so user can see it.
+*                    Set restart field (.C) to zero after we use it.
+*                    Report current sample via .E field.
+*/
 
 /*  subroutine to average data */
 /*  F. Lenkszus */
@@ -73,13 +77,14 @@ DEVELOPMENT CENTER AT ARGONNE NATIONAL LABORATORY (708-252-2000).
 #include <recSup.h>
 #include <subRecord.h>
 
-#define	CIRBUFSIZE	2048
+#define	CIRBUFSIZE	10000
 #define NO_ERR_RPT	-1
 
 #define NUM_2_AVE	psub->a
 #define INPUTVAL	psub->b
 #define RESTART		psub->c
 #define MODE		psub->d
+#define FILL		psub->e
 
 #define CONTINUOUS_MODE	0
 #define STOPONNUM_MODE  1
@@ -90,7 +95,6 @@ struct	fcirBuf {
 	short	num;
 	short	cur;
         short	fill;
-        short   restart;
 	double  *wp;
 	double  sum;
 	double  ave;
@@ -119,7 +123,6 @@ struct	subRecord *psub)
   p->fill = p->cur  = 0;
   p->wp = p->buf;
   p->ave = p->sum = 0;
-  p->restart = 0;
   return(OK);
 }
 
@@ -147,13 +150,16 @@ struct	subRecord *psub)
 			"%s: Num to ave (%d) exceeds limit (%d) for PV %s",
 			 xname, num, CIRBUFSIZE,  psub->name);
 	num = CIRBUFSIZE;
+	NUM_2_AVE = num;
+	db_post_events(psub, &psub->a, DBE_VALUE);
   }
 	
-  if ( p->restart != RESTART) {
-	p->restart = RESTART;
-	restart =1;
-  } else
-	restart = 0;
+  restart = RESTART;
+  if (RESTART) {
+	RESTART=0;
+	db_post_events(psub, &psub->c, DBE_VALUE);
+  }
+
   if ( ((num != p->num) && (MODE == CONTINUOUS_MODE)) || restart ) {
   	for ( i=0; i < p->num; i++)
 		p->buf[i]=0;
@@ -191,6 +197,9 @@ struct	subRecord *psub)
       printf("%s: ave = %.3f, sum = %.3f, num = %d\n", xname, p->ave, p->sum,
 		 p->fill);
   }
+  psub->e = p->fill;
+  db_post_events(psub, &psub->e, DBE_VALUE);
+
   return(OK);
 }
 
