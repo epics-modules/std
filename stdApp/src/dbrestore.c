@@ -16,24 +16,30 @@
  * 03/15/02  tmm  v2.5 check saveRestoreFilePath before using it.
  * 03/19/02  tmm  v2.6 initialize fname before using it.
  * 04/05/02  tmm  v2.7 Don't use copy for backup file.  It uses mode 640.
+ * 08/01/03  mlr  v3.0 Convert to R3.14.2.  Fix a couple of bugs where failure was
+ *                     assumed to be status<0, while it should be status!=0.
  */
-#define VERSION "2.7"
+#define VERSION "3.0"
 
-#include	<vxWorks.h>
 #include	<stdio.h>
-#include	<stdioLib.h>
 #include	<stdlib.h>
 #include	<sys/stat.h>
 #include	<string.h>
 #include	<ctype.h>
-#include	<usrLib.h>
 #include	<time.h>
 
 #include	<dbDefs.h>
 #include	<dbStaticLib.h>
 #include	<initHooks.h>
+#include	<epicsExport.h>
+#include	<iocsh.h>
 #include 	"fGetDateStr.h"
 #include	"save_restore.h"
+
+#ifndef vxWorks
+#define OK 0
+#define ERROR -1
+#endif
 
 extern	DBBASE *pdbbase;
 
@@ -125,7 +131,7 @@ int reboot_restore(char *filename, initHookState init_state)
 	epicsPrintf("*** restoring from '%s' at initHookState %d ***\n",
 		fname, (int)init_state);
 	if ((inp_fd = fopen_and_check(fname, "r")) == NULL) {
-		epicsPrintf("reboot_restore: Can't open save file.");
+		epicsPrintf("reboot_restore: Can't open save file.\n");
 		return(ERROR);
 	}
 
@@ -146,7 +152,7 @@ int reboot_restore(char *filename, initHookState init_state)
 
 			Debug2(5,"attempting to put '%s' to '%s'\n", input_line, channel);
 			status = dbFindRecord(pdbentry,channel);
-			if (status < 0) {
+			if (status != 0) {
 				epicsPrintf("dbFindRecord for '%s' failed\n", channel);
 				errMessage(status,"");
 			} else {
@@ -179,7 +185,7 @@ int reboot_restore(char *filename, initHookState init_state)
 				case DBF_OUTLINK:
 				case DBF_FWDLINK:
 					/* Can't restore links after InitDatabase */
-					if (init_state < INITHOOKafterInitDatabase) {
+					if (init_state < initHookAfterInitDatabase) {
 						status = dbPutString(pdbentry,input_line);
 						Debug(5,"dbPutString() returns %d:",status);
 						if (reboot_restoreDebug >= 5) errMessage(status,"");
@@ -201,7 +207,7 @@ int reboot_restore(char *filename, initHookState init_state)
 					Debug(5,"field type not handled\n", 0);
 					break;
 				}
-				if (status < 0) {
+				if (status != 0) {
 					epicsPrintf("dbPutString/dbPutMenuIndex of '%s' for '%s' failed\n",
 					  input_line,channel);
 					errMessage(status,"");
@@ -229,7 +235,7 @@ int reboot_restore(char *filename, initHookState init_state)
 	dbFinishEntry(pdbentry);
 
 	/* If this is the second pass for a restore file, don't write backup file again.*/
-	if (init_state >= INITHOOKafterInitDatabase) {
+	if (init_state >= initHookAfterInitDatabase) {
 		for(i = 0; i < restoreFileList.pass0cnt; i++) {
 			if (strcmp(filename, restoreFileList.pass0files[i]) == 0)
 				return(OK);
@@ -329,3 +335,27 @@ FILE *fopen_and_check(const char *fname, const char *mode)
 	}
 	return(inp_fd);
 }
+
+static const iocshArg set_pass0_Arg0 = { "file",iocshArgString};
+static const iocshArg * const set_pass0_Args[1] = {&set_pass0_Arg0};
+static const iocshFuncDef set_pass0_FuncDef = {"set_pass0_restoreFile",1,set_pass0_Args};
+static void set_pass0_CallFunc(const iocshArgBuf *args)
+{
+    set_pass0_restoreFile(args[0].sval);
+}
+
+static const iocshArg set_pass1_Arg0 = { "file",iocshArgString};
+static const iocshArg * const set_pass1_Args[1] = {&set_pass1_Arg0};
+static const iocshFuncDef set_pass1_FuncDef = {"set_pass1_restoreFile",1,set_pass1_Args};
+static void set_pass1_CallFunc(const iocshArgBuf *args)
+{
+    set_pass1_restoreFile(args[0].sval);
+}
+
+void dbrestoreRegister(void)
+{
+    iocshRegister(&set_pass0_FuncDef, set_pass0_CallFunc);
+    iocshRegister(&set_pass1_FuncDef, set_pass1_CallFunc);
+}
+
+epicsExportRegistrar(dbrestoreRegister);

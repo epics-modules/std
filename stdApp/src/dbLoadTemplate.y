@@ -42,28 +42,22 @@
 #endif
 
 #include "macLib.h"
+#include "dbAccess.h"
 #include "dbmf.h"
 #include "epicsVersion.h"
-#ifdef _WIN32
-#include "getopt.h"
-#endif
 
 #define MAXPATHLEN 300
 static char db_path[MAXPATHLEN] = "";
 
 static int line_num;
 static int yyerror();
-int dbLoadTemplate(char* sub_file, char* template_path);
 
-int dbLoadRecords(char* pfilename, char* pattern, char* ppath);
+/* int dbLoadTemplate(char* sub_file, char* template_path);*/
+#include "shareLib.h"
+epicsShareFunc int epicsShareAPI dbLoadTemplate(char* sub_file, char* template_path);
 
-#ifdef vxWorks
 #define VAR_MAX_VAR_STRING 5000
 #define VAR_MAX_VARS 100
-#else
-#define VAR_MAX_VAR_STRING 50000
-#define VAR_MAX_VARS 700
-#endif
 
 static char *sub_collect = NULL;
 static MAC_HANDLE *macHandle = NULL;
@@ -106,7 +100,8 @@ templ: templ_head O_BRACE subst C_BRACE
 	| templ_head
 	{
 		if(db_file_name)
-			dbLoadRecords(db_file_name,NULL,db_path);
+			/*dbLoadRecords(db_file_name,NULL,db_path);*/
+			dbLoadDatabase(db_file_name,db_path,NULL);
 		else
 			fprintf(stderr,"Error: no db file name given\n");
 	}
@@ -140,6 +135,7 @@ templ_head: DBFILE WORD
 	;
 
 subst: PATTERN pattern subs
+	| PATTERN pattern
     | var_subs
     ;
 
@@ -174,10 +170,10 @@ sub: WORD O_BRACE vals C_BRACE
 	{
 		sub_collect[strlen(sub_collect)-1]='\0';
 #ifdef ERROR_STUFF
-		fprintf(stderr,"dbLoadRecords(%s)\n",sub_collect);
+		fprintf(stderr,"dbLoadDatabase(%s)\n",sub_collect);
 #endif
 		if(db_file_name)
-			dbLoadRecords(db_file_name,sub_collect,db_path);
+			dbLoadDatabase(db_file_name,db_path,sub_collect);
 		else
 			fprintf(stderr,"Error: no db file name given\n");
 		dbmfFree($1);
@@ -188,10 +184,10 @@ sub: WORD O_BRACE vals C_BRACE
 	{
 		sub_collect[strlen(sub_collect)-1]='\0';
 #ifdef ERROR_STUFF
-		fprintf(stderr,"dbLoadRecords(%s)\n",sub_collect);
+		fprintf(stderr,"dbLoadDatabase(%s)\n",sub_collect);
 #endif
 		if(db_file_name)
-			dbLoadRecords(db_file_name,sub_collect,db_path);
+			dbLoadDatabase(db_file_name,db_path,sub_collect);
 		else
 			fprintf(stderr,"Error: no db file name given\n");
 		sub_collect[0]='\0';
@@ -237,10 +233,10 @@ var_sub: WORD O_BRACE sub_pats C_BRACE
 	{
 		sub_collect[strlen(sub_collect)-1]='\0';
 #ifdef ERROR_STUFF
-		fprintf(stderr,"dbLoadRecords(%s)\n",sub_collect);
+		fprintf(stderr,"dbLoadDatabase(%s)\n",sub_collect);
 #endif
 		if(db_file_name)
-			dbLoadRecords(db_file_name,sub_collect,db_path);
+			dbLoadDatabase(db_file_name,db_path,sub_collect);
 		else
 			fprintf(stderr,"Error: no db file name given\n");
 		dbmfFree($1);
@@ -251,10 +247,10 @@ var_sub: WORD O_BRACE sub_pats C_BRACE
 	{
 		sub_collect[strlen(sub_collect)-1]='\0';
 #ifdef ERROR_STUFF
-		fprintf(stderr,"dbLoadRecords(%s)\n",sub_collect);
+		fprintf(stderr,"dbLoadDatabase(%s)\n",sub_collect);
 #endif
 		if(db_file_name)
-			dbLoadRecords(db_file_name,sub_collect,db_path);
+			dbLoadDatabase(db_file_name,db_path,sub_collect);
 		else
 			fprintf(stderr,"Error: no db file name given\n");
 		sub_collect[0]='\0';
@@ -299,7 +295,7 @@ static int yyerror(char* str)
 
 static int is_not_inited = 1;
  
-int dbLoadTemplate(char* sub_file, char* template_path)
+int epicsShareAPI dbLoadTemplate(char* sub_file, char* template_path)
 {
 	FILE *fp;
 	int ind;

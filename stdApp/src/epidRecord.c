@@ -62,14 +62,19 @@
  * .15  05-19-01        mlr     Added Feedback Mode (FMOD) field.  Current choices
                                 are PID and MaxMin.  These are used by device support
                                 in implementing algorithms.
+ * .16  06-26-03	rls	Port to 3.14; alarm() conflicts with alarm
+				declaration in unistd.h (epidRecord.h->epicsTime.h->
+				osdTime.h->unistd.h) when compiled with SUNPro.
  */
 
-#include    <vxWorks.h>
-#include    <types.h>
-#include    <stdioLib.h>
-#include    <lstLib.h>
-#include    <string.h>
-#include    <tickLib.h>
+#ifdef vxWorks
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#endif
+#include <stdio.h>
+#include <string.h>
+
 #include    <alarm.h>
 #include    <dbDefs.h>
 #include    <dbAccess.h>
@@ -77,10 +82,13 @@
 #include    <dbFldTypes.h>
 #include    <errMdef.h>
 #include    <recSup.h>
+#include    <recGbl.h>
 #include    <devSup.h>
 #define GEN_SIZE_OFFSET
 #include    "epidRecord.h"
 #undef  GEN_SIZE_OFFSET
+#include "menuOmsl.h"
+#include    <epicsExport.h>
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -101,7 +109,7 @@ static long get_graphic_double();
 static long get_control_double();
 static long get_alarm_double();
 
-struct rset epidRSET={
+rset epidRSET={
     RSETNUMBER,
     report,
     initialize,
@@ -121,6 +129,8 @@ struct rset epidRSET={
     get_control_double,
     get_alarm_double };
 
+epicsExportAddress(rset, epidRSET);
+
 struct epidDSET { /* epid DSET */
     long            number;
     DEVSUPFUN       dev_report;
@@ -130,7 +140,7 @@ struct epidDSET { /* epid DSET */
     DEVSUPFUN       do_pid;
 };
 
-static void alarm();
+static void checkAlarms();
 static void monitor();
 
 
@@ -171,7 +181,7 @@ static long process(epidRecord *pepid)
 
     if (!pact) { /* If this is not a callback from device support */
         /* fetch the setpoint */
-        if(pepid->smsl == CLOSED_LOOP){
+        if(pepid->smsl == menuOmslclosed_loop){
             status = dbGetLink(&(pepid->stpl),DBR_FLOAT, &(pepid->val),0,0);
             if (RTN_SUCCESS(status)) pepid->udf=FALSE;
         }
@@ -186,7 +196,7 @@ static long process(epidRecord *pepid)
     if (!pact && pepid->pact) return(0);
     pepid->pact = TRUE;
     recGblGetTimeStamp(pepid);
-    alarm(pepid);
+    checkAlarms(pepid);
     monitor(pepid);
     recGblFwdLink(pepid);
     pepid->pact=FALSE;
@@ -279,7 +289,7 @@ static long get_alarm_double(struct dbAddr *paddr, struct dbr_alDouble *pad)
     return(0);
 }
 
-static void alarm(epidRecord *pepid)
+static void checkAlarms(epidRecord *pepid)
 {
     double      val;
     float       hyst, lalm, hihi, high, low, lolo;
@@ -369,7 +379,7 @@ static void monitor(epidRecord *pepid)
        db_post_events(pepid,&pepid->d,monitor_mask);
        pepid->dp = pepid->d;
     }
-    if (pepid->ctp != pepid->ct) {
+    if (epicsTimeNotEqual(&pepid->ctp, &pepid->ct)) {
        db_post_events(pepid,&pepid->ct,monitor_mask);
        pepid->ctp = pepid->ct;
     }

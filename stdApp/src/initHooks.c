@@ -35,11 +35,13 @@
  */
 
 
-#include	<vxWorks.h>
 #include	<stdio.h>
 #include	<initHooks.h>
 #include	<epicsPrint.h>
 #include	"save_restore.h"
+#include        <iocsh.h>
+#include        <epicsExport.h>
+
 
 extern int reboot_restore(char *filename, initHookState init_state);
 extern int set_pass0_restoreFile( char *filename);
@@ -56,28 +58,22 @@ extern struct restoreList restoreFileList;
 
 /* If this function (initHooks) is loaded, iocInit calls this function
  * at certain defined points during IOC initialization */
-void initHooks(initHookState state)
+static void stdInitHooks(initHookState state)
 {
 	int i;
 
 	switch (state) {
-	case INITHOOKatBeginning :
+	case initHookAtBeginning :
 	    break;
-	case INITHOOKafterGetResources :
+	case initHookAfterCallbackInit :
 	    break;
-	case INITHOOKafterLogInit :
+	case initHookAfterCaLinkInit :
 	    break;
-	case INITHOOKafterCallbackInit :
+	case initHookAfterInitDrvSup :
 	    break;
-	case INITHOOKafterCaLinkInit :
+	case initHookAfterInitRecSup :
 	    break;
-	case INITHOOKafterInitDrvSup :
-	    break;
-	case INITHOOKafterInitRecSup :
-	    break;
-	case INITHOOKafterInitDevSup :
-	    break;
-	case INITHOOKafterTS_init :
+	case initHookAfterInitDevSup :
 
 		/* For backward compatibility with earlier versions of save_restore,
 		 * if no restore files have been specified, set things up so we do
@@ -97,7 +93,7 @@ void initHooks(initHookState state)
 			reboot_restore(restoreFileList.pass0files[i], state);
 		}
 	    break;
-	case INITHOOKafterInitDatabase :
+	case initHookAfterInitDatabase :
 		/*
 		 * restore fields that init_record() would have overwritten with
 		 * info from the dol (desired output location).
@@ -106,18 +102,25 @@ void initHooks(initHookState state)
 			reboot_restore(restoreFileList.pass1files[i], state);
 		}
 	    break;
-	case INITHOOKafterFinishDevSup :
+	case initHookAfterFinishDevSup :
 	    break;
-	case INITHOOKafterScanInit :
+	case initHookAfterScanInit :
 	    break;
-	case INITHOOKafterInterruptAccept :
+	case initHookAfterInterruptAccept :
 	    break;
-	case INITHOOKafterInitialProcess :
+	case initHookAfterInitialProcess :
 	    break;
-	case INITHOOKatEnd :
+	case initHookAtEnd :
 	    break;
 	default:
 	    break;
 	}
 	return;
 }
+
+void stdInitHooksRegister(void)
+{
+   initHookRegister(stdInitHooks);
+}
+
+epicsExportRegistrar(stdInitHooksRegister);

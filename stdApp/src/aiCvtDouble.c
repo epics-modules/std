@@ -1,4 +1,4 @@
-/* $Id: aiCvtDouble.c,v 1.1.1.1 2001-07-03 20:05:23 sluiter Exp $ */
+/* $Id: aiCvtDouble.c,v 1.2 2003-05-28 20:09:18 bcda Exp $ */
 #include <vxWorks.h>
 #include <types.h>
 #include <stdioLib.h>
@@ -14,6 +14,7 @@
 #include "dbFldTypes.h"
 #include "devSup.h"
 #include "recSup.h"
+#include "recGbl.h"
 #include "special.h"
 #include "menuConvert.h"
 #include "aiRecord.h"
@@ -28,6 +29,9 @@
  * T. Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1  2001/07/03 20:05:23  sluiter
+ * Creating
+ *
  * Revision 1.4  1999/04/20 19:25:16  strauman
  * *** empty log message ***
  *
