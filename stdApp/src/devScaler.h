@@ -1,7 +1,7 @@
 /* devScaler.h */
 /* ----------------Device Support Entry Table for devSCALER----------------- */
 
-#define MAX_SCALER_CHANNELS 32
+#define MAX_SCALER_CHANNELS 64
 
 typedef struct {
 	long		number;
