@@ -1,0 +1,15 @@
+#RELEASE Location of external products
+# Run "gnumake clean uninstall install" in the application
+# top directory each time this file is changed.
+
+TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
+
+#If using the sequencer, point SNCSEQ at its top directory:
+SNCSEQ=/home/beams/BCDA/epics/synApps_4_6/support/seq-2-0-3
+
+# EPICS_BASE usually appears last so other apps can override stuff:
+EPICS_BASE=/net/beams/export/local/epics/baseR3.14.1
+
+#Capfast users may need the following definitions
+#CAPFAST_TEMPLATES=
+#SCH2EDIF_PATH=
