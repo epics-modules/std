@@ -10,7 +10,7 @@ grecord(ao,"$(P)$(SLIT)mXnPut") {
 }
 grecord(ao,"$(P)$(SLIT)mXpPut") {
 	field(DTYP,"Soft Channel")
-	field(SDIS,"$(P)$(SLIT)syncOp.VAL  PP MS")
+	field(SDIS,"$(P)$(SLIT)syncOp.VAL  NPP MS")
 	field(OUT,"$(P)$(mXp).VAL  PP MS")
 }
 grecord(ao,"$(P)$(SLIT)sizeBPut") {
@@ -41,6 +41,22 @@ grecord(ao,"$(P)$(SLIT)xpBPut") {
 	field(DTYP,"Soft Channel")
 	field(SDIS,"$(P)$(SLIT)xp.PACT  NPP MS")
 	field(OUT,"$(P)$(SLIT)xp.VAL  PP MS")
+}
+grecord(bo,"$(P)$(SLIT)closeGate") {
+	field(DTYP,"Soft Channel")
+	field(DISV,"0")
+	field(SDIS,"$(P)$(SLIT)gate.VAL  NPP MS")
+	field(OMSL,"closed_loop")
+	field(DOL,"$(P)$(mXn).DMOV  CP MS")
+	field(OUT,"$(P)$(SLIT)gate.VAL  PP MS")
+}
+grecord(bo,"$(P)$(SLIT)gate") {
+	field(DTYP,"Soft Channel")
+}
+grecord(bo,"$(P)$(SLIT)gatePut") {
+	field(DTYP,"Soft Channel")
+	field(SDIS,"$(P)$(SLIT)syncOp.VAL  PP MS")
+	field(OUT,"$(P)$(SLIT)gate.VAL  PP MS")
 }
 grecord(bo,"$(P)$(SLIT)set") {
 	field(DTYP,"Soft Channel")
@@ -91,11 +107,12 @@ grecord(transform,"$(P)$(SLIT)t1") {
 	field(CLCD,"(a+b)/2")
 	field(CLCF,"a")
 	field(CLCG,"b")
+	field(INPE,"1")
 	field(OUTA,"$(P)$(SLIT)xpBPut.VAL  PP MS")
 	field(OUTB,"$(P)$(SLIT)xnBPut.VAL  PP MS")
 	field(OUTC,"$(P)$(SLIT)sizeBPut.VAL  PP MS")
 	field(OUTD,"$(P)$(SLIT)centerBPut.VAL  PP MS")
-	field(OUTE,"0")
+	field(OUTE,"$(P)$(SLIT)gatePut.VAL  PP MS")
 	field(OUTF,"$(P)$(SLIT)mXpPut.VAL  PP MS")
 	field(OUTG,"$(P)$(SLIT)mXnPut.VAL  PP MS")
 	field(PREC,"3")
@@ -111,9 +128,10 @@ grecord(transform,"$(P)$(SLIT)t2") {
 	field(DESC,"xp(a), xn(b)->siz(c),cntr(d)")
 	field(CLCC,"a-b")
 	field(CLCD,"(a+b)/2")
-	field(CLCE,"g&&h")
+	field(CLCE,"g&&h&&!f")
 	field(INPA,"$(P)$(mXp).RBV  CP MS")
 	field(INPB,"$(P)$(mXn).RBV  CP MS")
+	field(INPF,"$(P)$(SLIT)gate.VAL  CP MS")
 	field(INPG,"$(P)$(mXp).DMOV  CP MS")
 	field(INPH,"$(P)$(mXn).DMOV  CP MS")
 	field(EGU,"mm")
