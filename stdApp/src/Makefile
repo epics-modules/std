@@ -52,7 +52,6 @@ std_SRCS += devEpidMpf.cc
 std_SRCS += devGP307gpib.c
 std_SRCS += devXxAX301.c
 std_SRCS += sseqRecord.c
-std_SRCS += recDynLink.c
 #std_SRCS += devVXStats.c
 
 # timestamp record
@@ -63,7 +62,6 @@ std_SRCS += timestampRecord.c
 INC += devScaler.h
 INC += fastPID.h
 INC += aiCvtDouble.h
-INC += recDynLink.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
