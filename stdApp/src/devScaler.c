@@ -137,8 +137,8 @@ volatile int devScalerdebug=0;
 #define MANUFACTURER_ID_OFFSET 0x28
 #define DATA_0_OFFSET 0x80
 #define PRESET_0_OFFSET 0xC0
-static long vsc_num_cards = 2;
-STATIC void *vsc_addrs = (void *)0x00d00000;
+static long vsc_num_cards = 0;
+STATIC void *vsc_addrs = (void *)0x00900000;
 STATIC long	vsc_InterruptVector = 0;
 
 STATIC long scaler_report(int level);
