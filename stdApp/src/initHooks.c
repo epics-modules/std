@@ -110,9 +110,9 @@ void initHooks(initHookState state)
 	    break;
 	case INITHOOKafterScanInit :
 	    break;
-	case INITHOOKafterInterruptAccept :
-	    break;
 	case INITHOOKafterInitialProcess :
+	    break;
+	case INITHOOKafterInterruptAccept :
 	    break;
 	case INITHOOKatEnd :
 	    break;
