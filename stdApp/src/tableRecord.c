@@ -37,9 +37,12 @@
  * .15  02/05/99 tmm  v5.01: RX, RY, RZ get same treatment in special as SX...
  * .16  02/28/99 tmm  v5.02: Fixed typo in matrix determinant (left out a term).
  * .17  03/09/99 tmm  v5.10: Fixed GEOCARS-geometry error (took wrong root).
- */
+ * .18  10/07/01 tmm  v5.11: Add support for Newport 5-motor table geometry
+ * .19  10/19/01 tmm  v5.12: Fix Newport 5&6-motor geometry
+ * .20  01/10/02 tmm  v5.13: Add PNC geometry (SRI with M0 and M1 swapped)
+*/
 
-#define VERSION 5.10
+#define VERSION 5.13
 
 #include	<vxWorks.h>
 #include	<types.h>
@@ -61,9 +64,10 @@
 #include	"tableRecord.h"
 #undef GEN_SIZE_OFFSET
 
+double D2R;	/* set in init_record() */
+
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
-#define D2R (3.1415926/180.)
 #define SMALL 1.e-6
 #define LARGE 1.e9
 #define X 0
@@ -110,10 +114,10 @@ static void		PivotPointVectorToLocalUserAngles(tableRecord *ptbl,
 					double *q0, double *q1, double *q2, double *u);
 static void		MotorToLocalUserAngles(tableRecord *ptbl, double *m, double *u);
 static void     MotorToUser(tableRecord *ptbl, double *m, double *u);
-static void 	UserToPivotPointVector(tableRecord *ptbl, double *user,
+static void 	LocalUserToPivotPointVector(tableRecord *ptbl, double *user,
 					double *pp0, double *pp1, double *pp2);
 static void 	PivotPointVectorToMotor(tableRecord *ptbl,
-					double *pp0, double *pp1, double *pp2, double *m);
+					double *pp0, double *pp1, double *pp2, double *m, double *u);
 static void     UserToMotor(tableRecord *ptbl, double *u, double *m);
 static void		MakeRotationMatrix(tableRecord *ptbl, double *u);
 static void     LabToLocal(tableRecord *ptbl, double *lab, double *local);
@@ -269,6 +273,7 @@ init_record(tableRecord *ptbl, int pass)
 	Debug(5, "init_record: pass = %d\n", pass);
 
 	if (pass == 0) {
+		D2R = atan(1.0)/45.0;
 		/*
 		 * Allocate link-status structure and hang on dpvt.  We can get
 		 * away with this because there's no possibility of device support.
@@ -293,9 +298,6 @@ init_record(tableRecord *ptbl, int pass)
 		ptbl->ppo0 = &(ptbl->pp0[9]);
 		ptbl->ppo1 = &(ptbl->pp0[12]);
 		ptbl->ppo2 = &(ptbl->pp0[15]);
-		Debug(9, "init_record: ptbl->pp0 = %p (+0x90)\n", (void *)ptbl->pp0);
-		Debug(9, "init_record: ptbl->pp1 = %p\n", (void *)ptbl->pp1);
-		Debug(9, "init_record: ptbl->ppo2 = %p\n", (void *)ptbl->ppo2);
 
 		/*
 		 * Allocate matrices.  Elements must be contiguous so
@@ -311,12 +313,6 @@ init_record(tableRecord *ptbl, int pass)
 			ptbl->a[i] = ptbl->a[i-1] + 3;
 			ptbl->b[i] = ptbl->b[i-1] + 3;
 		}
-		Debug(9, "init_record: ptbl->a = %p (+0x138)\n", (void *)ptbl->a);
-		Debug(9, "init_record: ptbl->b = %p (+0x138)\n", (void *)ptbl->b);
-		Debug(9, "init_record: ptbl->a[0] = %p\n", (void *)ptbl->a[0]);
-		Debug(9, "init_record: &(ptbl->a[0]) = %p\n", (void *)&(ptbl->a[0]));
-		Debug(9, "init_record: &(ptbl->a[0][0]) = %p\n",
-			(void *)&(ptbl->a[0][0]));
 
 		/* initialize pivot-point vectors and transform matrices */
 		InitGeometry(ptbl);
@@ -326,9 +322,9 @@ init_record(tableRecord *ptbl, int pass)
 		 * (Note that offsets may have been autorestored.)
 		 */
 		for (i = 0; i < 6; i++) {
-			ax[i] = 0;
+			ax[i] = 0.0;
 			axl[i] = ax0[i];
-			m0x[i] = 0;
+			m0x[i] = 0.0;
 		}
 
 		return (0);
@@ -353,7 +349,7 @@ init_record(tableRecord *ptbl, int pass)
 
 	/* get motor limits and transform into user limits */
 	(void) GetMotorLimits(ptbl);
-/* We should calculate user limits only if we think they've changed */
+	/* We should calculate user limits only if we think they've changed */
 	CalcUserLimits(ptbl);
 
 	monitor(ptbl);
@@ -372,15 +368,15 @@ process(tableRecord *ptbl)
 	double            sm[6], sv0x[6];
     struct private    *p = (struct private *)ptbl->dpvt;
     struct linkStatus *lnkStat = p->lnkStat;
-	double *ax = &ptbl->ax;
-	double *axrb = &ptbl->axrb;
-	double *m0x = &ptbl->m0x;
-	double *v0x = &ptbl->v0x;
-	double *ax0 = &ptbl->ax0;
-	double *axl = &ptbl->axl;
-	double *r0x = &ptbl->r0x;
+	double *ax = &ptbl->ax;		/* user-coordinate drive values (include offsets) */
+	double *axrb = &ptbl->axrb;	/* user-coordinate readback values (include offsets) */
+	double *m0x = &ptbl->m0x;	/* motor drive values */
+	double *v0x = &ptbl->v0x;	/* motor speeds */
+	double *ax0 = &ptbl->ax0;	/* user-coordinate offsets (e.g., via SET field) */
+	double *axl = &ptbl->axl;	/* previous user-coordinate drive values (ignore offsets) */
+	double *r0x = &ptbl->r0x;	/* motor readback values */
 
-	Debug0(5, "process: entry\n");
+	Debug(5, "tableRecord(%s):process:entry\n", ptbl->name);
 
 	ptbl->pact = TRUE;
 	ptbl->udf = FALSE;
@@ -512,7 +508,8 @@ process(tableRecord *ptbl)
 				return (err);
 		}
 	}
-	/* save true values */
+
+	/* save user-coordinate values (ignore offsets) */
 	for (i=0; i<6; i++) {axl[i] = ax[i] + ax0[i];}
 
 	/* Read motor limit values and transform to offset user coordinates */
@@ -898,11 +895,18 @@ MotorLimitViol(tableRecord *ptbl)
 	double *h0x = &ptbl->h0x, *l0x = &ptbl->l0x;
 	double *m0x = &ptbl->m0x;
 	short i;
+    struct private *p = (struct private *)ptbl->dpvt;
+    struct linkStatus *lnkStat = p->lnkStat;
 
 	for (i=0; i<6; i++, h0x++, l0x++, m0x++) {
-		if ((*h0x != 0.) || (*l0x != 0.)) {
-			if ((*m0x > *h0x) || (*m0x < *l0x)) {
-				return(1);
+		if ((lnkStat[i].can_read_limits) && (lnkStat[i].can_RW_drive)) {
+			if ((*h0x != 0.) || (*l0x != 0.)) {
+				if ((*m0x > *h0x) || (*m0x < *l0x)) {
+					if (tableRecordDebug >= 1)
+						printf("MotorLimitViol: motor[%d]=%f, l=%f, h=%f\n",
+							i, *m0x, *l0x, *h0x);
+					return(1);
+				}
 			}
 		}
 	}
@@ -922,8 +926,12 @@ UserLimitViol(tableRecord *ptbl)
 	for (i=0; i<6; i++, hlax++, llax++, ax++, ax0++) {
 		if ((*hlax != 0.0) || (*llax != 0.0)) {
 			u = *ax + *ax0;
-			if ((u < *llax) || (u > *hlax))
+			if ((u < *llax) || (u > *hlax)) {
+				if (tableRecordDebug >= 1)
+					printf("MotorLimitViol: user[%d]=%f, l=%f, h=%f\n",
+						i, u, *llax, *hlax);
 				return(1);
+			}
 		}
 	}
 	return(0);
@@ -939,7 +947,9 @@ GetReadback(tableRecord *ptbl, double *r)
     struct private *p = (struct private *)ptbl->dpvt;
     struct linkStatus *lnkStat = p->lnkStat;
 
+	Debug(5, "tableRecord(%s):GetReadback:entry\n", ptbl->name);
 	for (i=0; i<6; i++) {
+		r[i] = 0.0;
 		if (lnkStat[i].can_RW_drive) {
 			err = dbGetLink(&r0xi[i], DBR_DOUBLE, &r[i], NULL, NULL);
 			if (!RTN_SUCCESS(err)) {
@@ -961,6 +971,7 @@ ReadEncoders(tableRecord *ptbl, double *e)
     struct private *p = (struct private *)ptbl->dpvt;
     struct linkStatus *lnkStat = p->lnkStat;
 
+	Debug(5, "tableRecord(%s):ReadEncoders:entry\n", ptbl->name);
 	for (i=0; i<6; i++) {
 		e[i] = 0.;
 		if (lnkStat[i].can_read_position) {
@@ -986,6 +997,7 @@ InitGeometry(tableRecord *ptbl)
 	double fx, fy, fz;
 	double a, b, c, d, e, f, g, h, i, det;
 
+	Debug(5, "tableRecord(%s):InitGeometry:entry\n", ptbl->name);
 	fx = ptbl->rx + sx;
 	fy = ptbl->ry + sy;
 	fz = ptbl->rz + sz;
@@ -1015,6 +1027,18 @@ InitGeometry(tableRecord *ptbl)
 		pp2[Z] = ppo2[Z] = lz - fz;
 		break;
 
+	case tableGEOM_PNC:
+		pp1[X] = ppo1[X] = lx - fx;
+		pp1[Y] = ppo1[Y] = -fy;
+		pp1[Z] = ppo1[Z] = -fz;
+		pp0[X] = ppo0[X] = -fx;
+		pp0[Y] = ppo0[Y] = -fy;
+		pp0[Z] = ppo0[Z] = -fz;
+		pp2[X] = ppo2[X] = lx/2 - fx;
+		pp2[Y] = ppo2[Y] = -fy;
+		pp2[Z] = ppo2[Z] = lz - fz;
+		break;
+
 	case tableGEOM_SRI:
 	default:
 		pp0[X] = ppo0[X] = lx - fx;
@@ -1030,15 +1054,15 @@ InitGeometry(tableRecord *ptbl)
 	}
 
 	/*
-	 * Get three translation-independent vectors in the space spanned by the
-	 *                                            (a b c)
-	 * pivot-point vectors, and make the matrix   (d e f)  out of them.
-	 *                                            (g h i)
-	 *
-	 * the vectors are:
+	 * Get three vectors that are independent of the user coordinates (x,y,z),
+	 * in the space spanned by the pivot-point vectors, and make the matrix
+	 *		(a b c)
+	 *		(d e f)
+	 *		(g h i)
+	 * out of them.  The vectors are:
 	 * ppo1 - ppo0
 	 * ppo2 - ppo1
-	 * (ppo1-ppo0) X (ppo2-ppo1)
+	 * (ppo1-ppo0) X (ppo2-ppo1)  (X means cross product)
 	 */
 	a = ppo1[X] - ppo0[X]; b = ppo1[Y] - ppo0[Y]; c = ppo1[Z] - ppo0[Z];
 	d = ppo2[X] - ppo1[X]; e = ppo2[Y] - ppo1[Y]; f = ppo2[Z] - ppo1[Z];
@@ -1047,7 +1071,8 @@ InitGeometry(tableRecord *ptbl)
 	/*
 	 * Get inverse of the matrix.  Later, we'll apply this matrix to
 	 * rotated/translated pivot-point vectors to get the merely rotated
-	 * unit vectors.  This will allow us to determine the rotation angles.
+	 * unit vectors.  This will allow us to determine the rotation angles
+	 * in the SRI, GEOCARS, and PNC geometries.
 	 */
 	det = a*(e*i-h*f) + b*(f*g-i*d) + c*(d*h-g*e);
 	bb[0][0] = (e*i - f*h) / det;
@@ -1061,7 +1086,10 @@ InitGeometry(tableRecord *ptbl)
 	bb[2][2] = (a*e - b*d) / det;
 }
 
-
+/*
+ * If a pivot-point vector component is driven by a motor, it's easy to 
+ * calculate it's value.  Can't use this routine for the NEWPORT geometry.
+ */
 static void 
 NaiveMotorToPivotPointVector(tableRecord *ptbl, double *m, double *q0,
 	double *q1, double *q2)
@@ -1069,8 +1097,10 @@ NaiveMotorToPivotPointVector(tableRecord *ptbl, double *m, double *q0,
 	double *p0 = ptbl->ppo0, *p1 = ptbl->ppo1, *p2 = ptbl->ppo2;
 	double norm[3], **a = ptbl->a;
 
+	Debug(5, "tableRecord(%s):NaiveMotorToPivotPointVector:entry\n", ptbl->name);
 	switch (ptbl->geom) {
 	case tableGEOM_SRI:
+	case tableGEOM_PNC:
 	case tableGEOM_GEOCARS:
 	default:
 		q0[X] = p0[X] + m[M0X];
@@ -1091,6 +1121,10 @@ NaiveMotorToPivotPointVector(tableRecord *ptbl, double *m, double *q0,
 		 * require that the rotation matrix be known.  Therefore, this
 		 * routine may not be used by MotorToUser(), as it is for the other
 		 * geometries.
+		 * Also note that for the Newoport we are not calculating the locations
+		 * of the actual pivot points.  Instead, we're pretending the pivot points
+		 * move vertically -- as they do in the other geometries -- to maintain
+		 * a fixed distance from the point about which the table rotates.
 		 */
 		MakeRotationMatrix(ptbl, &ptbl->ax);
 		norm[X] = a[X][Y];	/* unit vector normal to table */
@@ -1111,7 +1145,10 @@ NaiveMotorToPivotPointVector(tableRecord *ptbl, double *m, double *q0,
 	}
 }
 
-
+/*
+ * Calculate pivot-point vectors from motors.
+ * Can't use this routine for the NEWPORT geometry.
+ */
 static void 
 MotorToPivotPointVector(tableRecord *ptbl, double *m, double *q0, double *q1,
 	double *q2)
@@ -1122,7 +1159,11 @@ MotorToPivotPointVector(tableRecord *ptbl, double *m, double *q0, double *q1,
 	double s, t, p10p20, p10p10, alpha;
 	double dx, dy, dz, d0x, d0y, d0z;
 
-	/* Get rotated/translated pivot-point vectors. */
+	Debug(5, "tableRecord(%s):MotorToPivotPointVector:entry\n", ptbl->name);
+	/*
+	 * Get what information about the rotated/translated pivot-point vectors we can
+	 * get straight from the motors.  We'll have to calculate the rest.
+	 */
 	NaiveMotorToPivotPointVector(ptbl, m, q0, q1, q2);
 
 	/* get q0[Z] from |q0-q2| == |p0-p2| */
@@ -1134,6 +1175,7 @@ MotorToPivotPointVector(tableRecord *ptbl, double *m, double *q0, double *q1,
 		q0[Z] = q2[Z] + sqrt(d0x*d0x + d0y*d0y + d0z*d0z - (dx*dx + dy*dy));
 		break;
 	case tableGEOM_SRI:
+	case tableGEOM_PNC:
 	default:
 		/* choose the root that yields (q2[Z] > q0[Z]) */
 		q0[Z] = q2[Z] - sqrt(d0x*d0x + d0y*d0y + d0z*d0z - (dx*dx + dy*dy));
@@ -1181,6 +1223,11 @@ MotorToPivotPointVector(tableRecord *ptbl, double *m, double *q0, double *q1,
 }
 
 
+/*
+ * Forget about translations (x,y,z) and calculate just the angles
+ * from the rotated pivot-point vectors.  We need this only for the SRI,
+ * GEOCARS, and PNC geometries.
+ */
 static void 
 PivotPointVectorToLocalUserAngles(tableRecord *ptbl, double *q0, double *q1,
 	double *q2, double *u)
@@ -1189,13 +1236,18 @@ PivotPointVectorToLocalUserAngles(tableRecord *ptbl, double *q0, double *q1,
 	double a, b, c, d, e, f, g, h, i;
 	double /*ip[3],*/ jp[3], kp[3];
 
+	Debug(5, "tableRecord(%s):PivotPointVectorToLocalUserAngles:entry\n", ptbl->name);
 	/*
-	 * Get three translation-independent vectors in the space spanned by the
-	 *                                                   (a b c)
-	 * transformed pivot-point vectors; make the matrix  (d e f)  from them.
-	 *                                                   (g h i)
+	 * Get three vectors independent of the user coordinates (x,y,z), in the
+	 * space spanned by the transformed pivot-point vectors, and make the matrix
+	 *		(a b c)
+	 *		(d e f)
+	 *		(g h i)
+	 * out of them.  The vectors are:
+	 * q1 - q0
+	 * q2 - q1
+	 * (q1-q0) X (q2-q1)  (X means cross product)
 	 */
-	
 	a = q1[X] - q0[X]; b = q1[Y] - q0[Y]; c = q1[Z] - q0[Z];
 	d = q2[X] - q1[X]; e = q2[Y] - q1[Y]; f = q2[Z] - q1[Z];
 	g = b*f - c*e;     h = c*d - a*f;     i = a*e - b*d;
@@ -1231,139 +1283,160 @@ PivotPointVectorToLocalUserAngles(tableRecord *ptbl, double *q0, double *q1,
 	u[AY_6] = asin(-kp[X]); /* a[X][Z] */
 	u[AX_6] = asin(kp[Y]/cos(u[AY_6])) / D2R; /* a[Y][Z] */
 	u[AZ_6] = asin(jp[X]/cos(u[AY_6])) / D2R; /* a[X][Y] */
-	u[AY_6] /= D2R;
+	u[AY_6] /= D2R;	/* user angles are in degrees, not radians */
 }
 
 
+/*
+ * Calculate angles (and whatever else we get as a byproduct)
+ * from the motor positions.  We only need this for the Newport geometry.
+ */
 static void 
 MotorToLocalUserAngles(tableRecord *ptbl, double *m, double *u)
 {
+
 	double *p0 = ptbl->ppo0, *p1 = ptbl->ppo1, *p2 = ptbl->ppo2;
+	double p0x = p0[X], p0y = p0[Y], p0z = p0[Z];
+	double p1x = p1[X], p1y = p1[Y], p1z = p1[Z];
+	double p2x = p2[X], p2y = p2[Y], p2z = p2[Z];
+	double p10x = p1[X]-p0[X], p10y = p1[Y]-p0[Y], p10z = p1[Z]-p0[Z];
 	double p01x = p0[X]-p1[X], p01y = p0[Y]-p1[Y], p01z = p0[Z]-p1[Z];
-	double p01x_2 = p01x*p01x, p01y_2 = p01y*p01y, p01z_2 = p01z*p01z;
+	double p20x = p2[X]-p0[X], p20y = p2[Y]-p0[Y], p20z = p2[Z]-p0[Z];
 	double p02x = p0[X]-p2[X], p02y = p0[Y]-p2[Y], p02z = p0[Z]-p2[Z];
-	double p02x_2 = p02x*p02x, p02y_2 = p02y*p02y, p02z_2 = p02z*p02z;
-	double p12x = p1[X]-p2[X], p12y = p1[Y]-p2[Y], p12z = p1[Z]-p2[Z];
-	double p12x_2 = p12x*p12x, p12y_2 = p12y*p12y, p12z_2 = p12z*p12z;
-	double L01 = m[M0Y]-m[M1Y], L12 = m[M1Y]-m[M2Y], L02 = m[M0Y]-m[M2Y];
-	double L01_2 = L01*L01, L12_2 = L12*L12, L02_2 = L02*L02;
-	double n02x = m[M0X]-m[M2X];
-	double n02x_2 = n02x*n02x;
-	double t1, t2, t3, tmp;
-	double Ryx, Ryy, Ryz, Rxx, Rxy, Rxz;
-	double Ryx_2, Ryy_2, Ryz_2;
-
-	/*** Get user angles from rotation-matrix elements Ryz, Rxy, Rxz ***/
-
-	/* solve the following eqn's for Ryx, Ryy, Ryz:
-	 * q0y + Ryy*L0 = p0y
-	 * q1y + Ryy*L1 = p1y
-	 * q0y - q1y = Ryx*(p0x-p1x)+Ryy*(p0y-p1y)+Ryz*(p0z-p1z)
-	 * q1y - q2y = Ryx*(p1x-p2x)+Ryy*(p1y-p2y)+Ryz*(p1z-p2z)
-	 * Ryx*Ryx + Ryy*Ryy + Ryz*Ryz = 1
+	double p02x_2 = p02x * p02x, p02y_2 = p02y * p02y, p02z_2 = p02z * p02z;
+	double L0 = m[M0Y], L1 = m[M1Y], L2 = m[M2Y];
+	double L10 = m[M1Y]-m[M0Y], L20 = m[M2Y]-m[M0Y], L02 = m[M0Y]-m[M2Y];
+	double L02_2 = L02 * L02;
+	double Ryx, Ryy, Ryz, Ryx_2, Ryy_2, Ryz_2;
+	double Rxx, Rxy, Rxz;
+	double n0x = m[M0X], n2x = m[M2X], n02x = n0x - n2x, n02x_2 = n02x * n02x;
+	double a, b, c, tmp, tmp1;
+	double npx, npy, npz;
+	
+	Debug(5, "tableRecord(%s):MotorToLocalUserAngles:entry\n", ptbl->name);
+	/*
+	 * From "upside-down" analysis (regard table top as horizontal and calculate how much
+	 * the floor is tilted) to find y component of table's normal vector.  (It's easier this
+	 * way because the legs are normal to the table top.)
+	 *
+	 * ->     ->   ^        ->   ^          ->   ^        ->   ^
+	 * np = ((p1 - j L1) - (p0 - j L0)) X ((p2 - j L2) - (p0 - j L0))
+	 *
+	 *       ->    ^         ->    ^        ->    ->        ^   ->        ^   ->
+	 *    = (p10 - j L10) X (p20 - j L20) = p10 X p20 - L10 j X p20 + L20 j X p10
+	 *
+	 * npy = p10z p20x - p20z p10x - L10 
 	 */
-	t1 = p01y_2 * p12x_2 - 2 * p01x * p01y * p12x * p12y + p01x_2 * p12y_2 + 
-		p01z_2 * p12y_2 - 2 * p01y * p01z * p12y * p12z + p01y_2 * p12z_2 + 
-		L01 * (-p01y * p12x_2 + p01x * p12x * p12y + p01z * p12y * p12z -
-			   p01y * p12z_2) + 
-		L12 * (p01x * p01y * p12x - p01x_2 * p12y + p01z *
-			   (-p01z * p12y + p01y * p12z));
+	npx = p10y * p20z - p10z * p20y - p20z * L10 + p10z * L20;
+	npy = p10z * p20x - p10x * p20z;
+	npz = p10x * p20y - p10y * p20x + p20x * L10 - p10x * L20;
 
-	t2 = (p01z * p12x - p01x * p12z) * sqrt(L12_2 * (p01x_2 - p01y_2 + p01z_2) +
-		(p01z * p12x - p01x * p12z)*(p01z * p12x - p01x * p12z) - 
-		2 * L12 * (L01 * p01x * p12x - p01x * p01y * p12x + 
-		p01x_2 * p12y - L01 * p01y * p12y + p01z_2 * p12y + 
-		(L01 - p01y) * p01z * p12z) + L01_2 * (p12x_2 - p12y_2 + p12z_2) - 
-		2 * L01 * (-p12y * (p01x * p12x + p01z * p12z) +
-		p01y * (p12x_2 + p12z_2)));
-
-	t3 = (L12_2 * (p01x_2 + p01z_2) + L01_2 * p12x_2 - 2 * L01 * p01y * p12x_2 +
-		p01y_2 * p12x_2 + p01z_2 * p12x_2 + 2 * L01 * p01x * p12x * p12y -
-		2 * p01x * p01y * p12x * p12y + p01x_2 * p12y_2 + p01z_2 * p12y_2 - 
-		2 * p01z * (p01x * p12x + (-L01 + p01y) * p12y) * p12z + 
-		(p01x_2 + (L01 - p01y)*(L01 - p01y)) * p12z_2 - 
-		2 * L12 * (L01 * p01x * p12x - p01x * p01y * p12x + p01x_2 * p12y + 
-		p01z_2 * p12y + (L01 - p01y) * p01z * p12z));
-
-	Ryy = (t1+t2)/t3;
-	tmp = (t1-t2)/t3;
-	if (fabs(tmp-1) < fabs(Ryy-1)) Ryy = tmp;
-
-	Ryx = (p01z * (p12y * (-1 + Ryy) - L12 * Ryy) + 
-		p12z * (p01y + L01 * Ryy - p01y * Ryy)) / (-p01z * p12x + p01x * p12z);
-	Ryz = (p01y * p12x * (-1 + Ryy) - L01 * p12x * Ryy + 
-		p01x * (p12y + L12 * Ryy - p12y * Ryy)) / (-p01z * p12x + p01x * p12z);
-
-
-	/* solve the following eqn's for Rxx, Rxy, Rxz:
-	 * q0x + Rxy*L0 = p0y + m[M0X]
-	 * q2x + Rxy*L2 = p2y + m[M2X]
-	 * q0x - q2x = Rxx*(p0x-p2x)+Rxy*(p0y-p2y)+Rxz*(p0z-p2z)
-	 * Rxx*Ryx + Rxy*Ryy + Rxz*Ryz = 0
-	 * Rxx*Rxx + Rxy*Rxy + Rxz*Rxz = 1
-	 */
-	Ryx_2 = Ryx*Ryx; Ryy_2 = Ryy*Ryy; Ryz_2 = Ryz*Ryz;
-
-	t1 = (n02x + p02x) * (L02 * Ryx * Ryy - p02y * Ryx * Ryy -
-			p02z * Ryx * Ryz + p02x * (Ryy_2 + Ryz_2));
-
-	t2 = (p02z * Ryy + (L02 - p02y) * Ryz) * sqrt(-p02x_2 * Ryx_2 +
-		p02y_2 * Ryx_2 + p02z_2 * Ryx_2 - 2 * p02x * p02y * Ryx * Ryy +
-		p02z_2 * Ryy_2 - 2 * p02z * (p02x * Ryx + p02y * Ryy) * Ryz +
-		p02y_2 * Ryz_2 + L02_2 * (Ryx_2 + Ryz_2) -
-		n02x_2 * (Ryx_2 + Ryy_2 + Ryz_2) - 
-		2 * n02x * p02x * (Ryx_2 + Ryy_2 + Ryz_2) - 
-		2 * L02 * (-Ryy * (p02x * Ryx + p02z * Ryz) + p02y * (Ryx_2 + Ryz_2)));
-
-	t3 = L02_2 * Ryx_2 - 2 * L02 * p02y * Ryx_2 + p02y_2 * Ryx_2 + 
-		p02z_2 * Ryx_2 + 2 * L02 * p02x * Ryx * Ryy -
-		2 * p02x * p02y * Ryx * Ryy + p02x_2 * Ryy_2 + p02z_2 * Ryy_2 -
-		2 * p02z * (p02x * Ryx + (-L02 + p02y) * Ryy) * Ryz +
-		(p02x_2 + (L02 - p02y)*(L02 - p02y)) * Ryz_2;
-
-	Rxx = (t1 + t2) / t3;
-	tmp = (t1 - t2) / t3;
-	if (fabs(tmp-1) < fabs(Rxx-1)) Rxx = tmp;
-
-	Rxy = (-p02z * Rxx * Ryx + (n02x + p02x - p02x * Rxx) * Ryz) /
-		(p02z * Ryy + L02 * Ryz - p02y * Ryz);
-	Rxz = (-L02 * Rxx * Ryx + p02y * Rxx * Ryx +
-		(n02x + p02x - p02x * Rxx) * Ryy) /
-		(p02z * Ryy + L02 * Ryz - p02y * Ryz);
+	Ryy = npy / sqrt(npx*npx + npy*npy + npz*npz);
+	Ryy_2 = Ryy * Ryy;
 
 	/*
-	 * We only need three rotation-matrix elements to get the angles, if we
-	 * restrict angles to the range of the arcsine function ([-90 ... 90]
-	 * degrees).
-	 *
-	 * Convert angles to degrees.
-	 *
-	 * Note that we're assuming the functional form of the rotation matrix
-	 * elements (a[0][2], a[1][2], and a[0][1], which we've calculated as Rxz,
-	 * Ryz, Rxy) here.  If MakeRotationMatrix() changes, the next three lines
-	 * may also have to change.
+	 * Now we can uncouple the y equations from the rest of this awful mess,
+	 * and get y as an unavoidable byproduct of solving for the Ry* matrix elements.
+	 * Mathematica input:
+	 * Solve[{Ryx p0x + (Ryy-1) p0y + Ryz p0z + y - Ryy L0 == 0,
+	 *        Ryx p1x + (Ryy-1) p1y + Ryz p1z + y - Ryy L1 == 0,
+	 *        Ryx p2x + (Ryy-1) p2y + Ryz p2z + y - Ryy L2 == 0},
+	 *        {Ryx,Ryz,y}]//FullSimplify
 	 */
+ 
+	Ryx = (p1z * p2y - p1y * p2z + p0y * (p1z - p2z) * (-1 + Ryy) - 
+	 (p1z * (L0 - L2 + p2y) - (L0 - L1 + p1y) * p2z) * Ryy + 
+	 p0z * (p1y - p2y + (L1 - L2 - p1y + p2y) * Ryy)) / 
+	 (p0z * (p1x - p2x) + p1z * p2x - p1x * p2z + p0x * (-p1z + p2z));
+	Ryx_2 = Ryx * Ryx;
+
+	Ryz = (p1y * p2x - p1x * p2y - p0y * (p1x - p2x) * (-1 + Ryy) + 
+	 (L0 * p1x - L2 * p1x - L0 * p2x + L1 * p2x - p1y * p2x + p1x * p2y) * Ryy + 
+	 p0x * (-p1y + p2y + (-L1 + L2 + p1y - p2y) * Ryy)) / 
+	 (p0z * (p1x - p2x) + p1z * p2x - p1x * p2z + p0x * (-p1z + p2z));
+ 	Ryz_2 = Ryz * Ryz;
+
+	u[Y_6] = (-(p0x * p1z * p2y) + p0x * p1y * p2z - 
+	 p0y * (p1z * p2x - p1x * p2z) * (-1 + Ryy) - L2 * p0x * p1z * Ryy + 
+	 L0 * p1z * p2x * Ryy + p0x * p1z * p2y * Ryy + L1 * p0x * p2z * Ryy - 
+	 L0 * p1x * p2z * Ryy - p0x * p1y * p2z * Ryy + 
+	 p0z * (p1y * p2x * (-1 + Ryy) - (L1 * p2x + p1x * p2y) * Ryy + 
+	 p1x * (p2y + L2 * Ryy))) / 
+	 (p0z * (p1x - p2x) + p1z * p2x - p1x * p2z + p0x * (-p1z + p2z));
+
+	if (tableRecordDebug >= 5) printf("Ryx=%f, Ryy=%f, Ryz=%f, y=%f\n", Ryx, Ryy, Ryz, u[Y_6]);
+
+	/* Thus far, we've been pretending rotation-matrix elements are independent, because Mathematica
+	 * chokes on the real problem.  Now the x equations, together with some rotation-matrix identities,
+	 * can be solved for enough of the remaining matrix elements to nail down all three user angles.
+	 * Mathematica input:
+	 * Solve[Rxx^2 + Rxy^2 + Rxz^2 == 1, 
+	 *    Rxx == (n02x + p02x + (L02 - p02y) Rxy - p02z Rxz)/p02x, 
+	 *    Rxx Ryx + Rxy Ryy + Rxz Ryz == 0, Rxx, Rxy, Rxz] // FullSimplify
+	 */
+
+	a = (n02x + p02x) * (L02 * Ryx * Ryy - p02y * Ryx * Ryy - p02z * Ryx * Ryz + p02x * (Ryy_2 + Ryz_2));
+	b = -p02x_2 * Ryx_2 + p02y_2 * Ryx_2 + p02z_2 * Ryx_2 - 2 * p02x * p02y * Ryx * Ryy + p02z_2 * Ryy_2 -
+		2 * p02z * (p02x * Ryx + p02y * Ryy) * Ryz + p02y_2 * Ryz_2 + L02_2 * (Ryx_2 + Ryz_2) -
+		n02x_2 * (Ryx_2 + Ryy_2 + Ryz_2) - 2 * n02x * p02x * (Ryx_2 + Ryy_2 + Ryz_2) -
+		2 * L02 * (-Ryy * (p02x * Ryx + p02z * Ryz) + p02y * (Ryx_2 + Ryz_2));
+	c = L02_2 * Ryx_2 - 2 * L02 * p02y * Ryx_2 + p02y_2 * Ryx_2 + p02z_2 * Ryx_2 +
+		2 * L02 * p02x * Ryx * Ryy - 2 * p02x * p02y * Ryx * Ryy + p02x_2 * Ryy_2 + p02z_2 * Ryy_2 -
+		2 * p02z * (p02x * Ryx + (-L02 + p02y) * Ryy) * Ryz + (p02x_2 + (L02 - p02y)*(L02 - p02y)) * Ryz_2;
+	Rxx = (a - (p02z * Ryy + (L02 - p02y) * Ryz) * sqrt(b)) / c;
+	tmp = (a + (p02z * Ryy + (L02 - p02y) * Ryz) * sqrt(b)) / c;
+	if (tableRecordDebug >= 6) printf("MotorToLocalUserAngles: Rxx = %f or %f\n", Rxx, tmp);
+	/* angles are small, so we should be close to unit matrix, for which Rxx = 1; */
+	if (fabs(tmp-1) < fabs(Rxx-1)) Rxx = tmp;
+
+	a = (n02x + p02x) * (p02z * (Ryx_2 + Ryy_2) - (p02x * Ryx + (-L02 + p02y) * Ryy) * Ryz);
+	Rxz = (a + (L02 * Ryx - p02y * Ryx + p02x * Ryy) * sqrt(b)) / c;
+	tmp = (a - (L02 * Ryx - p02y * Ryx + p02x * Ryy) * sqrt(b)) / c;
+	if (tableRecordDebug >= 6) printf("MotorToLocalUserAngles: Rxz = %f or %f\n", Rxz, tmp);
+	/* Plus sign seems always to be the right choice (in 500,000 random simulations).  I'm just
+	 * too lazy to figure out why.
+	 */
+
+	a = -(n02x + p02x) * (Ryx * (L02 * Ryx - p02y * Ryx + p02x * Ryy) +
+		p02z * Ryy * Ryz + (L02 - p02y) * Ryz_2);
+	Rxy = (a + (p02z * Ryx - p02x * Ryz) * sqrt(b)) / c;
+	tmp = (a - (p02z * Ryx - p02x * Ryz) * sqrt(b)) / c;
+	/* Use rotation-matrix identity to choose the right root. */
+	tmp1 = sqrt(1 - (Rxx*Rxx + Rxz*Rxz));
+	if (tableRecordDebug >= 6) printf("MotorToLocalUserAngles: Rxy = %f or %f (abs val should be near %f)\n",
+		Rxy, tmp, tmp1);
+	if (fabs(fabs(tmp)-tmp1) < fabs(fabs(Rxy)-tmp1)) Rxy = tmp;
+
+	if (tableRecordDebug >= 5) printf("Rxx=%f, Rxy=%f, Rxz=%f\n", Rxx, Rxy, Rxz);
+
+	/* Now we have the right matrix elements to pick out user angles easily. */
 	u[AY_6] = asin(-Rxz);
 	u[AX_6] = asin(Ryz/cos(u[AY_6])) / D2R;
 	u[AZ_6] = asin(Rxy/cos(u[AY_6])) / D2R;
 	u[AY_6] /= D2R;
-
 }
 
 
+/*
+ * From motor positions, calculate lab coordinate system user values, including user offsets.
+ */
 static void 
 MotorToUser(tableRecord *ptbl, double *m, double *u)
 {
 	short i, j, k;
 	double *ax0 = &ptbl->ax0;
-	double *ppo2 = ptbl->ppo2;
+	double *ppo0 = ptbl->ppo0, *ppo1 = ptbl->ppo1, *ppo2 = ptbl->ppo2;
 	double q0[3], q1[3], q2[3];
 	double **aa = ptbl->a;
-	double pp[3], m_try[6];
+	double pp0[3], pp1[3], pp2[3], m_try[6];
+    struct private    *p = (struct private *)ptbl->dpvt;
+    struct linkStatus *lnkStat = p->lnkStat;
 
+	Debug(5, "tableRecord(%s):MotorToUser:entry\n", ptbl->name);
 	switch (ptbl->geom) {
 	case tableGEOM_SRI:
 	case tableGEOM_GEOCARS:
+	case tableGEOM_PNC:
 	default:
 		MotorToPivotPointVector(ptbl, m, q0, q1, q2);
 		PivotPointVectorToLocalUserAngles(ptbl, q0, q1, q2, u);
@@ -1374,46 +1447,70 @@ MotorToUser(tableRecord *ptbl, double *m, double *u)
 		break;
 	}
 
-	/* Now work from the other end to get the translations. */
+	/*
+	 * Now we have enough information to recover the rotation matrix, so we can compare
+	 * rotated pivot-point vectors with motor positions, and get the (x, y, z) translations.
+	 */
+	if (tableRecordDebug >= 5) printf("MotorToUser: get translations\n");
 	MakeRotationMatrix(ptbl, u);
-	/* Rotate pivot point 2, because it has all three degrees of freedom. */
+	/* Rotate pivot point 2, because it has all three translations specified. */
 	for (j=X; j<=Z; j++) {
-		pp[j] = 0;
-		for (k=X; k<=Z; k++) {pp[j] += ppo2[k] * aa[j][k];}
+		pp0[j] = pp1[j] = pp2[j] = 0;
+		for (k=X; k<=Z; k++) {
+			pp0[j] += ppo0[k] * aa[j][k];
+			pp1[j] += ppo1[k] * aa[j][k];
+			pp2[j] += ppo2[k] * aa[j][k];
+		}
 	}
-	/* Compare rotated pivot point with motors to get translations. */
-	PivotPointVectorToMotor(ptbl, NULL, NULL, pp, m_try);
-	u[X_6] = m[M2X] - m_try[M2X];
-	u[Y_6] = m[M2Y] - m_try[M2Y];
-	u[Z_6] = m[M2Z] - m_try[M2Z];
+	if (ptbl->geom == tableGEOM_NEWPORT) {
+		/* We already have u[Y_6].  Use it. */
+		pp0[Y] += u[Y_6]; pp1[Y] += u[Y_6]; pp2[Y] += u[Y_6];
+	}
+	/* Compare rotated, y-translated pivot point with motors to get translations. */
+	PivotPointVectorToMotor(ptbl, pp0, pp1, pp2, m_try, u);
+	if (tableRecordDebug >= 5) printf("m[] = 0x:%f, 0y:%f, 1y:%f, 2x:%f, 2y:%f, 2z:%f\n",
+		m_try[M0X], m_try[M0Y], m_try[M1Y], m_try[M2X], m_try[M2Y], m_try[M2Z]);
+	/* Check special case of 5-motor table */
+	if ((ptbl->geom == tableGEOM_NEWPORT) && !(lnkStat[M2X].can_RW_drive)) {
+		; /* PivotPointVectorToMotor() calculated u[X_6] in local coordinate system */
+	} else {
+		u[X_6] = m[M2X] - m_try[M2X];
+	}
+	/* For Newport, we got u[Y_6] for free in MotorToLocalUserAngles(). */
+	if (ptbl->geom != tableGEOM_NEWPORT) u[Y_6] = m[M2Y] - m_try[M2Y];
+	if (!(lnkStat[M2Z].can_RW_drive)) {
+		; /* PivotPointVectorToMotor() calculated u[Z_6] in local coordinate system */
+	} else {
+		u[Z_6] = m[M2Z] - m_try[M2Z];
+	}
 
 	LocalToLab(ptbl, u, u);
 	/* subtract off user offsets */
 	for (i=0; i<6; i++) {u[i] -= ax0[i];}
 
 	if (tableRecordDebug > 25) {
-	    printf("MotorToUser: m[]=");
-		for (j=0;j<6;j++) printf("%f, ",m[j]);
-	    printf("\nMotorToUser: u[]=");
-		for (j=0;j<6;j++) printf("%f, ",u[j]);
+	    printf("MotorToUser: m[]="); for (j=0;j<6;j++) printf("%f, ",m[j]);
+	    printf("\nMotorToUser: u[]="); for (j=0;j<6;j++) printf("%f, ",u[j]);
 		printf("\n");
 	}
 }
 
 
+/*
+ * Go from (local-table) user coordinates to rotated, translated pivot-point
+ * vectors.
+ */
 static void 
-UserToPivotPointVector(tableRecord *ptbl, double *user, double *pp0,
+LocalUserToPivotPointVector(tableRecord *ptbl, double *u, double *pp0,
 	double *pp1, double *pp2)
 {
 	short i, j, k;
 	double *ppo0 = ptbl->ppo0, *ppo1 = ptbl->ppo1, *ppo2 = ptbl->ppo2;
-	double u[6];
-	double *ax0 = &ptbl->ax0, **a = ptbl->a;
+	double **a = ptbl->a, m2x, m2y;
+    struct private    *p = (struct private *)ptbl->dpvt;
+    struct linkStatus *lnkStat = p->lnkStat;
 
-	/* Get user coordinates into local coordinate system */
-	for (i=0; i<6; i++) {u[i] = user[i] + ax0[i];}
-	LabToLocal(ptbl, u, u);
-
+	Debug(5, "tableRecord(%s):LocalUserToPivotPointVector:entry\n", ptbl->name);
 	MakeRotationMatrix(ptbl, u);
 
 	/* transform */
@@ -1431,32 +1528,43 @@ UserToPivotPointVector(tableRecord *ptbl, double *user, double *pp0,
 }
 
 
+/*
+ * Calculate motor positions from rotated, translated pivot-point vectors (in
+ * local table coordinates).  Enforce constraints imposed by any missing motors.
+ */
 static void 
 PivotPointVectorToMotor(tableRecord *ptbl, double *pp0, double *pp1,
-	double *pp2, double *m)
+	double *pp2, double *m, double *u)
 {
 	double *ppo0 = ptbl->ppo0, *ppo1 = ptbl->ppo1, *ppo2 = ptbl->ppo2;
 	double norm[3], **a = ptbl->a;
+    struct private    *p = (struct private *)ptbl->dpvt;
+    struct linkStatus *lnkStat = p->lnkStat;
+
+	Debug(5, "tableRecord(%s):PivotPointVectorToMotor:entry\n", ptbl->name);
 
 	switch (ptbl->geom) {
 	case tableGEOM_SRI:
 	case tableGEOM_GEOCARS:
+	case tableGEOM_PNC:
 	default:
-		if (pp0) {
-			m[M0X] = pp0[X] - ppo0[X];
-			m[M0Y] = pp0[Y] - ppo0[Y];
-/*			m[M0Z] = pp0[Z] - ppo0[Z]; motion is free */
-		}
-		if (pp1) {
-/*			m[M1X] = pp1[X] - ppo1[X]; motion is free */
-			m[M1Y] = pp1[Y] - ppo1[Y];
-/*			m[M1Z] = pp1[Z] - ppo1[Z]; motion is free */
-		}
-		if (pp2) {
-			m[M2X] = pp2[X] - ppo2[X];
-			m[M2Y] = pp2[Y] - ppo2[Y];
+		m[M0X] = pp0[X] - ppo0[X];
+		m[M0Y] = pp0[Y] - ppo0[Y];
+/*		m[M0Z] = pp0[Z] - ppo0[Z]; motion is free */
+
+/*		m[M1X] = pp1[X] - ppo1[X]; motion is free */
+		m[M1Y] = pp1[Y] - ppo1[Y];
+/*		m[M1Z] = pp1[Z] - ppo1[Z]; motion is free */
+
+		m[M2X] = pp2[X] - ppo2[X];
+		m[M2Y] = pp2[Y] - ppo2[Y];
+		if (lnkStat[M2Z].can_RW_drive) {
 			m[M2Z] = pp2[Z] - ppo2[Z];
+		} else {
+			u[Z_6] = -(a[Z][X] * ppo2[X] + a[Z][Y] * ppo2[Y] + (a[Z][Z] - 1) * ppo2[Z]);
+			m[M2Z] = 0.0;
 		}
+
 		break;
 
 	case tableGEOM_NEWPORT:
@@ -1464,22 +1572,32 @@ PivotPointVectorToMotor(tableRecord *ptbl, double *pp0, double *pp1,
 		norm[X] = a[X][Y];	/* unit vector normal to table */
 		norm[Y] = a[Y][Y];
 		norm[Z] = a[Z][Y];
-		if (pp0) {
-			m[M0Y] = (pp0[Y] - ppo0[Y]) / norm[Y];
+
+		m[M0Y] = (pp0[Y] - ppo0[Y]) / norm[Y];
+		m[M1Y] = (pp1[Y] - ppo1[Y]) / norm[Y];
+		m[M2Y] = (pp2[Y] - ppo2[Y]) / norm[Y];
+
+/*		m[M0Z] = (pp0[Z] - ppo0[Z]) - norm[Z] * m[M0Y]; motion is free */
+/*		m[M1Z] = (pp1[Z] - ppo1[Z]) - norm[Z] * m[M1Y]; motion is free */
+		m[M2Z] = (pp2[Z] - ppo2[Z]) - norm[Z] * m[M2Y];
+
+		if (lnkStat[M2X].can_RW_drive) {
+			/* 6-motor table */
 			m[M0X] = (pp0[X] - ppo0[X]) - norm[X] * m[M0Y];
-/*			m[M0Z] = (pp0[Z] - ppo0[Z]) - norm[Z] * m[M0Y]; motion is free */
-		}
-		if (pp1) {
-			m[M1Y] = (pp1[Y] - ppo1[Y]) / norm[Y];
 /*			m[M1X] = (pp1[X] - ppo1[X]) - norm[X] * m[M1Y]; motion is free */
-/*			m[M1Z] = (pp1[Z] - ppo1[Z]) - norm[Z] * m[M1Y]; motion is free */
-		}
-		if (pp2) {
-			m[M2Y] = (pp2[Y] - ppo2[Y]) / norm[Y];
 			m[M2X] = (pp2[X] - ppo2[X]) - norm[X] * m[M2Y];
-			m[M2Z] = (pp2[Z] - ppo2[Z]) - norm[Z] * m[M2Y];
+		} else {
+			/* 5-motor table */
+			/* x (in local coordinate system) is constrained by the missing motor */
+			u[X_6] = -((a[X][X] - 1) * ppo2[X] + a[X][Y] * ppo2[Y] + a[X][Z] * ppo2[Z] - norm[X] * m[M2Y]);
+			m[M0X] = (a[X][X] - 1) * ppo0[X] + a[X][Y] * ppo0[Y] + a[X][Z] * ppo0[Z] -
+				norm[X] * m[M0Y] + u[X_6];
+/*			m[M1X] = (a[X][X] - 1) * ppo1[X] + a[X][Y] * ppo1[Y] + a[X][Z] * ppo1[Z] -
+				norm[X] * m[M1Y] + u[X_6]; free */
+			m[M2X] = 0.0;	/* no motor */
 		}
 		break;
+
 	}
 }
 
@@ -1487,8 +1605,17 @@ PivotPointVectorToMotor(tableRecord *ptbl, double *pp0, double *pp1,
 static void 
 UserToMotor(tableRecord *ptbl, double *user, double *m)
 {
-	UserToPivotPointVector(ptbl, user, ptbl->pp0, ptbl->pp1, ptbl->pp2);
-	PivotPointVectorToMotor(ptbl, ptbl->pp0, ptbl->pp1, ptbl->pp2, m);
+	double u[6];
+	double *ax0 = &ptbl->ax0;
+	int i;
+
+	Debug(5, "tableRecord(%s):UserToMotor:entry\n", ptbl->name);
+	/* Get user coordinates into local coordinate system */
+	for (i=0; i<6; i++) {u[i] = user[i] + ax0[i];}
+	LabToLocal(ptbl, u, u);
+
+	LocalUserToPivotPointVector(ptbl, u, ptbl->pp0, ptbl->pp1, ptbl->pp2);
+	PivotPointVectorToMotor(ptbl, ptbl->pp0, ptbl->pp1, ptbl->pp2, m, u);
 }
 
 
@@ -1506,6 +1633,12 @@ MakeRotationMatrix(tableRecord *ptbl, double *u)
 	a[0][0] = cy*cz;            a[0][1] = cy*sz;            a[0][2] = -sy;
 	a[1][0] = sx*sy*cz - cx*sz; a[1][1] = sx*sy*sz + cx*cz; a[1][2] = sx*cy;
 	a[2][0] = cx*sy*cz + sx*sz; a[2][1] = cx*sy*sz - sx*cz; a[2][2] = cx*cy;
+
+	if (tableRecordDebug >= 5) {
+		printf("    [%9.6f %9.6f %9.6f]\n", a[0][0], a[0][1], a[0][2]);
+		printf("a = [%9.6f %9.6f %9.6f]\n", a[1][0], a[1][1], a[1][2]);
+		printf("    [%9.6f %9.6f %9.6f]\n", a[2][0], a[2][1], a[2][2]);
+	}
 }
 
 
@@ -1604,7 +1737,7 @@ SortTrajectory(struct trajectory *t, int n)
 	}
 }
 
-
+/* From Numerical Recipes in C */
 #define NTRAJ 10
 static int
 polint(double *xa, double *ya, int n, double x, double *y, double *dy)
@@ -1655,7 +1788,7 @@ FindLimit(tableRecord *ptbl, struct trajectory *t, int n, double *userLimit)
     struct	linkStatus *lnkStat = p->lnkStat;
 
 	SortTrajectory(t, n);
-	if (tableRecordDebug >= 5) PrintTrajectory(t, n);
+	if (tableRecordDebug >= 10) PrintTrajectory(t, n);
 
 	/* Make sure a limit violation occurred */
 	for (i=0; i<n; i++) {if (t[i].lvio) break;}
@@ -1674,7 +1807,7 @@ FindLimit(tableRecord *ptbl, struct trajectory *t, int n, double *userLimit)
 		if (lnkStat[i].can_read_limits) {
 			for (j=0; j<n; j++) {motor[j] = t[j].motor[i];}
 			if ((hm[i] > motor[0]) != (hm[i] > motor[n-1])) {
-				if (tableRecordDebug >= 5)
+				if (tableRecordDebug >= 10)
 					printf("FindLimit:motor %d high limit was crossed\n", i);
 				/* At what user valuewas the motor limit hm[i] crossed? */
 				if (polint(&(motor[-1]), &(user[-1]), n, hm[i], &limit, &error)
@@ -1685,7 +1818,7 @@ FindLimit(tableRecord *ptbl, struct trajectory *t, int n, double *userLimit)
 				}
 			}
 			if ((lm[i] > motor[0]) != (lm[i] > motor[n-1])) {
-				if (tableRecordDebug >= 5)
+				if (tableRecordDebug >= 10)
 					printf("FindLimit:motor %d low limit was crossed\n", i);
 				/* At what user value was the motor limit lm[i] crossed? */
 				if (polint(&(motor[-1]), &(user[-1]), n, lm[i], &limit, &error)
@@ -1795,7 +1928,7 @@ CalcLocalUserLimits(tableRecord *ptbl)
 				ax[i] += delta;
 				UserToMotor(ptbl, ax, m0x);
 			}
-			if (tableRecordDebug >= 5) {
+			if (tableRecordDebug >= 10) {
 				printf("CalcLocalUserLimits: userCoord %d, limitCrossings=%d\n",
 					i, limitCrossings);
 			}
@@ -1866,37 +1999,37 @@ PrintValues(tableRecord *ptbl)
 	double	*p, **a;
 
 	p = ptbl->pp0;
-	printf("pp0 = [%8.3f %8.3f %8.3f]\n", p[X], p[Y], p[Z]);
+	printf("pp0 = [%9.6f %9.6f %9.6f]\n", p[X], p[Y], p[Z]);
 	p = ptbl->pp1;
-	printf("pp1 = [%8.3f %8.3f %8.3f]\n", p[X], p[Y], p[Z]);
+	printf("pp1 = [%9.6f %9.6f %9.6f]\n", p[X], p[Y], p[Z]);
 	p = ptbl->pp2;
-	printf("pp2 = [%8.3f %8.3f %8.3f]\n", p[X], p[Y], p[Z]);
+	printf("pp2 = [%9.6f %9.6f %9.6f]\n", p[X], p[Y], p[Z]);
 
 	p = &ptbl->m0x;
-	printf(" m = [%8.3f %8.3f %8.3f %8.3f %8.3f %8.3f]\n",
+	printf(" m = [%9.6f %9.6f %9.6f %9.6f %9.6f %9.6f]\n",
 		p[M0X], p[M0Y], p[M1Y], p[M2X], p[M2Y], p[M2Z]);
 
 	p = &ptbl->ax;
-	printf(" u = [%8.3f %8.3f %8.3f %8.3f %8.3f %8.3f]\n",
+	printf(" u = [%9.6f %9.6f %9.6f %9.6f %9.6f %9.6f]\n",
 		p[AX_6], p[AY_6], p[AZ_6], p[X_6], p[Y_6], p[Z_6]);
 
 	p = &ptbl->axl;
-	printf("ul = [%8.3f %8.3f %8.3f %8.3f %8.3f %8.3f]\n",
+	printf("ul = [%9.6f %9.6f %9.6f %9.6f %9.6f %9.6f]\n",
 		p[AX_6], p[AY_6], p[AZ_6], p[X_6], p[Y_6], p[Z_6]);
 
 	p = &ptbl->ax0;
-	printf("u0 = [%8.3f %8.3f %8.3f %8.3f %8.3f %8.3f]\n",
+	printf("u0 = [%9.6f %9.6f %9.6f %9.6f %9.6f %9.6f]\n",
 		p[AX_6], p[AY_6], p[AZ_6], p[X_6], p[Y_6], p[Z_6]);
 
 	a = ptbl->a;
-	printf("    [%8.3f %8.3f %8.3f]\n", a[0][0], a[0][1], a[0][2]);
-	printf("a = [%8.3f %8.3f %8.3f]\n", a[1][0], a[1][1], a[1][2]);
-	printf("    [%8.3f %8.3f %8.3f]\n", a[2][0], a[2][1], a[2][2]);
+	printf("    [%9.6f %9.6f %9.6f]\n", a[0][0], a[0][1], a[0][2]);
+	printf("a = [%9.6f %9.6f %9.6f]\n", a[1][0], a[1][1], a[1][2]);
+	printf("    [%9.6f %9.6f %9.6f]\n", a[2][0], a[2][1], a[2][2]);
 
 	a = ptbl->b;
-	printf("    [%8.3f %8.3f %8.3f]\n", a[0][0], a[0][1], a[0][2]);
-	printf("b = [%8.3f %8.3f %8.3f]\n", a[1][0], a[1][1], a[1][2]);
-	printf("    [%8.3f %8.3f %8.3f]\n", a[2][0], a[2][1], a[2][2]);
+	printf("    [%9.6f %9.6f %9.6f]\n", a[0][0], a[0][1], a[0][2]);
+	printf("b = [%9.6f %9.6f %9.6f]\n", a[1][0], a[1][1], a[1][2]);
+	printf("    [%9.6f %9.6f %9.6f]\n", a[2][0], a[2][1], a[2][2]);
 }
 
 
@@ -1907,11 +2040,15 @@ CalcUserLimits(tableRecord *ptbl)
 	double	*hu = &ptbl->hlax, *lu = &ptbl->llax;
 	double	*uhax = &ptbl->uhax, *ulax = &ptbl->ulax;
 	double	*ax0 = &ptbl->ax0;
+	int saveTableRecordDebug = tableRecordDebug;
 
-	if (tableRecordDebug) {
-		printf("CalcUserLimits:entry\n");
+	Debug(5, "tableRecord(%s):CalcUserLimits:entry\n", ptbl->name);
+	if (tableRecordDebug >= 10) {
 		PrintValues(ptbl);
+	} else {
+		tableRecordDebug=0;	/* CalcUserLimits produces too much output */
 	}
+
 	CalcLocalUserLimits(ptbl);
 	UserLimits_LocalToLab(ptbl);
 
@@ -1924,11 +2061,12 @@ CalcUserLimits(tableRecord *ptbl)
 		hu[i] -= ax0[i];
 		lu[i] -= ax0[i];
 	}
-	if (tableRecordDebug) {
+	if (tableRecordDebug > 10) {
 		printf("CalcUserLimits:done\n");
 		PrintValues(ptbl);
 	}
 
+	tableRecordDebug = saveTableRecordDebug;
 }
 
 
