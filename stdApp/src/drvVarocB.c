@@ -54,7 +54,6 @@
 
 #include <dbDefs.h>
 #include <drvSup.h>
-#include <module_types.h>
 #include <epicsExport.h>
 
 

@@ -105,7 +105,7 @@
  /**********************************************************************/
 
 #include	<vxWorks.h>
-#include        <vxLib.h>
+#include	<vxLib.h>
 #include	<sysLib.h>
 #include	<vme.h>
 #include	<types.h>
@@ -114,31 +114,30 @@
 #include	<intLib.h>
 #include	<string.h>
 #include	<math.h>
-#include        <iv.h>
-#include        <rebootLib.h>
+#include	<iv.h>
+#include	<rebootLib.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
 #include	<recGbl.h>
-#include        <recSup.h>
+#include	<recSup.h>
 #include	<devSup.h>
-#include	<module_types.h>
 #include	<link.h>
 
 #include	<epicsPrint.h>
-#include        <epicsExport.h>
+#include	<epicsExport.h>
 
-#include        <aoRecord.h>
-#include        <aiRecord.h>
-#include        <boRecord.h>
-#include        <biRecord.h>
-#include        <longinRecord.h>
-#include        <longoutRecord.h>
-#include        <mbboRecord.h>
-#include        <mbbiRecord.h>
+#include	<aoRecord.h>
+#include	<aiRecord.h>
+#include	<boRecord.h>
+#include	<biRecord.h>
+#include	<longinRecord.h>
+#include	<longoutRecord.h>
+#include	<mbboRecord.h>
+#include	<mbbiRecord.h>
 
-#include        <dbScan.h>
+#include	<dbScan.h>
 
 #define ERROR (-1)
 
@@ -274,7 +273,7 @@ int	      iLevel;
   }
 
   if(a32base >= MAX_A32_ADDRESS) {
-      epicsPrintf("devA32VmeConfig: Invalid Card Address %d \n",a32base);
+      epicsPrintf("devA32VmeConfig: Invalid Card Address %ld \n",a32base);
       return(ERROR);
   }
 

@@ -41,7 +41,7 @@
 #include	<types.h>
 #include	<stdioLib.h>
 #include	<string.h>
-#include        <ctype.h>
+#include	<ctype.h>
 
 #include	<stdlib.h>
 
@@ -49,11 +49,10 @@
 #include	<cvtTable.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
-#include        <recSup.h>
-#include        <recGbl.h>
+#include	<recSup.h>
+#include	<recGbl.h>
 #include	<devSup.h>
 #include	<link.h>
-#include	<module_types.h>
 #include	<epicsExport.h>
 #include	<aiRecord.h>
 
@@ -71,7 +70,7 @@ typedef struct {
 	DEVSUPFUN	report;
 	DEVSUPFUN	init;
 	DEVSUPFUN	init_record;
-        DEVSUPFUN       get_ioint_info;
+	DEVSUPFUN	get_ioint_info;
 	DEVSUPFUN	read_ai;
 	DEVSUPFUN	special_linconv;
 } devAiVaroc_dset;

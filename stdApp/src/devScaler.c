@@ -53,7 +53,6 @@ typedef unsigned short uint16;
 #include	<stdioLib.h>
 #include	<iv.h>
 #include	<wdLib.h>
-#include	<module_types.h>
 #include	<rebootLib.h>
 #endif
 

@@ -63,7 +63,6 @@ std_SRCS_vxWorks += drvIK320.c
 std_SRCS_vxWorks += drvIK320ErrStat.c
 std_SRCS_vxWorks += aiCvtDouble.c
 
-#std_SRCS_vxWorks  += module_types.c
 std_SRCS  += scalerRecord.c
 std_SRCS_vxWorks  += devScaler.c
 std_SRCS += sscanRecord.c

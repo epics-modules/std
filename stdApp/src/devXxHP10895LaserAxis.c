@@ -115,7 +115,6 @@
 #include	<dbAccess.h>
 #include	<recSup.h>
 #include	<devSup.h>
-#include	<module_types.h>
 #include	<link.h>
 #include	<epicsMutex.h>
 

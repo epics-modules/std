@@ -48,26 +48,25 @@
 #include	<vme.h>
 #include	<intLib.h>
 #include	<string.h>
-#include        <iv.h>
-#include        <sysLib.h>
-#include        <vxLib.h>
+#include	<iv.h>
+#include	<sysLib.h>
+#include	<vxLib.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
-#include        <recSup.h>
-#include        <recGbl.h>
+#include	<recSup.h>
+#include	<recGbl.h>
 #include	<devSup.h>
-#include	<module_types.h>
 #include	<link.h>
 #include	<epicsMutex.h>
 
-#include        <boRecord.h>
-#include        <biRecord.h>
-#include        <mbboRecord.h>
-#include        <mbbiRecord.h>
+#include	<boRecord.h>
+#include	<biRecord.h>
+#include	<mbboRecord.h>
+#include	<mbbiRecord.h>
 
-#include        <dbScan.h>
+#include	<dbScan.h>
 
 #define STATIC static
 

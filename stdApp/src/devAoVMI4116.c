@@ -47,7 +47,6 @@
 #include    <recGbl.h>
 #include	<devSup.h>
 #include	<special.h>
-#include	<module_types.h>
 #include	<aoRecord.h>
 
 static long vmi4116_num_cards = 1;
