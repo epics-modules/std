@@ -27,6 +27,7 @@
 #include <cantProceed.h>
 #include <alarm.h>
 #include <asynDriver.h>
+#include <asynDrvUser.h>
 #include <asynFloat64.h>
 #include <asynFloat64Callback.h>
 
@@ -51,16 +52,22 @@ typedef struct {
     double callbackInterval;
     double timePerPointRequested;
     double timePerPointActual;
-    asynFloat64Callback *pinput;
-    void *inputPvt;
+    asynFloat64 *pfloat64Input;
+    void *float64InputPvt;
+    asynFloat64Callback *pfloat64Callback;
+    void *float64CallbackPvt;
+    asynDrvUser *pdrvUser;
+    void *drvUserPvt;
+    asynFloat64 *pfloat64Output;
+    void *float64OutputPvt;
     int inputChannel;
     char *inputName;
-    asynFloat64 *poutput;
-    void *outputPvt;
     int outputChannel;
     char *outputName;
-    asynUser *pinputAsynUser;
-    asynUser *poutputAsynUser;
+    asynUser *pcallbackDataAsynUser;
+    asynUser *pcallbackIntervalAsynUser;
+    asynUser *pfloat64InputAsynUser;
+    asynUser *pfloat64OutputAsynUser;
     double averageStore;
     int numAverage;
     int accumulated;
@@ -105,6 +112,8 @@ static long init_record(epidRecord *pepid)
     epidFastPvt *pPvt;
     char *tok_save;
     char *p;
+    char *drvUserName;
+    size_t drvUserSize;
     char temp[100];
 
     pPvt = callocMustSucceed(1, sizeof(*pPvt), "devEpidFast::init_record");
@@ -132,7 +141,7 @@ static long init_record(epidRecord *pepid)
     pPvt->mutexId = epicsMutexCreate();
 
     pasynUser = pasynManager->createAsynUser(0, 0);
-    pPvt->pinputAsynUser = pasynUser;
+    pPvt->pcallbackDataAsynUser = pasynUser;
     status = pasynManager->connectDevice(pasynUser, pPvt->inputName, 
                                          pPvt->inputChannel);
     if (status != asynSuccess) {
@@ -149,11 +158,24 @@ static long init_record(epidRecord *pepid)
                      pasynUser->errorMessage);
         goto bad;
     }
-    pPvt->pinput = (asynFloat64Callback *)pasynInterface->pinterface;
-    pPvt->inputPvt = pasynInterface->drvPvt;
+    pPvt->pfloat64Callback = (asynFloat64Callback *) pasynInterface->pinterface;
+    pPvt->float64InputPvt = pasynInterface->drvPvt;
+
+    pPvt->pcallbackIntervalAsynUser = pasynManager->duplicateAsynUser(
+                                           pPvt->pcallbackDataAsynUser, 0, 0);
+    pasynInterface = pasynManager->findInterface(pasynUser,
+                                                 asynDrvUserType, 1);
+    if (!pasynInterface) {
+        errlogPrintf("devEpidFast::init_record, cannot find "
+                     "asynDrvUser interface %s\n",
+                     pasynUser->errorMessage);
+        goto bad;
+    }
+    pPvt->pdrvUser = (asynDrvUser *)pasynInterface->pinterface;
+    pPvt->drvUserPvt = pasynInterface->drvPvt;
 
     pasynUser = pasynManager->createAsynUser(0, 0);
-    pPvt->poutputAsynUser = pasynUser;
+    pPvt->pfloat64OutputAsynUser = pasynUser;
     status = pasynManager->connectDevice(pasynUser, pPvt->outputName, 
                                          pPvt->outputChannel);
     if (status != asynSuccess) {
@@ -170,13 +192,34 @@ static long init_record(epidRecord *pepid)
                      pasynUser->errorMessage);
         goto bad;
     }
-    pPvt->poutput = (asynFloat64 *)pasynInterface->pinterface;
-    pPvt->outputPvt = pasynInterface->drvPvt;
+    pPvt->pfloat64Output = (asynFloat64 *)pasynInterface->pinterface;
+    pPvt->float64OutputPvt = pasynInterface->drvPvt;
 
-    pPvt->pinput->registerCallbacks(pPvt->inputPvt, pPvt->pinputAsynUser,
-                                   dataCallback, intervalCallback, pPvt);
-    pPvt->callbackInterval = pPvt->pinput->getCallbackInterval(pPvt->inputPvt,
-                                                 pPvt->pinputAsynUser);
+    pPvt->pdrvUser->create(pPvt->drvUserPvt, pPvt->pcallbackDataAsynUser, 
+                           "data", drvUserName, &drvUserSize);
+    if (!drvUserSize) {
+        errlogPrintf("devEpidFast::init_record, asynDrvUser->create "
+                     "failed for data %s\n",
+                     pPvt->pcallbackDataAsynUser->errorMessage);
+        goto bad;
+    }
+    pPvt->pfloat64Callback->registerCallback(pPvt->float64CallbackPvt, 
+                                             pPvt->pcallbackDataAsynUser,
+                                             dataCallback, pPvt);
+    pPvt->pdrvUser->create(pPvt->drvUserPvt, pPvt->pcallbackIntervalAsynUser, 
+                           "interval", &drvUserName, &drvUserSize);
+    if (!drvUserSize) {
+        errlogPrintf("devEpidFast::init_record, asynDrvUser->create "
+                     "failed for interval %s\n",
+                     pPvt->pcallbackIntervalAsynUser->errorMessage);
+        goto bad;
+    }
+    pPvt->pfloat64Callback->registerCallback(pPvt->float64CallbackPvt, 
+                                             pPvt->pcallbackDataAsynUser,
+                                             intervalCallback, pPvt);
+    status = pPvt->pfloat64Input->read(pPvt->float64InputPvt,
+                                       pPvt->pfloat64InputAsynUser,
+                                       &pPvt->callbackInterval);
     update_params(pepid);
     return(0);
 bad:
@@ -215,7 +258,7 @@ static long update_params(epidRecord *pepid)
     pPvt->setPoint = pepid->val;
     epicsMutexUnlock(pPvt->mutexId);
 
-    asynPrint(pPvt->pinputAsynUser, ASYN_TRACEIO_DEVICE,
+    asynPrint(pPvt->pcallbackDataAsynUser, ASYN_TRACEIO_DEVICE,
               "devEpidFast::update_params, record=%s\n "
               "    feedback state %d, previous feedback state %d\n"
               "    cval=%f, err=%f, oval=%f,\n" 
@@ -320,8 +363,9 @@ static void do_PID(epidFastPvt *pPvt, double readBack)
     dI = pPvt->KP*pPvt->KI*pPvt->error*dt;
     if (pPvt->feedbackOn) {
         if (!pPvt->prevFeedbackOn) {
-            pPvt->poutput->read(pPvt->outputPvt, pPvt->poutputAsynUser,
-                                &pPvt->I);
+            pPvt->pfloat64Output->read(pPvt->float64OutputPvt, 
+                                       pPvt->pfloat64OutputAsynUser,
+                                       &pPvt->I);
         } else {
             if (((pPvt->output > pPvt->lowLimit) &&
                  (pPvt->output < pPvt->highLimit)) ||
@@ -345,8 +389,9 @@ static void do_PID(epidFastPvt *pPvt, double readBack)
 
     /* If feedback is on write output */
     if (pPvt->feedbackOn) {
-        pPvt->poutput->write(pPvt->outputPvt, pPvt->poutputAsynUser,
-                             pPvt->output);
+        pPvt->pfloat64Output->write(pPvt->float64OutputPvt, 
+                                    pPvt->pfloat64OutputAsynUser,
+                                    pPvt->output);
     }
     /* Save state of feedback */
     pPvt->prevFeedbackOn = pPvt->feedbackOn;
