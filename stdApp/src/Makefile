@@ -41,6 +41,7 @@ DBD += std.dbd
 DBD += stdVX.dbd
 DBD += stdSupport.dbd
 DBD += stdVXSupport.dbd
+DBD += vxStats.dbd
 DBD += shareBase.dbd
 
 #=============================
