@@ -16,9 +16,8 @@ include $(TOP)/configure/CONFIG
 #----------------------------------------------------
 # Create and install (or just install)
 # databases, templates, substitutions like this
-#DB += dbExample1.db
-#DB += dbExample2.db
-#DB += dbSubExample.db
+DB += softMotor.db
+DB += scanParms.db
 
 #----------------------------------------------------
 # Declare template files which do not show up in DB
