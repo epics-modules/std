@@ -617,7 +617,8 @@ static void checkLinks(sseqRecord *pR)
 		if (sseqRecDebug >= 10)
 			printf("sseq:checkLinks(%s): checking link %d\n", pR->name, i);
 		plinkGroup->dol_field_type = DBF_unknown;
-		if (plinkGroup->dol.value.pv_link.pvname[0]) {
+		if (plinkGroup->dol.value.pv_link.pvname &&
+		    plinkGroup->dol.value.pv_link.pvname[0]) {
 			plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
 			if (plinkGroup->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 			if (sseqRecDebug>=10) {
@@ -629,7 +630,8 @@ static void checkLinks(sseqRecord *pR)
 			}
 		}
 		plinkGroup->lnk_field_type = DBF_unknown;
-		if (plinkGroup->lnk.value.pv_link.pvname[0]) {
+		if (plinkGroup->lnk.value.pv_link.pvname &&
+		    plinkGroup->lnk.value.pv_link.pvname[0]) {
 			plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
 			if (plinkGroup->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 			if (plinkGroup->usePutCallback && (plinkGroup->lnk.type != CA_LINK))
