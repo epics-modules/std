@@ -1,31 +1,49 @@
-autoSaveRestore  --  save_restore.c v3.3; dbrestore.c v3.3
+autoSaveRestore  --  save_restore.c v3.5; dbrestore.c v3.5
 
-This software automatically saves the values of EPICS process variables
-(PVs), to files on a server, and can automatically restore those values
-when the VME crate is rebooted.  The original author is Bob Dalesio; I
-made some improvements; Frank Lenkszus made some more improvements,
-which I folded into the version I've been maintaining.  A bunch of
-people contributed to getting the software running on PPC hardware,
-including Ron Sluiter, Andrew Johnson, and Pete Jemian (APS), Markus
-Janousch and David Maden (SLS), and I'm not sure who else.
+This software automatically saves the values of EPICS process variables (PVs),
+to files on a server, and can automatically restore those values when the VME
+crate is rebooted.  The original author is Bob Dalesio; I made some
+improvements; Frank Lenkszus made some more improvements, which I folded into
+the version I've been maintaining.  A bunch of people contributed to getting
+the software running on PPC hardware, including Ron Sluiter, Andrew Johnson,
+and Pete Jemian (APS), Markus Janousch and David Maden (SLS), and I'm not sure
+who else.
 
-autoSaveRestore is a collection of files, and a rather ungainly name.
-In  this documentation, I'll use 'autosave' for short.  'save_restore'
-is one part of autosave; it is the task that actually does the parameter
-saving.  'reboot_restore' is the name of the function that restores
-parameter values during reboot.
+autoSaveRestore is a collection of files, and a rather ungainly name. In  this
+documentation, I'll use 'autosave' for short.  'save_restore' is one part of
+autosave; it is the task that actually does the parameter saving. 
+'reboot_restore' is the name of the function that restores parameter values
+during reboot.
 
-In versions earlier than 3.3, autosave's job was simply to save
-parameters through a reboot.  The file server to which save files were
-written was assumed competent to protect those files, and when the
-server said a save file was safe, autosave believed it.  Beginning with
-3.3, the file server is viewed as the enemy: autosave expects it to lie
-about file status, to suddenly stop recognizing previously valid file
-handles, and to return error codes that don't make sense.  Autosave
-can now defend its NFS mount against a server reboot, defend parameter
-values against a server power failure, and attempts to defend against a
-user messing around with the directory into which save files are being
-written.
+v3.5 highlights
+---------------
+Beginning with version 3.5, arrays can be saved and restored much as scalar
+PV's.  Arrays are read and written using run-time database access (scalar PV's
+are read using channel access and (usually) written using static database
+access), which implies that they can only be written during pass 1 of the
+restore, and that you cannot save the value of a non-local array PV.
+
+Beginning with v3.5, scalar PV's which have type DBF_NOACCESS in the .dbd file,
+and are set to some other DBF type during record initialization, can be
+restored in pass 1.  (Some fields of the genSub record behave in this way, and
+previous versions of save_restore could not handle them.)
+
+Prior to v3.5, PV's were listed 'backwards' in the save file -- i.e., the first
+PV in the request file became the last PV in the save file.  Now, both files
+have the same ordering.
+
+v3.3 highlights
+---------------
+In versions earlier than 3.3, autosave's job was simply to save parameters
+through a reboot.  The file server to which save files were written was assumed
+competent to protect those files, and when the server said a save file was
+safe, autosave believed it.  Beginning with 3.3, the file server is viewed as
+the enemy: autosave expects it to lie about file status, to suddenly stop
+recognizing previously valid file handles, and to return error codes that don't
+make sense.  Autosave can now defend its NFS mount against a server reboot,
+defend parameter values against a server power failure, and attempts to defend
+against a user messing around with the directory into which save files are
+being written.
 
 Autosave now allows you to change, at run time, the directory and/or
 the server to which save files are written.  Here's an example:
@@ -81,11 +99,81 @@ save_restoreStatus.db  -- database containing records autosave uses to report
 Differences from previous versions
 ==================================
 
+v3.5
+----
+Sometime in the past, I made fdbrestore() and fdbrestoreX() unavailable to
+console users by making them macros.  This is fixed.
+
+
 save_restore v3.3; dbrestore v3.3:
 ----------------------------------
 Several variables and user-callable functions have been renamed, as
 their meanings have changed.  In preparation for 3.14, most
 user-settable variables can now be set by a function call.
+Here's a list of variables and functions added, deleted, or changed:
+
+OLD                                   NEW
+----------------------------------------------------------------------
+sr_restore_incomplete_save_sets_ok -> save_restoreIncompleteSaveSetsOk
+sr_save_incomplete_sets_ok         -> save_restoreIncompleteSaveSetsOk
+sr_restore_incomplete_sets_ok      -> save_restoreIncompleteSaveSetsOk
+<no comparable function>           -> save_restoreSet_IncompleteSetsOk(value)
+
+reboot_restoreDebug                -> save_restoreDebug
+<no comparable function>           -> save_restoreSet_Debug(value)
+
+reboot_restoreDatedBu              -> save_restoreDatedBackupFiles
+<no comparable function>           -> save_restoreSet_DatedBackupFiles(value)
+
+<no comparable variable>           -> save_restoreNumSeqFiles
+<no comparable function>           -> save_restoreSet_NumSeqFiles(value)
+<no comparable variable>           -> save_restoreSeqPeriodInSeconds
+<no comparable function>           -> save_restoreSet_SeqPeriodInSeconds(value)
+	NOTE: if save_restoreNumSeqFiles > 0, redundant .sav files will be
+	written every save_restoreSeqPeriodInSeconds seconds
+
+<no comparable function>           -> dbrestoreShow()
+fdblist()                          -> save_restoreShow(verbose)
+	NOTE: save_restoreShow() calls dbrestoreShow()
+
+save_restore_test_fopen            -> <no comparable variable>
+	NOTE: test is no longer done
+
+create_periodic_set(file,period)   -> create_periodic_set(file,period,macro)
+create_triggered_set(file,trigPV)  -> create_triggered_set(file,trigPV,macro)
+create_monitor_set(file,period)    -> create_monitor_set(file,period,macro)
+create_manual_set(file)            -> create_manual_set(file,macro)
+reload_periodic_set(file,period)   -> reload_periodic_set(file,period,macro)
+reload_triggered_set(file,trigPV)  -> reload_triggered_set(file,trigPV,macro)
+reload_monitor_set(file,period)    -> reload_monitor_set(file,period,macro)
+reload_manual_set(file)            -> reload_manual_set(file,macro)
+	NOTE: macro string is optional and supplements any macro strings defined
+	in request files.  You can only reload one set at a time; you must wait
+	for a reload to complete before starting another one.
+
+	*************************************************************************
+	NOTE: IN VERSIONS EARLIER THAN 2.7, PERIODS WERE SPECIFIED USING FLOATING
+	POINT NUMBERS.  THEY ARE NOW SPECIFIED AS INTEGERS (IN SECONDS).
+	*************************************************************************
+	
+set_savefile_path(path)            -> set_savefile_path(path,pathsub)
+set_requestfile_path(path)         -> set_requestfile_path(path,pathsub)
+	NOTE: if pathsub is specified, it is appended to path.
+
+<no comparable function>           -> save_restoreSet_status_prefix(value)
+	NOTE: save_restore expects PV's with which it can display its status.
+	Status PV's are request-file specific; the supplied database contains
+	PV's for auto_positions.req and auto_settings.req only.  If you use
+	other request files, you can add your own PV's.  It's OK if the PV's
+	don't exist.
+
+<no comparable function>           -> save_restoreSet_NFSHost(host,IPaddress)
+<no comparable variable>           -> save_restoreRemountThreshold
+	NOTE: If save_restore is managing its own NFS mount (i.e., if calls to
+	save_restoreSet_NFSHost() and set_savefile_path() succeeded) it will
+	dismount and remount after save_restoreRemountThreshold consecutive
+	I/O errors (e.g. to fix a stale file handle).
+----------------------------------------------------------------------
 
 Autosave now maintains status PV's for each PV list, and rolled-up
 status PV's for overall save status and reboot status.
@@ -121,10 +209,13 @@ some were setup by whatever task called create_XXX_set().
 
 Previously, if a save-file write failed, it would not be retried until
 the normal conditions (e.g., a PV's value changed) were again met.
-Now, if enough I/O errors have accumulated to cause an NFS remount, all
-save sets in failure are written immediately after the remount succeeds.
+Now, if autosave is managing its own NFS mount, and enough I/O errors
+have accumulated to cause an NFS remount, all save sets in failure are
+written immediately after the remount succeeds.
 
-Some ca_pend timeouts adjusted or limited.
+Some ca_pend timeouts adjusted or limited.  Previous timeouts were
+inappropriate if many thousands of PV's were specified in a request
+file.
 
 Save files now contain the time at which they were written, in the
 format of fGetDateStr() -- yy/mm/dd-hh/mm/ss.
@@ -665,4 +756,4 @@ create_monitor_set("auto_settings.req", 30, "P=xxx:")
 
 
 Tim Mooney
-8/27/03
+4/14/04
