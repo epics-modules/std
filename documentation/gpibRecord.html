@@ -240,7 +240,7 @@ field is valid for both "ASCII" and "Binary" input formats.</TD>
 <TD>INP</TD>  <TD>R</TD> <TD>"Input Specification"</TD>
 <TD>DBF_INLINK</TD>
 <TD>The input link specification.  This field is used to select the GPIB device
-type (National Instruments, HiDEOS, Bitbus), link number, and GPIB address.
+type (National Instruments, MPF), link number, and GPIB address.
 The initial GPIB address can be specified either in the INP field or
 the ADDR field, with the ADDR field taking precedence 
 if both are non-zero.</TD>
@@ -438,12 +438,11 @@ RECTYPES += gpibRecord.h
 <TR VALIGN=TOP>
 <TD>xxxAppInclude.dbd</TD>
 <TD>This file is not included in the distribution.  However, the user must edit
-this file and add the following lines:
+this file and add the following line:
 <PRE>
 include "gpibRecord.dbd"
 
 device(gpib,GPIB_IO,devGPIB,"GPIB (NI or HIDEOS)")
-device(gpib,BBGPIB_IO,devGPIB,"GPIB (BitBusS)")
 </PRE></TD>
 </TR>
 
