@@ -2,6 +2,10 @@ menu(epidFeedbackState) {
         choice(epidFeedbackState_Off,"Off")
         choice(epidFeedbackState_On, "On")
 }
+menu(epidFeedbackMode) {
+        choice(epidFeedbackMode_PID,"PID")
+        choice(epidFeedbackMode_MaxMin, "Max/Min")
+}
 
 recordtype(epid) {
 	include "dbCommon.dbd" 
@@ -58,8 +62,20 @@ recordtype(epid) {
 		promptgroup(GUI_PID)
 		interest(1)
 	}
+	field(FMOD,DBF_MENU) {
+		prompt("Feedback Mode")
+		promptgroup(GUI_PID)
+		interest(1)
+		menu(epidFeedbackMode)
+	}
 	field(FBON,DBF_MENU) {
 		prompt("Feedback On/Off")
+		promptgroup(GUI_PID)
+		interest(1)
+		menu(epidFeedbackState)
+	}
+	field(FBOP,DBF_MENU) {
+		prompt("Prev. feedback On/Off")
 		promptgroup(GUI_PID)
 		interest(1)
 		menu(epidFeedbackState)

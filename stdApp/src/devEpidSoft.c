@@ -7,10 +7,23 @@
  *
  * Modification Log:
  * -----------------
- * .01  11-10-99        mlr     Split this code into a seperate device support
-                                module, so that the epid record can be used to
-                                communicate with hardware or fast software for
-                                higher performance applications.
+ * 11-10-99 MLR    Split this code into a seperate device support
+                   module, so that the epid record can be used to
+                   communicate with hardware or fast software for
+                   higher performance applications.
+    05/03/00  MLR  Added more sanity checks to integral term:
+                   If KI is 0. then set I to DRVL if KP is greater than 0,
+                   set I to DRVH is KP is less than 0.
+                   If feedback is off don't change integral term.
+    06/13/00  MLR  Added another refinement to integral term.  When feedback
+                   is changed from OFF to ON set the integral term to the
+                   current value of the output PV.
+    05/19/01  MLR  Added new algorithm, MaxMin, selected by the new record field
+                   FMOD.  MaxMin tries to maximize or minimize the control variable
+                   using, at present an extremely simple algorithm.  It simply does
+                   M(n) = M(n-1) - KP * (E(n) - E(n-1))/dT(n), where E(n) is defined
+                   as the readback value itself.  This algorithm will seek a maximum
+                   if KP is positive and a minimum if KP is negative.
  */
 
 
@@ -72,18 +85,22 @@ static long do_pid(epidRecord *pepid)
     unsigned long   ctp;    /*clock ticks previous  */
     unsigned long   ct;     /*clock ticks       */
     float           cval;   /*actual value      */
+    float           pcval;  /*previous value of cval */
     float           setp;   /*setpoint          */
     float           dt;     /*delta time (seconds)  */
     float       kp,ki,kd;   /*gains        */
     float           di;     /*change in integral term */
-    float           e;      /*error         */
+    float           e=0.;   /*error         */
     float           ep;     /*previous error    */
     float           de;     /*change in error   */
     float           oval;   /*new value of manip variable */
     float           p;      /*proportional contribution*/
     float           i;      /*integral contribution*/
     float           d;      /*derivative contribution*/
+    float         sign;
 
+    pcval = pepid->cval;
+    
     /* fetch the controlled value */
     if (pepid->inp.type == CONSTANT) { /* nothing to control*/
         if (recGblSetSevr(pepid,SOFT_ALARM,INVALID_ALARM)) return(0);
@@ -94,7 +111,7 @@ static long do_pid(epidRecord *pepid)
     }
     
     setp = pepid->val;
-    cval = pepid->cval;
+    cval = pepid->cval;  /* New value of cval */
     
     /* compute time difference and make sure it is large enough*/
     ctp = pepid->ct;
@@ -117,28 +134,79 @@ static long do_pid(epidRecord *pepid)
     kd = pepid->kd;
     ep = pepid->err;
     oval = pepid->oval;
+    p = pepid->p;
     i = pepid->i;
-    e = setp - cval;
-    de = e - ep;
-    p = kp*e;
-    /* Sanity checks on integral term:
-     * 1) Don't increase I if output >= DRVH
-     * 2) Don't decrease I if output <= DRVL
-     * 3) Limit the integral term to be in the range between DRLV and DRVH
-     * 4) If KI is zero then set the sum to zero, to allow easily turning
-     *    off the integral term for PID tuning.
-     */
-    di = kp*ki*e*dt;
-    if (((oval > pepid->drvl) && (oval < pepid->drvh)) ||
-        ((oval >= pepid->drvh) && ( di < 0.)) ||
-        ((oval <= pepid->drvl)  && ( di > 0.))) {
-        i = i + di;
-        if (i < pepid->drvl) i = pepid->drvl;
-        if (i > pepid->drvh) i = pepid->drvh;
+    d = pepid->d;
+
+    switch (pepid->fmod) {
+       case epidFeedbackMode_PID:
+          e = setp - cval;
+          de = e - ep;
+          p = kp*e;
+          /* Sanity checks on integral term:
+             * 1) Don't increase I if output >= highLimit
+             * 2) Don't decrease I if output <= lowLimit
+             * 3) Don't change I if feedback is off
+             * 4) Limit the integral term to be in the range betweem DRLV and DRVH
+             * 5) If KI is zero then set the sum to DRVL (if KI is positive), or
+             *    DRVH (if KP is negative) to allow easily turning off the 
+             *    integral term for PID tuning.
+             */
+             di = kp*ki*e*dt;
+          if (pepid->fbon) {
+             if (!pepid->fbop) {
+                /* Feedback just made transition from off to on.  Set the integral
+                   term to the current value of the controlled variable */
+                if (pepid->outl.type != CONSTANT) {
+                   if (dbGetLink(&pepid->outl,DBR_FLOAT,&i,0,0)) {
+                      recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
+                  }
+               }
+            } else {
+                if (((oval > pepid->drvl) && (oval < pepid->drvh)) ||
+                   ((oval >= pepid->drvh) && ( di < 0.)) ||
+                   ((oval <= pepid->drvl)  && ( di > 0.))) {
+                   i = i + di;
+                   if (i < pepid->drvl) i = pepid->drvl;
+                   if (i > pepid->drvh) i = pepid->drvh;
+               }
+            }
+         }
+          if (ki == 0) {
+             if (kp > 0.) i = pepid->drvl; else i = pepid->drvh;
+         }
+          if(dt>0.0) d = kp*kd*(de/dt); else d = 0.0;
+          oval = p + i + d;
+          break;
+
+       case epidFeedbackMode_MaxMin:
+          /* For now we don't scale to dt, worry about that later */
+          if (pepid->fbon) {
+             if (!pepid->fbop) {
+                /* Feedback just made transition from off to on.  Set the output
+                   to the current value of the controlled variable */
+                if (pepid->outl.type != CONSTANT) {
+                   if (dbGetLink(&pepid->outl,DBR_FLOAT,&oval,0,0)) {
+                      recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
+                   }
+                }
+             } else {
+                e = cval - pcval;
+                if (d > 0.) sign=1.; else sign=-1.;
+                if ((kp > 0.) && (e < 0.)) sign = -sign;
+                if ((kp < 0.) && (e > 0.)) sign = -sign;
+                d = kp * sign;
+                oval = pepid->oval + d;
+             }
+          }
+          break;
+          
+       default:
+          epicsPrintf("Invalid feedback mode in EPID\n");
+          break;
     }
-    if (ki == 0) i = 0;
-    if(dt>0.0) d = kp*kd*(de/dt); else d = 0.0;
-    oval = p + i + d;
+          
+          
     /* Limit output to range from DRLV to DRVH */
     if (oval > pepid->drvh) oval = pepid->drvh;
     if (oval < pepid->drvl) oval = pepid->drvl;
@@ -151,6 +219,7 @@ static long do_pid(epidRecord *pepid)
     pepid->p  = p;
     pepid->i  = i;
     pepid->d  = d;
+    pepid->fbop = pepid->fbon;
     
     /* If feedback is on, and output link is a PV_LINK then write the 
      * output link */

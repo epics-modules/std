@@ -59,6 +59,9 @@
                                 Changed the algorithm in devEpidSoft so that
                                 KI and KD are defined as repeats per second 
                                 rather than repeats per minute.
+ * .15  05-19-01        mlr     Added Feedback Mode (FMOD) field.  Current choices
+                                are PID and MaxMin.  These are used by device support
+                                in implementing algorithms.
  */
 
 #include    <vxWorks.h>
