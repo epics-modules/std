@@ -197,9 +197,14 @@
  * 5.15 10-01-01  tmm   Looking for PPC problems involving floating-point exceptions.  Try to
  *                      allow npts == 1, for fly scans.  Fix ppvn pointer problems.  If PV name
  *                      is all whitespace, reset it to an empty string.
+ * 5.16 03-15-02  tmm   Add CMND==5 to clear positioner PV's without changing anything else.
+ * 5.17 10-17-02  tmm   ACQM (acquisition mode) used to specify scalar/arrays and normal/accumulate.
+ *                      This meant that arrays could not accumulate from scan to scan.  Not good, so
+ *                      a new field ACQT specifies scalar/array.  Improved move-to-peak and related
+ *                      algorithms.
  */
 
-#define VERSION 5.15
+#define VERSION 5.17
 
 
 
@@ -306,11 +311,12 @@
 #define A_BUFFER        0
 #define B_BUFFER        1
 
-#define CLEAR_MSG           0
-#define CHECK_LIMITS        1
-#define PREVIEW_SCAN        2	/* Preview the SCAN positions */
-#define CLEAR_RECORD        3	/* Clear PV's, frzFlags, modes, abs/rel, etc */
-#define CLEAR_POSITIONERS   4	/* Clear positioner PV's, frzFlags, modes, abs/rel, etc */
+#define CLEAR_MSG           	0
+#define CHECK_LIMITS        	1
+#define PREVIEW_SCAN        	2	/* Preview the SCAN positions */
+#define CLEAR_RECORD        	3	/* Clear PV's, frzFlags, modes, abs/rel, etc */
+#define CLEAR_POSITIONERS   	4	/* Clear positioner PV's, frzFlags, modes, abs/rel, etc */
+#define CLEAR_POSITIONER_PVS	5	/* Clear positioner PV's */
 
 #define DBE_VAL_LOG     (DBE_VALUE | DBE_LOG)
 
@@ -477,6 +483,7 @@ typedef struct recPvtStruct {
 	short           onTheFly;
 	short           flying;
 	float          *nullArray;
+	float          *nullArray2;
 	unsigned long   tickStart;			/* used to time the scan */
 	char            movPos[NUM_POS];	/* used to indicate
 						 * interactive move */
@@ -652,6 +659,7 @@ init_record(sscanRecord *psscan, int pass)
 		/* For now, just point other detectors to a NULL array */
 
 		precPvt->nullArray = (float *) calloc(psscan->mpts, sizeof(float));
+		precPvt->nullArray2 = (float *) calloc(psscan->mpts, sizeof(float));
 		pDet = (detFields *) & psscan->d01hr;
 		for (i = 0; i < NUM_DET; i++, pDet++) {
 			puserPvt = (recDynLinkPvt *) precPvt->caLinkStruct[D1_IN + i].puserPvt;
@@ -1122,10 +1130,12 @@ special(struct dbAddr *paddr, int after)
 				psscan->p4ar = 0; POST(&psscan->p4ar);
 				psscan->pasm = 0; POST(&psscan->pasm);
 				psscan->ffo = 0; POST(&psscan->ffo);
+			case CLEAR_POSITIONER_PVS:
 				for (i = 0; i < NUM_PVS; i++) {
 					puserPvt = (recDynLinkPvt *) precPvt->caLinkStruct[i].puserPvt;
 					if ((psscan->cmnd == CLEAR_RECORD) ||
-					    ((psscan->cmnd == CLEAR_POSITIONERS) && (puserPvt->linkType == POSITIONER))) {
+					    (((psscan->cmnd == CLEAR_POSITIONERS) || (psscan->cmnd == CLEAR_POSITIONER_PVS)) &&
+						 (puserPvt->linkType == POSITIONER))) {
 						/* clear this PV */
 						semTake(precPvt->pvStatSem, WAIT_FOREVER);
 						pPvStat = &psscan->p1nv + i;	/* pointer arithmetic */
@@ -1511,7 +1521,8 @@ get_enum_strs(struct dbAddr *paddr, struct dbr_enumStrs *pes)
 		strncpy(pes->strs[2], "2-Preview scan", sizeof("2-Preview scan"));
 		strncpy(pes->strs[3], "3-Clear all PV's", sizeof("3-Clear all PV's"));
 		strncpy(pes->strs[4], "4-Clear positioner PV's", sizeof("4-Clear positioner PV's"));
-		pes->no_str = 5;
+		strncpy(pes->strs[5], "5-Clear positioner PV's", sizeof("5-Clear positioner PV's"));
+		pes->no_str = 6;
 	} else {
 		strcpy(pes->strs[0], "No string");
 		pes->no_str = 1;
@@ -2447,7 +2458,7 @@ contScan(psscan)
 		for (i = 0; i < NUM_POS; i++, pPos++, pPvStatPos++, pPvStat++) {
 			/* if readback PV is OK, use that value */
 			puserPvt = precPvt->caLinkStruct[i + NUM_POS].puserPvt;
-			if (psscan->acqm == sscanACQM_ARRAY) {
+			if (psscan->acqt == sscanACQT_1D_ARRAY) {
 				/*** scan record just grabs arrays acquired by somebody else, perhaps hardware ***/
 				nRequest = nReq = psscan->npts;
 				if (*pPvStat == PV_OK) {
@@ -2512,7 +2523,7 @@ contScan(psscan)
 		pDet = (detFields *) & psscan->d01hr;
 		for (i = 0; i < precPvt->valDetPvs; i++, pDet++, pPvStat++) {
 			if (precPvt->acqDet[i] && (precPvt->detBufPtr[i].pFill != NULL)) {
-				if (psscan->acqm == sscanACQM_ARRAY) {
+				if (psscan->acqt == sscanACQT_1D_ARRAY) {
 
 					/*** scan record just grabs arrays acquired by somebody else, perhaps hardware ***/
 					nRequest = nReq = psscan->npts;
@@ -2582,7 +2593,7 @@ contScan(psscan)
 		}
 
 		psscan->udf = 0;
-		if (psscan->acqm == sscanACQM_ARRAY) {
+		if (psscan->acqt == sscanACQT_1D_ARRAY) {
 			/*** scan record gets all points in one pass ***/
 			psscan->cpt = psscan->npts;
 		} else {
@@ -2645,18 +2656,22 @@ endScan(sscanRecord *psscan)
 }
 
 
+volatile int sscan_fit_smooth = 3;
+volatile int sscan_test_fit = 0;
+
 static void 
 packData(sscanRecord *psscan)
 {
 
 	recPvtStruct	*precPvt = (recPvtStruct *) psscan->rpvt;
-	int				i, j, counter, markIndex;
+	int				i, j, markIndex;
 	double			highVal, lowVal, aveDiff;
 	int 			highIndex, lowIndex;
 	detFields		*pDet;
 	posFields		*pPos;
-	double			markVal, d, *pPBuf, dd, dp;
-	float			*pDBuf;
+	double			d, *pPBuf;
+	float			*pDBuf, *pf, *pf1, *pf2;
+	unsigned short	*pPvStat;
 
 	if (precPvt->dataState == DS_PACKED) return;
 	precPvt->dataState = DS_PACKED;
@@ -2666,34 +2681,99 @@ packData(sscanRecord *psscan)
 	 * values. This will cause medm to plot the same point over and over
 	 * again, but it will look correct
 	 */
-	for (counter = psscan->cpt; counter < psscan->mpts; counter++) {
-		/* Fill valid detector arrays with last value */
-		pDet = (detFields *) & psscan->d01hr;
-		for (i = 0; i < precPvt->valDetPvs; i++, pDet++) {
-			if (precPvt->acqDet[i]) {
-				precPvt->detBufPtr[i].pFill[counter] = pDet->d_cv;
+	/* Fill valid detector arrays with last value */
+	pDet = (detFields *) & psscan->d01hr;
+	for (i = 0; i < precPvt->valDetPvs; i++, pDet++) {
+		if (precPvt->acqDet[i]) {
+			for (j = psscan->cpt; j < psscan->mpts; j++) {
+				precPvt->detBufPtr[i].pFill[j] = pDet->d_cv;
 			}
 		}
-		/* Fill in the readback arrays with last values */
-		for (i = 0; i < precPvt->valPosPvs; i++) {
-			precPvt->posBufPtr[i].pFill[counter] =
-				precPvt->posBufPtr[i].pFill[counter - 1];
+	}
+	/* Fill in the readback arrays with last values */
+	for (i = 0; i < precPvt->valPosPvs; i++) {
+		for (j = psscan->cpt; j < psscan->mpts; j++) {
+			precPvt->posBufPtr[i].pFill[j] =
+				precPvt->posBufPtr[i].pFill[j - 1];
 		}
 	}
 
-	if (psscan->pasm >= sscanPASM_Peak_Pos) {
+	if ((psscan->cpt > 1) && (psscan->pasm >= sscanPASM_Peak_Pos)) {
 		/* Find peak/valley/edge in reference detector data array and go to it. */
 		markIndex = -1;
+
+
+		/* First, identify a valid positioner */
+		pPBuf=NULL;
+		pPvStat = &psscan->p1nv;
+		pPos = (posFields *) &psscan->p1pp;
+		for (i=0; i<NUM_POS && pPBuf==NULL; i++, pPvStat++) {
+			if (*pPvStat == PV_OK) pPBuf = precPvt->posBufPtr[i].pFill;
+		}
+
+		/* Make sure reference detector is valid */
+		pDBuf = NULL;
+		pDet = (detFields *) &psscan->d01hr;
+		/* Make sure the reference detector PV is actually acquiring data. */
 		if (precPvt->acqDet[psscan->refd - 1]) {
+			pDet += psscan->refd - 1;
 			pDBuf = precPvt->detBufPtr[psscan->refd - 1].pFill;
-			pPBuf = precPvt->posBufPtr[0].pFill;
+		}
+
+		/* copy detector data to spare array, and (optionally) smooth it */
+		pf = precPvt->nullArray;
+		for (i = 0; i < psscan->cpt; i++) pf[i] = pDBuf[i];
+		if (sscan_fit_smooth) {
+			pf1 = pf;
+			pf2 = precPvt->nullArray2;
+			for (j=0; j<=sscan_fit_smooth; j++) {
+				for (i = 0; i < psscan->cpt; i++) {
+					pf2[i] = pf1[i];
+					if (sscan_fit_smooth && ((i > 0) && (i < psscan->cpt-1))) {
+						pf2[i] = pf1[i-1]/4 + pf1[i]/2 + pf1[i+1]/4;
+					}
+				}
+				pf = pf2; pf2 = pf1; pf1 = pf;	/* swap for next run through data */
+			}
+		}
+		pDBuf = pf;
+		pf1 = (pf == precPvt->nullArray) ? precPvt->nullArray2 : precPvt->nullArray; 
+
+		if (sscan_test_fit) {
+			for (i = 0; i < psscan->cpt; i++) precPvt->detBufPtr[1].pFill[i] = pf[i];
+			db_post_events(psscan, precPvt->detBufPtr[1].pBufA, DBE_VALUE);
+			db_post_events(psscan, precPvt->detBufPtr[1].pBufB, DBE_VALUE);
+		}
+
+		if (pPBuf && pDBuf) {
 			switch (psscan->pasm) {
 			default:
 				break;
+
+			case sscanPASM_RisingEdge_Pos:
+			case sscanPASM_FallingEdge_Pos:
+				/* calc derivative of detector data, fall through to find peak */
+				for (i = 0; i < psscan->cpt; i++) pf1[i] = pDBuf[i];
+				for (i = 1; i < psscan->cpt-1; i++) {
+					d = pPBuf[i+1] - pPBuf[i-1];
+					if (fabs(d) < 1.e-6) d = d<0.0 ? -1.0e-6 : 1.0e-6;
+					pf1[i] = (pDBuf[i+1] - pDBuf[i-1]) / d;
+				}
+				pf1[i] = pf1[i-1];
+				pf1[0] = pf1[1];
+				pDBuf = pf1;
+
+				if (sscan_test_fit) {
+					for (i = 0; i < psscan->cpt; i++)
+						precPvt->detBufPtr[2].pFill[i] = pDBuf[i];
+					db_post_events(psscan, precPvt->detBufPtr[2].pBufA, DBE_VALUE);
+					db_post_events(psscan, precPvt->detBufPtr[2].pBufB, DBE_VALUE);
+				}
+
+				/* fall through */
+
 			case sscanPASM_Peak_Pos:
 			case sscanPASM_Valley_Pos:
-				/* we need at least two data points to look for a peak */
-				if (psscan->cpt < 2) break;
 
 				/* find average positive difference between ref-detector values of adjacent points */
 				/* find high and low ref-detector values, and the data points at which they occurred */
@@ -2717,46 +2797,20 @@ packData(sscanRecord *psscan)
 				/* did we find an acceptable max or min? */
 				if ((highVal - lowVal) > 2*aveDiff) {
 					/* ...yes */
-					if (psscan->pasm == sscanPASM_Peak_Pos) {
+					if ((psscan->pasm == sscanPASM_Peak_Pos) ||
+						(psscan->pasm == sscanPASM_RisingEdge_Pos)) {
 						markIndex = highIndex;
 					} else {
 						markIndex = lowIndex;
 					}
 				}
 				break;
-
-			case sscanPASM_RisingEdge_Pos:
-			case sscanPASM_FallingEdge_Pos:
-				markVal = -HUGE_VAL;
-				for (i = 1; i < psscan->cpt-1; i++) {
-					d = -HUGE_VAL;
-					/* Look for the monotonic section of data that contains the largest difference in
-					 * ref-detector values.  The point that centers that section is our best guess
-					 * at the edge.
-					 */
-					for (j=1; ((i-j)>=0) && ((i+j)<psscan->cpt); j++) {
-						dd = pDBuf[i+j] - pDBuf[i-j];
-						dp = pPBuf[i+j] - pPBuf[i-j];
-						if (psscan->pasm == sscanPASM_FallingEdge_Pos) {
-							dd = -dd;
-						}
-						if (fabs(dp) > DBL_EPSILON) {
-							if (2*j*dd/dp > d) {
-								d = 2*j*dd/dp;
-							} else {
-								break;
-							}
-						}
-					}
-					if (d > markVal) {
-						markVal = d;
-						markIndex = i;
-					}
-				}
-				break;
 			}
 
 		}
+
+		/* clean up */
+		for (i=0, pf=precPvt->nullArray; i < psscan->cpt; i++) pf[i] = 0.;
 
 		if ((markIndex >= 0)  && (markIndex < (psscan->cpt))) {
 			/* Optimal value found.  Go to position at which that value was acquired */
