@@ -26,7 +26,16 @@ option +r;
  * 02-24-00 tmm   v3.1 Test database's busy flag explicitly.  If someone tells
  *                the monochromator to go to a position it already is at, the
  *                only CA monitor we'll get is the busy flag.
- *
+ * 04-09-02 tmm   v3.2 Added Geom variable to select between nested (old) and
+ *                symmetric (new) monochromator geometries.  In nested geometry,
+ *                first and last xtal surfaces are of (H1,K1,L1), second and
+ *                third are of (H2,K2,L2).  In symmetric geometry, first and
+ *                second surfaces are (H1,K1,L1), third and fourth are
+ *                (H2,K2,L2).
+ * 08-05-02 tmm   v3.3 Fixed symmetric geometry.  Fixed phi2 initialization.
+ *                Modified transition into "Set" mode so that phi offsets are
+ *                automatically recalculated.  "Set" no longer wipes world
+ *                offset.
  */
 
 /* General Purpose PV's used by sequence */
@@ -56,6 +65,12 @@ assign  opMode to "{P}HR{N}_Mode2MO";
 monitor opMode;
 evflag  opMode_mon;
 sync    opMode opMode_mon;
+
+short   Geom;
+assign  Geom to "{P}HR{N}_GeomMO";
+monitor Geom;
+evflag  Geom_mon;
+sync    Geom Geom_mon;
 
 short   hr_Moving; 
 assign  hr_Moving to "{P}HR{N}_Moving";
@@ -549,7 +564,11 @@ state initSequence
 			pvPut(phi1);
 			theta1 = phi1;
 			pvPut(theta1);
-			phi2 = phi2MotRdbk + (phi2Off + worldOff*uR2D);
+			if (Geom == 0) {
+				phi2 = phi2MotRdbk * uR2D + phi2Off + worldOff*uR2D;
+			} else {
+				phi2 = phi2MotRdbk * uR2D + phi2Off - worldOff*uR2D;
+			}
 			pvPut(phi1);
 			theta2 = phi2 - phi1 - theta1;
 			pvPut(theta2);
@@ -577,6 +596,7 @@ state waitForCmndEnter
 			efClear(worldOff_mon);
 			efClear(useSetMode_mon);
 			efClear(opMode_mon);
+			efClear(Geom_mon);
 
 			phi1MotRdbkEcho = phi1MotRdbk;
 			pvPut(phi1MotRdbkEcho);
@@ -599,7 +619,11 @@ state waitForCmndEnter
 				pvPut(phi1);
 				theta1 = phi1;
 
-				phi2 = phi2MotCmdMon * uR2D + (phi2Off + worldOff*uR2D);
+				if (Geom == 0) {
+					phi2 = phi2MotCmdMon * uR2D + phi2Off + worldOff*uR2D;
+				} else {
+					phi2 = phi2MotCmdMon * uR2D + phi2Off - worldOff*uR2D;
+				}
 				pvPut(phi2);
 
 				if ((opMode == 0) || (opMode == 1)) {
@@ -739,7 +763,8 @@ state waitForCmnd
 			phi2Hi=0; pvPut(phi2Hi);
 			phi2Lo=0; pvPut(phi2Lo);
 %%			taskDelay(6);
-		} state calcMovements
+		/* } state calcMovements */
+		} state eChanged
 
 		when (efTest(useSetMode_mon) && !useSetMode) {
 			efClear(useSetMode_mon);
@@ -753,6 +778,20 @@ state waitForCmnd
 			pvPut(autoMode);
 			sprintf(seqMsg2, "Set to Manual Mode");
 			pvPut(seqMsg2);
+%%			taskDelay(6);
+		} state calcMovements
+
+		when (efTest(Geom_mon)) {
+%%			if (hrCtlDebug) printf("hrCtl:waitForCmnd: Geom event.\n");
+			efClear(Geom_mon);
+			autoMode = 0;
+			pvPut(autoMode);
+			sprintf(seqMsg1, "New geometry.  Switch Phi 2 motor dir.");
+			pvPut(seqMsg1);
+			sprintf(seqMsg2, "and recalibrate monochromator.");
+			pvPut(seqMsg2);
+			opAlert = 1;
+			pvPut(opAlert);
 %%			taskDelay(6);
 		} state calcMovements
 
@@ -809,10 +848,17 @@ state phiLimits
 				pvPut(theta1Lo);
 
 				/* translate phi2 motor limits into phi2, theta2 limits */
-				phi2Hi = phi2MotHiLim * uR2D + (phi2Off + worldOff*uR2D);
-				theta2Hi = phi2Hi - phi1Lo - theta1Lo;
-				phi2Lo = phi2MotLoLim * uR2D + (phi2Off + worldOff*uR2D);
-				theta2Lo = phi2Lo - phi1Hi - theta1Hi;
+				if (Geom == 0) {
+					phi2Hi = phi2MotHiLim * uR2D + phi2Off + worldOff*uR2D;
+					phi2Lo = phi2MotLoLim * uR2D + phi2Off + worldOff*uR2D;
+					theta2Hi = phi2Hi - phi1Lo - theta1Lo;
+					theta2Lo = phi2Lo - phi1Hi - theta1Hi;
+				} else {
+					phi2Hi = phi2MotHiLim * uR2D + phi2Off - worldOff*uR2D;
+					phi2Lo = phi2MotLoLim * uR2D + phi2Off - worldOff*uR2D;
+					theta2Hi = phi2Hi;
+					theta2Lo = phi2Lo;
+				}
 				if (theta2Hi > 89.0) {
 					theta2Hi = 89.0;
 					sprintf(seqMsg2, "Theta2HiLim > 89 deg. (Using 89 deg.)");
@@ -1106,14 +1152,25 @@ state thChanged
 			if ((opMode == 0) || (opMode == 1)) {
 				lambda = D1*sin(theta1*D2R);
 				phi1 = theta1;
-				if (opMode == 1) phi2 = phi1 + theta1 + theta2;
+				if (opMode == 1) {
+					if (Geom == 0) {
+						phi2 = phi1 + theta1 + theta2;
+					} else {
+						phi2 = theta2;
+					}
+				}
 			} else {
 				lambdaNom = D1*sin(theta1*D2R);
 				theta2Nom = asin(lambdaNom/D2) * R2D;
 				lambda = D2*sin(theta2*D2R);
 				phi1 = theta1;
-				phi2 = (phi1 + theta1 + theta2Nom) + R2D * (lambda-lambdaNom) *
-						(1/(D1*cos(theta1*D2R)) + 1/(D2*cos(theta2Nom*D2R)));
+				if (Geom == 0) {
+					phi2 = (phi1 + theta1 + theta2Nom) + R2D * (lambda-lambdaNom) *
+							(1/(D1*cos(theta1*D2R)) + 1/(D2*cos(theta2Nom*D2R)));
+				} else {
+					phi2 = theta2Nom + R2D * (lambda-lambdaNom) *
+							(1/(D1*cos(theta1*D2R)) + 1/(D2*cos(theta2Nom*D2R)));
+				}
 			}
 			pvPut(phi1);
 			if (opMode != 0) pvPut(phi2);
@@ -1143,10 +1200,14 @@ state calcMovements
 		when (useSetMode == 0) {
 %%			if (hrCtlDebug) {printf("hrCtl:calcMovements, USE\n");}
 			/* Calculate new phi* */
-			phi1MotDesired = (phi1 - (phi1Off + worldOff*uR2D)) * D2uR;
+			phi1MotDesired = (phi1 - phi1Off - worldOff*uR2D) * D2uR;
 			pvPut(phi1MotDesired);
 			if (opMode != 0) {
-				phi2MotDesired = (phi2 - (phi2Off + worldOff*uR2D)) * D2uR;
+				if (Geom == 0) {
+					phi2MotDesired = (phi2 - phi2Off - worldOff*uR2D) * D2uR;
+				} else {
+					phi2MotDesired = (phi2 - phi2Off + worldOff*uR2D) * D2uR;
+				}
 				pvPut(phi2MotDesired);
 			}
 		} state moveHR
@@ -1154,17 +1215,29 @@ state calcMovements
 		when (useSetMode == 1) {
 %%			if (hrCtlDebug) {printf("hrCtl:calcMovements, SET\n");}
 			/* Calculate new phiOff* */
-			phi1Off = phi1 - phi1MotRdbk/D2uR - worldOff*uR2D;
+			/* phi1Off = phi1 - phi1MotRdbk/D2uR - worldOff*uR2D; */
+			phi1Off = phi1 - phi1MotRdbk/D2uR;
 			pvPut(phi1Off);
 			if (opMode != 0) {
-				phi2Off = phi2 - phi2MotRdbk/D2uR - worldOff*uR2D;
+				/* Don't consider world.  It's not part of calibration
+				 * if (Geom == 0) {
+				 * 	phi2Off = (phi2 - phi2MotRdbk/D2uR - worldOff*uR2D) * D2uR;
+				 * } else {
+				 * 	phi2Off = (phi2 - phi2MotRdbk/D2uR + worldOff*uR2D) * D2uR;
+				 * }
+				 */
+				phi2Off = phi2 - phi2MotRdbk/D2uR;
 				pvPut(phi2Off);
 			}
 			/* Calculate new phi* */
-			phi1MotDesired = (phi1 - (phi1Off + worldOff*uR2D)) * D2uR;
+			phi1MotDesired = (phi1 - phi1Off - worldOff*uR2D) * D2uR;
 			pvPut(phi1MotDesired);
 			if (opMode != 0) {
-				phi2MotDesired = (phi2 - (phi2Off + worldOff*uR2D)) * D2uR;
+				if (Geom == 0) {
+					phi2MotDesired = (phi2 - phi2Off - worldOff*uR2D) * D2uR;
+				} else {
+					phi2MotDesired = (phi2 - phi2Off + worldOff*uR2D) * D2uR;
+				}
 				pvPut(phi2MotDesired);
 			}
 			putVals = 0;
@@ -1460,18 +1533,34 @@ void hrCtl_calcReadback(struct UserVar *pVar)
 		break;
 
 	case 1:
-		pVar->phi2Rdbk = pVar->phi2MotRdbk * pVar->uR2D +
-			(pVar->phi2Off + pVar->worldOff*pVar->uR2D);
+		if (pVar->Geom == 0) {
+			pVar->phi2Rdbk = pVar->phi2MotRdbk * pVar->uR2D +
+				(pVar->phi2Off + pVar->worldOff*pVar->uR2D);
+		} else {
+			pVar->phi2Rdbk = pVar->phi2MotRdbk * pVar->uR2D +
+				(pVar->phi2Off - pVar->worldOff*pVar->uR2D);
+		}
 		pVar->lambdaRdbk = pVar->D1*sin(pVar->theta1Rdbk*pVar->D2R);
 		break;
 
 	case 2:
-		pVar->phi2Rdbk = pVar->phi2MotRdbk * pVar->uR2D +
-			(pVar->phi2Off + pVar->worldOff*pVar->uR2D);
+		if (pVar->Geom == 0) {
+			pVar->phi2Rdbk = pVar->phi2MotRdbk * pVar->uR2D +
+				(pVar->phi2Off + pVar->worldOff*pVar->uR2D);
+		} else {
+			pVar->phi2Rdbk = pVar->phi2MotRdbk * pVar->uR2D +
+				(pVar->phi2Off - pVar->worldOff*pVar->uR2D);
+		}
 		pVar->theta2Nom = asin(pVar->D1*sin(pVar->theta1Rdbk*pVar->D2R)/pVar->D2) * pVar->R2D;
-		pVar->lambdaRdbk = pVar->D1*sin(pVar->theta1Rdbk*pVar->D2R) +
-			pVar->D2R * (pVar->phi2Rdbk - pVar->phi1Rdbk - pVar->theta1Rdbk - pVar->theta2Nom) /
-			( 1/(pVar->D1*cos(pVar->theta1Rdbk*pVar->D2R)) + 1/(pVar->D2*cos(pVar->theta2Nom*pVar->D2R)) );
+		if (pVar->Geom == 0) {
+			pVar->lambdaRdbk = pVar->D1*sin(pVar->theta1Rdbk*pVar->D2R) +
+				pVar->D2R * (pVar->phi2Rdbk - pVar->phi1Rdbk - pVar->theta1Rdbk - pVar->theta2Nom) /
+				( 1/(pVar->D1*cos(pVar->theta1Rdbk*pVar->D2R)) + 1/(pVar->D2*cos(pVar->theta2Nom*pVar->D2R)) );
+		} else {
+			pVar->lambdaRdbk = pVar->D1*sin(pVar->theta1Rdbk*pVar->D2R) +
+				pVar->D2R * (pVar->phi2Rdbk - pVar->theta2Nom) /
+				( 1/(pVar->D1*cos(pVar->theta1Rdbk*pVar->D2R)) + 1/(pVar->D2*cos(pVar->theta2Nom*pVar->D2R)) );
+		}
 		break;
 	}
 	pVar->theta1Rdbk = asin(pVar->lambdaRdbk/pVar->D1) * pVar->R2D;
