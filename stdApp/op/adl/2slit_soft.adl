@@ -1,12 +1,12 @@
 
 file {
-	name="/home/sricat/BCDA/epics/synApps_R3.13.1.1_R4.2/share/stdApp/op/adl/2slit_soft_1.1.adl"
-	version=020303
+	name="/home/oxygen4/MOONEY/epics/3.13.2/tmm/xxxApp/op/adl/2slit_soft_1.2.adl"
+	version=030002
 }
 display {
 	object {
-		x=103
-		y=302
+		x=253
+		y=600
 		width=500
 		height=260
 	}
@@ -130,6 +130,8 @@ text {
 		bclr=0
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -335,7 +337,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label=-More
+	label="-More"
 }
 "message button" {
 	object {
@@ -364,6 +366,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "message button" {
 	object {
@@ -391,6 +395,8 @@ text {
 		chan="$(P)$(SLIT)xn.VAL"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 rectangle {
@@ -436,6 +442,8 @@ rectangle {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -510,6 +518,8 @@ rectangle {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 text {
 	object {
@@ -586,6 +596,8 @@ text {
 		bclr=0
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -791,7 +803,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label=-More
+	label="-More"
 }
 "message button" {
 	object {
@@ -820,6 +832,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "message button" {
 	object {
@@ -847,6 +861,8 @@ text {
 		chan="$(P)$(SLIT)xp.VAL"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 rectangle {
@@ -892,6 +908,8 @@ rectangle {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -966,6 +984,8 @@ rectangle {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 text {
 	object {
@@ -1042,6 +1062,8 @@ text {
 		bclr=0
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -1247,7 +1269,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label=-More
+	label="-More"
 }
 "message button" {
 	object {
@@ -1276,6 +1298,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "message button" {
 	object {
@@ -1303,6 +1327,8 @@ text {
 		chan="$(P)$(SLIT)size.VAL"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 rectangle {
@@ -1348,6 +1374,8 @@ rectangle {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -1422,6 +1450,8 @@ rectangle {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 text {
 	object {
@@ -1498,6 +1528,8 @@ text {
 		bclr=0
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -1703,7 +1735,7 @@ text {
 	}
 	clr=0
 	bclr=17
-	label=-More
+	label="-More"
 }
 "message button" {
 	object {
@@ -1732,6 +1764,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "message button" {
 	object {
@@ -1759,6 +1793,8 @@ text {
 		chan="$(P)$(SLIT)center.VAL"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 rectangle {
@@ -1804,6 +1840,8 @@ rectangle {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 rectangle {
 	object {
@@ -1878,6 +1916,8 @@ rectangle {
 		bclr=3
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 text {
 	object {
@@ -1911,24 +1951,10 @@ text {
 	}
 	stacking="column"
 }
-"choice button" {
-	object {
-		x=0
-		y=240
-		width=78
-		height=20
-	}
-	control {
-		chan="$(P)$(SLIT)set.VAL"
-		clr=14
-		bclr=51
-	}
-	stacking="column"
-}
 "message button" {
 	object {
-		x=260
-		y=234
+		x=210
+		y=230
 		width=60
 		height=27
 	}
@@ -1944,7 +1970,7 @@ text {
 	object {
 		x=85
 		y=240
-		width=110
+		width=100
 		height=20
 	}
 	control {
@@ -1952,12 +1978,12 @@ text {
 		clr=14
 		bclr=51
 	}
-	label="Sync to motors"
+	label="Initialize"
 	press_msg="1"
 }
 "related display" {
 	object {
-		x=200
+		x=0
 		y=240
 		width=50
 		height=20
@@ -1972,9 +1998,19 @@ text {
 		name="yyTransform_full.adl"
 		args="P=$(P),T=$(SLIT)t2"
 	}
+	display[2] {
+		label="limit transform"
+		name="yyTransform_full.adl"
+		args="P=$(P),T=$(SLIT)t3"
+	}
+	display[3] {
+		label="alarms"
+		name="2slit_alarm.adl"
+		args="P=$(P),SLIT=$(SLIT)"
+	}
 	clr=0
 	bclr=17
-	label=-Debug
+	label="-Debug"
 }
 rectangle {
 	object {
@@ -2019,9 +2055,26 @@ text {
 	textix="Slit $(SLIT)"
 	align="horiz. centered"
 }
+"text update" {
+	object {
+		x=85
+		y=230
+		width=100
+		height=12
+	}
+	monitor {
+		chan="$(P)$(SLIT)ready"
+		clr=20
+		bclr=3
+	}
+	align="horiz. centered"
+	format="string"
+	limits {
+	}
+}
 text {
 	object {
-		x=355
+		x=295
 		y=250
 		width=50
 		height=10
@@ -2034,8 +2087,8 @@ text {
 }
 text {
 	object {
-		x=355
-		y=235
+		x=295
+		y=238
 		width=50
 		height=10
 	}
@@ -2045,31 +2098,78 @@ text {
 	textix="X- MOTOR:"
 	align="horiz. right"
 }
-"text update" {
+composite {
 	object {
-		x=410
-		y=250
-		width=80
-		height=12
+		x=350
+		y=238
+		width=60
+		height=24
 	}
-	monitor {
-		chan="$(P)$(SLIT)mXp_nameCalc.SVAL"
-		clr=54
-		bclr=3
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=350
+				y=250
+				width=60
+				height=12
+			}
+			monitor {
+				chan="$(P)$(SLIT)mXp_nameCalc.SVAL"
+				clr=54
+				bclr=3
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=350
+				y=238
+				width=60
+				height=12
+			}
+			monitor {
+				chan="$(P)$(SLIT)mXn_nameCalc.SVAL"
+				clr=54
+				bclr=3
+			}
+			format="string"
+			limits {
+			}
+		}
 	}
-	format="string"
 }
 "text update" {
 	object {
-		x=410
-		y=235
-		width=80
+		x=420
+		y=250
+		width=60
 		height=12
 	}
 	monitor {
-		chan="$(P)$(SLIT)mXn_nameCalc.SVAL"
+		chan="$(P)$(SLIT)mXpSEVR"
 		clr=54
 		bclr=3
 	}
 	format="string"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=420
+		y=238
+		width=60
+		height=12
+	}
+	monitor {
+		chan="$(P)$(SLIT)mXnSEVR"
+		clr=54
+		bclr=3
+	}
+	format="string"
+	limits {
+	}
 }
