@@ -1,6 +1,6 @@
 
 file {
-	name="/home/beams/BCDA/epics/synApps_R3.13.1.1_R4.2/share/stdApp/op/adl/scan_5.3.adl"
+	name="/home/beams/BCDA/epics/synApps_R3.13.2_R4.3/share/stdApp/op/adl/scan_5.4.adl"
 	version=020306
 }
 display {
@@ -15,7 +15,7 @@ display {
 	cmap=""
 	gridSpacing=5
 	gridOn=0
-	snapToGrid=0
+	snapToGrid=1
 }
 "color map" {
 	ncolors=65
@@ -1119,90 +1119,6 @@ text {
 	bclr=17
 	label="-SAVE DATA:"
 }
-"related display" {
-	object {
-		x=0
-		y=175
-		width=25
-		height=20
-	}
-	display[0] {
-		label="Real-time plot"
-		name="scanDetPlotRT.adl"
-		args="P=$(P),S=$(S),D=D01,N=01"
-	}
-	display[1] {
-		label="After-scan plot"
-		name="scanDetPlot.adl"
-		args="P=$(P),S=$(S),N=01"
-	}
-	clr=0
-	bclr=17
-	label="-01"
-}
-"related display" {
-	object {
-		x=0
-		y=195
-		width=25
-		height=20
-	}
-	display[0] {
-		label="Real-time plot"
-		name="scanDetPlotRT.adl"
-		args="P=$(P),S=$(S),D=D02,N=02"
-	}
-	display[1] {
-		label="After-scan plot"
-		name="scanDetPlot.adl"
-		args="P=$(P),S=$(S),N=02"
-	}
-	clr=0
-	bclr=17
-	label="-02"
-}
-"related display" {
-	object {
-		x=0
-		y=235
-		width=25
-		height=20
-	}
-	display[0] {
-		label="Real-time plot"
-		name="scanDetPlotRT.adl"
-		args="P=$(P),S=$(S),D=D04,N=04"
-	}
-	display[1] {
-		label="After-scan plot"
-		name="scanDetPlot.adl"
-		args="P=$(P),S=$(S),N=04"
-	}
-	clr=0
-	bclr=17
-	label="-04"
-}
-"related display" {
-	object {
-		x=0
-		y=215
-		width=25
-		height=20
-	}
-	display[0] {
-		label="Real-time plot"
-		name="scanDetPlotRT.adl"
-		args="P=$(P),S=$(S),D=D03,N=03"
-	}
-	display[1] {
-		label="After-scan plot"
-		name="scanDetPlot.adl"
-		args="P=$(P),S=$(S),N=03"
-	}
-	clr=0
-	bclr=17
-	label="-03"
-}
 "text entry" {
 	object {
 		x=25
@@ -1266,4 +1182,138 @@ text {
 	format="string"
 	limits {
 	}
+}
+"related display" {
+	object {
+		x=0
+		y=175
+		width=25
+		height=20
+	}
+	display[0] {
+		label="Real-time plot"
+		name="scanDetPlotRT.adl"
+		args="P=$(P),S=$(S),D=D01,N=01"
+	}
+	display[1] {
+		label="After-scan plot"
+		name="scanDetPlot.adl"
+		args="P=$(P),S=$(S),N=01"
+	}
+	display[2] {
+		label="Real-time dets 01-02"
+		name="scanDetPlot2RT.adl"
+		args="P=$(P),S=$(S),N1=01,N2=02"
+	}
+	display[3] {
+		label="After-scan dets 01-02"
+		name="scanDetPlot2.adl"
+		args="P=$(P),S=$(S),N1=01,N2=02"
+	}
+	display[4] {
+		label="Real-time dets 01-08"
+		name="scanDetPlot8RT.adl"
+		args="P=$(P),S=$(S),N1=01,N2=02,N3=03,N4=04,N5=05,N6=06,N7=07,N8=08"
+	}
+	display[5] {
+		label="After-scan dets 01-08"
+		name="scanDetPlot8.adl"
+		args="P=$(P),S=$(S),N1=01,N2=02,N3=03,N4=04,N5=05,N6=06,N7=07,N8=08"
+	}
+	clr=0
+	bclr=17
+	label="-01"
+}
+"related display" {
+	object {
+		x=0
+		y=195
+		width=25
+		height=20
+	}
+	display[0] {
+		label="Real-time plot"
+		name="scanDetPlotRT.adl"
+		args="P=$(P),S=$(S),D=D02,N=02"
+	}
+	display[1] {
+		label="After-scan plot"
+		name="scanDetPlot.adl"
+		args="P=$(P),S=$(S),N=02"
+	}
+	display[2] {
+		label="Real-time dets 02-03"
+		name="scanDetPlot2RT.adl"
+		args="P=$(P),S=$(S),N1=02,N2=03"
+	}
+	display[3] {
+		label="After-scan dets 02-03"
+		name="scanDetPlot3.adl"
+		args="P=$(P),S=$(S),N1=02,N2=03"
+	}
+	clr=0
+	bclr=17
+	label="-02"
+}
+"related display" {
+	object {
+		x=0
+		y=215
+		width=25
+		height=20
+	}
+	display[0] {
+		label="Real-time plot"
+		name="scanDetPlotRT.adl"
+		args="P=$(P),S=$(S),D=D03,N=03"
+	}
+	display[1] {
+		label="After-scan plot"
+		name="scanDetPlot.adl"
+		args="P=$(P),S=$(S),N=03"
+	}
+	display[2] {
+		label="Real-time dets 03-04"
+		name="scanDetPlot2RT.adl"
+		args="P=$(P),S=$(S),N1=03,N2=04"
+	}
+	display[3] {
+		label="After-scan deta 03-04"
+		name="scanDetPlot2.adl"
+		args="P=$(P),S=$(S),N1=03,N2=04"
+	}
+	clr=0
+	bclr=17
+	label="-03"
+}
+"related display" {
+	object {
+		x=0
+		y=235
+		width=25
+		height=20
+	}
+	display[0] {
+		label="Real-time plot"
+		name="scanDetPlotRT.adl"
+		args="P=$(P),S=$(S),D=D04,N=04"
+	}
+	display[1] {
+		label="After-scan plot"
+		name="scanDetPlot.adl"
+		args="P=$(P),S=$(S),N=04"
+	}
+	display[2] {
+		label="Real-time dets 04-05"
+		name="scanDetPlot2RT.adl"
+		args="P=$(P),S=$(S),N1=04,N2=05"
+	}
+	display[3] {
+		label="After-scan dets 04-05"
+		name="scanDetPlot2.adl"
+		args="P=$(P),S=$(S),N1=04,N2=05"
+	}
+	clr=0
+	bclr=17
+	label="-04"
 }
