@@ -28,14 +28,12 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <epicsExport.h>
+
 #include "Message.h"
 #include "Float64Message.h"
 #include "Float64ArrayMessage.h"
 #include "mpfType.h"
-
-#include "epicsTypes.h"
-#include "epicsExport.h"
-#include "symTable.h"
 
 #include "fastPID.h"
 
@@ -48,6 +46,7 @@ extern "C"
 #endif
 volatile int fastPIDDebug = 0;
 }
+epicsExportAddress(int, fastPIDDebug);
 
 fastPID::fastPID(): KP(1), KI(0), KD(0), 
                     P(0), I(0), D(0), 
@@ -202,10 +201,3 @@ void fastPIDServer::fastServer(fastPIDServer *pFastPIDServer)
         }
     }
 }
-
-void fastPIDRegister(void)
-{
-    addSymbol("fastPIDDebug", (epicsInt32 *)&fastPIDDebug, epicsInt32T);
-}
-epicsExportRegistrar(fastPIDRegister);
-
