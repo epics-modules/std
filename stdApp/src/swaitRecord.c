@@ -63,9 +63,12 @@
  *                       outputWait to zero, and post output event, as soon as
  *                       we've called recDynLinkPut*.  Rename as swaitRecord.
  * 4.04  08-24-99  tmm   Fix special treatment of link fields for new dbd file
+ * 4.05  10-04-01  tmm   In earlier versions, watchdog interrupt was running
+ *                       code directly that should not run at interrupt level.
+ *                       Changed to use callback task for delayed output.  
  */
 
-#define VERSION 4.4
+#define VERSION 4.5
 
 
 
@@ -78,15 +81,15 @@
 #include	<tickLib.h>
 #include	<semLib.h>
 #include	<taskLib.h>
-#include        <wdLib.h>
-#include        <sysLib.h>
+#include	<wdLib.h>
+#include	<sysLib.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
 #include	<dbEvent.h>
 #include	<dbScan.h>
-#include        <dbDefs.h>
+#include	<dbDefs.h>
 #include	<dbFldTypes.h>
 #include	<devSup.h>
 #include	<errMdef.h>
@@ -95,6 +98,7 @@
 #include	<special.h>
 #include	<callback.h>
 #include	<taskwd.h>
+#include	<postfix.h>
 
 #define GEN_SIZE_OFFSET
 #include	"swaitRecord.h"
@@ -102,24 +106,31 @@
 #include	"recDynLink.h"
 
 
+#define PRIVATE_FUNCTIONS 1	/* normal:1, debug:0 */
+#if PRIVATE_FUNCTIONS
+#define STATIC static
+#else
+#define STATIC
+#endif
+
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
 #define initialize NULL
-static long init_record();
-static long process();
-static long special();
+STATIC long init_record();
+STATIC long process();
+STATIC long special();
 #define get_value NULL
 #define cvt_dbaddr NULL
 #define get_array_info NULL 
 #define put_array_info NULL 
 #define get_units NULL 
-static long get_precision();
+STATIC long get_precision();
 #define get_enum_str NULL
 #define get_enum_strs NULL 
 #define put_enum_str NULL
-static long get_graphic_double();
+STATIC long get_graphic_double();
 #define get_control_double NULL 
-static long get_alarm_double(); 
+STATIC long get_alarm_double(); 
  
 struct rset swaitRSET={
 	RSETNUMBER,
@@ -201,7 +212,7 @@ typedef struct recDynLinkPvt {
 } recDynLinkPvt;
 
 
-static long get_ioint_info(cmd,pwait,ppvt)
+STATIC long get_ioint_info(cmd,pwait,ppvt)
     int                     cmd;
     swaitRecord       *pwait;
     IOSCANPVT               *ppvt;
@@ -220,18 +231,19 @@ struct qStruct {
 
 int    swaitRecordDebug=0;
 int    swaitRecordCacheMode=0;
-static void schedOutput(swaitRecord *pwait);
-static void execOutput(struct cbStruct *pcbst);
-static int fetch_values(swaitRecord *pwait);
-static void monitor(swaitRecord *pwait);
-static long initSiml();
-static void ioIntProcess(CALLBACK *pioProcCb);
+STATIC void schedOutput(swaitRecord *pwait);
+static void doOutputCallback(CALLBACK *pcallback);
+STATIC void execOutput(swaitRecord *pwait);
+STATIC int fetch_values(swaitRecord *pwait);
+STATIC void monitor(swaitRecord *pwait);
+STATIC long initSiml();
+STATIC void ioIntProcess(CALLBACK *pioProcCb);
 
-static void pvSearchCallback(recDynLink *precDynLink);
-static void inputChanged(recDynLink *precDynLink);
+STATIC void pvSearchCallback(recDynLink *precDynLink);
+STATIC void inputChanged(recDynLink *precDynLink);
 
 
-static long init_record(pwait,pass)
+STATIC long init_record(pwait,pass)
     swaitRecord	*pwait;
     int pass;
 {
@@ -277,8 +289,9 @@ static long init_record(pwait,pass)
     }
     db_post_events(pwait,&pwait->clcv,DBE_VALUE);
 
-    callbackSetCallback(execOutput, &pcbst->doOutCb);
+    callbackSetCallback(doOutputCallback, &pcbst->doOutCb);
     callbackSetPriority(pwait->prio, &pcbst->doOutCb);
+    callbackSetUser(pwait, &pcbst->doOutCb);
     callbackSetCallback(ioIntProcess, &pcbst->ioProcCb);
     callbackSetPriority(pwait->prio, &pcbst->ioProcCb);
     callbackSetUser(pwait, &pcbst->ioProcCb);
@@ -289,7 +302,7 @@ static long init_record(pwait,pass)
         exit(1);
     }
 
-    if (status=initSiml(pwait)) return(status);
+    if ((status=initSiml(pwait))) return(status);
 
     /* reset miscellaneous flags */
     pcbst->outputWait = 0;
@@ -333,100 +346,103 @@ notifyCallback(recDynLink * precDynLink)
 	if (swaitRecordDebug >= 10) printf("swaitRecord:notifyCallback: entry\n");
     recGblFwdLink(pwait);
 }
-static long process(pwait)
-	swaitRecord	*pwait;
+STATIC long process(swaitRecord	*pwait)
 {
-        short async    = FALSE;
-        long  status;
+	struct cbStruct *pcbst = (struct cbStruct *)pwait->cbst;
+	short async    = FALSE;
+	long  status;
 
-        pwait->pact = TRUE;
+	if (pwait->pact &&	pcbst->outputWait) {
+		execOutput(pwait);
+		return(0);
+	}
 
-        /* Check for simulation mode */
-        status=dbGetLink(&(pwait->siml),DBR_ENUM,&(pwait->simm),0,0);
+	pwait->pact = TRUE;
 
-        /* reset procPending before getting values */
-        ((struct cbStruct *)pwait->cbst)->procPending = 0;
+	/* Check for simulation mode */
+	status=dbGetLink(&(pwait->siml),DBR_ENUM,&(pwait->simm),0,0);
 
-        if (pwait->simm == NO) {
-            if (fetch_values(pwait)==0) {
-                if (calcPerform(&pwait->a,&pwait->val,pwait->rpcl)) {
-                        recGblSetSevr(pwait,CALC_ALARM,INVALID_ALARM);
-                } else pwait->udf = FALSE;
-            }
-            else {
-                recGblSetSevr(pwait,READ_ALARM,INVALID_ALARM);
-            }
-        }
-        else {      /* SIMULATION MODE */
-            status = dbGetLink(&(pwait->siol),DBR_DOUBLE,&(pwait->sval),0,0);
-            if (status==0){
-                pwait->val=pwait->sval;
-                pwait->udf=FALSE;
-            }
-            recGblSetSevr(pwait,SIMM_ALARM,pwait->sims);
-        }
+	/* reset procPending before getting values */
+	((struct cbStruct *)pwait->cbst)->procPending = 0;
 
-        /* decide whether to write Output PV  */
-        switch(pwait->oopt) {
-          case swaitOOPT_Every_Time:
-            schedOutput(pwait);
-            async = TRUE;
-            break;
+	if (pwait->simm == NO) {
+		if (fetch_values(pwait)==0) {
+			if (calcPerform(&pwait->a,&pwait->val,pwait->rpcl)) {
+				recGblSetSevr(pwait,CALC_ALARM,INVALID_ALARM);
+			} else pwait->udf = FALSE;
+		} else {
+			recGblSetSevr(pwait,READ_ALARM,INVALID_ALARM);
+		}
+	} else {      /* SIMULATION MODE */
+		status = dbGetLink(&(pwait->siol),DBR_DOUBLE,&(pwait->sval),0,0);
+		if (status==0) {
+			pwait->val=pwait->sval;
+			pwait->udf=FALSE;
+		}
+		recGblSetSevr(pwait,SIMM_ALARM,pwait->sims);
+	}
 
-          case swaitOOPT_On_Change:
-            if (fabs(pwait->oval - pwait->val) > pwait->mdel)  {
-              schedOutput(pwait);
-              async = TRUE;
-            }
-            break;
+	/* decide whether to write Output PV  */
+	switch(pwait->oopt) {
+		case swaitOOPT_Every_Time:
+			schedOutput(pwait);
+			async = TRUE;
+			break;
 
-          case swaitOOPT_Transition_To_Zero:
-            if ((pwait->oval != 0) && (pwait->val == 0)) {
-              schedOutput(pwait);
-              async = TRUE;
-            }
-            break;
+		case swaitOOPT_On_Change:
+			if (fabs(pwait->oval - pwait->val) > pwait->mdel)  {
+				schedOutput(pwait);
+				async = TRUE;
+			}
+			break;
 
-          case swaitOOPT_Transition_To_Non_zero:
-            if ((pwait->oval == 0) && (pwait->val != 0)) {
-              schedOutput(pwait);
-              async = TRUE;
-            }
-            break;
+		case swaitOOPT_Transition_To_Zero:
+			if ((pwait->oval != 0) && (pwait->val == 0)) {
+				schedOutput(pwait);
+				async = TRUE;
+			}
+			break;
 
-          case swaitOOPT_When_Zero:
-            if (!pwait->val) {
-              schedOutput(pwait);
-              async = TRUE;
-            }
-            break;
+		case swaitOOPT_Transition_To_Non_zero:
+			if ((pwait->oval == 0) && (pwait->val != 0)) {
+				schedOutput(pwait);
+				async = TRUE;
+			}
+			break;
 
-          case swaitOOPT_When_Non_zero:
-            if (pwait->val) {
-              schedOutput(pwait);
-              async = TRUE;
-            }
-            break;
+		case swaitOOPT_When_Zero:
+			if (!pwait->val) {
+				schedOutput(pwait);
+				async = TRUE;
+			}
+			break;
 
-          case swaitOOPT_Never:
-          default:
-            break;
-        }
+		case swaitOOPT_When_Non_zero:
+			if (pwait->val) {
+				schedOutput(pwait);
+				async = TRUE;
+			}
+			break;
 
-        pwait->oval = pwait->val;
+		case swaitOOPT_Never:
+		default:
+			break;
+	}
 
-        recGblGetTimeStamp(pwait); 
-        /* check event list */
-        monitor(pwait);
+	pwait->oval = pwait->val;
 
-        if (!async) {
-			recGblFwdLink(pwait);
-			pwait->pact = FALSE;
-        }
-        return(0);
+	recGblGetTimeStamp(pwait); 
+	/* check event list */
+	monitor(pwait);
+
+	if (!async) {
+		recGblFwdLink(pwait);
+		pwait->pact = FALSE;
+	}
+	return(0);
 }
 
-static long special(paddr,after)
+STATIC long special(paddr,after)
     struct dbAddr *paddr;
     int	   	  after;
 {
@@ -507,7 +523,7 @@ static long special(paddr,after)
     }
 }
 
-static long get_precision(paddr,precision)
+STATIC long get_precision(paddr,precision)
     struct dbAddr *paddr;
     long	  *precision;
 {
@@ -523,7 +539,7 @@ static long get_precision(paddr,precision)
     return(0);
 }
 
-static long get_graphic_double(paddr,pgd)
+STATIC long get_graphic_double(paddr,pgd)
     struct dbAddr *paddr;
     struct dbr_grDouble	*pgd;
 {
@@ -536,7 +552,7 @@ static long get_graphic_double(paddr,pgd)
     return(0);
 }
 
-static long get_alarm_double(paddr,pad)
+STATIC long get_alarm_double(paddr,pad)
     struct dbAddr *paddr;
     struct dbr_alDouble *pad;
 {
@@ -544,7 +560,7 @@ static long get_alarm_double(paddr,pad)
     return(0);
 }
 
-static void monitor(pwait)
+STATIC void monitor(pwait)
     swaitRecord   *pwait;
 {
         unsigned short  monitor_mask;
@@ -590,7 +606,7 @@ static void monitor(pwait)
 }
 
 
-static long initSiml(pwait)
+STATIC long initSiml(pwait)
 swaitRecord   *pwait;
 { 
 
@@ -607,7 +623,7 @@ swaitRecord   *pwait;
     return(0);
 }
 
-static int fetch_values(pwait)
+STATIC int fetch_values(pwait)
 swaitRecord *pwait;
 {
         struct cbStruct *pcbst = (struct cbStruct *)pwait->cbst;
@@ -652,22 +668,34 @@ swaitRecord *pwait;
  * NOTE: THE RECORD REMAINS "ACTIVE" WHILE WAITING ON THE WATCHDOG
  *
  **************************************************************************/
-static void schedOutput(pwait)
-    swaitRecord   *pwait;
+STATIC void schedOutput(swaitRecord *pwait)
 {
+	struct cbStruct *pcbst = (struct cbStruct *)pwait->cbst;
 
-struct cbStruct *pcbst = (struct cbStruct *)pwait->cbst;
-
-int                   wdDelay;
+	int	wdDelay;
  
-    if (pwait->odly > 0.0) {
-      /* Use the watch-dog as a delay mechanism */
-      pcbst->outputWait = 1;
-      wdDelay = pwait->odly * sysClkRateGet();
-      wdStart(pcbst->wd_id, wdDelay, (FUNCPTR)execOutput, (int)(pwait->cbst));
-    } else {
-      execOutput(pwait->cbst);
-    }
+	if (pwait->odly > 0.0) {
+		/* Use the watch-dog as a delay mechanism */
+		pcbst->outputWait = 1;
+		wdDelay = pwait->odly * sysClkRateGet();
+		wdStart(pcbst->wd_id, wdDelay, (FUNCPTR)callbackRequest, (int)(&pcbst->doOutCb));
+	} else {
+		execOutput(pwait);
+	}
+}
+
+
+static void doOutputCallback(CALLBACK *pcallback)
+{
+	dbCommon    *pwait;
+	struct rset *prset;
+
+	callbackGetUser(pwait, pcallback);
+	prset = (struct rset *)pwait->rset;
+
+	dbScanLock((struct dbCommon *)pwait);
+	(*prset->process)(pwait);
+	dbScanUnlock((struct dbCommon *)pwait);
 }
 
 /***************************************************************************
@@ -677,27 +705,32 @@ int                   wdDelay;
  * lock sets.
  *
  ***************************************************************************/
-void execOutput(pcbst)
-   struct cbStruct *pcbst;
+STATIC void execOutput(swaitRecord *pwait)
 {
-long status;
-size_t nRequest = 1;
-double oldDold, outValue=0;
+	long status;
+	size_t nRequest = 1;
+	double oldDold, outValue=0;
+	struct cbStruct *pcbst = pwait->cbst;
 
-    /* if output link is valid , decide between VAL and DOL */
-    if (!pcbst->pwait->outv) {
-        if (pcbst->pwait->dopt) {
-            if (!pcbst->pwait->dolv) {
-                oldDold = pcbst->pwait->dold;
-                status = recDynLinkGet(&pcbst->caLinkStruct[DOL_INDEX],
-                               &(pcbst->pwait->dold), &nRequest, 0, 0, 0);
-                if (pcbst->pwait->dold != oldDold)
-                  db_post_events(pcbst->pwait,&pcbst->pwait->dold,DBE_VALUE);
-            }
-			outValue = pcbst->pwait->dold;
-        } else {
-			outValue = pcbst->pwait->val;
-        }
+	if (swaitRecordDebug >= 10)
+		printf("swaitRecord(%s)execOutput: entry\n", pwait->name);
+	/* if output link is valid , decide between VAL and DOL */
+	if (!pwait->outv) {
+		if (pwait->dopt) {
+			if (!pwait->dolv) {
+				oldDold = pwait->dold;
+				status = recDynLinkGet(&pcbst->caLinkStruct[DOL_INDEX],
+						&(pwait->dold), &nRequest, 0, 0, 0);
+				if (pwait->dold != oldDold)
+					db_post_events(pwait,&pcbst->pwait->dold,DBE_VALUE);
+			}
+			outValue = pwait->dold;
+		} else {
+			outValue = pwait->val;
+		}
+		if (swaitRecordDebug >= 10)
+			printf("swaitRecord(%s)execOutput: calling recDynLinkPutCallback()\n",
+				pwait->name);
 		status = recDynLinkPutCallback(&pcbst->caLinkStruct[OUT_INDEX],
 			&outValue, 1, notifyCallback);
 		if (status == NOTIFY_IN_PROGRESS) {
@@ -711,19 +744,22 @@ double oldDold, outValue=0;
 			status = recDynLinkPut(&pcbst->caLinkStruct[OUT_INDEX], &outValue, 1);
 		}
 	} else {
-		recGblFwdLink(pcbst->pwait);
+		if (swaitRecordDebug >= 10)
+			printf("swaitRecord(%s)execOutput: calling recGblFwdLink()\n", pwait->name);
+		recGblFwdLink(pwait);
 	}
 
-	if (pcbst->pwait->oevt > 0) {post_event((int)pcbst->pwait->oevt);}
+	if (pwait->oevt > 0) {post_event((int)pwait->oevt);}
 	pcbst->outputWait = 0;
-	pcbst->pwait->pact = FALSE;
+	pwait->pact = FALSE;
 
-    /* If I/O Interrupt scanned, see if any inputs changed during delay */
-    if ((pcbst->pwait->scan == SCAN_IO_EVENT) && (pcbst->procPending == 1)) {
-       scanOnce(pcbst->pwait);
-    }
-
-    return;
+	/* If I/O Interrupt scanned, see if any inputs changed during delay */
+	if ((pwait->scan == SCAN_IO_EVENT) && (pcbst->procPending == 1)) {
+		if (swaitRecordDebug >= 10)
+			printf("swaitRecord(%s)execOutput: calling scanOnce()\n", pwait->name);
+		scanOnce(pwait);
+	}
+	return;
 }
 
 
@@ -734,7 +770,7 @@ double oldDold, outValue=0;
  * request is issued to the routine ioIntProcess
  */
 
-static void inputChanged(recDynLink *precDynLink)
+STATIC void inputChanged(recDynLink *precDynLink)
 {
   swaitRecord *pwait = ((recDynLinkPvt *)precDynLink->puserPvt)->pwait;
   struct cbStruct   *pcbst = (struct cbStruct   *)pwait->cbst;
@@ -753,13 +789,13 @@ static void inputChanged(recDynLink *precDynLink)
     /* put input index and monitored data on processing queue */
     recDynLinkGet(precDynLink, &monData, &nRequest, 0, 0, 0); 
     if (swaitRecordDebug>5)
-        printf("%s:queuing monitor on %d = %f\n",pwait->name,index,monData);
+        printf("swaitRecord(%s)inputChanged: queuing monitor on %d = %f\n",pwait->name,index,monData);
     if (rngBufPut(pcbst->monitorQ, (void *)&index, sizeof(char))
         != sizeof(char)) errMessage(0,"recWait rngBufPut error");
     if (rngBufPut(pcbst->monitorQ, (void *)&monData, sizeof(double))
         != sizeof(double)) errMessage(0,"recWait rngBufPut error");
 	if (swaitRecordDebug>5) {
-		printf("%s:%d entries left in monitorQ\n", pwait->name,
+		printf("swaitRecord(%s)inputChanged: %d entries left in monitorQ\n", pwait->name,
 			rngFreeBytes(pcbst->monitorQ)/sizeof(struct qStruct));
 	}
     callbackRequest(&pcbst->ioProcCb);
@@ -770,56 +806,54 @@ static void inputChanged(recDynLink *precDynLink)
    event queue is built by inputChanged() and emptied here so each change
    of an input causes the record to process.
 */
-static void ioIntProcess(CALLBACK *pioProcCb)
+STATIC void ioIntProcess(CALLBACK *pioProcCb)
 {
+	swaitRecord *pwait;
+	struct cbStruct   *pcbst;
 
-    swaitRecord *pwait;
-    struct cbStruct   *pcbst;
+	char     inputIndex;
+	double   monData;
+	double   *pInput; 
 
-    char     inputIndex;
-    double   monData;
-    double   *pInput; 
+	callbackGetUser(pwait, pioProcCb);
+	pcbst = (struct cbStruct *)pwait->cbst;
+	pInput = &pwait->a;  /* a pointer to the first input field */
 
-    callbackGetUser(pwait, pioProcCb);
-    pcbst = (struct cbStruct *)pwait->cbst;
-    pInput = &pwait->a;  /* a pointer to the first input field */
+	if (pwait->scan != SCAN_IO_EVENT) return;
 
-    if (pwait->scan != SCAN_IO_EVENT) return;
+	if (!swaitRecordCacheMode) {
+		if (rngBufGet(pcbst->monitorQ, (void *)&inputIndex, sizeof(char))
+			!= sizeof(char)) errMessage(0, "recWait: rngBufGet error");
+		if (rngBufGet(pcbst->monitorQ, (void *)&monData, sizeof(double))
+			!= sizeof(double)) errMessage(0, "recWait: rngBufGet error");
 
-    if (!swaitRecordCacheMode) {
-      if (rngBufGet(pcbst->monitorQ, (void *)&inputIndex, sizeof(char))
-          != sizeof(char)) errMessage(0, "recWait: rngBufGet error");
-      if (rngBufGet(pcbst->monitorQ, (void *)&monData, sizeof(double))
-          != sizeof(double)) errMessage(0, "recWait: rngBufGet error");
-
-      if (swaitRecordDebug>=5)
-          printf("%s:processing on %d = %f  (%f)\n", pwait->name,
-                  inputIndex, monData,pwait->val);
-      pInput += inputIndex;   /* pointer arithmetic for appropriate input */ 
-      dbScanLock((struct dbCommon *)pwait);
-      *pInput = monData;      /* put data in input data field */
+		if (swaitRecordDebug>=5)
+			printf("swaitRecord(%s)ioIntProcess: processing on %d = %f  (%f)\n",
+				pwait->name, inputIndex, monData,pwait->val);
+		pInput += inputIndex;   /* pointer arithmetic for appropriate input */ 
+		dbScanLock((struct dbCommon *)pwait);
+		*pInput = monData;      /* put data in input data field */
       
-      /* Process the record, unless busy waiting to do the output link */
-      if (pcbst->outputWait) {
-          pcbst->procPending = 1;
-          if (swaitRecordDebug) printf("%s:record busy, setting procPending\n", pwait->name);
-      }
-      else {
-          dbProcess((struct dbCommon *)pwait);     /* process the record */
-      }
-      dbScanUnlock((struct dbCommon *)pwait);
-    }
-    else {
-      if (swaitRecordDebug>=5) printf("%s:processing (cached)\n", pwait->name);
-      dbScanLock((struct dbCommon *)pwait);
-      dbProcess((struct dbCommon *)pwait);     /* process the record */
-      dbScanUnlock((struct dbCommon *)pwait);
-    } 
-
+		/* Process the record, unless busy waiting to do the output link */
+		if (pcbst->outputWait) {
+			pcbst->procPending = 1;
+			if (swaitRecordDebug)
+				printf("swaitRecord(%s)ioIntProcess:record busy, setting procPending\n", 
+					pwait->name);
+		} else {
+			dbProcess((struct dbCommon *)pwait);     /* process the record */
+		}
+		dbScanUnlock((struct dbCommon *)pwait);
+	} else {
+		if (swaitRecordDebug>=5) printf("%s:processing (cached)\n", pwait->name);
+		dbScanLock((struct dbCommon *)pwait);
+		dbProcess((struct dbCommon *)pwait);     /* process the record */
+		dbScanUnlock((struct dbCommon *)pwait);
+	} 
 }
     
 
-LOCAL void pvSearchCallback(recDynLink *precDynLink)
+STATIC void pvSearchCallback(recDynLink *precDynLink)
 {
 
     recDynLinkPvt     *puserPvt = (recDynLinkPvt *)precDynLink->puserPvt;
