@@ -42,10 +42,12 @@
  * .09  01-18-00    tmm    v3.6: special() did not list INGG...INLL
  * .10  05-08-00    tmm    v3.61: changed some status messages to debug messages.
  * .11  08-22-00    tmm    v3.62: changed message text.
+ * .12  04-22-03    tmm    v3.7: RPC fields now allocated in dbd file, since
+ *                         sCalcPostfix doesn't allocate them anymore
  *
  */
 
-#define VERSION 3.62
+#define VERSION 3.7
 
 
 #include	<vxWorks.h>
@@ -201,9 +203,6 @@ static long init_record(pcalc,pass)
     
 	prpvt = (struct rpvtStruct *)pcalc->rpvt;
 
-	pcalc->rpcl = 0;
-	pcalc->orpc = 0;
-
 	plink = &pcalc->inpa;
 	pvalue = &pcalc->a;
 	plinkValid = &pcalc->inav;
@@ -237,7 +236,7 @@ static long init_record(pcalc,pass)
 		db_post_events(pcalc,plinkValid,DBE_VALUE);
 	}
 
-	pcalc->clcv = sCalcPostfix(pcalc->calc,(char **)&pcalc->rpcl,&error_number);
+	pcalc->clcv = sCalcPostfix(pcalc->calc,pcalc->rpcl,&error_number);
 	if (pcalc->clcv) {
 		recGblRecordError(S_db_badField,(void *)pcalc,
 			"scalcout: init_record: Illegal CALC field");
@@ -245,7 +244,7 @@ static long init_record(pcalc,pass)
 	}
 	db_post_events(pcalc,&pcalc->clcv,DBE_VALUE);
 
-	pcalc->oclv = sCalcPostfix(pcalc->ocal,(char **)&pcalc->orpc,&error_number);
+	pcalc->oclv = sCalcPostfix(pcalc->ocal,(char *)pcalc->orpc,&error_number);
 	if (pcalc->oclv) {
 		recGblRecordError(S_db_badField,(void *)pcalc,
 			"scalcout: init_record: Illegal OCAL field");
@@ -301,7 +300,7 @@ static long process(pcalc)
 	if (fetch_values(pcalc)==0) {
 		stat = sCalcPerform(&pcalc->a, ARG_MAX, (char **)(pcalc->strs),
 				STRING_ARG_MAX, &pcalc->val, pcalc->sval, STRING_SIZE,
-				(char *)pcalc->rpcl);
+				pcalc->rpcl);
 		if (stat)
 			recGblSetSevr(pcalc,CALC_ALARM,INVALID_ALARM);
 		else
@@ -381,7 +380,7 @@ static long special(paddr,after)
 	if (!after) return(0);
 	switch (fieldIndex) {
 	case scalcoutRecordCALC:
-		pcalc->clcv = sCalcPostfix(pcalc->calc, (char **)&pcalc->rpcl, &error_number);
+		pcalc->clcv = sCalcPostfix(pcalc->calc, pcalc->rpcl, &error_number);
 		if (pcalc->clcv) {
 			recGblRecordError(S_db_badField,(void *)pcalc,
 				"scalcout: special(): Illegal CALC field");
@@ -392,7 +391,7 @@ static long special(paddr,after)
 		break;
 
 	case scalcoutRecordOCAL:
-		pcalc->oclv = sCalcPostfix(pcalc->ocal, (char **)&pcalc->orpc, &error_number);
+		pcalc->oclv = sCalcPostfix(pcalc->ocal, (char *)pcalc->orpc, &error_number);
 		if (pcalc->oclv) {
 			recGblRecordError(S_db_badField,(void *)pcalc,
 				"scalcout: special(): Illegal OCAL field");

@@ -848,14 +848,16 @@ recordtype(scalcout) {
 		special(SPC_NOMOD)
 		interest(3)
 	}
-	field(RPCL,DBF_LONG) {
+	field(RPCL,DBF_NOACCESS) {
 		prompt("Reverse Polish Calc")
 		special(SPC_NOMOD)
 		interest(4)
+		extra("char	rpcl[240]")
 	}
-	field(ORPC,DBF_LONG) {
+	field(ORPC,DBF_NOACCESS) {
 		prompt("Reverse Polish OCalc")
 		special(SPC_NOMOD)
 		interest(4)
+		extra("char	orpc[240]")
 	}
 }
