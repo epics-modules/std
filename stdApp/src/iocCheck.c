@@ -62,3 +62,18 @@ void taskFault(userarg)
 {
     iocStatus = 0;
 }
+
+#include <registryFunction.h>
+#include <epicsExport.h>
+
+static registryFunctionRef iocCheckRef[] = {
+	{"iocCheckInit",(REGISTRYFUNCTION)iocCheckInit},
+	{"iocCheck",(REGISTRYFUNCTION)iocCheck}
+};
+
+void iocCheckRegistrar(void)
+{
+	registryFunctionRefAdd(iocCheckRef, NELEMENTS(iocCheckRef));
+}
+
+epicsExportRegistrar(iocCheckRegistrar);
