@@ -45,6 +45,8 @@ rebuild:: clean install
 
 install:: inc buildInstall 
 
+depends:: $(DEPENDS)
+
 buildInstall:: build $(INSTALL_DATA)
 
 clean::
