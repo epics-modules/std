@@ -411,9 +411,9 @@ asyncFinish(sseqRecord *pR)
  * compiler doesn't seem to understand that dbCaCallback means pointer to
  * function returning void, and it wants a return argument.
   */
-void /* dbCaCallback */ putCallbackCB(void *arg)
+void epicsShareAPI putCallbackCB(void *arg)
 {
-        struct link *plink = (struct link *)arg;
+	struct link *plink = (struct link *)arg;
 	sseqRecord			*pR = (sseqRecord *)(plink->value.pv_link.precord);
 	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
 	struct linkGroup	*plinkGroup;
@@ -699,7 +699,7 @@ static long special(struct dbAddr *paddr, int after)
 		plinkGroup = (struct linkGroup *)&pR->dly1;
 		plinkGroup += lnkIndex;
 		plinkGroup->dol_field_type = DBF_unknown;
-		if (plinkGroup->dol.value.pv_link.pvname[0]) {
+		if (plinkGroup->dol.value.pv_link.pvname && plinkGroup->dol.value.pv_link.pvname[0]) {
 			plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
 			if (plinkGroup->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 		}
@@ -732,7 +732,8 @@ static long special(struct dbAddr *paddr, int after)
 				&pR->lnk1, &plinkGroup->lnk);
 		}
 		plinkGroup->lnk_field_type = DBF_unknown;
-		if (plinkGroup->lnk.value.pv_link.pvname[0]) {
+
+		if (plinkGroup->lnk.value.pv_link.pvname && plinkGroup->lnk.value.pv_link.pvname[0]) {
 			plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
 			if (plinkGroup->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 		}
