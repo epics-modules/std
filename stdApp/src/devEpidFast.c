@@ -17,7 +17,6 @@
 #include <dbDefs.h>
 #include <link.h>
 #include <epicsPrint.h>
-#include <epicsExport.h>
 #include <epicsMutex.h>
 #include <epicsString.h>
 #include <dbCommon.h>
@@ -31,6 +30,7 @@
 #include <asynFloat64.h>
 
 #include "epidRecord.h"
+#include <epicsExport.h>
 
 typedef struct {
     double setPoint;
@@ -122,16 +122,16 @@ static long init_record(epidRecord *pepid)
     pinstio = (struct instio*)&(pepid->inp.value);
     /* Parse to get inputName, inputChannel, 
      * outputName, outputChannel 
-     * Copy to temp, since strtok_r overwrites it */
+     * Copy to temp, since epicsStrtok_r overwrites it */
     strncpy(temp, pinstio->string, sizeof(temp));
     tok_save = NULL;
-    p = strtok_r(temp, ", ", &tok_save);
+    p = epicsStrtok_r(temp, ", ", &tok_save);
     pPvt->inputName = epicsStrDup(p);
-    p = strtok_r(NULL, ", ", &tok_save);
+    p = epicsStrtok_r(NULL, ", ", &tok_save);
     pPvt->inputChannel = atoi(p);
-    p = strtok_r(NULL, ", ", &tok_save);
+    p = epicsStrtok_r(NULL, ", ", &tok_save);
     pPvt->outputName = epicsStrDup(p);
-    p = strtok_r(NULL, ", ", &tok_save);
+    p = epicsStrtok_r(NULL, ", ", &tok_save);
     pPvt->outputChannel = atoi(p);
     pPvt->mutexId = epicsMutexCreate();
 
