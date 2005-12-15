@@ -115,20 +115,10 @@ Modification Log:
 #ifdef NODEBUG
 #define Debug(l,FMT,V) ;
 #else
-#ifdef __GNUC__
-#define Debug(l,f,v...) { if(l<=scalerRecordDebug) \
-		{printf("%s(%d):",__FILE__,__LINE__); printf(f ,## v); }}
-#else
-#ifdef __SUNPRO_CC
-#define Debug(l,...) { if(l<=scalerRecordDebug) \
-		{printf("%s(%d):",__FILE__,__LINE__); printf(__VA_ARGS__); }}
-#else
-#define Debug(l,FMT,V) {  if(l <= scalerRecordDebug) \
-			{ printf("%s(%d):",__FILE__,__LINE__); \
-			  printf(FMT,V); } }
+#define Debug(level)  if(level<=scalerRecordDebug) \
+		{printf("%s(%d):",__FILE__,__LINE__); printf(
 #endif
-#endif
-#endif
+
 volatile int scalerRecordDebug = 0;
 volatile int scaler_wait_time = 10;
 
@@ -190,7 +180,7 @@ static void deviceCallbackFunc(CALLBACK *pcb)
 	scalerRecord *pscal;
 
 	callbackGetUser(pscal, pcb);
-	Debug(5, "scaler deviceCallbackFunc: entry for '%s'\n", pscal->name);
+	Debug(5) "scaler deviceCallbackFunc: entry for '%s'\n", pscal->name);}
 	dbScanLock((struct dbCommon *)pscal);
 	process((struct dbCommon *)pscal);
 	dbScanUnlock((struct dbCommon *)pscal);
@@ -203,7 +193,7 @@ static void updateCallbackFunc(CALLBACK *pcb)
 	struct rpvtStruct *prpvt;
 
 	callbackGetUser(pscal, pcb);
-	Debug(5, "scaler updateCallbackFunc: entry for '%s'\n", pscal->name);
+	Debug(5) "scaler updateCallbackFunc: entry for '%s'\n", pscal->name);}
 	prpvt = (struct rpvtStruct *)pscal->rpvt;
 	epicsMutexLock(prpvt->updateMutex);
 	updateCounts(pscal);
@@ -220,7 +210,7 @@ static void delayCallbackFunc(CALLBACK *pcb)
 	 * process() to start counting.
 	 */
 	callbackGetUser(pscal, pcb);
-	Debug(5, "scaler delayCallbackFunc: entry for '%s'\n", pscal->name);
+	Debug(5) "scaler delayCallbackFunc: entry for '%s'\n", pscal->name);}
 	if (pscal->us == USER_STATE_WAITING && pscal->cnt) {
 		pscal->us = USER_STATE_REQSTART;
 		(void)scanOnce((void *)pscal);
@@ -232,7 +222,7 @@ static void autoCallbackFunc(CALLBACK *pcb)
     scalerRecord *pscal;
 
 	callbackGetUser(pscal, pcb);
-	Debug(5, "scaler autoCallbackFunc: entry for '%s'\n", pscal->name);
+	Debug(5) "scaler autoCallbackFunc: entry for '%s'\n", pscal->name);}
 	(void)scanOnce((void *)pscal);
 }
 
@@ -246,8 +236,8 @@ int pass;
 		*pautoCallback, *pdeviceCallback;
     struct rpvtStruct *prpvt;
 
-	Debug(5, "scaler init_record: pass = %d\n", pass);
-	Debug(5, "init_record: .PR1 = %ld\n", (long)pscal->pr1);
+	Debug(5) "scaler init_record: pass = %d\n", pass);}
+	Debug(5) "init_record: .PR1 = %ld\n", (long)pscal->pr1);}
 	if (pass == 0) {
 		pscal->vers = VERSION;
         pscal->rpvt = (void *)calloc(1, sizeof(struct rpvtStruct));
@@ -299,11 +289,11 @@ int pass;
 		return(S_dev_noDSET);
 	}
 
-	Debug(2, "init_record: calling dset->init_record\n");
+	Debug(2) "init_record: calling dset->init_record\n");}
 	if (pdset->init_record)
 	{
 		status=(*pdset->init_record)(pscal);
-		Debug(3, "init_record: dset->init_record returns %ld\n", status);
+		Debug(3) "init_record: dset->init_record returns %ld\n", status);}
 		if (status) {
 			pscal->card = -1;
 			return (status);
@@ -329,12 +319,12 @@ int pass;
 		/* convert time to clock ticks */
 		pscal->pr1 = (long) (pscal->tp * pscal->freq);
 		db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
-		Debug(3, "init_record: .TP != 0, so .PR1 set to %ld\n", (long)pscal->pr1);
+		Debug(3) "init_record: .TP != 0, so .PR1 set to %ld\n", (long)pscal->pr1);}
 	} else if (pscal->pr1 && pscal->freq) {
 		/* convert clock ticks to time */
 		pscal->tp = (double)(pscal->pr1 / pscal->freq);
 		db_post_events(pscal,&(pscal->tp),DBE_VALUE);
-		Debug(3, "init_record: .PR1/.FREQ != 0, so .TP set to %f\n", pscal->tp);
+		Debug(3) "init_record: .PR1/.FREQ != 0, so .TP set to %f\n", pscal->tp);}
 	}
 	return(0);
 }
@@ -358,7 +348,7 @@ scalerRecord *pscal;
     struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
 
 	
-	Debug(5, "process: entry\n");
+	Debug(5) "process: entry\n");}
 	epicsMutexLock(prpvt->updateMutex);
 
 	pscal->pact = TRUE;
@@ -415,7 +405,7 @@ scalerRecord *pscal;
 				for (i=0; i<pscal->nch; i++) {
 					pdir[i] = pgate[i];
 					if (pgate[i]) {
-						Debug(5, "process: writing preset: %ld.\n", ppreset[i]);
+						Debug(5) "process: writing preset: %ld.\n", ppreset[i]);}
 						(*pdset->write_preset)(card, i, ppreset[i]);
 					}
 				}
@@ -448,7 +438,7 @@ scalerRecord *pscal;
 		}
 		if (handled) {
 			pscal->pcnt = pscal->cnt;
-			Debug(2, "process: posting .CNT field (%d)\n", pscal->cnt);
+			Debug(2) "process: posting .CNT field (%d)\n", pscal->cnt);}
 			db_post_events(pscal,&(pscal->cnt),DBE_VALUE);
 		}
 	}
@@ -460,7 +450,7 @@ scalerRecord *pscal;
 		/* fire .cout link to trigger anything that should coincide with scaler integration */
 		status = dbPutLink(&pscal->cout, DBR_SHORT, &pscal->cnt, 1);
 		if (!RTN_SUCCESS(status)) {
-			Debug(5, "scaler:process: ERROR %d PUTTING TO COUT LINK.\n", status);
+			Debug(5) "scaler:process: ERROR %d PUTTING TO COUT LINK.\n", status);}
 		}
 	}
 
@@ -487,7 +477,7 @@ scalerRecord *pscal;
 		if (putNotifyOperation) dly_sec = MAX(pscal->dly1, scaler_wait_time);
 		/* if (we-have-to-wait && we-haven't-already-waited) { */
 		if (dly_sec > 0 && pscal->ss != SCALER_STATE_WAITING) {
-			Debug(5, "process: scheduling autocount restart\n");
+			Debug(5) "process: scheduling autocount restart\n");}
 			/*
 			 * Schedule a callback, and make a note that counting should start
 			 * the next time we process (if pscal->ss is still SCALER_STATE_WAITING
@@ -496,7 +486,7 @@ scalerRecord *pscal;
 			pscal->ss = SCALER_STATE_WAITING;  /* tell ourselves to start next time */
 			callbackRequestDelayed(pautoCallback, dly_sec);
 		} else {
-			Debug(5, "process: restarting autocount\n");
+			Debug(5) "process: restarting autocount\n");}
 			/* Either the delay time is zero, or pscal->ss = SCALER_STATE_WAITING
 			 * (we've already waited), so start auto-count counting.
 			 * Different rules apply for auto-count counting:
@@ -555,7 +545,7 @@ static void updateCounts(scalerRecord *pscal)
 	double old_t;
 
 	called_by_process = (pscal->pact == TRUE);
-	Debug(5, "updateCounts: %s called by process()\n", called_by_process ? " " : "NOT");
+	Debug(5) "updateCounts: %s called by process()\n", called_by_process ? " " : "NOT");}
 	if (!called_by_process) {
 		if (pscal->ss != SCALER_STATE_IDLE)
 			pscal->pact = TRUE;
@@ -570,7 +560,7 @@ static void updateCounts(scalerRecord *pscal)
 		for (i=0; i<pscal->nch; i++) {counts[i] = 0;}
 	}
 
-	Debug(5, "updateCounts: posting scaler values\n");
+	Debug(5) "updateCounts: posting scaler values\n");}
 	/* post scaler values */
 	for (i=0; i<pscal->nch; i++) {
 		if (counts[i] != pscaler[i]) {
@@ -585,7 +575,7 @@ static void updateCounts(scalerRecord *pscal)
 
 	if (pscal->ss == SCALER_STATE_COUNTING) {
 		/* arrange to call this routine again after user-specified time */
-		Debug(5, "updateCounts: arranging for callback\n");
+		Debug(5) "updateCounts: arranging for callback\n");}
 		rate = ((pscal->us == USER_STATE_COUNTING) ? pscal->rate : pscal->rat1);
 		if (rate > .1) {
 			callbackRequestDelayed(pupdateCallback, 1.0/rate);
@@ -593,7 +583,7 @@ static void updateCounts(scalerRecord *pscal)
 	}
 
 	if (!called_by_process) pscal->pact = FALSE;
-	Debug(5, "updateCounts: exit\n");
+	Debug(5) "updateCounts: exit\n");}
 }
 
 
@@ -609,7 +599,7 @@ int	after;
 	CALLBACK *pdelayCallback = (CALLBACK *)&(pcallbacks[1]);
     int fieldIndex = dbGetFieldIndex(paddr);
 
-	Debug(5, "special: entry; after=%d\n", after);
+	Debug(5) "special: entry; after=%d\n", after);}
 	if (!after) return (0);
 
 	switch (fieldIndex) {
@@ -685,8 +675,8 @@ int	after;
 	default:
 		if ((fieldIndex >= scalerRecordPR2) &&
 				(fieldIndex <= scalerRecordPR64)) {
-			i = (paddr->pfield - (void *)&(pscal->pr1)) / sizeof(long);
-			Debug(4, "special: channel %d preset\n", i);
+			i = ((char *)paddr->pfield - (char *)&(pscal->pr1)) / sizeof(long);
+			Debug(4) "special: channel %d preset\n", i);}
 			pdir = (unsigned short *) &(pscal->d1);
 			pgate = (unsigned short *) &(pscal->g1);
 			ppreset = (long *) &(pscal->pr1);
@@ -700,8 +690,8 @@ int	after;
 				(fieldIndex <= scalerRecordG64)) {
 			/* If user set gate field, make sure preset counter has some */
 			/* reasonable value. */
-			i = (int)((paddr->pfield - (void *)&(pscal->g1)) / sizeof(short));
-			Debug(4, "special: channel %d gate\n", i);
+			i = (int)(((char *)paddr->pfield - (char *)&(pscal->g1)) / sizeof(short));
+			Debug(4) "special: channel %d gate\n", i);}
 			ppreset = (long *) &(pscal->pr1);
 			pgate = (unsigned short *) &(pscal->g1);
 			if (pgate[i] && (ppreset[i] == 0)) {
