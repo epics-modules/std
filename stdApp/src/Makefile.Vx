@@ -36,6 +36,7 @@ SRCS.cc += ../fastPID.cc
 SRCS.c += ../genSubRecord.c
 SRCS.c += ../devAoVMI4116.c
 SRCS.c += ../interp.c
+SRCS.c += ../arrayTest.c
 
 # Override base with local version that uses ca_put_callback
 SRCS.c += ../recDynLink.c
@@ -58,6 +59,10 @@ SRCS.c += ../devIK320.c
 SRCS.c += ../drvIK320.c
 SRCS.c += ../drvIK320ErrStat.c
 SRCS.c += ../aiCvtDouble.c
+
+# pvHistory stuff
+SRCS += ../devTimeOfDay.c 
+SRCS += ../pvHistory.c
 
 # Override dbLoadRecords, dbLoadDatabase from base with new versions
 # that work around the lack of soft links in 3.13.1
