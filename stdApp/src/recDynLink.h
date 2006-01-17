@@ -17,6 +17,8 @@ typedef struct recDynLink{
 	void	*puserPvt;
 	void	*pdynLinkPvt;
 	short	status;
+	short	onQueue;
+	short	getCallbackInProgress;
 } recDynLink;
 typedef void (*recDynCallback)(recDynLink *);
 
@@ -50,6 +52,7 @@ long recDynLinkGetUnits(recDynLink *precDynLink,char *units,int maxlen);
 long recDynLinkGet(recDynLink *precDynLink,
 	void *pbuffer, size_t *nRequest,
 	TS_STAMP *timestamp,short *status,short *severity);
+long recDynLinkGetCallback(recDynLink *precDynLink, size_t *nRequest, recDynCallback userGetCallback);
 long recDynLinkPut(recDynLink *precDynLink,void *pbuffer,size_t nRequest);
 long recDynLinkPutCallback(recDynLink *precDynLink,void *pbuffer,size_t nRequest, recDynCallback notifyCallback);
 
