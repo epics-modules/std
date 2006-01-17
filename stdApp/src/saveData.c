@@ -383,7 +383,8 @@ typedef struct scan {
 /************************************************************************/
 /*---------------------- saveScan task messages ------------------------*/
 
-#define MAX_MSG		1000 /*200*/	/* max # of messages in saveTask queue	*/
+/* #define MAX_MSG		1000*/ /*200*/	/* max # of messages in saveTask queue	*/
+volatile int saveDataMsgQueueSize = 1000; /* Change before saveData_Init() */
 #define MAX_SIZE	80	/* max size in byte of the messages	*/
 
 #define MSG_SCAN_DATA	1	/* save scan        			*/
@@ -722,7 +723,7 @@ int saveData_Init(char* fname, char* macros)
   strncpy(req_macros, macros, 39);
 
   if(msg_queue==NULL) {
-    msg_queue= msgQCreate(MAX_MSG, MAX_SIZE, MSG_Q_FIFO);
+    msg_queue= msgQCreate(saveDataMsgQueueSize, MAX_SIZE, MSG_Q_FIFO);
     if(msg_queue==NULL) {
       Debug0(1, "Unable to create message queue\n");
       return -1;
@@ -773,7 +774,7 @@ void saveData_Version()
 
 void saveData_CVS() 
 {
-  printf("saveData CVS: $Id: saveData.c,v 1.4.2.4 2004-05-27 21:25:00 mooney Exp $\n");
+  printf("saveData CVS: $Id: saveData.c,v 1.4.2.5 2006-01-17 21:22:22 mooney Exp $\n");
 }
 
 void saveData_Info() {
@@ -3085,10 +3086,11 @@ LOCAL void proc_realTime1D(INTEGER_MSG* pmsg)
 /*----------------------------------------------------------------------*/
 /* The task in charge of updating and saving scans           		*/
 /*                                                			*/
+int saveDataNumMsgHW = 0;
 LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,int p8,int p9)
 {
   char*    pmsg;
-  int*     ptype;
+  int     *ptype, n, shortQueueNotify=1;
 
   Debug0(1, "Task saveDataTask running...\n");
 
@@ -3112,7 +3114,9 @@ LOCAL int saveDataTask(int tid,int p1,int p2,int p3,int p4,int p5,int p6,int p7,
   if(taskIsSuspended(tid)) taskResume(tid);
 
   while(1) {
-    
+	/* record max number of messages on queue */
+    n = msgQNumMsgs(msg_queue);
+	if (n > saveDataNumMsgHW) saveDataNumMsgHW = n;
     /* waiting for messages						*/
     if(msgQReceive(msg_queue, pmsg, MAX_SIZE,
                    WAIT_FOREVER)==S_objLib_OBJ_DELETED) {
