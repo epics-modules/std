@@ -6,6 +6,8 @@ menu(sscanDSTATE) {
 	choice(sscanDSTATE_UNPACKED, "UNPACKED")
 	choice(sscanDSTATE_TRIG_ARRAY_READ, "TRIG_ARRAY_READ")
 	choice(sscanDSTATE_ARRAY_READ_WAIT, "ARRAY_READ_WAIT")
+	choice(sscanDSTATE_ARRAY_GET_CALLBACK_WAIT, "ARRAY_GET_CALLBACK_WAIT")
+	choice(sscanDSTATE_RECORD_ARRAY_DATA, "RECORD_ARRAY_DATA")
 	choice(sscanDSTATE_SAVE_DATA_WAIT, "SAVE_DATA_WAIT")
 	choice(sscanDSTATE_PACKED, "PACKED")
 	choice(sscanDSTATE_POSTED, "POSTED")
@@ -74,6 +76,7 @@ menu(sscanFAZE) {
 	choice(sscanFAZE_TRIG_ARRAY_READ,"TRIG_ARRAY_READ")
 	choice(sscanFAZE_ARRAY_READ_WAIT,"WAIT:ARRAY_READ")
 	choice(sscanFAZE_PREVIEW,"PREVIEW")
+	choice(sscanFAZE_RECORD_SCALAR_DATA,"RECORD SCALAR DATA")
 }
 menu(sscanACQM) {
 	choice(sscanACQM_NORMAL,"NORMAL")
@@ -166,7 +169,6 @@ recordtype(sscan) {
 	field(AWAIT, DBF_SHORT) {
 		prompt("Waiting for data-storage client")
 		special(SPC_MOD)
-		pp(TRUE)
 	}
 	field(AAWAIT, DBF_MENU) {
 		prompt("AutoWait for data-storage client")
@@ -1040,7 +1042,7 @@ recordtype(sscan) {
 		asl(ASL0)
 		interest(1)
 		menu(sscanLINKWAIT)
-		initial("YES")
+		initial("Wait")
 	}
 	field(ASWAIT,DBF_MENU) {
 		prompt("Wait for completion?")
@@ -1048,7 +1050,7 @@ recordtype(sscan) {
 		asl(ASL0)
 		interest(1)
 		menu(sscanLINKWAIT)
-		initial("YES")
+		initial("Wait")
 	}
 	field(P1NV,DBF_MENU) {
 		prompt("P1  PV Status")
