@@ -107,6 +107,10 @@ device(epid,VME_IO,devEpidMpf,"MPF EPID")
 # VMI4116 16-bit D/A converter
 device(ao,VME_IO,devAoVMI4116,"VMIVME-4116")
 
+# devTimeOfDay
+device(stringin, CONSTANT, devSiTodString, "Time of Day")
+device(ai, CONSTANT, devAiTodSeconds, "Sec Past Epoch")
+
 ################
 # DRIVER SUPPORT
 ################
