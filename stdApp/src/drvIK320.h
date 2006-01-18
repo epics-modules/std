@@ -1,4 +1,4 @@
-/* $Id: drvIK320.h,v 1.1.1.1 2001-07-03 20:05:28 sluiter Exp $ */
+/* $Id: drvIK320.h,v 1.1.1.1.2.1 2006-01-18 20:42:01 sluiter Exp $ */
 #ifndef DRV_IK320_H
 #define DRV_IK320_H
 
@@ -14,6 +14,9 @@
  * Author: Till Straumann (PTB, 1999) 
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1  2001/07/03 20:05:28  sluiter
+ * Creating
+ *
  * Revision 1.9  1999/05/05 16:25:16  strauman
  *  - added doc: README
  *
@@ -105,23 +108,27 @@ typedef struct dbCommonRec *dbCommon;
  * The driver function calls
  */
 
-#define FUNC_NONE		0
-#define FUNC_ABORT		0
+#define FUNC_NONE	0
+#define FUNC_ABORT	0
 
 #define FUNC_READ_X1	1	
 #define FUNC_READ_X2	2	
 #define FUNC_READ_ALL	3	
-#define FUNC_PRE_X1		4
-#define FUNC_PRE_X2		5
-#define FUNC_PRE_X3		6
-#define FUNC_POST		7
-#define FUNC_REF_X1		8
-#define FUNC_REF_X2		9
+#define FUNC_PRE_X1	4
+#define FUNC_PRE_X2	5
+#define FUNC_PRE_X3	6
+#define FUNC_POST	7
+#define FUNC_REF_X1	8
+#define FUNC_REF_X2	9
 #define FUNC_SET_PARMS	0xa	
 #define FUNC_COMP_X1	0xb	
 #define FUNC_COMP_X2	0xc	
 
 #define FUNC_REF_BOTH	0x18
+
+#define FUNC_NOREF1	0x19
+#define FUNC_NOREF2	0x1A
+#define FUNC_NOREF12	0x1B
 
 #define FUNC_GRP_TRIG	0x0b00
 
