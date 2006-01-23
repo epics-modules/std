@@ -49,6 +49,10 @@ std_SRCS += sseqRecord.c
 # timestamp record
 std_SRCS += timestampRecord.c
 
+# pvHistory stuff
+std_SRCS += devTimeOfDay.c 
+std_SRCS += pvHistory.c
+
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
 INC += devScaler.h
