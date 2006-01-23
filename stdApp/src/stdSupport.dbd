@@ -16,8 +16,19 @@ include "timestampRecord.dbd"
 device(epid,CONSTANT,devEpidSoft,"Soft Channel")
 device(epid,INST_IO,devEpidFast,"Fast Epid")
 
+# devTimeOfDay
+device(stringin, CONSTANT, devSiTodString, "Time of Day")
+device(ai, CONSTANT, devAiTodSeconds, "Sec Past Epoch")
+
 ################
 # DRIVER SUPPORT
 ################
 
+
+################
+# OTHER SUPPORT
+################
+
 variable("sseqRecDebug", int)
+variable("pvHistoryDebug", int)
+registrar(pvHistoryRegister)
