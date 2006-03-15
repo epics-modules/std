@@ -1,4 +1,4 @@
-/* $Id: devIK320.c,v 1.1.1.1.2.3 2006-01-18 20:41:07 sluiter Exp $ */
+/* $Id: devIK320.c,v 1.1.1.1.2.4 2006-03-15 18:43:55 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,9 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1.2.3  2006/01/18 20:41:07  sluiter
+ * Reformatted with spaces replacing tabs.
+ *
  * Revision 1.1.1.1.2.2  2004/01/16 18:07:59  sluiter
  * More bug fixes for when hardware is missing.
  *
@@ -407,7 +410,7 @@ STATIC void ik320GroupChanged(int unregister, int groupNr)
        unregister ? "left" : "joined", groupNr, grp->nAxes);
 }
 
-STATIC void k320GroupAddValue(int groupNr, double value, long status)
+STATIC void ik320GroupAddValue(int groupNr, double value, long status)
 {
     aiRecord        *prec = ik320GroupStatic[groupNr];
     DevIK320GroupAi grp;
