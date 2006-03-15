@@ -1,4 +1,4 @@
-/* $Id: devIK320.c,v 1.1.1.1.2.4 2006-03-15 18:43:55 sluiter Exp $ */
+/* $Id: devIK320.c,v 1.1.1.1.2.5 2006-03-15 19:41:48 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,9 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1.2.4  2006/03/15 18:43:55  sluiter
+ * Typo on ik320GroupAddValue when reformatting.
+ *
  * Revision 1.1.1.1.2.3  2006/01/18 20:41:07  sluiter
  * Reformatted with spaces replacing tabs.
  *
@@ -300,7 +303,7 @@ struct
 STATIC int
 ik320ParmCompare(const void *key, const void *element)
 {
-    return(int)key - (int)((IK320Parm)element)->from;
+    return((int)key - (int)((IK320Parm)element)->from);
 }
 
 /* the entries of the parmTable must be sorted in ascending order
@@ -440,8 +443,8 @@ STATIC long ik320InitGroupAi(int after)
             if (prec)
             {
                 ((DevIK320GroupAi)(prec->dpvt))->nAxes = drvIK320getNGroupListeners(i);
-                DM(4,"ik320InitGroupAi(): group %i has %i listeners\n",
-                   i, ((DevIK320GroupAi)(prec->dpvt))->nAxes);
+                DM(4,"ik320InitGroupAi(): group %i has %i listeners\n", i,
+                   ((DevIK320GroupAi)(prec->dpvt))->nAxes);
             }
         }
     }
@@ -470,10 +473,10 @@ STATIC long ik320InitGroupAiRec(aiRecord *prec)
     if (0 > grpNr || MAX_IK320_GROUPS <= grpNr)
         return(S_drvIK320_invalidParm);
 
-    if (! (prec->dpvt=devState=(DevIK320GroupAi)malloc(sizeof(DevIK320GroupAiRec))) )
+    if (!(prec->dpvt=devState=(DevIK320GroupAi)malloc(sizeof(DevIK320GroupAiRec))) )
         goto cleanup;
 
-    if ( ! (devState->mutex=semMCreate(SEM_Q_FIFO)))
+    if (!(devState->mutex=semMCreate(SEM_Q_FIFO)))
         goto cleanup;
 
     devState->nAxes=0;
@@ -510,7 +513,7 @@ STATIC long ik320ReadGroupAi(aiRecord *prec)
      * !valid && pact: async processing is in progress.
      */
     DM(2,"ik320ReadGroupAi(): entering...");
-    if ( ! grp->valid && ! prec->pact )
+    if (!grp->valid && !prec->pact)
     {
         /* issue group trigger
          * if there are no axes in this group, there will never be
@@ -550,7 +553,7 @@ STATIC long ik320ReadGroupAi(aiRecord *prec)
         aiCvtDouble(prec);
     }
     DM(2,"\n");
-    return(2); /* did conversion on our own */
+    return(2);  /* did conversion on our own */
 }
 
 STATIC void ik320GroupPost(DevIK320GroupAi grp)
@@ -655,10 +658,10 @@ STATIC long ik320InitMbbo(mbboRecord *prec, IK320FunctionDescRec *menu,
     if ((status=ik320Connect(&prec->out,&devState->axis,&devState->drv)))
         goto cleanup;
 
-    idx= multiDim ? (devState->axis-1)*nels : 0;
+    idx = multiDim ? (devState->axis-1)*nels : 0;
 
-    valptr=&(prec->zrvl);
-    nameptr=prec->zrst; 
+    valptr = &(prec->zrvl);
+    nameptr = prec->zrst; 
 
     for (i=0; i< nels && menu[idx+i].name; i++)
     {
@@ -679,8 +682,8 @@ STATIC long ik320InitMbbo(mbboRecord *prec, IK320FunctionDescRec *menu,
 
 cleanup:
     prec->pact=TRUE;
-    if (devState) free(devState);
-
+    if (devState)
+        free(devState);
     return(status);
 }
 
@@ -710,7 +713,8 @@ STATIC long ik320WriteFunct(mbboRecord *prec)
             status = S_drvIK320_invalidParm;
             goto cleanup;
 
-        case FUNC_NONE: status = OK;
+        case FUNC_NONE:
+            status = OK;
             goto cleanup;
 
         case FUNC_GRP_TRIG:
@@ -782,6 +786,7 @@ STATIC long ik320WriteFunct(mbboRecord *prec)
 
         drvIK320Finish(devState->drv);
     }
+
 cleanup:
     prec->rbv = 0;
     prec->val = 0;
@@ -804,7 +809,7 @@ ik320IRQStatus(unsigned short irqStatus, int cmd)
     unsigned char sLo= (irqStatus & 0xff);
     switch (
 }
- */
+*/
 
 STATIC long ik320WriteMbboSync(mbboRecord *prec)
 {
@@ -826,7 +831,9 @@ STATIC long ik320WriteMbboSync(mbboRecord *prec)
     if (prec->pact || FUNC_NONE == cmd)
         return(OK);
 
-    status = drvIK320Request(devState->drv,0 /* sync request */,cmd,0 /* no parameter */);
+    status = drvIK320Request(devState->drv,
+                             0     /* sync request */,
+                             cmd,0 /* no parameter */);
 
     if (OK==status)
     { /* request was handled synchronously */
@@ -849,7 +856,7 @@ cleanup:
     {
         prec->val = prec->mlst;
         recGblRecordError(status,prec,"ik320WriteMbboSync()");
-        epicsPrintf("status = %x",status);
+        epicsPrintf("status = %lx",status);
         recGblSetSevr(prec, WRITE_ALARM,
                       (S_drvIK320_cardBusy==status) ? MINOR_ALARM : INVALID_ALARM);
     }
@@ -881,7 +888,6 @@ cleanup:
     prec->pact=TRUE;
     if (devState)
         free(devState);
-
     return(status);
 }
 
@@ -962,7 +968,6 @@ STATIC long ik320ReadAiFinish(aiRecord *prec)
     }
 
     drvIK320Finish(devState->drv);
-
     return(status);
 }
 
@@ -1016,7 +1021,7 @@ STATIC long ik320ReadAi(aiRecord *prec)
     else
     {        /* completion phase */
         status=ik320ReadAiFinish(prec);
-        if ( ! prec->pact )
+        if (!prec->pact)
         {
             /* if a value could be read, but this is not
              * the completion phase of async processing, this means that
@@ -1029,7 +1034,7 @@ STATIC long ik320ReadAi(aiRecord *prec)
     }
 
 cleanup:
-    DM(1,"ik320ReadAi() exit (status %x).\n",status);
+    DM(1,"ik320ReadAi() exit (status %lx).\n",status);
 
     if (status)
     {
@@ -1037,7 +1042,7 @@ cleanup:
         recGblSetSevr(prec, READ_ALARM,
                       (S_drvIK320_cardBusy==status) ? MINOR_ALARM : INVALID_ALARM);
     }
-    return(2); /* no conversion; we did it on our own */
+    return(2);  /* no conversion; we did it on our own */
 }
 
 STATIC long ik320InitParm(stringoutRecord *prec)
@@ -1064,12 +1069,12 @@ STATIC long ik320scan(char **chpt)
     int  i;
     long rval=0;
     long ch;
-    if ( *(*chpt)++ != 'P' )
+    if (*(*chpt)++ != 'P' )
         return(-1);
     for (i=0; i<2; i++)
     {
         ch=(long)(*(*chpt)++) - '0';
-        if ( ch < 0 || ch > 9 )
+        if (ch < 0 || ch > 9)
             return(-1);
         rval = 10 * rval + ch;
     }
@@ -1079,11 +1084,10 @@ STATIC long ik320scan(char **chpt)
     case ':':
     case ' ':
         return(10*rval); /* done, no '.x' */
-
     case '.':
         break;      /* continue scanning */
     default:
-        return(-1);      /* oops */
+        return(-1); /* oops */
     }
 
     ch = (long)(*(*chpt)++) - '0';
@@ -1168,7 +1172,7 @@ STATIC long ik320WriteParm(stringoutRecord *prec)
 
 
     /* check if they want to read or set the parameter */
-    if ( 0 < (written=sscanf(chpt, fmt, &wVal)) )
+    if (0 < (written=sscanf(chpt, fmt, &wVal)))
     {
         /* (synchronously) write the parameter */
         if (drvIK320Request(drv, 0, FUNC_SET_PARMS, &parm))
@@ -1214,7 +1218,7 @@ STATIC long ik320WriteParm(stringoutRecord *prec)
         }
 
         /* compare the read back value */
-        if ( written )
+        if (written)
         {
             if (parm.type == six)
             {
