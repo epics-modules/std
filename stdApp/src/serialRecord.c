@@ -8,6 +8,7 @@
  * .01  10/28/99  MLR  Added debugging statements
  * .02  9/18/00   MLR  Added "hybrid" mode.  ASCII output but to binary buffer
  *                     Minor changes to avoid compiler warnings.
+ * .03 03/17/06   RLS  modified init_record() to allocate memory on pass=0.
  *
  */
 
@@ -106,7 +107,15 @@ static long init_record(pserial,pass)
     struct serialdset *pdset;
     long status;
 
-    if (pass==0) return(0);
+    if (pass==0)
+    {
+        /* Allocate the space for the binary output and binary input arrays */
+        if (pserial->omax <= 0) pserial->omax=1;
+        if (pserial->imax <= 0) pserial->imax=1;
+        pserial->optr = (char *)calloc(pserial->omax, sizeof(char));
+        pserial->iptr = (char *)calloc(pserial->imax, sizeof(char));
+        return(0);
+    }
 
     if(!(pdset = (struct serialdset *)(pserial->dset))) {
 	recGblRecordError(S_dev_noDSET,(void *)pserial,"serial: init_record");
@@ -120,12 +129,6 @@ static long init_record(pserial,pass)
     if( pdset->init_record ) {
 	if((status=(*pdset->init_record)(pserial))) return(status);
     }
-
-    /* Allocate the space for the binary output and binary input arrays */
-    if (pserial->omax <= 0) pserial->omax=1;
-    if (pserial->imax <= 0) pserial->imax=1;
-    pserial->optr = (char *)calloc(pserial->omax, sizeof(char));
-    pserial->iptr = (char *)calloc(pserial->imax, sizeof(char));
 
     /* Set up the serial port parameters */
     (*pdset->port_setup) (pserial,
