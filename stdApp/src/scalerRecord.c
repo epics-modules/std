@@ -66,9 +66,10 @@ Modification Log:
 11/17/04   tmm     v3.17 If device support changed PR1, recalc and post TP.
                    Autocount now calls write_preset again if device support
                    changed PR1, but doesn't let this change get out to user.
+03/30/06   tmm     v3.18 Don't post CNT unless we changed it.
 
 *******************************************************************************/
-#define VERSION 3.17
+#define VERSION 3.18
 
 #include        <epicsVersion.h>
 
@@ -362,6 +363,7 @@ scalerRecord *pscal;
 		/* Auto-count cycle is not allowed to reset .CNT field. */
 		if (pscal->us == USER_STATE_COUNTING) {
 			pscal->cnt = 0;
+			db_post_events(pscal,&(pscal->cnt),DBE_VALUE);
 			pscal->us = USER_STATE_IDLE;
 			justFinishedUserCount = 1;
 			if (pscal->ppn) putNotifyOperation = 1;
@@ -438,8 +440,6 @@ scalerRecord *pscal;
 		}
 		if (handled) {
 			pscal->pcnt = pscal->cnt;
-			Debug(2) "process: posting .CNT field (%d)\n", pscal->cnt);}
-			db_post_events(pscal,&(pscal->cnt),DBE_VALUE);
 		}
 	}
 
