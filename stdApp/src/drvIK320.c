@@ -1,4 +1,4 @@
-/* $Id: drvIK320.c,v 1.1.1.1.2.7 2006-01-18 20:43:02 sluiter Exp $ */
+/* $Id: drvIK320.c,v 1.1.1.1.2.8 2006-04-14 15:14:28 sluiter Exp $ */
 
 /* DISCLAIMER: This software is provided `as is' and without _any_ kind of
  *             warranty. Use it at your own risk - I won't be responsible
@@ -12,6 +12,10 @@
  * Author: Till Straumann (PTB, 1999)
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.1.1.2.7  2006/01/18 20:43:02  sluiter
+ * - Allow reading without referencing.
+ * - Reformated; replaced tabs with spaces.
+ *
  * Revision 1.1.1.1.2.6  2004/01/16 18:11:55  sluiter
  * drvIK320Connect() returns error when hardware missing.
  *
@@ -69,7 +73,9 @@
  *           memory from drvIK320Connect().
  * 2.2 01-16-04 rls drvIK320Connect() returns error when hardware missing.
  *     01-18-06 rls Default to reading encoder without referencing.
- *
+ *     04-14-06 rls Erroneous, intermittent timeouts because of
+ *                  semTake(drv->sync,1) in drvIK320Request().  1 tick delay
+ *                  only gives 0 to 16.67ms delay. Changed to 2 ticks.
  */
 
 #include <vxWorks.h>
@@ -1026,7 +1032,7 @@ drvIK320Request(IK320Driver drv, dbCommon *prec, int func, void *parm)
         DM(2,"drvIK320: reference; set irq mask...");
         card->irqStatus = 0;
         INTERRUPT(drv);
-        if (semTake(drv->sync,1))
+        if (semTake(drv->sync, 2))
         {
             status = S_drvIK320_timeout;
             break;
