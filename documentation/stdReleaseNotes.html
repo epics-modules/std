@@ -10,6 +10,33 @@ content="text/html; charset=iso-8859-1">
 
 <h1 align="center">std Release Notes</h1>
 
+<h2 align="center">Release 2-5-2</h2>
+
+<ul>
+<li><p>sseqRecord.html rewritten.  The old version was a minimal modification
+of seqRecord.html, from the EPICS Record Reference Manual, and was not
+very clear.
+
+<li><p>scaler record: v3.18: Don't post CNT field unless record-support changed its
+value.  Modified debug macro.
+
+<li><p>devEpidFast.c: changed strtok_r to epicsStrtok_r
+
+<li><p>pvHistory: new software to maintain short-term history of a few PV's in
+the ioc.  Software comprises pvHistory.c (genSub routines), devTimeOfDay.c,
+pvHistory.db, pvHistory.req (autosave-request file), and pvHistory*.adl, and
+relies on autosave to save/restore the value arrays.
+
+<li><p>softMotor.db: shortened some .DESC field values so they fit.
+
+<li><p>all_com_4.db: new file
+
+<li><p>softMotorConfig.adl: related-display callups were using sCalcout files for
+calcout records, because synApps did not contain calcout medm displays.  Now the
+calc module does contain calcout displays, so we use them.
+
+</ul>
+
 <h2 align="center">Release 2-4</h2>
 
 <ul>
