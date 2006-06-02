@@ -2,7 +2,6 @@
 # RECORD SUPPORT
 ################
 include "scalerRecord.dbd"
-#include "gpibRecord.dbd"
 include "sseqRecord.dbd"
 include "epidRecord.dbd"
 include "timestampRecord.dbd"
@@ -13,29 +12,23 @@ include "timestampRecord.dbd"
 
 #include "vxStats.dbd"
 
-# Generic GPIB record
-#device(gpib,GPIB_IO,devGPIB,"GPIB (NI or HIDEOS)")
-#device(gpib,BBGPIB_IO,devGPIB,"GPIB (BitBusS)")
-
 # EPID record
 device(epid,CONSTANT,devEpidSoft,"Soft Channel")
-device(epid,VME_IO,devEpidMpf,"MPF EPID")
+device(epid,INST_IO,devEpidFast,"Fast Epid")
 
-# GP307 GPIB
-device(ai,GPIB_IO,devAiGP307Gpib,"Vg307 GPIB Instrument")
-device(bi,GPIB_IO,devBiGP307Gpib,"Vg307 GPIB Instrument")
-device(bo,GPIB_IO,devBoGP307Gpib,"Vg307 GPIB Instrument")
-device(stringin,GPIB_IO,devSiGP307Gpib,"Vg307 GPIB Instrument")
-
-# Queensgate Piezo drive.
-device(ao,BBGPIB_IO,devAoAX301,"PZT Bug")
-device(ai,BBGPIB_IO,devAiAX301,"PZT Bug")
-device(bo,BBGPIB_IO,devBoAX301,"PZT Bug")
-device(longout,BBGPIB_IO,devLoAX301,"PZT Bug")
+# devTimeOfDay
+device(stringin, CONSTANT, devSiTodString, "Time of Day")
+device(ai, CONSTANT, devAiTodSeconds, "Sec Past Epoch")
 
 ################
 # DRIVER SUPPORT
 ################
 
-variable("fastPIDDebug", int)
+
+################
+# OTHER SUPPORT
+################
+
 variable("sseqRecDebug", int)
+variable("pvHistoryDebug", int)
+registrar(pvHistoryRegister)

@@ -1,7 +1,7 @@
 
 file {
-	name="/home/oxygen4/MOONEY/epics/synApps_4_6/support/std/stdApp/op/adl/yySseq_full.adl"
-	version=030003
+	name="/home/oxygen4/MOONEY/epics/synApps_5_1/support/std/cvs/stdApp/op/adl/yySseq_full.adl"
+	version=030004
 }
 display {
 	object {
@@ -1370,4 +1370,69 @@ menu {
 		clr=14
 		bclr=51
 	}
+}
+composite {
+	object {
+		x=675
+		y=45
+		width=70
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=675
+				y=45
+				width=70
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="WAIT FOR"
+			align="horiz. centered"
+		}
+		text {
+			object {
+				x=675
+				y=55
+				width=70
+				height=10
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="COMPLETION?"
+			align="horiz. centered"
+		}
+	}
+}
+"related display" {
+	object {
+		x=720
+		y=313
+		width=27
+		height=27
+	}
+	display[0] {
+		label="annotated display"
+		name="yySseq_help.adl"
+	}
+	clr=0
+	bclr=17
+	label="-?"
+}
+text {
+	object {
+		x=434
+		y=45
+		width=80
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="NUMERIC"
+	align="horiz. centered"
 }

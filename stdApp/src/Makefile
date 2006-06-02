@@ -22,7 +22,6 @@ include $(TOP)/configure/CONFIG
 # xxxRecord.h will be created from xxxRecord.dbd
 
 DBDINC += scalerRecord
-#DBDINC += gpibRecord
 DBDINC += sseqRecord
 DBDINC += epidRecord
 DBDINC += timestampRecord
@@ -38,34 +37,30 @@ DBD += shareBase.dbd
 
 LIBRARY_IOC += std
 
-std_SRCS_vxWorks += devXxHeidenhainGpib.c
-std_SRCS_vxWorks+= devXxKeithleyDMM199Gpib.c
-
 std_SRCS_vxWorks += aiCvtDouble.c
 
 std_SRCS += scalerRecord.c
-#std_SRCS += gpibRecord.c
 std_SRCS += epidRecord.c
-std_SRCS += fastPID.cc
 std_SRCS += devEpidSoft.c
-std_SRCS += devEpidMpf.cc
-std_SRCS += devGP307gpib.c
-std_SRCS += devXxAX301.c
+std_SRCS += devEpidFast.c
 std_SRCS += sseqRecord.c
 #std_SRCS += devVXStats.c
 
 # timestamp record
 std_SRCS += timestampRecord.c
 
+# pvHistory stuff
+std_SRCS += devTimeOfDay.c 
+std_SRCS += pvHistory.c
+
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
 INC += devScaler.h
-INC += fastPID.h
 INC += aiCvtDouble.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
-std_LIBS += mpf mpfEpics gpib
+std_LIBS += asyn
 std_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
@@ -82,7 +77,7 @@ stdApp_SRCS_vxWorks += -nil-
 stdApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 stdApp_LIBS += std
-stdApp_LIBS += mpf mpfEpics gpib
+stdApp_LIBS += asyn
 stdApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================

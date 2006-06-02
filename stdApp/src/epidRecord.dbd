@@ -9,7 +9,7 @@ menu(epidFeedbackMode) {
 
 recordtype(epid) {
 	include "dbCommon.dbd" 
-	field(VAL,DBF_FLOAT) {
+	field(VAL,DBF_DOUBLE) {
 		prompt("Setpoint")
 		asl(ASL0)
 		pp(TRUE)
@@ -35,19 +35,19 @@ recordtype(epid) {
                 promptgroup(GUI_PID)
                 interest(1)
         }
-	field(CVAL,DBF_FLOAT) {
+	field(CVAL,DBF_DOUBLE) {
 		prompt("Controlled Value")
 		special(SPC_NOMOD)
 	}
-	field(CVLP,DBF_FLOAT) {
+	field(CVLP,DBF_DOUBLE) {
 		prompt("Prev. Controlled Value")
 		special(SPC_NOMOD)
 	}
-	field(OVAL, DBF_FLOAT) {
+	field(OVAL, DBF_DOUBLE) {
 		prompt("Output value")
 		special(SPC_NOMOD)
 	}
-	field(OVLP,DBF_FLOAT) {
+	field(OVLP,DBF_DOUBLE) {
 		prompt("Prev output")
 		special(SPC_NOMOD)
 		interest(3)
@@ -57,7 +57,7 @@ recordtype(epid) {
 		promptgroup(GUI_DISPLAY)
 		interest(1)
 	}
-	field(MDT,DBF_FLOAT) {
+	field(MDT,DBF_DOUBLE) {
 		prompt("Min Delta T")
 		promptgroup(GUI_PID)
 		interest(1)
@@ -80,17 +80,17 @@ recordtype(epid) {
 		interest(1)
 		menu(epidFeedbackState)
 	}
-	field(KP,DBF_FLOAT) {
+	field(KP,DBF_DOUBLE) {
 		prompt("Proportional Gain")
 		promptgroup(GUI_PID)
 		interest(1)
 	}
-	field(KI,DBF_FLOAT) {
+	field(KI,DBF_DOUBLE) {
 		prompt("Intergral Gain")
 		promptgroup(GUI_PID)
 		interest(1)
 	}
-	field(KD,DBF_FLOAT) {
+	field(KD,DBF_DOUBLE) {
 		prompt("Derivative Gain")
 		promptgroup(GUI_PID)
 		interest(1)
@@ -101,42 +101,42 @@ recordtype(epid) {
 		interest(1)
 		size(16)
 	}
-	field(HOPR,DBF_FLOAT) {
+	field(HOPR,DBF_DOUBLE) {
 		prompt("High Operating Range")
 		promptgroup(GUI_DISPLAY)
 		interest(1)
 	}
-	field(LOPR,DBF_FLOAT) {
+	field(LOPR,DBF_DOUBLE) {
 		prompt("Low Operating Range")
 		promptgroup(GUI_DISPLAY)
 		interest(1)
 	}
-	field(DRVH,DBF_FLOAT) {
+	field(DRVH,DBF_DOUBLE) {
 		prompt("High Drive Limit")
 		promptgroup(GUI_DISPLAY)
 		interest(1)
 	}
-	field(DRVL,DBF_FLOAT) {
+	field(DRVL,DBF_DOUBLE) {
 		prompt("Low Drive Limit")
 		promptgroup(GUI_DISPLAY)
 		interest(1)
 	}
-	field(HIHI,DBF_FLOAT) {
+	field(HIHI,DBF_DOUBLE) {
 		prompt("Hihi Deviation Limit")
 		promptgroup(GUI_ALARMS)
 		interest(1)
 	}
-	field(LOLO,DBF_FLOAT) {
+	field(LOLO,DBF_DOUBLE) {
 		prompt("Lolo Deviation Limit")
 		promptgroup(GUI_ALARMS)
 		interest(1)
 	}
-	field(HIGH,DBF_FLOAT) {
+	field(HIGH,DBF_DOUBLE) {
 		prompt("High Deviation Limit")
 		promptgroup(GUI_ALARMS)
 		interest(1)
 	}
-	field(LOW,DBF_FLOAT) {
+	field(LOW,DBF_DOUBLE) {
 		prompt("Low Deviation Limit")
 		promptgroup(GUI_ALARMS)
 		interest(1)
@@ -165,50 +165,50 @@ recordtype(epid) {
 		interest(1)
 		menu(menuAlarmSevr)
 	}
-	field(HYST,DBF_FLOAT) {
+	field(HYST,DBF_DOUBLE) {
 		prompt("Alarm Deadband")
 		promptgroup(GUI_ALARMS)
 		interest(1)
 	}
-	field(ADEL,DBF_FLOAT) {
+	field(ADEL,DBF_DOUBLE) {
 		prompt("Archive Deadband")
 		promptgroup(GUI_DISPLAY)
 		interest(1)
 	}
-	field(MDEL,DBF_FLOAT) {
+	field(MDEL,DBF_DOUBLE) {
 		prompt("Monitor Deadband")
 		promptgroup(GUI_DISPLAY)
 		interest(1)
 	}
-	field(ODEL,DBF_FLOAT) {
+	field(ODEL,DBF_DOUBLE) {
 		prompt("Output Deadband")
 		promptgroup(GUI_PID)
 		interest(1)
 	}
-	field(P,DBF_FLOAT) {
+	field(P,DBF_DOUBLE) {
 		prompt("P component")
 		special(SPC_NOMOD)
 		interest(2)
 	}
-	field(PP,DBF_FLOAT) {
+	field(PP,DBF_DOUBLE) {
 		prompt("Prev. P component")
 		special(SPC_NOMOD)
 		interest(2)
 	}
-	field(I,DBF_FLOAT) {
+	field(I,DBF_DOUBLE) {
 		prompt("I component")
 		interest(2)
 	}
-	field(IP,DBF_FLOAT) {
+	field(IP,DBF_DOUBLE) {
 		prompt("Prev. I component")
 		interest(2)
 	}
-	field(D,DBF_FLOAT) {
+	field(D,DBF_DOUBLE) {
 		prompt("D component")
 		special(SPC_NOMOD)
 		interest(2)
 	}
-	field(DP,DBF_FLOAT) {
+	field(DP,DBF_DOUBLE) {
 		prompt("Prev. D component")
 		special(SPC_NOMOD)
 		interest(2)
@@ -225,35 +225,35 @@ recordtype(epid) {
 		interest(4)
                 extra("epicsTimeStamp   ctp")
 	}
-	field(DT,DBF_FLOAT) {
+	field(DT,DBF_DOUBLE) {
 		prompt("Delta T")
 		interest(2)
 	}
-	field(DTP,DBF_FLOAT) {
+	field(DTP,DBF_DOUBLE) {
 		prompt("Prev. Delta T")
 		interest(2)
 	}
-	field(ERR,DBF_FLOAT) {
+	field(ERR,DBF_DOUBLE) {
 		prompt("Error")
 		special(SPC_NOMOD)
 		interest(2)
 	}
-	field(ERRP,DBF_FLOAT) {
+	field(ERRP,DBF_DOUBLE) {
 		prompt("Prev. Error")
 		special(SPC_NOMOD)
 		interest(2)
 	}
-	field(LALM,DBF_FLOAT) {
+	field(LALM,DBF_DOUBLE) {
 		prompt("Last Value Alarmed")
 		special(SPC_NOMOD)
 		interest(3)
 	}
-	field(ALST,DBF_FLOAT) {
+	field(ALST,DBF_DOUBLE) {
 		prompt("Last Value Archived")
 		special(SPC_NOMOD)
 		interest(3)
 	}
-	field(MLST,DBF_FLOAT) {
+	field(MLST,DBF_DOUBLE) {
 		prompt("Last Value Monitored")
 		special(SPC_NOMOD)
 		interest(3)

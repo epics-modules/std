@@ -1,14 +1,14 @@
 
 file {
-	name="/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta12_shareR1.0/stdApp/op/adl/linkHelp.adl"
-	version=020305
+	name="/home/oxygen4/MOONEY/epics/synApps_4_6/support/std/stdApp/op/adl/linkHelp.adl"
+	version=030004
 }
 display {
 	object {
-		x=49
-		y=309
+		x=286
+		y=461
 		width=500
-		height=540
+		height=560
 	}
 	clr=14
 	bclr=0
@@ -99,30 +99,6 @@ text {
 	}
 	textix=" This"
 }
-rectangle {
-	object {
-		x=40
-		y=1
-		width=155
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-}
-rectangle {
-	object {
-		x=42
-		y=3
-		width=151
-		height=20
-	}
-	"basic attribute" {
-		clr=40
-	}
-}
 text {
 	object {
 		x=200
@@ -181,7 +157,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix=" wait for all the completion callbacks before declaring itself done."
+	textix=" by the link has completed."
 }
 text {
 	object {
@@ -193,7 +169,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix=" In general, the record will fire off several callback links, then"
+	textix=" callback.   EPICS sends such a callback when all processing started"
 }
 text {
 	object {
@@ -205,7 +181,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix=" In beamline software, output links request a completion callback."
+	textix=" In beamline software, output links normally request a completion"
 }
 text {
 	object {
@@ -313,7 +289,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="         (i.e., SCAN field) is 'Passive'."
+	textix="         (i.e., SCAN field) is 'Passive'.  (For input links.)"
 }
 text {
 	object {
@@ -484,7 +460,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix=" A completion callback is the mechanism the scan record uses to tell"
+	textix=" A completion callback is the mechanism the sscan record uses to tell"
 }
 text {
 	object {
@@ -532,5 +508,76 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix=" must be callback links.  Otherwise, the scan record will not wait."
+	textix=" must be callback links.  Otherwise, the scan record will not wait"
+}
+composite {
+	object {
+		x=40
+		y=1
+		width=155
+		height=24
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=40
+				y=1
+				width=155
+				height=24
+			}
+			"basic attribute" {
+				clr=20
+				fill="outline"
+				width=2
+			}
+		}
+		rectangle {
+			object {
+				x=42
+				y=3
+				width=151
+				height=20
+			}
+			"basic attribute" {
+				clr=40
+			}
+		}
+	}
+}
+text {
+	object {
+		x=42
+		y=6
+		width=150
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="xxx:scan1.WAIT PP NMS"
+}
+text {
+	object {
+		x=43
+		y=290
+		width=150
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="xxx:scan1.WAIT"
+}
+text {
+	object {
+		x=0
+		y=535
+		width=500
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=" for the off-crate processing to complete."
 }

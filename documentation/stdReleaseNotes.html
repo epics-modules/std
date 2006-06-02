@@ -10,6 +10,48 @@ content="text/html; charset=iso-8859-1">
 
 <h1 align="center">std Release Notes</h1>
 
+<h2 align="center">Release 2-5-2</h2>
+
+<ul>
+<li><p>sseqRecord.html rewritten.  The old version was a minimal modification
+of seqRecord.html, from the EPICS Record Reference Manual, and was not
+very clear.
+
+<li><p>scaler record: v3.18: Don't post CNT field unless record-support changed its
+value.  Modified debug macro.
+
+<li><p>devEpidFast.c: changed strtok_r to epicsStrtok_r
+
+<li><p>pvHistory: new software to maintain short-term history of a few PV's in
+the ioc.  Software comprises pvHistory.c (genSub routines), devTimeOfDay.c,
+pvHistory.db, pvHistory.req (autosave-request file), and pvHistory*.adl, and
+relies on autosave to save/restore the value arrays.
+
+<li><p>softMotor.db: shortened some .DESC field values so they fit.
+
+<li><p>all_com_4.db: new file
+
+<li><p>softMotorConfig.adl: related-display callups were using sCalcout files for
+calcout records, because synApps did not contain calcout medm displays.  Now the
+calc module does contain calcout displays, so we use them.
+
+</ul>
+
+<h2 align="center">Release 2-4</h2>
+
+<ul>
+<li><p>mpf-related stuff replaced by asyn-related stuff
+<li><p>minor scaler-record changes to accommodate Joerger VS series.  Existing
+support for other scaler devices should not require any modifications.
+<li><p>BitBus is no longer supported
+<li><p>ioc-status info now provided by vxStats module
+<li><p>PID support rearranged around the asyn module
+<li><p>SSEQ-record delays now snap to nearest clock period, and show user the
+delay that will actually be used.  Fixed bug that was crashing on Linux and
+Windows.
+<li><p><a href="cvsLog.txt">cvs log</a>
+</ul>
+
 <h2 align="center">Release 2-3</h2>
 
 <p align="left">This is what's left of the synApps std module
@@ -37,7 +79,7 @@ seqRecDebug.
     Suggestions and Comments to: <br>
     <a href="mailto:mooney@aps.anl.gov">Tim Mooney </a>:
     (mooney@aps.anl.gov) <br>
-    Last modified: March 4, 2004 
+    Last modified: January 6, 2005
 </address>
 </body>
 </html>
