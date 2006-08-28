@@ -32,6 +32,7 @@ DBD += stdVX.dbd
 DBD += stdSupport.dbd
 DBD += stdVXSupport.dbd
 DBD += shareBase.dbd
+DBD += femto.dbd
 
 #=============================
 
@@ -53,6 +54,10 @@ std_SRCS += timestampRecord.c
 std_SRCS += devTimeOfDay.c 
 std_SRCS += pvHistory.c
 
+# Femto amplifier
+std_SNCFLAGS += +r
+std_SRCS += femto.stt
+
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
 INC += devScaler.h
@@ -60,7 +65,7 @@ INC += aiCvtDouble.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
-std_LIBS += asyn
+std_LIBS += asyn seq pv
 std_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
