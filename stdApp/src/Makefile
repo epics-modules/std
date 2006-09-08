@@ -32,7 +32,6 @@ DBD += stdVX.dbd
 DBD += stdSupport.dbd
 DBD += stdVXSupport.dbd
 DBD += shareBase.dbd
-#DBD += femto.dbd
 
 #=============================
 
@@ -55,7 +54,7 @@ std_SRCS += devTimeOfDay.c
 std_SRCS += pvHistory.c
 
 # Femto amplifier
-#std_SRCS += femto.stt
+std_SRCS += femto.st
 
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
