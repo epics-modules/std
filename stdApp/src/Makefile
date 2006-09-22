@@ -79,9 +79,7 @@ stdApp_SRCS_vxWorks += -nil-
 #The following adds support from base/src/vxWorks
 stdApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
-stdApp_LIBS += std
-stdApp_LIBS += asyn
-stdApp_LIBS += $(EPICS_BASE_IOC_LIBS)
+stdApp_LIBS += std seq pv asyn $(EPICS_BASE_IOC_LIBS)
 
 #===========================
 
