@@ -41,7 +41,20 @@ dbLoadRecords("../../../std/stdApp/Db/userTransforms10.db", "P=stdTest:")
 # Miscellaneous PV's, such as burtResult
 dbLoadRecords("../../../std/stdApp/Db/misc.db", "P=stdTest:")
 
+# Femto amplifier
+#dbLoadRecords("../../../std/femto.db","P=stdTest:,H=fem01:,F=seq01:")
+
 iocInit
+
+# Start Femto amplifier sequence programs
+#   P=<prefix>
+#   H=<hardware-type> (i.e. fem01: - femto amplifier)
+#   F=<functionality> (i.e. seq01: - sequencer)
+#   GAIN=<gain bit1>
+#   GAIN=<gain bit2>
+#   GAIN=<gain bit3>
+#   NOISE=<low/high noise bit>
+#seq femto,"name=femto1,P=stdTest:,H=fem01:,F=seq01:,GAIN1=,GAIN2=,GAIN3=,NOISE="
 
 ### Start up the autosave task and tell it what to do.
 # The task is actually named "save_restore".

@@ -152,7 +152,7 @@ static long init_record(epidRecord *pepid, int pass)
     if (pass==0) return(0);
     /* initialize the setpoint for constant setpoint */
     if (pepid->stpl.type == CONSTANT){
-       if(recGblInitConstantLink(&pepid->stpl,DBF_FLOAT,&pepid->val))
+       if(recGblInitConstantLink(&pepid->stpl,DBF_DOUBLE,&pepid->val))
                 pepid->udf = FALSE;
     }
 
@@ -182,7 +182,7 @@ static long process(epidRecord *pepid)
     if (!pact) { /* If this is not a callback from device support */
         /* fetch the setpoint */
         if(pepid->smsl == menuOmslclosed_loop){
-            status = dbGetLink(&(pepid->stpl),DBR_FLOAT, &(pepid->val),0,0);
+            status = dbGetLink(&(pepid->stpl),DBR_DOUBLE, &(pepid->val),0,0);
             if (RTN_SUCCESS(status)) pepid->udf=FALSE;
         }
         if (pepid->udf == TRUE ) {
@@ -292,7 +292,7 @@ static long get_alarm_double(struct dbAddr *paddr, struct dbr_alDouble *pad)
 static void checkAlarms(epidRecord *pepid)
 {
     double      val;
-    float       hyst, lalm, hihi, high, low, lolo;
+    double      hyst, lalm, hihi, high, low, lolo;
     unsigned short  hhsv, llsv, hsv, lsv;
 
     if(pepid->udf == TRUE ){
@@ -335,7 +335,7 @@ static void checkAlarms(epidRecord *pepid)
 static void monitor(epidRecord *pepid)
 {
     unsigned short  monitor_mask;
-    float       delta;
+    double          delta;
 
     monitor_mask = recGblResetAlarms(pepid);
     /* check for value change */

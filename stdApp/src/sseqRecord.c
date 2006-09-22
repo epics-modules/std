@@ -49,11 +49,14 @@
 #include	<callback.h>
 #include	<cvtFast.h>
 #include	<dbCa.h>
+#include	<epicsThread.h>
 
 #define GEN_SIZE_OFFSET
 #include	"sseqRecord.h"
 #undef  GEN_SIZE_OFFSET
 #include        <epicsExport.h>
+
+#define NINT(f) (long)((f)>0 ? (f)+0.5 : (f)-0.5)
 
 volatile int sseqRecDebug = 0;
 epicsExportAddress(int, sseqRecDebug);
@@ -172,6 +175,11 @@ init_record(sseqRecord *pR, int pass)
 	/*** init links, get initial values, field types ***/
 	plinkGroup = (struct linkGroup *)(&(pR->dly1));
 	for (index = 0; index < NUM_LINKS; index++, plinkGroup++) {
+		/* set delays to nearest multiple of clock period */
+		plinkGroup->dly = epicsThreadSleepQuantum() *
+			NINT(plinkGroup->dly/epicsThreadSleepQuantum());
+			db_post_events(pR, &plinkGroup->dly, DBE_VALUE);
+
 		/* init DOL*-related stuff (input links) */
 		if (plinkGroup->dol.type == CONSTANT) {
 			recGblInitConstantLink(&plinkGroup->dol, DBF_DOUBLE, &plinkGroup->dov);
@@ -403,9 +411,9 @@ asyncFinish(sseqRecord *pR)
  * compiler doesn't seem to understand that dbCaCallback means pointer to
  * function returning void, and it wants a return argument.
   */
-void /* dbCaCallback */ putCallbackCB(void *arg)
+void epicsShareAPI putCallbackCB(void *arg)
 {
-        struct link *plink = (struct link *)arg;
+	struct link *plink = (struct link *)arg;
 	sseqRecord			*pR = (sseqRecord *)(plink->value.pv_link.precord);
 	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
 	struct linkGroup	*plinkGroup;
@@ -617,7 +625,8 @@ static void checkLinks(sseqRecord *pR)
 		if (sseqRecDebug >= 10)
 			printf("sseq:checkLinks(%s): checking link %d\n", pR->name, i);
 		plinkGroup->dol_field_type = DBF_unknown;
-		if (plinkGroup->dol.value.pv_link.pvname[0]) {
+		if (plinkGroup->dol.value.pv_link.pvname &&
+		    plinkGroup->dol.value.pv_link.pvname[0]) {
 			plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
 			if (plinkGroup->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 			if (sseqRecDebug>=10) {
@@ -629,7 +638,8 @@ static void checkLinks(sseqRecord *pR)
 			}
 		}
 		plinkGroup->lnk_field_type = DBF_unknown;
-		if (plinkGroup->lnk.value.pv_link.pvname[0]) {
+		if (plinkGroup->lnk.value.pv_link.pvname &&
+		    plinkGroup->lnk.value.pv_link.pvname[0]) {
 			plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
 			if (plinkGroup->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 			if (plinkGroup->usePutCallback && (plinkGroup->lnk.type != CA_LINK))
@@ -689,7 +699,7 @@ static long special(struct dbAddr *paddr, int after)
 		plinkGroup = (struct linkGroup *)&pR->dly1;
 		plinkGroup += lnkIndex;
 		plinkGroup->dol_field_type = DBF_unknown;
-		if (plinkGroup->dol.value.pv_link.pvname[0]) {
+		if (plinkGroup->dol.value.pv_link.pvname && plinkGroup->dol.value.pv_link.pvname[0]) {
 			plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
 			if (plinkGroup->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 		}
@@ -722,7 +732,8 @@ static long special(struct dbAddr *paddr, int after)
 				&pR->lnk1, &plinkGroup->lnk);
 		}
 		plinkGroup->lnk_field_type = DBF_unknown;
-		if (plinkGroup->lnk.value.pv_link.pvname[0]) {
+
+		if (plinkGroup->lnk.value.pv_link.pvname && plinkGroup->lnk.value.pv_link.pvname[0]) {
 			plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
 			if (plinkGroup->lnk_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 		}
@@ -775,6 +786,24 @@ static long special(struct dbAddr *paddr, int after)
 			plinkGroup->dov = d;
 			db_post_events(pR, &plinkGroup->dov, DBE_VALUE);
 		}
+		break;
+
+	case(sseqRecordDLY1):
+	case(sseqRecordDLY2):
+	case(sseqRecordDLY3):
+	case(sseqRecordDLY4):
+	case(sseqRecordDLY5):
+	case(sseqRecordDLY6):
+	case(sseqRecordDLY7):
+	case(sseqRecordDLY8):
+	case(sseqRecordDLY9):
+	case(sseqRecordDLYA):
+		lnkIndex = ((char *)paddr->pfield - (char *)&pR->dly1) /
+			sizeof(struct linkGroup);
+		plinkGroup = (struct linkGroup *)&pR->dly1;
+		plinkGroup->dly = epicsThreadSleepQuantum() *
+			NINT(plinkGroup->dly/epicsThreadSleepQuantum());
+			db_post_events(pR, &plinkGroup->dly, DBE_VALUE);
 		break;
 
 	default:
