@@ -2,6 +2,7 @@
 scalerRecord.c
 Record-support routines for <= 64-channel, 32-bit scaler
 
+
 Original Author: Tim Mooney
 Date: 1/16/95
 
@@ -67,11 +68,16 @@ Modification Log:
                    Autocount now calls write_preset again if device support
                    changed PR1, but doesn't let this change get out to user.
 03/30/06   tmm     v3.18 Don't post CNT unless we changed it.
-
+10/26/06   mlr     v3.19 Changed interface to device support 
+                     All functions pass precord rather than card
+                     init_record passes pointer to device callback structure
+                   Don't assume VME_IO in record.
+                   Move callback structures from dpvt to rpvt so record does not
+                   access dpvt.
 *******************************************************************************/
-#define VERSION 3.18
+#define VERSION 3.19
 
-#include        <epicsVersion.h>
+#include	<epicsVersion.h>
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -170,6 +176,7 @@ epicsExportAddress(rset, scalerRSET);
 
 struct rpvtStruct {
 	epicsMutexId updateMutex;
+	CALLBACK *pcallbacks;
 };
 
 static void do_alarm();
@@ -203,7 +210,7 @@ static void updateCallbackFunc(CALLBACK *pcb)
 
 static void delayCallbackFunc(CALLBACK *pcb)
 {
-    scalerRecord *pscal;
+	scalerRecord *pscal;
 
 	/*
 	 * User asked us to start counting after a delay that has now expired.
@@ -220,7 +227,7 @@ static void delayCallbackFunc(CALLBACK *pcb)
 
 static void autoCallbackFunc(CALLBACK *pcb)
 {
-    scalerRecord *pscal;
+	scalerRecord *pscal;
 
 	callbackGetUser(pscal, pcb);
 	Debug(5) "scaler autoCallbackFunc: entry for '%s'\n", pscal->name);}
@@ -235,28 +242,28 @@ int pass;
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
 	CALLBACK *pcallbacks, *pupdateCallback, *pdelayCallback,
 		*pautoCallback, *pdeviceCallback;
-    struct rpvtStruct *prpvt;
+	struct rpvtStruct *prpvt;
 
 	Debug(5) "scaler init_record: pass = %d\n", pass);}
 	Debug(5) "init_record: .PR1 = %ld\n", (long)pscal->pr1);}
 	if (pass == 0) {
 		pscal->vers = VERSION;
-        pscal->rpvt = (void *)calloc(1, sizeof(struct rpvtStruct));
-	    prpvt = (struct rpvtStruct *)pscal->rpvt;
+	pscal->rpvt = (void *)calloc(1, sizeof(struct rpvtStruct));
+	prpvt = (struct rpvtStruct *)pscal->rpvt;
 		if ((prpvt->updateMutex = epicsMutexCreate()) == 0) {
 			epicsPrintf("scalerRecord:init_record: could not create mutex.\n");
 			return(-1);
 		}
 		return (0);
 	}
-    prpvt = (struct rpvtStruct *)pscal->rpvt;
+	prpvt = (struct rpvtStruct *)pscal->rpvt;
 
 	/* Gotta have a .val field.  Make its value reproducible. */
 	pscal->val = 0;
 
 	/*** setup callback stuff (note: array of 4 callback structures) ***/
 	pcallbacks = (CALLBACK *)(calloc(4,sizeof(CALLBACK)));
-	pscal->dpvt = (void *)pcallbacks;
+	prpvt->pcallbacks = pcallbacks;
 
 	/* callback to implement periodic updates */
 	pupdateCallback = (CALLBACK *)&(pcallbacks[0]);
@@ -277,7 +284,6 @@ int pass;
 	callbackSetUser((void *)pscal, pautoCallback);
 
 	/* fourth callback for device support */
-	/* Note that device support depends on this callback being pcallbacks[3] */
 	pdeviceCallback = (CALLBACK *)&(pcallbacks[3]);
 	callbackSetCallback(deviceCallbackFunc, pdeviceCallback);
 	callbackSetPriority(pscal->prio, pdeviceCallback);
@@ -293,14 +299,11 @@ int pass;
 	Debug(2) "init_record: calling dset->init_record\n");}
 	if (pdset->init_record)
 	{
-		status=(*pdset->init_record)(pscal);
+		status=(*pdset->init_record)(pscal, pdeviceCallback);
 		Debug(3) "init_record: dset->init_record returns %ld\n", status);}
 		if (status) {
-			pscal->card = -1;
 			return (status);
 		}
-		pscal->card = pscal->out.value.vmeio.card;
-		db_post_events(pscal,&(pscal->card),DBE_VALUE);
 	}
 
 	/* default clock freq */
@@ -336,17 +339,16 @@ scalerRecord *pscal;
 {
 	int i, status, prev_scaler_state, save_pr1, old_pr1;
 	double old_freq;
-	int card = pscal->out.value.vmeio.card;
 	int justFinishedUserCount=0, justStartedUserCount=0, putNotifyOperation=0;
 	long *ppreset = (long *)&(pscal->pr1);
 	short *pdir = (short *)&pscal->d1;
 	short *pgate = (short *)&pscal->g1;
+	struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
+	CALLBACK *pcallbacks = prpvt->pcallbacks;
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
-	CALLBACK *pcallbacks = (CALLBACK *)pscal->dpvt;
 	CALLBACK *pupdateCallback = (CALLBACK *)&(pcallbacks[0]);
 	/* CALLBACK *pdelayCallback = (CALLBACK *)&(pcallbacks[1]); */
 	CALLBACK *pautoCallback = (CALLBACK *)&(pcallbacks[2]);
-    struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
 
 	
 	Debug(5) "process: entry\n");}
@@ -357,8 +359,8 @@ scalerRecord *pscal;
 	prev_scaler_state = pscal->ss;
 
 	/* If we're being called as a result of a done-counting interrupt, */
-	/* (*pdset->done)(card) will return TRUE */
-	if ((*pdset->done)(card)) {
+	/* (*pdset->done)(pscal) will return TRUE */
+	if ((*pdset->done)(pscal)) {
 		pscal->ss = SCALER_STATE_IDLE;
 		/* Auto-count cycle is not allowed to reset .CNT field. */
 		if (pscal->us == USER_STATE_COUNTING) {
@@ -376,7 +378,7 @@ scalerRecord *pscal;
 							(pscal->us == USER_STATE_WAITING))) {
 			/*** if we're already counting (auto-count), stop ***/
 			if (pscal->ss == SCALER_STATE_COUNTING) {
-				(*pdset->arm)(card, 0);
+				(*pdset->arm)(pscal, 0);
 				pscal->ss = SCALER_STATE_IDLE;
 			}
 
@@ -385,7 +387,7 @@ scalerRecord *pscal;
 
 				/* disarm, disable interrupt generation, reset disarm-on-cout, */
 				/* clear mask register, clear direction register, clear counters */
-				(*pdset->reset)(card);
+				(*pdset->reset)(pscal);
 
 				/*
 				 * We tell device support how long to count by giving it a preset,
@@ -408,12 +410,12 @@ scalerRecord *pscal;
 					pdir[i] = pgate[i];
 					if (pgate[i]) {
 						Debug(5) "process: writing preset: %ld.\n", ppreset[i]);}
-						(*pdset->write_preset)(card, i, ppreset[i]);
+						(*pdset->write_preset)(pscal, i, ppreset[i]);
 					}
 				}
 				if (save_pr1 != pscal->pr1) {
 					pscal->pr1 = (long) NINT(pscal->tp * pscal->freq);
-					(*pdset->write_preset)(card, 0, pscal->pr1);
+					(*pdset->write_preset)(pscal, 0, pscal->pr1);
 				}
 				if (old_pr1 != pscal->pr1) {
 					db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
@@ -424,7 +426,7 @@ scalerRecord *pscal;
 					db_post_events(pscal,&(pscal->freq),DBE_VALUE);
 				}
 
-				(*pdset->arm)(card, 1);
+				(*pdset->arm)(pscal, 1);
 				pscal->ss = SCALER_STATE_COUNTING;
 				pscal->us = USER_STATE_COUNTING;
 				handled = 1;
@@ -432,7 +434,7 @@ scalerRecord *pscal;
 			}
 		} else if (!pscal->cnt) {
 			/*** stop counting ***/
-			(*pdset->arm)(card, 0);
+			(*pdset->arm)(pscal, 0);
 			pscal->ss = SCALER_STATE_IDLE;
 			pscal->us = USER_STATE_IDLE;
 			justFinishedUserCount = 1;
@@ -471,7 +473,7 @@ scalerRecord *pscal;
 	/* Are we in auto-count mode and not already counting? */
 	if (pscal->us == USER_STATE_IDLE && pscal->cont &&
 		pscal->ss != SCALER_STATE_COUNTING) {
-        double dly_sec=pscal->dly1;  /* seconds to delay */
+	double dly_sec=pscal->dly1;  /* seconds to delay */
 
 		if (justFinishedUserCount) dly_sec = MAX(pscal->dly1, scaler_wait_time);
 		if (putNotifyOperation) dly_sec = MAX(pscal->dly1, scaler_wait_time);
@@ -495,29 +497,29 @@ scalerRecord *pscal;
 			 */
 			 old_freq = pscal->freq;
 			 old_pr1 = pscal->pr1;
-			(*pdset->reset)(card);
+			(*pdset->reset)(pscal);
 			if (pscal->tp1 >= 1.e-3) {
 				save_pr1 = pscal->pr1;
-				(*pdset->write_preset)(card, 0, (long)(pscal->tp1*pscal->freq));
+				(*pdset->write_preset)(pscal, 0, (long)(pscal->tp1*pscal->freq));
 				if (save_pr1 != pscal->pr1) {
 					/*
 					 * Device support wants to use a different clock freq.  We might
 					 * get a more accurate counting time if we recalc the preset count
 					 * from tp1 with the new clock frequency.
 					 */
-					(*pdset->write_preset)(card, 0, (long)(pscal->tp1*pscal->freq));
+					(*pdset->write_preset)(pscal, 0, (long)(pscal->tp1*pscal->freq));
 				}
 
 			} else {
 				for (i=0; i<pscal->nch; i++) {
 					pdir[i] = pgate[i];
-					if (pgate[i]) (*pdset->write_preset)(card, i, ppreset[i]);
+					if (pgate[i]) (*pdset->write_preset)(pscal, i, ppreset[i]);
 				}
 			}
 			if (old_freq != pscal->freq) db_post_events(pscal,&(pscal->freq),DBE_VALUE);
 			/* Don't let autocount disturb user's channel-1 preset */
 			pscal->pr1 = old_pr1;
-			(*pdset->arm)(card, 1);
+			(*pdset->arm)(pscal, 1);
 			pscal->ss = SCALER_STATE_COUNTING;
 
 			/* schedule first update callback */
@@ -537,11 +539,12 @@ static void updateCounts(scalerRecord *pscal)
 {
 	int i, called_by_process;
 	float rate;
-	int card = pscal->out.value.vmeio.card;
 	long *pscaler = (long *)&(pscal->s1);
 	long counts[MAX_SCALER_CHANNELS];
+	struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
+	CALLBACK *pcallbacks = prpvt->pcallbacks;
+	CALLBACK *pupdateCallback = (CALLBACK *)&(pcallbacks[0]);
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
-	CALLBACK *pupdateCallback = (CALLBACK *)pscal->dpvt;
 	double old_t;
 
 	called_by_process = (pscal->pact == TRUE);
@@ -555,7 +558,7 @@ static void updateCounts(scalerRecord *pscal)
 
 	/* read scalers (get pointer to actual VME-resident scaler-data array) */
 	if (pscal->us != USER_STATE_WAITING) {
-		(*pdset->read)(card, counts);
+		(*pdset->read)(pscal, counts);
 	} else {
 		for (i=0; i<pscal->nch; i++) {counts[i] = 0;}
 	}
@@ -595,9 +598,10 @@ int	after;
 	int i=0;
 	unsigned short *pdir, *pgate;
 	long *ppreset;
-	CALLBACK *pcallbacks = (CALLBACK *)pscal->dpvt;
+	struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
+	CALLBACK *pcallbacks = prpvt->pcallbacks;
 	CALLBACK *pdelayCallback = (CALLBACK *)&(pcallbacks[1]);
-    int fieldIndex = dbGetFieldIndex(paddr);
+	int fieldIndex = dbGetFieldIndex(paddr);
 
 	Debug(5) "special: entry; after=%d\n", after);}
 	if (!after) return (0);
@@ -707,10 +711,10 @@ int	after;
 
 static long get_precision(paddr, precision)
 struct dbAddr *paddr;
-long          *precision;
+long *precision;
 {
 	scalerRecord *pscal = (scalerRecord *) paddr->precord;
-    int fieldIndex = dbGetFieldIndex(paddr);
+	int fieldIndex = dbGetFieldIndex(paddr);
 
 	*precision = pscal->prec;
 	if (fieldIndex == scalerRecordVERS) {
