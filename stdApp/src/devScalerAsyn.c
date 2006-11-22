@@ -36,6 +36,7 @@
 
 #include "scalerRecord.h"
 #include "devScaler.h"
+#include "devScalerAsyn.h"
 
 typedef enum {int32Type, float64Type, int32ArrayType} interfaceType;
 
@@ -56,6 +57,7 @@ typedef struct {
     void *asynInt32ArrayPvt;
     asynDrvUser *pasynDrvUser;
     void  *asynDrvUserPvt;
+    int channelsCommand;
     int resetCommand;
     int readCommand;
     int presetCommand;
@@ -103,6 +105,7 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     asynInterface *pasynInterface;
     scalerAsynPvt *pPvt;
     int i;
+    int nchans;
 
     /* Allocate asynMcaPvt private structure */
     pPvt = callocMustSucceed(1, sizeof(scalerAsynPvt), "devScalerAsyn init_record()");
@@ -179,7 +182,19 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     pPvt->pasynDrvUser = (asynDrvUser *)pasynInterface->pinterface;
     pPvt->asynDrvUserPvt = pasynInterface->drvPvt;
 
-    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, "SCALER_RESET", 0, 0);
+    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, 
+                                        SCALER_CHANNELS_COMMAND_STRING, 0, 0);
+    if(status!=asynSuccess) {
+        printf("%s scaler_init_record drvUserCreate SCALER_CHANNELS %s\n",
+                psr->name, pasynUser->errorMessage);
+        goto bad;
+    }
+    pPvt->channelsCommand = pasynUser->reason;
+
+    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, 
+                                        SCALER_READ_COMMAND_STRING, 0, 0);
+    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, 
+                                        SCALER_RESET_COMMAND_STRING, 0, 0);
     if(status!=asynSuccess) {
         printf("%s scaler_init_record drvUserCreate SCALER_RESET %s\n",
                 psr->name, pasynUser->errorMessage);
@@ -187,7 +202,8 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     }
     pPvt->resetCommand = pasynUser->reason;
 
-    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, "SCALER_READ", 0, 0);
+    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, 
+                                        SCALER_READ_COMMAND_STRING, 0, 0);
     if(status!=asynSuccess) {
         printf("%s scaler_init_record drvUserCreate SCALER_READ %s\n",
                 psr->name, pasynUser->errorMessage);
@@ -195,7 +211,8 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     }
     pPvt->readCommand = pasynUser->reason;
 
-    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, "SCALER_PRESET", 0, 0);
+    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, 
+                                        SCALER_PRESET_COMMAND_STRING, 0, 0);
     if(status!=asynSuccess) {
         printf("%s scaler_init_record drvUserCreate SCALER_PRESET %s\n",
                 psr->name, pasynUser->errorMessage);
@@ -203,7 +220,8 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     }
     pPvt->presetCommand = pasynUser->reason;
 
-    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, "SCALER_ARM", 0, 0);
+    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser,
+                                        SCALER_ARM_COMMAND_STRING, 0, 0);
     if(status!=asynSuccess) {
         printf("%s scaler_init_record drvUserCreate SCALER_ARM %s\n",
                 psr->name, pasynUser->errorMessage);
@@ -211,13 +229,24 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     }
     pPvt->armCommand = pasynUser->reason;
 
-    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, "SCALER_DONE", 0, 0);
+    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, 
+                                        SCALER_DONE_COMMAND_STRING, 0, 0);
     if(status!=asynSuccess) {
         printf("%s scaler_init_record drvUserCreate SCALER_DONE %s\n",
                 psr->name, pasynUser->errorMessage);
         goto bad;
     }
     pPvt->doneCommand = pasynUser->reason;
+
+    /* Ask how many channels the scaler supports */
+    pasynUser->reason = pPvt->channelsCommand;
+    status = pPvt->pasynInt32->read(pPvt->asynInt32Pvt, pasynUser, &nchans);
+    if(status!=asynSuccess) {
+        printf("%s scaler_init_record error reading nchans %s\n",
+                psr->name, pasynUser->errorMessage);
+        goto bad;
+    }
+    psr->nch = nchans;
 
     /* Register for callbacks when acquisition completes */
     pasynUser->reason = pPvt->doneCommand;
@@ -230,9 +259,6 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
                psr->name, pasynUser->errorMessage);
         goto bad;
     }
-
-    /* FOR NOW HARDCODE 32 CHANNELS UNTIL WE GET THAT INTERFACE WORKED OUT */
-    psr->nch = 32;
 
     return(0);
 
@@ -269,7 +295,8 @@ static long scaler_arm(scalerRecord *psr, int val)
 static long scaler_done(scalerRecord *psr)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
-    return(scaler_command(psr, pPvt->doneCommand, 0, 0, 0));
+    scaler_command(psr, pPvt->doneCommand, 0, 0, 0);
+    return(pPvt->done);
 }
 
 
