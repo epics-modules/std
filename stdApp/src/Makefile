@@ -60,6 +60,7 @@ std_SRCS += femto.st
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
 INC += devScaler.h
+INC += devScalerAsyn.h
 INC += aiCvtDouble.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
