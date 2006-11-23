@@ -295,8 +295,12 @@ static long scaler_arm(scalerRecord *psr, int val)
 static long scaler_done(scalerRecord *psr)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
-    scaler_command(psr, pPvt->doneCommand, 0, 0, 0);
-    return(pPvt->done);
+    if (pPvt->done) {
+        pPvt->done = 0;
+        return(1);
+    } else {
+        return(0);
+    }
 }
 
 
@@ -391,6 +395,7 @@ static void interruptCallback(void *drvPvt,  asynUser *pasynUser, epicsInt32 val
     scalerAsynPvt *pPvt = (scalerAsynPvt *)drvPvt;
     scalerRecord *psr = pPvt->psr;
 
+    pPvt->done = 1;
     asynPrint(pPvt->pasynUser[0], ASYN_TRACEIO_DEVICE,
         "%s devScalerAsyn::interruptCallback new value=%d\n",
         psr->name, value);
