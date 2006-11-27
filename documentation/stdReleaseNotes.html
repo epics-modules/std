@@ -9,6 +9,22 @@
 </HEAD>
 <BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
 <H1 ALIGN=CENTER>std Release Notes</H1>
+<H2 ALIGN=CENTER>Release 2-5-4</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Changes to scaler record:
+        <UL>
+          <LI>PRn and Sn fields are now DBF_ULONG rather than DBF_LONG.
+	  <LI>No longer hardcode VME_IO device type in the record logic.
+          <LI>Changed interface to device support so that all functions pass precord 
+              rather than card, and init_record passes pointer to device callback structure.
+          <LI>Move callback structures from dpvt to rpvt so record does not access dpvt.
+	</P>
+        </UL>
+	<LI><P STYLE="margin-bottom: 0in">Added asyn device support for scaler record.
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Added stdApp/Db/asynScaler32.db.
+	</P>
+</UL>
 <H2 ALIGN=CENTER>Release 2-5-3</H2>
 <UL>
 	<LI><P STYLE="margin-bottom: 0in">epid record still had some FLOAT
