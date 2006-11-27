@@ -121,20 +121,16 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
         goto bad;
     }
 
-    /* Create asynUsers for each channel */
-    for (i=0; i<MAX_SCALER_CHANNELS; i++) {
-        pasynUser = pasynManager->createAsynUser(asynCallback, 0);
-        pasynUser->userPvt = pPvt;
-        pPvt->pasynUser[i] = pasynUser;
-  
-        /* Connect to device */
-        status = pasynManager->connectDevice(pasynUser, port, i);
-        if (status != asynSuccess) {
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "devScalerAsyn::init_record, %s connectDevice failed to %s\n",
-                      psr->name, port);
-            goto bad;
-        }
+    /* Create a pasynUser for initialization */
+    pasynUser = pasynManager->createAsynUser(asynCallback, 0);
+    pasynUser->userPvt = pPvt;
+    /* Connect to device */
+    status = pasynManager->connectDevice(pasynUser, port, 0);
+    if (status != asynSuccess) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "devScalerAsyn::init_record, %s connectDevice failed to %s\n",
+                  psr->name, port);
+        goto bad;
     }
 
     /* Get the asynInt32 interface */
@@ -246,7 +242,24 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
                 psr->name, pasynUser->errorMessage);
         goto bad;
     }
+    if (nchans > MAX_SCALER_CHANNELS) nchans = MAX_SCALER_CHANNELS;
     psr->nch = nchans;
+
+    /* Create asynUsers for each channel */
+    for (i=0; i<psr->nch; i++) {
+        pasynUser = pasynManager->createAsynUser(asynCallback, 0);
+        pasynUser->userPvt = pPvt;
+        pPvt->pasynUser[i] = pasynUser;
+  
+        /* Connect to device */
+        status = pasynManager->connectDevice(pasynUser, port, i);
+        if (status != asynSuccess) {
+            asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                      "devScalerAsyn::init_record, %s connectDevice failed to %s\n",
+                      psr->name, port);
+            goto bad;
+        }
+    }
 
     /* Register for callbacks when acquisition completes */
     pasynUser->reason = pPvt->doneCommand;
@@ -362,7 +375,7 @@ static void asynCallback(asynUser *pasynUser)
     else if (pmsg->command == pPvt->readCommand) {
         /* Read the values of the scalers */
        pPvt->pasynInt32Array->read(pPvt->asynInt32ArrayPvt, pasynUser, 
-                                   pmsg->pval, MAX_SCALER_CHANNELS, &nread);
+                                   pmsg->pval, psr->nch, &nread);
        asynPrint(pasynUser, ASYN_TRACE_FLOW,
          "devScalerAsyn::asynCallback readCommand nread=%d, counts[0]=%d\n",
          nread, pmsg->pval[0]);        
