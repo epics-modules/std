@@ -74,6 +74,7 @@ Modification Log:
                    Don't assume VME_IO in record.
                    Move callback structures from dpvt to rpvt so record does not
                    access dpvt.
+                   Change PRn and Sn fields from long to unsigned long.
 *******************************************************************************/
 #define VERSION 3.19
 
