@@ -131,7 +131,7 @@ volatile int scaler_wait_time = 10;
 
 #define MIN(a,b) (a)<(b)?(a):(b)
 #define MAX(a,b) (a)>(b)?(a):(b)
-#define NINT(f) (long)((f)>0 ? (f)+0.5 : (f)-0.5)
+#define NINT(f) (unsigned long)((f)>0 ? (f)+0.5 : (f)-0.5)
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
@@ -245,7 +245,7 @@ int pass;
 	struct rpvtStruct *prpvt;
 
 	Debug(5) "scaler init_record: pass = %d\n", pass);}
-	Debug(5) "init_record: .PR1 = %ld\n", (long)pscal->pr1);}
+	Debug(5) "init_record: .PR1 = %ld\n", (unsigned long)pscal->pr1);}
 	if (pass == 0) {
 		pscal->vers = VERSION;
 	pscal->rpvt = (void *)calloc(1, sizeof(struct rpvtStruct));
@@ -321,9 +321,9 @@ int pass;
 	/* convert between time and clock ticks */
 	if (pscal->tp) {
 		/* convert time to clock ticks */
-		pscal->pr1 = (long) (pscal->tp * pscal->freq);
+		pscal->pr1 = (unsigned long) (pscal->tp * pscal->freq);
 		db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
-		Debug(3) "init_record: .TP != 0, so .PR1 set to %ld\n", (long)pscal->pr1);}
+		Debug(3) "init_record: .TP != 0, so .PR1 set to %ld\n", (unsigned long)pscal->pr1);}
 	} else if (pscal->pr1 && pscal->freq) {
 		/* convert clock ticks to time */
 		pscal->tp = (double)(pscal->pr1 / pscal->freq);
@@ -340,7 +340,7 @@ scalerRecord *pscal;
 	int i, status, prev_scaler_state, save_pr1, old_pr1;
 	double old_freq;
 	int justFinishedUserCount=0, justStartedUserCount=0, putNotifyOperation=0;
-	long *ppreset = (long *)&(pscal->pr1);
+	unsigned long *ppreset = (unsigned long *)&(pscal->pr1);
 	short *pdir = (short *)&pscal->d1;
 	short *pgate = (short *)&pscal->g1;
 	struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
@@ -402,8 +402,8 @@ scalerRecord *pscal;
 				old_pr1 = pscal->pr1;
 				old_freq = pscal->freq;
 				/* Make sure channel-1 preset count agrees with time preset and freq */
-				if (pscal->pr1 != (long) NINT(pscal->tp * pscal->freq)) {
-					pscal->pr1 = (long) NINT(pscal->tp * pscal->freq);
+				if (pscal->pr1 != (unsigned long) NINT(pscal->tp * pscal->freq)) {
+					pscal->pr1 = (unsigned long) NINT(pscal->tp * pscal->freq);
 				}
 				save_pr1 = pscal->pr1;
 				for (i=0; i<pscal->nch; i++) {
@@ -414,7 +414,7 @@ scalerRecord *pscal;
 					}
 				}
 				if (save_pr1 != pscal->pr1) {
-					pscal->pr1 = (long) NINT(pscal->tp * pscal->freq);
+					pscal->pr1 = (unsigned long) NINT(pscal->tp * pscal->freq);
 					(*pdset->write_preset)(pscal, 0, pscal->pr1);
 				}
 				if (old_pr1 != pscal->pr1) {
@@ -500,14 +500,14 @@ scalerRecord *pscal;
 			(*pdset->reset)(pscal);
 			if (pscal->tp1 >= 1.e-3) {
 				save_pr1 = pscal->pr1;
-				(*pdset->write_preset)(pscal, 0, (long)(pscal->tp1*pscal->freq));
+				(*pdset->write_preset)(pscal, 0, (unsigned long)(pscal->tp1*pscal->freq));
 				if (save_pr1 != pscal->pr1) {
 					/*
 					 * Device support wants to use a different clock freq.  We might
 					 * get a more accurate counting time if we recalc the preset count
 					 * from tp1 with the new clock frequency.
 					 */
-					(*pdset->write_preset)(pscal, 0, (long)(pscal->tp1*pscal->freq));
+					(*pdset->write_preset)(pscal, 0, (unsigned long)(pscal->tp1*pscal->freq));
 				}
 
 			} else {
@@ -539,8 +539,8 @@ static void updateCounts(scalerRecord *pscal)
 {
 	int i, called_by_process;
 	float rate;
-	long *pscaler = (long *)&(pscal->s1);
-	long counts[MAX_SCALER_CHANNELS];
+	unsigned long *pscaler = (unsigned long *)&(pscal->s1);
+	unsigned long counts[MAX_SCALER_CHANNELS];
 	struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
 	CALLBACK *pcallbacks = prpvt->pcallbacks;
 	CALLBACK *pupdateCallback = (CALLBACK *)&(pcallbacks[0]);
@@ -597,7 +597,7 @@ int	after;
 	scalerRecord *pscal = (scalerRecord *)(paddr->precord);
 	int i=0;
 	unsigned short *pdir, *pgate;
-	long *ppreset;
+	unsigned long *ppreset;
 	struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
 	CALLBACK *pcallbacks = prpvt->pcallbacks;
 	CALLBACK *pdelayCallback = (CALLBACK *)&(pcallbacks[1]);
@@ -653,7 +653,7 @@ int	after;
 
 	case scalerRecordTP:
 		/* convert time to clock ticks */
-		pscal->pr1 = (long) (pscal->tp * pscal->freq);
+		pscal->pr1 = (unsigned long) (pscal->tp * pscal->freq);
 		db_post_events(pscal,&(pscal->pr1),DBE_VALUE);
 		pscal->d1 = pscal->g1 = 1;
 		db_post_events(pscal,&(pscal->d1),DBE_VALUE);
@@ -679,11 +679,11 @@ int	after;
 	default:
 		if ((fieldIndex >= scalerRecordPR2) &&
 				(fieldIndex <= scalerRecordPR64)) {
-			i = ((char *)paddr->pfield - (char *)&(pscal->pr1)) / sizeof(long);
+			i = ((char *)paddr->pfield - (char *)&(pscal->pr1)) / sizeof(unsigned long);
 			Debug(4) "special: channel %d preset\n", i);}
 			pdir = (unsigned short *) &(pscal->d1);
 			pgate = (unsigned short *) &(pscal->g1);
-			ppreset = (long *) &(pscal->pr1);
+			ppreset = (unsigned long *) &(pscal->pr1);
 			if (ppreset[i] > 0) {
 				pdir[i] = pgate[i] = 1;
 				db_post_events(pscal,&(pdir[i]),DBE_VALUE);
@@ -696,7 +696,7 @@ int	after;
 			/* reasonable value. */
 			i = (int)(((char *)paddr->pfield - (char *)&(pscal->g1)) / sizeof(short));
 			Debug(4) "special: channel %d gate\n", i);}
-			ppreset = (long *) &(pscal->pr1);
+			ppreset = (unsigned long *) &(pscal->pr1);
 			pgate = (unsigned short *) &(pscal->g1);
 			if (pgate[i] && (ppreset[i] == 0)) {
 				ppreset[i] = 1000;

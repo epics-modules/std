@@ -71,8 +71,8 @@ typedef struct {
 /* These functions are in the DSET */
 static long scaler_init_record(struct scalerRecord *psr, CALLBACK *pcallback);
 static long scaler_reset(scalerRecord *psr);
-static long scaler_read(scalerRecord *psr, long *val);
-static long scaler_write_preset(scalerRecord *psr, int signal, long val);
+static long scaler_read(scalerRecord *psr, unsigned long *val);
+static long scaler_write_preset(scalerRecord *psr, int signal, unsigned long val);
 static long scaler_arm(scalerRecord *psr, int val);
 static long scaler_done(scalerRecord *psr);
 
@@ -274,13 +274,13 @@ static long scaler_reset(scalerRecord *psr)
     return(scaler_command(psr, pPvt->resetCommand, 0, 0, 0));
 }
 
-static long scaler_read(scalerRecord *psr, long *val)
+static long scaler_read(scalerRecord *psr, unsigned long *val)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
     return(scaler_command(psr, pPvt->readCommand, 0, 0, val));
 }
 
-static long scaler_write_preset(scalerRecord *psr, int signal, long val)
+static long scaler_write_preset(scalerRecord *psr, int signal, unsigned long val)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
     return(scaler_command(psr, pPvt->presetCommand, signal, val, 0));
