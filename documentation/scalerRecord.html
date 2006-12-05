@@ -1,9 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Scaler Record (v 3.16) and related software</TITLE>
+<TITLE>Scaler Record (v 3.19) and related software</TITLE>
 </HEAD>
 <BODY>
-<H1>Scaler Record (v 3.16) and related software</H1>
+<H1>Scaler Record (v 3.19) and related software</H1>
 
 <ADDRESS>Tim Mooney</ADDRESS>
 
@@ -19,9 +19,9 @@
 <A NAME="Overview">
 <H2>Overview</H2></A>
 
-<P>This documentation describes version 3.16 of the EPICS scaler record, and
+<P>This documentation describes version 3.19 of the EPICS scaler record, and
 related EPICS software required to build and use it.  This version of the
-record is compatible with EPICS 3.14.5, and is incompatible with any 3.13.x
+record is compatible with EPICS 3.14.8.2, and is incompatible with any 3.13.x
 version of EPICS.
 
 <P>The scaler record provides support for a bank of up to 64 32-bit counters
@@ -36,9 +36,9 @@ preset value stop all counters.  (The hardware may actually implement a
 preset counter by loading in the preset value, and counting down to zero.  If
 so, device support is expected to maintain the fiction that all counters
 count up from zero.)  Currently device support exists for the Joerger VSC
-8 and 16 channel VME scalers; Joerger VS64 fly-counting scalers; and the
-SIS3801 multichannel scaler, emulating a single scaler bank.  Joerger VS
-scalers do not support preset counting, so the software sets the Gn fields
+8 and 16 channel VME scalers; Joerger VS64 fly-counting scalers; the
+SIS3801 multichannel scaler, emulating a single scaler bank, and the SIS3820.
+Joerger VS scalers do not support preset counting, so the software sets the Gn fields
 to 0 and keeps them there.
 
 <P>Scaler channel 1 receives special treatment: it is presumed to count a
@@ -68,14 +68,29 @@ contains the frequency of the clock signal.  The 10 MHz signal available on
 the front panel normally is used for this purpose.
 
 <DT>SIS3801 scalers <DD>Normally, the hardware is set up to connect an
-internally generated 25-MHz clock to channel 1, via an internal switch.
+internally generated 25-MHz clock to channel 1, via a software switch.
 (Thus, any external signal connected to SIS3801 channel 1 will be ignored.)
 It is possible to use an externally generated clock, and in any case it is
 still the user's responsibility to ensure that FREQ contains the correct
-value.  The SIS3801 has no actual preset-counter hardware, but software
-emulates preset counters by reading the scaler periodically and stopping
-it when a channel specified as a preset counter has reached or exceeded the
-preset count.
+value.  The SIS3801 does not support hardware presets.  However, presets are emulated as follows. 
+The scaler is uses a FIFO to buffer the counts in each dwell period.  For the scaler
+record mode (as opposed to the MCS mode used with the MCA record) the dwell time is
+set to 0.01 seconds.  Thus, every 0.01 seconds the counts for each channel are pushed into
+the FIFO stack.  When the driver reads the FIFO at the scaler polling rate (.RATE) it compares 
+the total counts for each channel with the preset counts.  If any preset is reached then it
+signals that counting is complete.  Thus, the counting could have extended for up to 0.01 second
+longer than requested, but each channel will have counted for exactly the same period of time,
+so the counts per second will be accurate.
+
+<DT>SIS3820 scalers <DD> Normally the hardware is set up to connect an
+internally generated 50-MHz clock to channel 1, via a software switch. 
+The SIS3820 supports hardware presets.  
+However, there is only a single preset for channels 1-16,
+and a second preset for channels 17-32.  This means that only one channel from 1-16 and one channel
+from 17-32 can be used as a preset at the same time. The driver handles this limitation by using the
+highest numbered channel in each group that has a non-zero preset (PRn) and active gate (Gn=Y).
+For example, if PR1, PR3, PR18 and PR22 are all non-zero and G1,G3,G18 and G22 are "Y", 
+then the scaler will stop counting when S3=PR3 or S22=PR22, whichever comes first.
 
 <DT>Joerger VS scalers <DD>This hardware does not implement preset
 counters; an internal 16-bit gate-time counter is used to set the counting
@@ -91,11 +106,11 @@ the time base.
 <P>This is how the scaler record is intended to be used:
 <OL>
 <LI>The user sets FREQ to the frequency of the clock signal input to
-    scaler channel 1. (Joerger VSC and SIS3801 only)
+    scaler channel 1. (Joerger VSC, SIS3801, and SIS3820 only)
 <LI>The user sets TP (time preset) and/or PRn (preset value for scaler
     channel n).  (For Joerger VS scalers, only TP or PR1 may be set.)
 <LI>The user sets CNT to "Count" (1), initiating counting.
-<LI>For Joerger VSC and SIS3801 scalers, the counters count until any
+<LI>For Joerger VSC, SIS3801 and SIS3820 scalers, the counters count until any
     preset counter reaches its preset value, whereupon the record resets
     CNT to "Done" (0), or the user manually resets CNT to "Done" (0),
     causing counting to stop.  For Joerger VS scalers, counters count
@@ -165,7 +180,6 @@ find the actual item.</CAPTION></A>
 
 <TR>								<TH>Name		<TH>Access	<TH>Prompt				<TH>Data type	<TH>Comment
 
-<TR><TD><A HREF="#Fields_misc">		CARD	</A> 	<TD>R		<TD>Card Number			<TD>SHORT		<TD>Which VME card
 <TR><TD><A HREF="#Fields_control">	CNT		</A>	<TD>R/W*	<TD>Count				<TD>RECCHOICE	<TD>(0:"Done", 1:"Count")
 <TR><TD><A HREF="#Fields_control">	CONT	</A>	<TD>R/W*	<TD>OneShot/AutoCount	<TD>RECCHOICE	<TD>(0:"OneShot", 1:"AutoCount")
 <TR><TD><A HREF="#Fields_private">	D1...D64</A>	<TD>R/W		<TD>Count Direction n	<TD>RECCHOICE	<TD>(0:"Up", 1:"Dn")
@@ -179,10 +193,10 @@ find the actual item.</CAPTION></A>
 <TR><TD><A HREF="#Fields_link">		OUT		</A>	<TD>R		<TD>Output Specification<TD>OUTLINK		<TD>link to hardware
 <TR><TD><A HREF="#Fields_private">	PCNT	</A>	<TD>R		<TD>Prev Count			<TD>RECCHOICE	<TD>private
 <TR><TD><A HREF="#Fields_misc">		PREC	</A>	<TD>R/W		<TD>Display Precision	<TD>SHORT		<TD>num decimal places
-<TR><TD><A HREF="#Fields_control">	PR1...PR64</A>	<TD>R/W		<TD>Preset n			<TD>LONG		<TD>preset values
+<TR><TD><A HREF="#Fields_control">	PR1...PR64</A>	<TD>R/W		<TD>Preset n			<TD>ULONG		<TD>preset values
 <TR><TD><A HREF="#Fields_control">	RATE	</A>	<TD>R/W		<TD>Display Rate (Hz)	<TD>FLOAT		<TD>in [0..60] Hz
 <TR><TD><A HREF="#Fields_control">	RAT1	</A>	<TD>R/W		<TD>Auto Display Rate	<TD>FLOAT		<TD>in [0..60] Hz
-<TR><TD><A HREF="#Fields_data">		S1...S64</A>	<TD>R		<TD>Scaler n			<TD>LONG		<TD>results
+<TR><TD><A HREF="#Fields_data">		S1...S64</A>	<TD>R		<TD>Scaler n			<TD>ULONG		<TD>results
 <TR><TD><A HREF="#Fields_private">	SS</A>			<TD>r		<TD>Scaler state		<TD>SHORT		<TD>state of hardware
 <TR><TD><A HREF="#Fields_data">		T		</A>	<TD>R		<TD>Timer				<TD>DOUBLE		<TD>elapsed time
 <TR><TD><A HREF="#Fields_control">	TP		</A>	<TD>R/W		<TD>Time Preset			<TD>DOUBLE		<TD>preset time
@@ -248,7 +262,7 @@ set Gn to 1.  If the hardware does not implement preset scalers, device
 support will set these fields to 0 whenever it notices that they have been
 set to 1.
 
-<TR VALIGN=TOP><TD>PR1...PR64	<TD>R/W	<TD>Preset n	<TD>LONG
+<TR VALIGN=TOP><TD>PR1...PR64	<TD>R/W	<TD>Preset n	<TD>ULONG
 
 	<TR><TD COLSPAN=5>
 Preset values for the associated scalers.  If scaler n has been
@@ -318,7 +332,7 @@ seconds) and values associated with scaler 1 (S1 and PR1).  It is
 the user's responsibility to ensure that this field has the correct
 value.
 
-<TR VALIGN=TOP><TD>S1...S64	<TD>R	<TD>Scaler n value (EGU)		<TD>LONG
+<TR VALIGN=TOP><TD>S1...S64	<TD>R	<TD>Scaler n value (EGU)		<TD>ULONG
 
 	<TR><TD COLSPAN=5>
 The counts accumulated by the scalers.  These are posted periodically (at RATE Hz)
@@ -370,14 +384,6 @@ This field is a proxy for the value field, S1, associated with scaler
 <TR VALIGN=TOP><TD>VERS	<TD>R		<TD>Code Version			<TD>FLOAT
 
 	<TD>Version number of the recScaler.c code.
-
-<TR VALIGN=TOP><TD>CARD	<TD>R		<TD>Card Number				<TD>SHORT
-
-	<TR><TD COLSPAN=5>
-The VME card number, derived from the output link.  Cards are numbered
-from zero according to their VME addresses.  Joerger-scaler types VSC8
-and VSC16 are in the same series, since they are handled by the same
-device-support module.
 
 <TR VALIGN=TOP><TD>NCH	<TD>R		<TD>Number of channels				<TD>SHORT
 
@@ -433,10 +439,12 @@ scaler record.
 <TABLE BORDER CELLPADDING=5>
 <TR><TH COLSPAN=2>SOURCE CODE<BR></TH></TR>
 <TR VALIGN=TOP><TD>scalerRecord.c		<TD>Record support for the scaler record</TR>
+<TR VALIGN=TOP><TD>devScalerAsyn.c		<TD>Device support for asyn scaler drivers</TR>
 <TR VALIGN=TOP><TD>devScaler.h			<TD>Header included by record and device support</TR>
 <TR VALIGN=TOP><TD>devScaler.c			<TD>Device support for Joerger VSC scalers</TR>
 <TR VALIGN=TOP><TD>devScaler_VS.c		<TD>Device support for Joerger VS scalers</TR>
 <TR VALIGN=TOP><TD>devScalerSTR7201.c	<TD>Device support for Struck 7201 and SIS3801</TR>
+<TR VALIGN=TOP><TD>drvMcaSIS3820Asyn.c	<TD>Device support for Struck 7201 and SIS3801</TR>
 
 <TR VALIGN=TOP>
 <TD>scalerRecord.dbd</TD>
@@ -455,6 +463,7 @@ scaler-related information:
 # Database definition for scaler record
 include "scalerRecord.dbd"
 # Device support for scaler record
+device(scaler,INST_IO,devScalerAsyn,"Asyn Scaler")
 device(scaler,VME_IO,devScaler,"Joerger VSC8/16")
 device(scaler,VME_IO,devScaler_VS,"Joerger VS")
 device(scaler,VME_IO,devScalerSTR7201,"Struck STR7201 Scaler")
@@ -667,7 +676,7 @@ time (DLY1), the scaler can swamp the network with data.<HR>
 Suggestions and comments to: 
 <BR><A HREF="mailto:mooney@aps.anl.gov">Tim Mooney</A> : (mooney@aps.anl.gov)
 <BR>
-Last modified: July 16, 2004
+Last modified: December 5, 2006
 </ADDRESS>
 
 </BODY>
