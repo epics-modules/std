@@ -180,7 +180,6 @@ find the actual item.</CAPTION></A>
 
 <TR>								<TH>Name		<TH>Access	<TH>Prompt				<TH>Data type	<TH>Comment
 
-<TR><TD><A HREF="#Fields_misc">		CARD	</A> 	<TD>R		<TD>Card Number			<TD>SHORT		<TD>Which VME card
 <TR><TD><A HREF="#Fields_control">	CNT		</A>	<TD>R/W*	<TD>Count				<TD>RECCHOICE	<TD>(0:"Done", 1:"Count")
 <TR><TD><A HREF="#Fields_control">	CONT	</A>	<TD>R/W*	<TD>OneShot/AutoCount	<TD>RECCHOICE	<TD>(0:"OneShot", 1:"AutoCount")
 <TR><TD><A HREF="#Fields_link">		COUT	</A>	<TD>R/W		<TD>CNT Output			<TD>OUTLINK		<TD>Link to PV
@@ -390,13 +389,6 @@ sequence has just started, or just finished.
 
 	<TD>Version number of the recScaler.c code.
 
-<TR VALIGN=TOP><TD>CARD	<TD>R		<TD>Card Number				<TD>SHORT
-
-	<TR><TD COLSPAN=5>
-The VME card number, derived from the output link.  Cards are numbered
-from zero according to their VME addresses.  Joerger-scaler types VSC8
-and VSC16 are in the same series, since they are handled by the same
-device-support module.
 
 <TR VALIGN=TOP><TD>NCH	<TD>R		<TD>Number of channels				<TD>SHORT
 
