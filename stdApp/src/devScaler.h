@@ -1,9 +1,8 @@
 /* devScaler.h */
-/* OSI by S. Kate Feng 3/03 */
 
-/* ----------------Device Support Entry Table for devSCALER----------------- */
+/* ----------------Device Support Entry Table for devScaler----------------- */
 
-#define MAX_SCALER_CHANNELS 32
+#define MAX_SCALER_CHANNELS 64
 
 typedef struct {
 	long		number;

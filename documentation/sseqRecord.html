@@ -7,1254 +7,413 @@
 <body>
 <h1>
 The sseq (string sequence) record</h1>
-<a NAME="HEADING34-1"></a>
+
+<p>Contents:<!-- TOC -->
+<ol>
+<li><a href="#Introduction">Introduction</a>
+<li><a href="#ScanParameters">Scan Parameters</a>
+<li><a href="#DesiredOutput">Desired Output Parameters</a>
+<li><a href="#Output">Output/Wait Parameters</a>
+<li><a href="#Selection">Selection Algorithm Parameters</a>
+<li><a href="#Delay">Delay Parameters</a>
+<li><a href="#Display">Operator Display Parameters</a>
+<li><a href="#Alarms">Alarm Parameters</a>
+<li><a href="#code">Record Support Routines</a>
+</ol>
+
+<a NAME="Introduction"></a>
 <h1>
 1. Introduction</h1>
 
-<hr>The String Sequence record is similar to the Sequence record, and
-has all of its capabilities, but it also can link from either string or
-double fields to either string or double fields. The record is used to
-trigger the processing of up to ten other records and send values to
-those records. It is similar to the fanout record, except that it will
-fetch an input value and write an output value instead of simply
-processing a collection of forward links. It can also specify one of
-several selection algorithms that determine which values to write. It
-has no associated device support. Its fields fall into the following
-categories:
-<p>&nbsp;scan parameters
-<p>&nbsp;desired output parameters
-<p>&nbsp;output parameters
-<p>&nbsp;selection algorithm parameters
-<p>&nbsp;delay parameters
-<p>&nbsp;operator display parameters
-<p>&nbsp;run-time parameters
-<p><a NAME="HEADING34-10"></a>
-<h1>
+<hr>The <b>sseq</b> (String Sequence) record is derived from the <b>seq</b>
+(Sequence) record, and has all of its capabilities. In addition, it can link
+from either string or numeric fields to either string or numeric fields, and it
+can wait for processing that any of its output links triggers to complete. The
+record can execute a sequence of up to ten sets of
+<i>delay/get-value/put-value/wait-for-completion</i> operations.  All steps and
+sequences are optional; with default field values, the record does nothing at
+all.  The sseq record also implements several selection algorithms that allow a
+dtabase programmer or runtime user to specify which sets of
+<i>delay/get/put/wait</i> to execute. The record has no associated device
+support.
+
+
+
+
+<h1><a NAME="ScanParameters"></a>
 2. Scan Parameters</h1>
 
-<hr>The sequence record has the standard fields for specifying under what
-circumstances it will be processed.  See the EPICS Record Reference Manual for more information.
-<p><a NAME="HEADING34-12"></a>
+
+<hr>Like all other EPICS records, the sequence record has the standard set of
+fields (SCAN, PINI, FLNK, etc) for specifying under what circumstances it will
+be processed, and what record, if any, should process immediately afterward. 
+See the EPICS Record Reference Manual for more information.
+
+<p><a NAME="DesiredOutput"></a>
 <h1>
 3. Desired Output Parameters</h1>
 
-<hr>These fields determine where the record retrieves the values it is
-to write to other records. All of these values are not necessarily used,
-depending on the selection algorithm.
-<p>&nbsp;The sequence record can retrieve up to 10 values from 10 locations.
-The user specifies the locations in the Desired Output Link fields (DOL1-DOLA),
-which can be either constants, database links, or channel access links.
-If a Desired Output Link is a constant, the corresponding value field for
-that link is initialized to the constant value and <i>cannot</i> be changed
-via dbputs. Otherwise, if the Desired Output Link is a database or channel
-access link, a value is fetched from the link each time the record is processed
-(provided that the output link is part of the record's selection algorithm).
-See the EPICS Record Reference Manual for information on how to specify database links.
-<p>&nbsp;The value fetched from the Desired Output Links are stored in
-the corresponding Desired Output Value fields (DO1-DOA). These fields can
-be initialized to a constant value, but they cannot be changed via dbPuts.
-<table BORDER >
+<hr>These fields hold the values the record is to write to other records, or
+determine from where those values are to be read.
+
+<p>The sequence record can fetch up to 10 values from 10 locations. The
+user specifies the locations in the Desired Output Link fields (DOL1-DOLA),
+which can be either constants or links to other EPICS PVs. If a Desired Output
+Link is a constant, the corresponding value field for that link is initialized
+to the constant value. Otherwise, if the Desired Output Link is a link, a value
+is fetched from the link each time the record is processed. See the EPICS Record
+Reference Manual for information on how to specify database links.
+
+<p>The values fetched from the Desired Output Links are stored in the
+corresponding Desired Output fields (DO1-DOA and STR1-STRA). These fields can
+also be initialized to a constant value, and they can be changed at run time. 
+But note that the value of DO<i>n</i> and STR<i>n</i> will be overwritten if
+DOL<i>n</i> is a valid link (i.e., if DOL<i>n</i> contains the name of a PV to
+which the sseq record is able to make a channel-access connection).
+
+<P>Many EPICS records that have a DOL link field also have an OMSL (Output Mode
+Select) field, which determines whether or not the DOL field is used.  Like the
+seq record, the sseq record has no such field.  Its DOL<i>n</i> links are used
+if they contain text that could be a PV name, and value fields are overwritten
+if that use succeeds.
+
+<P><table BORDER >
 <tr>
 <th>Field</th>
-
 <th>Summary</th>
-
 <th>Type</th>
-
 <th>DCT</th>
-
 <th>Initial</th>
-
 <th>Access</th>
-
 <th>Modify</th>
-
 <th>Rec Proc Monitor</th>
-
 <th>PP</th>
 </tr>
 
 <tr>
-<td>DOL1</td>
-
-<td>Desired Output Link 1</td>
-
+<td>DOL1...DOLA</td>
+<td>Desired Output Links 1-10</td>
 <td>INLINK</td>
-
 <td>Yes</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>N/A</td>
-
 <td>No</td>
 </tr>
 
 <tr>
-<td>DOL2</td>
-
-<td>Desired Output Link 2</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOL3</td>
-
-<td>Desired Output Link 3</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOL4</td>
-
-<td>Desired Output Link 4</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOL5</td>
-
-<td>Desired Output Link 5</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOL6</td>
-
-<td>Desired Output Link 6</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOL7</td>
-
-<td>Desired Output Link 71</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOL8</td>
-
-<td>Desired Output Link 8</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOL9</td>
-
-<td>Desired Output Link 9</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOLA</td>
-
-<td>Desired Output Link 10</td>
-
-<td>INLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DO1</td>
-
-<td>Desired Output Value, Link 1</td>
-
+<td>DO1...D0A</td>
+<td>Desired Output Values 1-10</td>
 <td>DOUBLE</td>
-
 <td>No</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 
 <tr>
-<td>DO2</td>
-
-<td>Desired Output Value, Link 2</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DO3</td>
-
-<td>Desired Output Value, Link 3</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DO4</td>
-
-<td>Desired Output Value, Link 4</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DO5</td>
-
-<td>Desired Output Value, Link 5</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DO6</td>
-
-<td>Desired Output Value, Link 6</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DO7</td>
-
-<td>Desired Output Value, Link 7</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DO8</td>
-
-<td>Desired Output Value, Link 8</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DO9</td>
-
-<td>Desired Output Value, Link 9</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DOA</td>
-
-<td>Desired Output Value, Link 10&nbsp;</td>
-
-<td>DOUBLE</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STR1</td>
-
-<td>Desired Output String, Link 1</td>
-
+<td>STR1...STRA</td>
+<td>Desired Output Strings 1-10</td>
 <td>STRING</td>
-
 <td>No</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
-
-<tr>
-<td>STR2</td>
-
-<td>Desired Output String, Link 2</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STR3</td>
-
-<td>Desired Output String, Link 3</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STR4</td>
-
-<td>Desired Output String, Link 4</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STR5</td>
-
-<td>Desired Output String, Link 5</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STR6</td>
-
-<td>Desired Output String, Link 6</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STR7</td>
-
-<td>Desired Output String, Link 7</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STR8</td>
-
-<td>Desired Output String, Link 8</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STR9</td>
-
-<td>Desired Output String, Link 9</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>STRA</td>
-
-<td>Desired Output String, Link 10&nbsp;</td>
-
-<td>STRING</td>
-
-<td>No</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-
 
 </table>
 
-<p><a NAME="HEADING34-16"></a>
+<p><a NAME="Output"></a>
 <h1>
-4. Output Parameters</h1>
+4. Output/Wait Parameters</h1>
 
-<hr>When the record is processed, the desired output values are retrieved
-for the links in the record's selection algorithm and are written to the
-corresponding output link (LNK1-LNKA). These output links can be database
-links or channel access links; they cannot be device addresses. There are
-ten output links, one for each desired output link. Only those that are
-defined are used.
+<hr>When the sseq record is processed, desired output values (DO<i>n</i> or
+STR<i>n</i>) are written to the corresponding output links (LNK<i>n</i>). These
+output links should either be blank (in which case no writing will occur), or
+contain the name of an EPICS PV; they cannot be device addresses. There are ten
+output links. Only those that contain valid PV names are used.  If a link field
+contains a PV name to which a CA connection cannot be made, the rest of the
+record currently continues to operate as though the unconnected link field were
+blank.  (This is probably not a good practice, and it is not guaranteed to
+persist as the record is improved.)
+
+<P>EPICS links can cause processing of the linked-to (i.e., target) record to
+occur.  Whether or not processing actually does occur depends on both the
+specification of the link, and the properties of the target record.  This is
+well documented in the EPICS Application Developer's Guide, but since some
+details of link behavior are essential prerequisites for an understanding of the
+sseq record's WAIT<i>n</i> fields, the (EPICS 3.14) behavior of the output
+links, LNK<i>n</i>, is summarized here:
+
+<P> There are three possibilities:
+
+<DL>
+
+<DT>PP<DD>If LNK<i>n</i> has the attribute "PP" (e.g., "<code>targetRecord.field PP
+NMS</code>"), then the link will attempt to cause <code>targetRecord</code> to
+process.  The attempt will succeed, however, only if the target record is
+"Passive" (e.g., <code>targetRecord.SCAN</code> has the value
+<code>Passive</code>).  In other words, "PP" means "process if passive".
+
+<DT>CA<DD>If LNK<i>n</i> has the attribute "CA" (e.g., "<code>targetRecord.field
+CA NMS</code>"), then <code>targetRecord</code> will process only if
+<code>field</code> has been designated by <code>targetRecord</code>'s
+record-support code as a "Process Passive" field.  You can tell if a field is
+"Process Passive" either by looking at the record's .dbd file, or by writing to
+it from any Channel Access client; if the record processes when the field is
+question is written to via Channel Access, then the field is Process Passive,
+and a CA link to that field from the sseq record will also cause the record to
+process.
+
+<DT>NPP<DD>If LNK<i>n</i> has the attribute "NPP", then
+<code>targetRecord</code> will not process as a result of LNK<i>n</i>.
+
+</dl>
+
+<P>The sseq record is permitted to demand a completion callback from EPICS
+only if the LNK field it's processing has the attribute "CA".  A "PP" link
+is not permitted to make this demand.  If LNK<i>n</i> does have the "CA"
+attribute, and WAIT<i>n</i> has the value "Wait", then the sseq record will
+demand a completion callback.  In this case, it will wait after firing
+LNK<i>n</i> for the callback, before moving on to the next group of DLY/DOL/LNK
+fields.  If LNK<i>n</i> has any other attribute, WAIT<i>n</i> is irrelevant
+and its value will be ignored.
+
+<P>If LNK<i>n</i> has the attribute "CA", and WAIT<i>n</i> has the value "Wait",
+but <code>targetRecord.field</code> is <i>not</i> a Process-Passive field, then
+<code>targetRecord</code>  will not process as a result of LNK<i>n</i>, but the
+sseq record will immediately receive a completion callback anyway, and will
+therefore not wait for <code>targetRecord</code> to process.
+
+<P>Finally, if the sseq record successfully waits for <code>targetRecord</code>
+to finish processing, it is still possible for other records to process as an
+<i>indirect</i> result of LNK<i>n</i>, and the sseq record cannot wait for this
+indirectly caused processing to finish unless the database developer has
+arranged for the indirectly caused processing to be traceable by EPICS.  For
+example, a channel access client may have a monitor on the field the sseq record
+writes to, and may do something when that field's value changes.  EPICS cannot
+trace this processing without special help from a database developer.  This
+issue is covered in depth in the documentation of the sscan record, which also
+relies on EPICS execution tracing to determine when processing it has caused
+finishes.  (See "Completion Reporting" in the Powerpoint presentation
+"Scans.ppt" in the synApps <b>sscan</b> module's documentation directory.)
+
+<P>
 <table BORDER >
 <tr>
 <th>Field</th>
-
 <th>Summary</th>
-
 <th>Type</th>
-
 <th>DCT</th>
-
 <th>Initial</th>
-
 <th>Access</th>
-
 <th>Modify</th>
-
 <th>Rec Proc Monitor</th>
-
 <th>PP</th>
 </tr>
 
 <tr>
-<td>LNK1</td>
-
-<td>Output link 1</td>
-
+<td>LNK1...LNKA</td>
+<td>Output links 1-10</td>
 <td>OUTLINK</td>
-
 <td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
+<td>blank</td>
+<td>Yes</td>
+<td>Yes</td>
 <td>N/A</td>
-
 <td>No</td>
 </tr>
 
 <tr>
-<td>LNK2</td>
-
-<td>Output link 2</td>
-
-<td>OUTLINK</td>
-
+<td>WAIT1...WAITA</td>
+<td>Waits 1-10</td>
+<td>MENU ("NoWait"/"Wait")</td>
 <td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
+<td>"NoWait"</td>
+<td>Yes</td>
+<td>Yes</td>
 <td>N/A</td>
-
 <td>No</td>
+
+<tr><td colspan=9>These fields determine whether the sseq record waits for
+completion of any processing started by a LNK field before processing the next
+set of <i>DLY/DOL/LNK</i> fields. If WAIT<i>n</i> has the value "Wait",
+then the record will attempt to execute LNK<i>n</i> in such a way that it will
+be able to wait for all processing started by the link to finish.
 </tr>
 
-<tr>
-<td>LNK3</td>
-
-<td>Output link 3</td>
-
-<td>OUTLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>LNK4</td>
-
-<td>Output link 4</td>
-
-<td>OUTLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>LNK5</td>
-
-<td>Output link 5</td>
-
-<td>OUTLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>LNK6</td>
-
-<td>Output link 6</td>
-
-<td>OUTLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>LNK7</td>
-
-<td>Output link 7</td>
-
-<td>OUTLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>LNK8</td>
-
-<td>Output link 8</td>
-
-<td>OUTLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>LNK9</td>
-
-<td>Output link 9</td>
-
-<td>OUTLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>LNKA</td>
-
-<td>Output link 1</td>
-
-<td>OUTLINK</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>No</td>
-
-<td>No</td>
-
-<td>N/A</td>
-
-<td>No</td>
-</tr>
 </table>
 
-<p><a NAME="HEADING34-18"></a>
+<p><a NAME="Selection"></a>
 <h1>
 5. Selection Algorithm Parameters</h1>
 
-<hr>When the sequence record is processed, it uses a selection algorithm
-similar to that of the selection record to decide which links to process.The
-select mechanism field (SELM) has four algorithms to choose from: <tt>All</tt>,
+<hr>When the sseq record is processed, it uses a selection algorithm similar to
+that of the sel (selection) record to decide which links to process.  The select
+mechanism field (SELM) provides three algorithms to choose from: <tt>All</tt>,
 <tt>Specified</tt> or <tt>Mask</tt>.
-<p>&nbsp;The <tt>All</tt> algorithm causes the record to process each input
-and output link each time the record is processed, in order from 1 to 10.
-So when SELM is <tt>All</tt>, the desired output value from DOL1 will fetched
-and sent to LNK1, then the desired output value from DOL2 will be fetched
-and sent to the location in LNK2, and so on until the last input and output
-link DOA and LNKA. (Note that undefined links are not used.) If DOL<i>x</i>
-is a constant, the current value field is simply used and the desired output
-link is ignored. The SELN field is not used when <tt>All</tt> is the algorithm.
-<p>&nbsp;When the <tt>Specified</tt> algorithm is chosen, each time the
-record is processed it gets the integer value in the Link Selection (SELN)
-field and uses that as the index of the link to process. For instance,
-if SELN is 4, the desired output value from DO4 will be retrieved and sent
-to LNK4. If DOL<i>x</i> is a constant, DO<i>x</i> is simply used without
+
+<DL>
+
+<DT><tt>All</tt><DD>All link groups are processed, in order from 1 to 10. Thus,
+if DOL1 or LNK1 is connected, record will wait for DLY1 seconds, fetch the
+desired output value from DOL1 (if DOL1 contains a PV name), place it in DO1 and
+STR1, and send it LNK1 (if LNK1 contains a PV name), optionally waiting for
+completion.  Then the record will move on to process DLY2, DOL2, DO2, STR2,
+LNK2, WAIT2, and so on until the last input and output link DOA and LNKA.  The
+SELN field is not used when SELM = <tt>All</tt>.
+
+<DT><tt>Specified</tt><DD>Each time the
+record is processed it will get the integer value in the Link Selection (SELN)
+field and uses that as the index of the link group to process. For instance,
+if SELN is 4, the desired output value from DO4 will be fetched and sent
+to LNK4. If DOL<i>n</i> is a constant, DO<i>n</i> is simply used without
 the value being fetched from the input link.
-<p>&nbsp;When Mask is chosen, each time the record is processed, the record
-uses the integer value from the SELN field as a mask to determine the links
-to process. For instance, if SELN is 1, then the value from DO1 will be
-written to the location in LNK1. If SELN is 3, the record will retrieve
-the values from DO1 and DO2 and write them to the locations in LNK1 and
-LNK2, respectively. If SELN is 63, DO1...DO6 will be written to LNK1...LNK6.
-<p>&nbsp;LNK2. If SELN is 63, DO1...DO6 will be written to LNK1...LNK6.
+
+<DT><tt>Mask</tt><DD>Each time the record is processed, the record uses the
+integer value from the SELN field as a bit mask to determine which link groups to
+process. For example, if SELN is 1, then the value from DO1 will be written to
+the location in LNK1. If SELN is 3, the record will fetch the values from DO1
+and DO2 and write them to the locations in LNK1 and LNK2, respectively. If SELN
+is 63, DO1...DO6 will be written to LNK1...LNK6.
+
+</DL>
+
 <table BORDER >
 <tr>
 <th>Field</th>
-
 <th>Summary</th>
-
 <th>Type</th>
-
 <th>DCT</th>
-
 <th>Initial</th>
-
 <th>Access</th>
-
 <th>Modify</th>
-
 <th>Rec Proc Monitor</th>
-
 <th>PP</th>
 </tr>
 
 <tr>
 <td>SELM</td>
-
 <td>Select Mechanism</td>
-
 <td>RECCHOICE</td>
-
 <td>Yes</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 
 <tr>
-<td>SELN&nbsp;</td>
-
-<td>Link Selection&nbsp;</td>
-
+<td>SELN</td>
+<td>Link Selection</td>
 <td>USHORT</td>
-
 <td>No</td>
-
 <td>1</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 
 <tr>
 <td>SELL</td>
-
-<td>Link Selection Location&nbsp;</td>
-
+<td>Link Selection Location</td>
 <td>INLINK</td>
-
 <td>Yes</td>
-
 <td>0</td>
-
 <td>No</td>
-
 <td>No</td>
-
 <td>N/A</td>
-
 <td>No</td>
 </tr>
 </table>
 
-<p><a NAME="HEADING34-24"></a>
+<p><a NAME="Delay"></a>
 <h1>
 6. Delay Parameters</h1>
 
 <hr>The delay parameters consist of 10 fields, one for each I/O link discussed
-above. These fields can be configured to cause the record to delay processing
-the link. For instance, if the user gives the DLY1 field a value of 3.0,
-each time the record is processed at run-time, the record will delay processing
-the DOL1, DOV1, and LNK1 fields for three seconds. That is, the desired
-output value will not be fetched and written to the output link until three
-seconds have lapsed.
+above. These fields cause the record to delay processing before fetching data
+from the associated input link, or writing to the associated output link. For
+example, if the user gives the DLY1 field a value of 3.0, each time the record
+is processed at run-time, the record will delay processing for three seconds
+before fetching data from the DOL1 link.  If neither an input or an output link
+exist, the associated delay will be ignored.
+
+<P>Delays are implemented with a time granularity of the system clock, which
+typically has a frequency of 60 Hz.  When a delay value is specified, the record
+rounds it to the nearest multiple of the system clock period, and writes it back
+to the DLY<i>n</i> field. 
+
 <table BORDER >
 <tr>
 <th>Field</th>
-
 <th>Summary</th>
-
 <th>Type</th>
-
 <th>DCT</th>
-
 <th>Initial</th>
-
 <th>Access</th>
-
 <th>Modify</th>
-
 <th>Rec Proc Monitor</th>
-
 <th>PP</th>
 </tr>
 
 <tr>
 <td>DLY1</td>
-
 <td>Delay time</td>
-
 <td>DOUBLE</td>
-
 <td>Yes</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 
 <tr>
 <td>DLY2</td>
-
 <td>Delay time</td>
-
 <td>DOUBLE</td>
-
 <td>Yes</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 
 <tr>
-<td>DLY3</td>
-
-<td>Delay time</td>
-
-<td>DOUBLE</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DLY4</td>
-
-<td>Delay time</td>
-
-<td>DOUBLE</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DLY5</td>
-
-<td>Delay time</td>
-
-<td>DOUBLE</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DLY6</td>
-
-<td>Delay time</td>
-
-<td>DOUBLE</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DLY7</td>
-
-<td>Delay time</td>
-
-<td>DOUBLE</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DLY8</td>
-
-<td>Delay time</td>
-
-<td>DOUBLE</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
-</tr>
-
-<tr>
-<td>DLY9</td>
-
-<td>Delay time</td>
-
-<td>DOUBLE</td>
-
-<td>Yes</td>
-
-<td>0</td>
-
-<td>Yes</td>
-
-<td>Yes</td>
-
-<td>No</td>
-
-<td>No</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
 </tr>
 
 <tr>
 <td>DLYA</td>
-
 <td>Delay time</td>
-
 <td>DOUBLE</td>
-
 <td>Yes</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 </table>
 
-<p><a NAME="HEADING34-26"></a>
+<p><a NAME="Display"></a>
 <h1>
 7. Operator Display Parameters</h1>
 
@@ -1262,103 +421,73 @@ seconds have lapsed.
 The Precision field (PREC) determines the decimal precision for the VAL
 field when it is displayed. It is used when the <tt>get_precision</tt>
 record routine is called.
-<p>See the EPICS Record Reference Manual for more on the record name (NAME) and description
-(DESC) fields.
+
+<p>See the EPICS Record Reference Manual for more on the record name (NAME) and
+description (DESC) fields.
+
 <table BORDER >
 <tr>
 <th>Field</th>
-
 <th>Summary</th>
-
 <th>Type</th>
-
 <th>DCT</th>
-
 <th>Initial</th>
-
 <th>Access</th>
-
 <th>Modify</th>
-
 <th>Rec Proc Monitor</th>
-
 <th>PP</th>
 </tr>
 
 <tr>
-<td>PREC&nbsp;</td>
-
-<td>Display Precision&nbsp;</td>
-
+<td>PREC</td>
+<td>Display Precision</td>
 <td>SHORT</td>
-
 <td>Yes</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 
 <tr>
 <td>NAME</td>
-
 <td>Record Name</td>
-
 <td>STRING [29]</td>
-
 <td>Yes</td>
-
 <td>0</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 
 <tr>
 <td>DESC</td>
-
 <td>Description</td>
-
 <td>STRING [29]</td>
-
 <td>Yes</td>
-
 <td>Null</td>
-
 <td>Yes</td>
-
 <td>Yes</td>
-
 <td>No</td>
-
 <td>No</td>
 </tr>
 </table>
 
-<p><a NAME="HEADING34-29"></a>
+<p><a NAME="Alarms"></a>
 <h1>
 8. Alarm Parameters</h1>
 
 <hr>The sequence record has the alarm parameters common to all record types.
 See the EPICS Record Reference Manual for details.
-<p><a NAME="HEADING34-31"></a>
+<p><a NAME="code"></a>
 <h1>
 9. Record Support Routines</h1>
 
 <hr>The only record support routine is process.
-<br>&nbsp;
-<br>&nbsp;
+<br>
+<br>
 <dl>
 <dd>
 1. First, PACT is set to TRUE, and the link selection is fetched. Depending
@@ -1382,55 +511,23 @@ on asynchronous processing.)</dd>
 <dd>
 5. Monitors are checked.</dd>
 
-<br>&nbsp;
-<p>&nbsp;
+<br>
+<p>
 <dd>
 6. The forward link is scanned, PACT is set FALSE, and the process routine
 returns.</dd>
 
-<br>&nbsp;
-<p>&nbsp;</dl>
+<br>
+<p></dl>
 For the delay mechanism to operate properly, the record is processed asynchronously.
 The only time the record will not be processed asynchronously is when there
 are no non-NULL output links selected (i.e. when it has nothing to do.)
 The processing of the links is done via callback tasks at the priority
 set in the PRIO field in dbCommon (see the Application Developer's Guide
-for more information on call
-<p><!-- TOC -->
-<dl>
-<dt>
-<a href="Recordref-34.html#HEADING34-1"><b>1. </b>- Introduction</a></dt>
+for more information.
 
-<dt>
-<a href="Recordref-34.html#HEADING34-10"><b>2. </b>- Scan Parameters</a></dt>
-
-<dt>
-<a href="Recordref-34.html#HEADING34-12"><b>3. </b>- Desired Output Parameters</a></dt>
-
-<dt>
-<a href="Recordref-34.html#HEADING34-16"><b>4. </b>- Output Parameters</a></dt>
-
-<dt>
-<a href="Recordref-34.html#HEADING34-18"><b>5. </b>- Selection Algorithm
-Parameters</a></dt>
-
-<dt>
-<a href="Recordref-34.html#HEADING34-24"><b>6. </b>- Delay Parameters</a></dt>
-
-<dt>
-<a href="Recordref-34.html#HEADING34-26"><b>7. </b>- Operator Display Parameters</a></dt>
-
-<dt>
-<a href="Recordref-34.html#HEADING34-29"><b>8. </b>- Alarm Parameters</a></dt>
-
-<dt>
-<a href="Recordref-34.html#HEADING34-31"><b>9. </b>- Record Support Routines</a></dt>
-
-<dd>
-</dd>
-</dl>
 
 <hr>
-<br>&nbsp;
+<br>
 </body>
 </html>
