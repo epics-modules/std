@@ -33,12 +33,15 @@
  *                0 - TS_TEXT_MONDDYYYY  Mon dd, yyyy hh:mm:ss
  *                1 - TS_TEXT_MMDDYY     mm/dd/yy hh:mm:ss
  *
- *
+ * This device support for an ai record captures secPastEpoch.  If the
+ * ai record's PHAS field is nonzero, it also captures the fractional part
+ * of a second.
  *
  * Modification Log:
  * -----------------
  * .01  04-12-96        nda     initial coding           
  * .02  02-07-97        nda     added devAi support for timestamp seconds
+ *      12-13-06        tmm     added fractional seconds for ai records
  *      ...
  */
 
@@ -143,6 +146,7 @@ static long aiReadTs(pai)
         recGblGetTimeStamp(pai);        /* get time stamp NOW */
 
         pai->val = (double) pai->time.secPastEpoch;
+        if(pai->phas) pai->val += (double) pai->time.nsec/1e9;
 
         pai->udf = 0;
 
