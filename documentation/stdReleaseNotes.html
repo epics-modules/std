@@ -1,43 +1,138 @@
-<html>
-
-<head>
-<meta http-equiv="Content-Type"
-content="text/html; charset=iso-8859-1">
-<title>stdReleaseNotes</title>
-</head>
-
-<body bgcolor="#FFFFFF">
-
-<h1 align="center">std Release Notes</h1>
-
-<h2 align="center">Release 2-3</h2>
-
-<p align="left">This is what's left of the synApps std module
-after the modules autosave, calc, optics, sscan, and vme were split out.
-</p>
-
-This version is intended to build with EPICS base 3.14.5.
-
-Differences from std 2.2:
-<ul>
-<li><p>scaler record - device support that used "struct callback" defined
-in devScaler.h must now replace that with "CALLBACK", and must include
-epics/base/include/callback.h
-<li>sseq record - Now allows user to specify whether or not the record
-should wait, after putting a link value, for the resulting processing to
-complete before processing the next link.  Some code cleanup.  Added
-seqRecDebug.
-<li>topDAC8.adl - Deleted to avoid conflict with dac128V module.
-<li>VXstats_full.adl
-<li>pid_control_settings.req - added delta time
-<li>Added device-independent scaler database and save-restore settings files.
-<li>timeString.db - new capability in 3.14.5: stringin record can get time date.
-</ul>
-<address>
-    Suggestions and Comments to: <br>
-    <a href="mailto:mooney@aps.anl.gov">Tim Mooney </a>:
-    (mooney@aps.anl.gov) <br>
-    Last modified: March 4, 2004 
-</address>
-</body>
-</html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>stdReleaseNotes</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 7  (Solaris Sparc)">
+	<META NAME="CREATED" CONTENT="20060828;8453100">
+	<META NAME="CHANGED" CONTENT="20060828;8514200">
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
+<H1 ALIGN=CENTER>std Release Notes</H1>
+<H2 ALIGN=CENTER>Release 2-5-4 (Dec. 6, 2006)</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Changes to scaler record:
+        <UL>
+          <LI>PRn and Sn fields are now DBF_ULONG rather than DBF_LONG.
+	  <LI>No longer hardcode VME_IO device type in the record logic.
+	  <LI>Removed .CARD record field.
+          <LI>Changed interface to device support so that all functions pass precord 
+              rather than card, and init_record passes pointer to device callback structure.
+          <LI>Move callback structures from dpvt to rpvt so record does not access dpvt.
+	</P>
+        </UL>
+	<LI><P STYLE="margin-bottom: 0in">Added asyn device support for scaler record. This is
+            currently used by the SIS3820 device support in mcaApp/SISSrc, but all scaler
+            device support will eventually be changed to use asyn.
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Changed stdApp/Db/scaler*.db so that $(OUT) is a
+            macro parameter, rather than assuming VME_IO link type.
+	<LI><P STYLE="margin-bottom: 0in">Deleted CARD field from stdApp/op/adl/scaler*.adl.
+	<LI><P STYLE="margin-bottom: 0in">Deleted stdApp/src/femto.dbd, not needed.
+	<li><P STYLE="margin-bottom: 0in">Added timer.db (resettable software timer) and
+		related software: timer.req, timer*.adl
+	</P>
+</UL>
+<H2 ALIGN=CENTER>Release 2-5-3</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">epid record still had some FLOAT
+	stuff to convert to DOUBLE. Fixed record and docs. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">added userStringSeq10 database,
+	autosave request, and medm display files.</P>
+	<LI><P STYLE="margin-bottom: 0in">Added support for the Femto
+	current amplifier (<A HREF="http://www.femto.de/">www.femto.de</A>).</P>
+</UL>
+<H2 ALIGN=CENTER>Release 2-5-2</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">sseqRecord.html rewritten. The old
+	version was a minimal modification of seqRecord.html, from the EPICS
+	Record Reference Manual, and was not very clear. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">scaler record: v3.18: Don't post
+	CNT field unless record-support changed its value. Modified debug
+	macro. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">devEpidFast.c: changed strtok_r to
+	epicsStrtok_r 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">pvHistory: new software to
+	maintain short-term history of a few PV's in the ioc. Software
+	comprises pvHistory.c (genSub routines), devTimeOfDay.c,
+	pvHistory.db, pvHistory.req (autosave-request file), and
+	pvHistory*.adl, and relies on autosave to save/restore the value
+	arrays. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">softMotor.db: shortened some .DESC
+	field values so they fit. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">all_com_4.db: new file 
+	</P>
+	<LI><P>softMotorConfig.adl: related-display callups were using
+	sCalcout files for calcout records, because synApps did not contain
+	calcout medm displays. Now the calc module does contain calcout
+	displays, so we use them. 
+	</P>
+</UL>
+<H2 ALIGN=CENTER>Release 2-4</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">mpf-related stuff replaced by
+	asyn-related stuff 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">minor scaler-record changes to
+	accommodate Joerger VS series. Existing support for other scaler
+	devices should not require any modifications. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">BitBus is no longer supported 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">ioc-status info now provided by
+	vxStats module 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">PID support rearranged around the
+	asyn module 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">SSEQ-record delays now snap to
+	nearest clock period, and show user the delay that will actually be
+	used. Fixed bug that was crashing on Linux and Windows. 
+	</P>
+	<LI><P><A HREF="cvsLog.txt">cvs log</A> 
+	</P>
+</UL>
+<H2 ALIGN=CENTER>Release 2-3</H2>
+<P ALIGN=LEFT>This is what's left of the synApps std module after the
+modules autosave, calc, optics, sscan, and vme were split out. 
+</P>
+<P>This version is intended to build with EPICS base 3.14.5.
+Differences from std 2.2: 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">scaler record - device support
+	that used &quot;struct callback&quot; defined in devScaler.h must
+	now replace that with &quot;CALLBACK&quot;, and must include
+	epics/base/include/callback.h 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">sseq record - Now allows user to
+	specify whether or not the record should wait, after putting a link
+	value, for the resulting processing to complete before processing
+	the next link. Some code cleanup. Added seqRecDebug. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">topDAC8.adl - Deleted to avoid
+	conflict with dac128V module. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">VXstats_full.adl 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">pid_control_settings.req - added
+	delta time 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Added device-independent scaler
+	database and save-restore settings files. 
+	</P>
+	<LI><P>timeString.db - new capability in 3.14.5: stringin record can
+	get time date. 
+	</P>
+</UL>
+<ADDRESS>Suggestions and Comments to: <BR><A HREF="mailto:mooney@aps.anl.gov">Tim
+Mooney </A>: (mooney@aps.anl.gov) <BR>Last modified: January 6, 2005 
+</ADDRESS>
+</BODY>
+</HTML>

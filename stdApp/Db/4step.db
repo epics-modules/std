@@ -211,7 +211,6 @@ grecord(stringout,"$(P)4step:det2TrigName") {
 }
 grecord(stringout,"$(P)4step:det1TrigName") {
 	field(PINI,"YES")
-	field(VAL,"$(P)scaler1.CNT")
 	field(OUT,"$(P)4step:det1TrigInfo.STR1  PP MS")
 }
 grecord(stringout,"$(P)4step:sig4:Desc") {
@@ -229,7 +228,6 @@ grecord(transform,"$(P)4step:sig1") {
 	field(CLCE,"(a+c)/2")
 	field(CLCF,"(b+d)/2")
 	field(CLCG,"e-f")
-	field(INPJ,"$(P)scaler1.T")
 	field(INPK,"$(P)4step:ctrl.L  NPP MS")
 	field(INPL,"0")
 	field(OUTA,"$(P)4step:sig1:A.VAL  PP MS")
@@ -259,7 +257,6 @@ grecord(transform,"$(P)4step:sig2") {
 	field(CLCE,"(a+c)/2")
 	field(CLCF,"(b+d)/2")
 	field(CLCG,"e-f")
-	field(INPJ,"$(P)scaler1.S2")
 	field(INPK,"$(P)4step:ctrl.L  NPP MS")
 	field(INPL,"0")
 	field(OUTA,"$(P)4step:sig2:A.VAL  PP MS")
@@ -289,7 +286,6 @@ grecord(transform,"$(P)4step:sig3") {
 	field(CLCE,"(a+c)/2")
 	field(CLCF,"(b+d)/2")
 	field(CLCG,"e-f")
-	field(INPJ,"$(P)scaler1.S3")
 	field(INPK,"$(P)4step:ctrl.L  NPP MS")
 	field(INPL,"0")
 	field(OUTA,"$(P)4step:sig3:A.VAL  PP MS")
@@ -319,7 +315,6 @@ grecord(transform,"$(P)4step:sig4") {
 	field(CLCE,"(a+c)/2")
 	field(CLCF,"(b+d)/2")
 	field(CLCG,"e-f")
-	field(INPJ,"$(P)scaler1.S4")
 	field(INPK,"$(P)4step:ctrl.L  NPP MS")
 	field(INPL,"0")
 	field(OUTA,"$(P)4step:sig4:A.VAL  PP MS")
@@ -586,38 +581,18 @@ grecord(sseq,"$(P)4step:calcSendE") {
 grecord(sseq,"$(P)4step:Dseq") {
 	field(DESC,"step D actions")
 	field(PREC,"3")
-	field(DOL1,"-100")
-	field(LNK1,"$(P)DAC1_2.VAL PP")
-	field(DLY2,"0.1")
-	field(DOL2,"0")
-	field(LNK2,"$(P)DAC1_2.VAL PP")
 }
 grecord(sseq,"$(P)4step:Cseq") {
 	field(DESC,"step C actions")
 	field(PREC,"3")
-	field(DOL1,"-100")
-	field(LNK1,"$(P)DAC1_1.VAL PP")
-	field(DLY2,"0.1")
-	field(DOL2,"0")
-	field(LNK2,"$(P)DAC1_1.VAL PP")
 }
 grecord(sseq,"$(P)4step:Bseq") {
 	field(DESC,"step B actions")
 	field(PREC,"3")
-	field(DOL1,"100")
-	field(LNK1,"$(P)DAC1_2.VAL PP")
-	field(DLY2,"0.1")
-	field(DOL2,"0")
-	field(LNK2,"$(P)DAC1_2.VAL PP")
 }
 grecord(sseq,"$(P)4step:Aseq") {
 	field(DESC,"step A actions")
 	field(PREC,"3")
-	field(DOL1,"100")
-	field(LNK1,"$(P)DAC1_1.VAL PP")
-	field(DLY2,"0.1")
-	field(DOL2,"0")
-	field(LNK2,"$(P)DAC1_1.VAL PP")
 }
 grecord(sseq,"$(P)4step:sig1:sFan") {
 	field(PINI,"YES")
