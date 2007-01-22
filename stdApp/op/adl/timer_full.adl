@@ -1,12 +1,12 @@
 
 file {
-	name="C:\cygwin\home\mooney\epics\synApps\support\all_adl\timer_full.adl"
-	version=030004
+	name="/home/oxygen/MOONEY/epics/synApps/support/std/stdApp/op/adl/timer_full.adl"
+	version=030101
 }
 display {
 	object {
-		x=703
-		y=279
+		x=119
+		y=481
 		width=350
 		height=200
 	}
@@ -131,7 +131,7 @@ text {
 	object {
 		x=5
 		y=35
-		width=50
+		width=70
 		height=40
 	}
 	control {
@@ -155,21 +155,6 @@ text {
 	clr=0
 	bclr=63
 	label="-Less"
-}
-"message button" {
-	object {
-		x=5
-		y=80
-		width=50
-		height=20
-	}
-	control {
-		chan="$(P)timer$(N):reset"
-		clr=14
-		bclr=51
-	}
-	label="RESET"
-	press_msg="1"
 }
 text {
 	object {
@@ -358,49 +343,59 @@ text {
 		height=14
 	}
 	monitor {
-		chan="$(P)timer$(N):calcElapsed.G"
+		chan="$(P)timer$(N):remainingSecs"
 		clr=54
 		bclr=2
 	}
 	limits {
 	}
 }
-composite {
+"text entry" {
 	object {
 		x=107
+		y=177
+		width=180
+		height=20
+	}
+	control {
+		chan="$(P)timer$(N):doStop.FLNK"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=108
 		y=160
-		width=181
-		height=37
+		width=180
+		height=14
 	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=107
-				y=177
-				width=180
-				height=20
-			}
-			control {
-				chan="$(P)timer$(N):doStop.FLNK"
-				clr=14
-				bclr=52
-			}
-			format="string"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=108
-				y=160
-				width=180
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="When Preset is reached:"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="When Preset is reached:"
+}
+"related display" {
+	object {
+		x=315
+		y=0
+		width=35
+		height=14
+	}
+	display[0] {
+		label="calcElapsed"
+		name="yyTransform.adl"
+		args="P=$(P),T=timer$(N):calcElapsed"
+	}
+	display[1] {
+		label="doneCalc"
+		name="yyCalcoutRecord.adl"
+		args="P=$(P),C=timer$(N):doneCalc"
+	}
+	clr=5
+	bclr=0
+	label="-DEBUG"
 }

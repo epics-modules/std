@@ -1,14 +1,14 @@
 
 file {
-	name="C:\cygwin\home\mooney\epics\synApps\support\all_adl\timer.adl"
-	version=030004
+	name="/home/oxygen4/MOONEY/epics/synApps_T202_E3_14_7_R5_1/support/std/stdApp/op/adl/timer.adl"
+	version=030101
 }
 display {
 	object {
-		x=992
-		y=108
+		x=487
+		y=310
 		width=250
-		height=80
+		height=70
 	}
 	clr=14
 	bclr=2
@@ -100,16 +100,17 @@ rectangle {
 }
 "text update" {
 	object {
-		x=60
-		y=35
-		width=171
-		height=20
+		x=80
+		y=40
+		width=130
+		height=26
 	}
 	monitor {
 		chan="$(P)timer$(N):elapsedSecs"
 		clr=54
 		bclr=2
 	}
+	format="compact"
 	limits {
 	}
 }
@@ -144,9 +145,9 @@ text {
 }
 "related display" {
 	object {
-		x=205
-		y=55
-		width=40
+		x=215
+		y=50
+		width=35
 		height=20
 	}
 	display[0] {
@@ -161,28 +162,13 @@ text {
 "choice button" {
 	object {
 		x=5
-		y=35
-		width=50
-		height=40
+		y=34
+		width=70
+		height=35
 	}
 	control {
 		chan="$(P)timer$(N):Go"
 		clr=14
 		bclr=51
 	}
-}
-"message button" {
-	object {
-		x=60
-		y=55
-		width=50
-		height=20
-	}
-	control {
-		chan="$(P)timer$(N):reset"
-		clr=14
-		bclr=51
-	}
-	label="RESET"
-	press_msg="1"
 }
