@@ -79,7 +79,7 @@ static long scaler_done(scalerRecord *psr);
 /* These are other functions */
 static long scaler_command(scalerRecord *psr, int command, long channel, long val, long *pval);
 static void asynCallback(asynUser *pasynUser);
-static void interruptCallback(void *drvPvt,  asynUser *pasynUser, epicsInt32 value, asynStatus status);
+static void interruptCallback(void *drvPvt,  asynUser *pasynUser, epicsInt32 value);
 
 SCALERDSET devScalerAsyn = {
     7,
@@ -403,7 +403,7 @@ static void asynCallback(asynUser *pasynUser)
 }
 
 /* Callback routine gets called when acquisition completes */
-static void interruptCallback(void *drvPvt,  asynUser *pasynUser, epicsInt32 value, asynStatus status)
+static void interruptCallback(void *drvPvt,  asynUser *pasynUser, epicsInt32 value)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)drvPvt;
     scalerRecord *psr = pPvt->psr;

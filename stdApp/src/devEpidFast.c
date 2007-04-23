@@ -77,8 +77,8 @@ static long update_params(epidRecord *epid);
 static void computeNumAverage(epidFastPvt *pPvt);
 static void do_PID(epidFastPvt *pPvt, double readback);
 /* These are callback functions, called from the driver */
-static void dataCallback(void *drvPvt, asynUser *pasynUser, double readback, asynStatus status);
-static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds, asynStatus status);
+static void dataCallback(void *drvPvt, asynUser *pasynUser, double readback);
+static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds);
 
 typedef struct {
     long            number;
@@ -280,7 +280,7 @@ static void computeNumAverage(epidFastPvt *pPvt)
 
 /* This is the function that is called back from the driver when the time
  * interval changes */
-static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds, asynStatus status)
+static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds)
 {
     epidFastPvt *pPvt = (epidFastPvt *)drvPvt;
 
@@ -292,7 +292,7 @@ static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds, 
 
 /* This is the function that is called back from the driver when a new readback
  * value is obtained */
-static void dataCallback(void *drvPvt, asynUser *pasynUser, double readBack, asynStatus status)
+static void dataCallback(void *drvPvt, asynUser *pasynUser, double readBack)
 {
     epidFastPvt *pPvt = (epidFastPvt *)drvPvt;
 
