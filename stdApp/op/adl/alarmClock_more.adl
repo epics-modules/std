@@ -1,0 +1,887 @@
+
+file {
+	name="/home/xorApps/epics/synApps_5_2/ioc/8id/8idApp/op/adl/alarmClock_more.adl"
+	version=030101
+}
+display {
+	object {
+		x=788
+		y=126
+		width=320
+		height=300
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=11
+		y=50
+		width=290
+		height=45
+	}
+	"basic attribute" {
+		clr=30
+		width=1
+	}
+}
+rectangle {
+	object {
+		x=10
+		y=9
+		width=300
+		height=31
+	}
+	"basic attribute" {
+		clr=2
+	}
+}
+rectangle {
+	object {
+		x=295
+		y=12
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)AClock$(A):Enable"
+	}
+}
+"choice button" {
+	object {
+		x=242
+		y=10
+		width=50
+		height=30
+	}
+	control {
+		chan="$(P)AClock$(A):Enable"
+		clr=14
+		bclr=51
+	}
+}
+rectangle {
+	object {
+		x=295
+		y=26
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)AClock$(A):Enable"
+	}
+}
+"text entry" {
+	object {
+		x=16
+		y=119
+		width=25
+		height=20
+	}
+	control {
+		chan="$(P)AClock$(A):Set:mm"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=63
+		y=119
+		width=25
+		height=20
+	}
+	control {
+		chan="$(P)AClock$(A):Set:dd"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=111
+		y=119
+		width=25
+		height=20
+	}
+	control {
+		chan="$(P)AClock$(A):Set:yy"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=181
+		y=120
+		width=25
+		height=20
+	}
+	control {
+		chan="$(P)AClock$(A):Set:HH"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=228
+		y=120
+		width=25
+		height=20
+	}
+	control {
+		chan="$(P)AClock$(A):Set:MM"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=274
+		y=120
+		width=25
+		height=20
+	}
+	control {
+		chan="$(P)AClock$(A):Set:SS"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=49
+		y=119
+		width=5
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="/"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=97
+		y=120
+		width=5
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="/"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=214
+		y=120
+		width=5
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=":"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=262
+		y=120
+		width=5
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=":"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=22
+		y=101
+		width=15
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Month"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=69
+		y=101
+		width=15
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Day"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=117
+		y=101
+		width=15
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Year"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=187
+		y=101
+		width=15
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Hour"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=234
+		y=100
+		width=15
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Min"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=280
+		y=101
+		width=15
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Sec"
+	align="horiz. centered"
+}
+"choice button" {
+	object {
+		x=14
+		y=144
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)AClock$(A):UD:mm"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=61
+		y=144
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)AClock$(A):UD:dd"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=109
+		y=144
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)AClock$(A):UD:yy"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=179
+		y=144
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)AClock$(A):UD:HH"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=226
+		y=143
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)AClock$(A):UD:MM"
+		clr=14
+		bclr=51
+	}
+}
+"choice button" {
+	object {
+		x=272
+		y=144
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)AClock$(A):UD:SS"
+		clr=14
+		bclr=51
+	}
+}
+"message button" {
+	object {
+		x=141
+		y=122
+		width=35
+		height=16
+	}
+	control {
+		chan="$(P)AClock$(A):SetNow.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Reset"
+	press_msg="1"
+}
+"text update" {
+	object {
+		x=61
+		y=194
+		width=200
+		height=15
+	}
+	monitor {
+		chan="$(P)AClock$(A):TOD"
+		clr=14
+		bclr=1
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=26
+		y=62
+		width=20
+		height=20
+	}
+	monitor {
+		chan="$(P)AClock$(A):TOD:mm"
+		clr=14
+		bclr=30
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=70
+		y=62
+		width=20
+		height=20
+	}
+	monitor {
+		chan="$(P)AClock$(A):TOD:dd"
+		clr=14
+		bclr=30
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=117
+		y=62
+		width=20
+		height=20
+	}
+	monitor {
+		chan="$(P)AClock$(A):TOD:yy"
+		clr=14
+		bclr=30
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=170
+		y=62
+		width=20
+		height=20
+	}
+	monitor {
+		chan="$(P)AClock$(A):TOD:HH"
+		clr=14
+		bclr=30
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=218
+		y=62
+		width=20
+		height=20
+	}
+	monitor {
+		chan="$(P)AClock$(A):TOD:MM"
+		clr=14
+		bclr=30
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=264
+		y=62
+		width=20
+		height=20
+	}
+	monitor {
+		chan="$(P)AClock$(A):TOD:SS"
+		clr=14
+		bclr=30
+	}
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=3
+		y=276
+		width=50
+		height=19
+	}
+	display[0] {
+		label="Mon. Check"
+		name="yyTransform_full.adl"
+		args="P=$(P),T=AClock$(A):Chk:mm"
+	}
+	display[1] {
+		label="Day Check"
+		name="yyTransform_full.adl"
+		args="P=$(P),T=AClock$(A):Chk:dd"
+	}
+	display[2] {
+		label="Year Check"
+		name="yyTransform_full.adl"
+		args="P=$(P),T=AClock$(A):Chk:yy"
+	}
+	display[3] {
+		label="Set Trigger"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):Set"
+	}
+	display[4] {
+		label="Trigger"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):Trigger"
+	}
+	display[5] {
+		label="TOD yy"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):TOD:yy"
+	}
+	display[6] {
+		label="TOD mm"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):TOD:mm"
+	}
+	display[7] {
+		label="TOD dd"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):TOD:dd"
+	}
+	display[8] {
+		label="TOD HH"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):TOD:HH"
+	}
+	display[9] {
+		label="TOD MM"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):TOD:MM"
+	}
+	display[10] {
+		label="TOD SS"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):TOD:SS"
+	}
+	clr=0
+	bclr=53
+	label="-Diag1"
+}
+text {
+	object {
+		x=128
+		y=238
+		width=186
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="TRIGGER OUTPUT PV"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=126
+		y=248
+		width=190
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)AClock$(A):Trigger.OUTV"
+	}
+}
+"text entry" {
+	object {
+		x=128
+		y=250
+		width=186
+		height=20
+	}
+	control {
+		chan="$(P)AClock$(A):Trigger.OUT"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=53
+		y=12
+		width=195
+		height=21
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="$(P)AClock$(A)"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=11
+		y=50
+		width=290
+		height=45
+	}
+	"basic attribute" {
+		clr=0
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)AClock$(A):Trigger"
+	}
+}
+rectangle {
+	object {
+		x=11
+		y=50
+		width=290
+		height=45
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)AClock$(A):Trigger"
+	}
+}
+text {
+	object {
+		x=54
+		y=62
+		width=5
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="/"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=102
+		y=62
+		width=5
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="/"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=250
+		y=62
+		width=5
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=":"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=202
+		y=62
+		width=5
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=":"
+	align="horiz. centered"
+}
+polyline {
+	object {
+		x=0
+		y=184
+		width=339
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(1,186)
+		(338,185)
+	}
+}
+"related display" {
+	object {
+		x=262
+		y=275
+		width=50
+		height=20
+	}
+	display[0] {
+		label="Alarm Clock"
+		name="alarmClock.adl"
+		args="P=$(P),A=$(A)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=17
+	label="-Less"
+}
+"text update" {
+	object {
+		x=61
+		y=216
+		width=200
+		height=15
+	}
+	monitor {
+		chan="$(P)AClock$(A):Set.SVAL"
+		clr=14
+		bclr=1
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=8
+		y=196
+		width=45
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="TOD:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=9
+		y=215
+		width=45
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Alarm:"
+	align="horiz. right"
+}
+"related display" {
+	object {
+		x=56
+		y=276
+		width=50
+		height=19
+	}
+	display[0] {
+		label="TOD MM"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):TOD:MM"
+	}
+	display[1] {
+		label="TOD SS"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=AClock$(A):TOD:SS"
+	}
+	display[2] {
+		label="Reset Alarm"
+		name="yySseq_full.adl"
+		args="P=$(P),S=AClock$(A):SetNow"
+	}
+	clr=0
+	bclr=53
+	label="-Diag2"
+}

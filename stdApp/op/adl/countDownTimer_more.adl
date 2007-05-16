@@ -1,0 +1,495 @@
+
+file {
+	name="/home/phoebus/SULLIVAN/epics/synApps_cvs/ioc/8id/8idnApp/op/adl/countDownTimer_more.adl"
+	version=030101
+}
+display {
+	object {
+		x=417
+		y=213
+		width=215
+		height=200
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+text {
+	object {
+		x=44
+		y=94
+		width=11
+		height=29
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=":"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=95
+		y=94
+		width=11
+		height=29
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=":"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=9
+		y=97
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)cdt$(N):setTimeHrs"
+		clr=14
+		bclr=51
+	}
+	format="truncated"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=61
+		y=97
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)cdt$(N):setTimeMin"
+		clr=14
+		bclr=51
+	}
+	format="truncated"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=111
+		y=97
+		width=30
+		height=30
+	}
+	control {
+		chan="$(P)cdt$(N):setTimeSec"
+		clr=14
+		bclr=51
+	}
+	format="truncated"
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=9
+		y=179
+		width=45
+		height=18
+	}
+	display[0] {
+		label="Count Details"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=cdt$(N):count"
+	}
+	display[1] {
+		label="Parse Details"
+		name="yyTransform_full.adl"
+		args="P=$(P),T=cdt$(N):parse"
+	}
+	display[2] {
+		label="Reset Details"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=cdt$(N):reset"
+	}
+	display[3] {
+		label="Trigger Details"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=cdt$(N):trigger"
+	}
+	display[4] {
+		label="StartReset Details"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=cdt$(N):startReset"
+	}
+	display[5] {
+		label="CountReset Details"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=cdt$(N):countReset"
+	}
+	display[6] {
+		label="Stop/Start Details"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=cdt$(N):stopStart"
+	}
+	clr=0
+	bclr=53
+	label="-Detail"
+}
+"choice button" {
+	object {
+		x=154
+		y=96
+		width=50
+		height=30
+	}
+	control {
+		chan="$(P)cdt$(N):upDown"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=16
+		y=140
+		width=186
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="TRIGGER OUTPUT PV"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=14
+		y=150
+		width=190
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)cdt$(N):trigger.OUTV"
+	}
+}
+"text entry" {
+	object {
+		x=16
+		y=152
+		width=186
+		height=20
+	}
+	control {
+		chan="$(P)cdt$(N):trigger.OUT"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+composite {
+	object {
+		x=7
+		y=5
+		width=200
+		height=29
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=7
+				y=5
+				width=200
+				height=29
+			}
+			"basic attribute" {
+				clr=2
+			}
+		}
+		text {
+			object {
+				x=11
+				y=9
+				width=195
+				height=21
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="$(P)cdt$(N)"
+			align="horiz. centered"
+		}
+	}
+}
+"related display" {
+	object {
+		x=159
+		y=176
+		width=50
+		height=20
+	}
+	display[0] {
+		label="CountDownTimer"
+		name="countDownTimer.adl"
+		args="P=$(P),N=$(N)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=17
+	label="-Less"
+}
+"choice button" {
+	object {
+		x=156
+		y=42
+		width=50
+		height=40
+	}
+	control {
+		chan="$(P)cdt$(N):start"
+		clr=14
+		bclr=51
+	}
+}
+rectangle {
+	object {
+		x=7
+		y=41
+		width=138
+		height=45
+	}
+	"basic attribute" {
+		clr=30
+		width=1
+	}
+}
+"text update" {
+	object {
+		x=17
+		y=45
+		width=25
+		height=25
+	}
+	monitor {
+		chan="$(P)cdt$(N):timeHrs"
+		clr=14
+		bclr=30
+	}
+	align="horiz. right"
+	format="truncated"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=109
+		y=45
+		width=25
+		height=25
+	}
+	monitor {
+		chan="$(P)cdt$(N):timeSec"
+		clr=14
+		bclr=30
+	}
+	align="horiz. right"
+	format="truncated"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=63
+		y=45
+		width=25
+		height=25
+	}
+	monitor {
+		chan="$(P)cdt$(N):timeMin"
+		clr=14
+		bclr=30
+	}
+	align="horiz. right"
+	format="truncated"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=7
+		y=41
+		width=139
+		height=45
+	}
+	"basic attribute" {
+		clr=0
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)cdt$(N):trigger"
+	}
+}
+text {
+	object {
+		x=47
+		y=37
+		width=11
+		height=29
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=":"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=93
+		y=37
+		width=11
+		height=29
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=":"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=19
+		y=69
+		width=21
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="hrs"
+	align="horiz. right"
+}
+text {
+	object {
+		x=65
+		y=69
+		width=21
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="min"
+	align="horiz. right"
+}
+text {
+	object {
+		x=111
+		y=69
+		width=21
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="sec"
+	align="horiz. right"
+}
+rectangle {
+	object {
+		x=7
+		y=41
+		width=139
+		height=45
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)cdt$(N):trigger"
+	}
+}

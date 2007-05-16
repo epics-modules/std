@@ -1,0 +1,19 @@
+-------------- ST.CMD -------------------------------
+# Auto-Shutter Open Substitution File
+# P=PV prefix
+# S=control shutter(usually A)
+# BL=##(beamline number)
+# T1=pre-open delay timer ID (usually 1 see - countDownTimer.vdb)
+# T2=post-open count timer ID (usually 2)
+# ALM=lease clock ID (usually 1 see - alarmClock.vdb)
+dbLoadTemplate("autoShutter.substitutions")
+
+------ AUTOSAVE/RESTORE FILE (auto_settings.req) ------
+file autoShutter.req P=$(P), S=A, T1=1, T2=2, A=1
+
+---------------- MEDM - related display ---------------
+# S = Control shutter (usually A)
+# T1 = CountDownTimer used for auto-open delay function
+# T2 = CountDownTimer used for shutter open timer (time since shutter opened)
+# A  = alarmClock number bused for 'lease' function
+autoShutter.adl P=xxx:,S=A,T1=1,T2=2, A=1
