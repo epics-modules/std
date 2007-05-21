@@ -1,7 +1,7 @@
 
 file {
-	name="/home/phoebus/SULLIVAN/epics/synApps_cvs/ioc/8id/8idnApp/op/adl/autoShutter_less.adl"
-	version=030101
+	name="c:\Documents and Settings\Pete\Desktop\autoShutter_less.adl"
+	version=030004
 }
 display {
 	object {
@@ -87,34 +87,6 @@ display {
 		1a7309,
 	}
 }
-rectangle {
-	object {
-		x=174
-		y=73
-		width=12
-		height=12
-	}
-	"basic attribute" {
-		clr=20
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(S)Shtr:Enable"
-	}
-}
-"choice button" {
-	object {
-		x=23
-		y=69
-		width=144
-		height=40
-	}
-	control {
-		chan="$(P)$(S)Shtr:Enable"
-		clr=14
-		bclr=4
-	}
-}
 text {
 	object {
 		x=14
@@ -127,21 +99,6 @@ text {
 	}
 	textix="Auto Open"
 	align="horiz. centered"
-}
-rectangle {
-	object {
-		x=175
-		y=92
-		width=12
-		height=12
-	}
-	"basic attribute" {
-		clr=15
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(S)Shtr:Enable"
-	}
 }
 rectangle {
 	object {
@@ -260,7 +217,7 @@ rectangle {
 	object {
 		x=125
 		y=126
-		width=30
+		width=60
 		height=20
 	}
 	display[0] {
@@ -270,7 +227,7 @@ rectangle {
 	}
 	clr=0
 	bclr=53
-	label="-Set"
+	label="-Edit"
 }
 text {
 	object {
@@ -284,4 +241,64 @@ text {
 	}
 	textix="$(P)$(S)"
 	align="horiz. centered"
+}
+"message button" {
+	object {
+		x=57
+		y=92
+		width=80
+		height=21
+	}
+	control {
+		chan="$(P)$(S)Shtr:Enable"
+		clr=35
+		bclr=24
+	}
+	label="Disable"
+	press_msg="0"
+}
+rectangle {
+	object {
+		x=179
+		y=96
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(S)Shtr:Enable"
+	}
+}
+"message button" {
+	object {
+		x=57
+		y=66
+		width=80
+		height=21
+	}
+	control {
+		chan="$(P)$(S)Shtr:Enable"
+		clr=60
+		bclr=64
+	}
+	label="Enable"
+	press_msg="1"
+}
+rectangle {
+	object {
+		x=179
+		y=70
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:Enable"
+	}
 }
