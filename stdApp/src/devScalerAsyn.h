@@ -18,3 +18,4 @@
 #define SCALER_ARM_COMMAND_STRING      "SCALER_ARM"      /* int32, write */
 #define SCALER_DONE_COMMAND_STRING     "SCALER_DONE"     /* int32, read */
 
+#define MAX_SCALER_COMMANDS 6
