@@ -29,7 +29,6 @@
 #include <asynDriver.h>
 #include <asynInt32.h>
 #include <asynInt32Array.h>
-#include <asynFloat64.h>
 #include <asynDrvUser.h>
 #include <asynEpicsUtils.h>
 #include <epicsExport.h>
@@ -38,7 +37,6 @@
 #include "devScaler.h"
 #include "devScalerAsyn.h"
 
-typedef enum {int32Type, float64Type, int32ArrayType} interfaceType;
 
 typedef struct {
     int command;
@@ -51,8 +49,6 @@ typedef struct {
     asynUser *pasynUser[MAX_SCALER_CHANNELS];
     asynInt32 *pasynInt32;
     void *asynInt32Pvt;
-    asynFloat64 *pasynFloat64;
-    void *asynFloat64Pvt;
     asynInt32Array *pasynInt32Array;
     void *asynInt32ArrayPvt;
     asynDrvUser *pasynDrvUser;
@@ -143,17 +139,6 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     }
     pPvt->pasynInt32 = (asynInt32 *)pasynInterface->pinterface;
     pPvt->asynInt32Pvt = pasynInterface->drvPvt;
-
-    /* Get the asynFloat64 interface */
-    pasynInterface = pasynManager->findInterface(pasynUser, asynFloat64Type, 1);
-    if (!pasynInterface) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "devScalerAsyn::init_record, %s find float64 interface failed\n",
-                  psr->name);
-        goto bad;
-    }
-    pPvt->pasynFloat64 = (asynFloat64 *)pasynInterface->pinterface;
-    pPvt->asynFloat64Pvt = pasynInterface->drvPvt;
 
     /* Get the asynInt32Array interface */
     pasynInterface = pasynManager->findInterface(pasynUser, 
