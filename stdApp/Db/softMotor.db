@@ -17,10 +17,20 @@ grecord(motor,"$(P)$(SM)") {
     field(DINP,"$(P)$(SM)CalcMove.VAL NPP MS")
     field(STOO,"$(P)$(SM)CalcStop.A PP MS")        
 }
+grecord(dfanout,"$(P)$(SM)Init") {
+	field(SCAN,"1 second")
+	field(DOL,"1")
+	field(OUTA,"$(P)$(SM)CalcFrwdOutput.PROC  PP NMS")
+	field(OUTB,"$(P)$(SM)CalcRevsInput.PROC  PP NMS")
+	field(OUTC,"$(P)$(SM)CalcMoveInput.PROC  PP NMS")
+	field(OUTD,"$(P)$(SM)CalcStopOutput.PROC  PP NMS")
+        field(OUTE,"$(P)$(SM)MoveLogic.PROC  PP NMS") 
+	field(OUTF,"$(P)$(SM)Init.DISA CA NMS")
+}
 grecord(scalcout,"$(P)$(SM)CalcFrwdOutput") {
     field(DESC,"$(SM) Parse Fwd OutLink")
     field(BB," PP MS")
-    field(CALC,"AA + BB")
+    field(CALC,"(AA=='')?AA:AA+BB")
     field(OUT,"$(P)$(SM)CalcFrwd.OUT CA NMS")
 }
 grecord(calcout,"$(P)$(SM)CalcFrwd") {
@@ -31,7 +41,7 @@ grecord(calcout,"$(P)$(SM)CalcFrwd") {
 grecord(scalcout,"$(P)$(SM)CalcRevsInput") {
     field(DESC,"$(SM) Parse Rev InLink")
     field(BB," CP MS")
-    field(CALC,"AA + BB")
+    field(CALC,"(AA=='')?AA:AA+BB")
     field(OUT,"$(P)$(SM)CalcRevs.INPA CA NMS")
 }
 grecord(calcout,"$(P)$(SM)CalcRevs") {
@@ -51,17 +61,18 @@ grecord(scalcout,"$(P)$(SM)CalcMoveLogic") {
 grecord(scalcout,"$(P)$(SM)CalcMoveInput") {
     field(DESC,"$(SM) Parse Move InLink")
     field(BB," CP MS")
-    field(CALC,"AA + BB")
+    field(CALC,"(AA=='')?AA:AA+BB")
     field(OUT,"$(P)$(SM)CalcMove.INPA CA NMS")
 }
 grecord(calcout,"$(P)$(SM)CalcMove") {
     field(DESC,"$(SM) Moving Calc")
     field(CALC,"!A")
+    field(OUT,"$(P)$(SM).NTM NPP NMS")
 }
 grecord(scalcout,"$(P)$(SM)CalcStopOutput") {
     field(DESC,"$(SM) Parse Stop OutLink")
     field(BB," PP MS")
-    field(CALC,"AA + BB")
+    field(CALC,"(AA=='')?AA:AA+BB")
     field(OUT,"$(P)$(SM)CalcStop.OUT CA NMS")
 }
 grecord(calcout,"$(P)$(SM)CalcStop") {
