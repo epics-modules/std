@@ -183,6 +183,7 @@ find the actual item.</CAPTION></A>
 <TR><TD><A HREF="#Fields_control">	CNT		</A>	<TD>R/W*	<TD>Count				<TD>RECCHOICE	<TD>(0:"Done", 1:"Count")
 <TR><TD><A HREF="#Fields_control">	CONT	</A>	<TD>R/W*	<TD>OneShot/AutoCount	<TD>RECCHOICE	<TD>(0:"OneShot", 1:"AutoCount")
 <TR><TD><A HREF="#Fields_link">		COUT	</A>	<TD>R/W		<TD>CNT Output			<TD>OUTLINK		<TD>Link to PV
+<TR><TD><A HREF="#Fields_link">		COUTP	</A>	<TD>R/W		<TD>Prompt COUT			<TD>OUTLINK		<TD>Link to PV
 <TR><TD><A HREF="#Fields_private">	D1...D64</A>	<TD>R/W		<TD>Count Direction n	<TD>RECCHOICE	<TD>(0:"Up", 1:"Dn")
 <TR><TD><A HREF="#Fields_control">	DLY		</A>	<TD>R/W		<TD>Delay				<TD>FLOAT		<TD>before counting
 <TR><TD><A HREF="#Fields_control">	DLY1	</A>	<TD>R/W		<TD>Auto-mode Delay		<TD>FLOAT		<TD>before counting
@@ -204,7 +205,7 @@ find the actual item.</CAPTION></A>
 <TR><TD><A HREF="#Fields_control">	TP		</A>	<TD>R/W		<TD>Time Preset			<TD>DOUBLE		<TD>preset time
 <TR><TD><A HREF="#Fields_control">	TP1		</A>	<TD>R/W		<TD>Time Preset			<TD>DOUBLE		<TD>preset time (auto mode)
 <TR><TD><A HREF="#Fields_private">	US</A>			<TD>r		<TD>User state			<TD>SHORT		<TD>state of user request
-<TR><TD><A HREF="#Fields_private">	VAL		</A>	<TD>R/W		<TD>Result				<TD>DOUBLE		<TD>not used
+<TR><TD><A HREF="#Fields_private">	VAL		</A>	<TD>R/W		<TD>Result				<TD>DOUBLE		<TD>posted when counting is done
 <TR><TD><A HREF="#Fields_misc">		VERS	</A>	<TD>R		<TD>Code Version		<TD>FLOAT		<TD>code version
 
 <TR VALIGN=TOP>
@@ -356,7 +357,9 @@ This field is a proxy for the value field, S1, associated with scaler
 <CAPTION><H2>Link fields</H2></CAPTION></A>
 <TR VALIGN=TOP><TH>Name	<TH>Access	<TH>Prompt				<TH>Data type		<TH>Comments
 <TR VALIGN=TOP><TD>COUT	<TD>R/W		<TD>CNT Output			<TD>OUTLINK			<TD>link to EPICS PV to which CNT field's value is written when a user count
-sequence has just started, or just finished.
+sequence has just started, or has just finished.
+<TR VALIGN=TOP><TD>COUTP<TD>R/W		<TD>Prompt CNT Output	<TD>OUTLINK			<TD>link to EPICS PV to which CNT field's value is written when a user count
+sequence has just been commanded, or has just finished.  This outlink is not delayed, as is COUT, by the DLY field.
 
 <TR VALIGN=TOP><TD>OUT	<TD>R	<TD>Output Specification	<TD>OUTLINK
 
@@ -425,7 +428,8 @@ Previous value of CNT.
 
 	<TR><TD COLSPAN=5>
 
-<TR VALIGN=TOP><TD>VAL 			<TD>R/W	<TD>Result			<TD>DOUBLE 			<TD>Not used.
+<TR VALIGN=TOP><TD>VAL 			<TD>R/W	<TD>Result			<TD>DOUBLE 			<TD>Set to value of the T
+field, and posted when counting is done, after all other fields have been posted.
 
 </TABLE>
 </HR>

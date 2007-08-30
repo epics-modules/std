@@ -455,6 +455,13 @@ scalerRecord *pscal;
 		if (!RTN_SUCCESS(status)) {
 			Debug(5) "scaler:process: ERROR %d PUTTING TO COUT LINK.\n", status);}
 		}
+		if (justFinishedUserCount) {
+			/* fire .coutp link to trigger anything that should coincide with scaler integration */
+			status = dbPutLink(&pscal->coutp, DBR_SHORT, &pscal->cnt, 1);
+			if (!RTN_SUCCESS(status)) {
+				Debug(5) "scaler:process: ERROR %d PUTTING TO COUTP LINK.\n", status);}
+			}
+		}
 	}
 
 	/* done counting? */
@@ -596,7 +603,7 @@ struct dbAddr *paddr;
 int	after;
 {
 	scalerRecord *pscal = (scalerRecord *)(paddr->precord);
-	int i=0;
+	int i=0, status;
 	unsigned short *pdir, *pgate;
 	unsigned long *ppreset;
 	struct rpvtStruct *prpvt = (struct rpvtStruct *)pscal->rpvt;
@@ -611,6 +618,12 @@ int	after;
 	case scalerRecordCNT:
 		/* Ignore redundant (pscal->cnt == 1) commands */
 		if (pscal->cnt && (pscal->us != USER_STATE_IDLE)) return(0);
+
+		/* fire .coutp link to trigger anything that should coincide with scaler integration */
+		status = dbPutLink(&pscal->coutp, DBR_SHORT, &pscal->cnt, 1);
+		if (!RTN_SUCCESS(status)) {
+			Debug(5) "scaler:special: ERROR %d PUTTING TO COUTP LINK.\n", status);}
+		}
 
 		/* Scan record if it's not Passive.  (If it's Passive, it'll get */
 		/* scanned automatically, since .cnt is a Process-Passive field.) */
