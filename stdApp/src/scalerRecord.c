@@ -610,6 +610,7 @@ int	after;
 	CALLBACK *pcallbacks = prpvt->pcallbacks;
 	CALLBACK *pdelayCallback = (CALLBACK *)&(pcallbacks[1]);
 	int fieldIndex = dbGetFieldIndex(paddr);
+	double dly=0.0;
 
 	Debug(5) "special: entry; after=%d\n", after);}
 	if (!after) return (0);
@@ -628,9 +629,9 @@ int	after;
 		/* Scan record if it's not Passive.  (If it's Passive, it'll get */
 		/* scanned automatically, since .cnt is a Process-Passive field.) */
 		/* Arrange to process after user-specified delay time */
-		i = pscal->dly;   /* seconds to delay */
-		if (i<0) i = 0;
-		if (i == 0 || pscal->cnt == 0) {
+		dly = pscal->dly;   /* seconds to delay */
+		if (dly<0.0) dly = 0.0;
+		if (dly == 0.0 || pscal->cnt == 0) {
 			/*** handle request now ***/
 			if (pscal->cnt) {
 				/* start counting */
