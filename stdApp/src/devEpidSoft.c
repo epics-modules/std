@@ -86,20 +86,20 @@ static long do_pid(epidRecord *pepid)
 {
     epicsTimeStamp  ctp;    /*previous time */
     epicsTimeStamp  ct;     /*current time       */
-    double           cval;   /*actual value      */
-    double           pcval;  /*previous value of cval */
-    double           setp;   /*setpoint          */
+    double          cval;   /*actual value      */
+    double          pcval;  /*previous value of cval */
+    double          setp;   /*setpoint          */
     double          dt;     /*delta time (seconds)  */
-    double       kp,ki,kd;   /*gains        */
-    double           di;     /*change in integral term */
-    double           e=0.;   /*error         */
-    double           ep;     /*previous error    */
-    double           de;     /*change in error   */
-    double           oval;   /*new value of manip variable */
-    double           p;      /*proportional contribution*/
-    double           i;      /*integral contribution*/
-    double           d;      /*derivative contribution*/
-    double         sign;
+    double       kp,ki,kd;  /*gains        */
+    double          di;     /*change in integral term */
+    double          e=0.;   /*error         */
+    double          ep;     /*previous error    */
+    double          de;     /*change in error   */
+    double          oval;   /*new value of manip variable */
+    double          p;      /*proportional contribution*/
+    double          i;      /*integral contribution*/
+    double          d;      /*derivative contribution*/
+    double          sign;
 
     pcval = pepid->cval;
     
@@ -108,8 +108,8 @@ static long do_pid(epidRecord *pepid)
         if (recGblSetSevr(pepid,SOFT_ALARM,INVALID_ALARM)) return(0);
     }
     if (dbGetLink(&pepid->inp,DBR_DOUBLE,&pepid->cval,0,0)) {
-       recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
-       return(0);
+        recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
+        return(0);
     }
     
     setp = pepid->val;
@@ -132,11 +132,11 @@ static long do_pid(epidRecord *pepid)
     d = pepid->d;
 
     switch (pepid->fmod) {
-       case epidFeedbackMode_PID:
-          e = setp - cval;
-          de = e - ep;
-          p = kp*e;
-          /* Sanity checks on integral term:
+        case epidFeedbackMode_PID:
+            e = setp - cval;
+            de = e - ep;
+            p = kp*e;
+            /* Sanity checks on integral term:
              * 1) Don't increase I if output >= highLimit
              * 2) Don't decrease I if output <= lowLimit
              * 3) Don't change I if feedback is off
@@ -145,56 +145,56 @@ static long do_pid(epidRecord *pepid)
              *    DRVH (if KP is negative) to allow easily turning off the 
              *    integral term for PID tuning.
              */
-             di = kp*ki*e*dt;
-          if (pepid->fbon) {
-             if (!pepid->fbop) {
-                /* Feedback just made transition from off to on.  Set the integral
-                   term to the current value of the controlled variable */
-                if (pepid->outl.type != CONSTANT) {
-                   if (dbGetLink(&pepid->outl,DBR_DOUBLE,&i,0,0)) {
-                      recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
-                  }
-               }
-            } else {
-                if (((oval > pepid->drvl) && (oval < pepid->drvh)) ||
-                   ((oval >= pepid->drvh) && ( di < 0.)) ||
-                   ((oval <= pepid->drvl)  && ( di > 0.))) {
-                   i = i + di;
-                   if (i < pepid->drvl) i = pepid->drvl;
-                   if (i > pepid->drvh) i = pepid->drvh;
-               }
-            }
-         }
-          if (ki == 0) i=0.;
-          if(dt>0.0) d = kp*kd*(de/dt); else d = 0.0;
-          oval = p + i + d;
-          break;
-
-       case epidFeedbackMode_MaxMin:
-          /* For now we don't scale to dt, worry about that later */
-          if (pepid->fbon) {
-             if (!pepid->fbop) {
-                /* Feedback just made transition from off to on.  Set the output
-                   to the current value of the controlled variable */
-                if (pepid->outl.type != CONSTANT) {
-                   if (dbGetLink(&pepid->outl,DBR_DOUBLE,&oval,0,0)) {
-                      recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
-                   }
+            di = kp*ki*e*dt;
+            if (pepid->fbon) {
+                if (!pepid->fbop) {
+                    /* Feedback just made transition from off to on.  Set the integral
+                       term to the current value of the controlled variable */
+                    if (pepid->outl.type != CONSTANT) {
+                        if (dbGetLink(&pepid->outl,DBR_DOUBLE,&i,0,0)) {
+                            recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
+                        }
+                    }
+                } else {
+                    if (((oval > pepid->drvl) && (oval < pepid->drvh)) ||
+                        ((oval >= pepid->drvh) && ( di < 0.)) ||
+                        ((oval <= pepid->drvl)  && ( di > 0.))) {
+                        i = i + di;
+                        if (i < pepid->drvl) i = pepid->drvl;
+                        if (i > pepid->drvh) i = pepid->drvh;
+                    }
                 }
-             } else {
-                e = cval - pcval;
-                if (d > 0.) sign=1.; else sign=-1.;
-                if ((kp > 0.) && (e < 0.)) sign = -sign;
-                if ((kp < 0.) && (e > 0.)) sign = -sign;
-                d = kp * sign;
-                oval = pepid->oval + d;
-             }
-          }
-          break;
+            }
+            if (ki == 0) i=0.;
+            if(dt>0.0) d = kp*kd*(de/dt); else d = 0.0;
+            oval = p + i + d;
+            break;
+
+        case epidFeedbackMode_MaxMin:
+            /* For now we don't scale to dt, worry about that later */
+            if (pepid->fbon) {
+                if (!pepid->fbop) {
+                    /* Feedback just made transition from off to on.  Set the output
+                       to the current value of the controlled variable */
+                    if (pepid->outl.type != CONSTANT) {
+                        if (dbGetLink(&pepid->outl,DBR_DOUBLE,&oval,0,0)) {
+                            recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
+                        }
+                    }
+                } else {
+                    e = cval - pcval;
+                    if (d > 0.) sign=1.; else sign=-1.;
+                    if ((kp > 0.) && (e < 0.)) sign = -sign;
+                    if ((kp < 0.) && (e > 0.)) sign = -sign;
+                    d = kp * sign;
+                    oval = pepid->oval + d;
+                }
+            }
+            break;
           
-       default:
-          epicsPrintf("Invalid feedback mode in EPID\n");
-          break;
+        default:
+            epicsPrintf("Invalid feedback mode in EPID\n");
+            break;
     }
           
           
