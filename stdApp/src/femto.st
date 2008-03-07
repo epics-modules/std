@@ -1,6 +1,6 @@
 /*  femto - Femto Amplifier Control
     Calling seqeunce:
-        seq &femto,"name=femto1,P=brq:,H=fem01:,F=seq01:,GAIN1=,GAIN2=,GAIN3=,NOISE="
+        seq &femto,"name=,P=,H=,F=GAIN1=,GAIN2=,GAIN3=,NOISE="
  
     Where:
         P  = prefix of database and sequencer
@@ -12,7 +12,7 @@
         NOISE = PV name for noise ctl bit
 
  */
-program femto("name=femto1,P=,H=,F=,GAIN1=,GAIN2=,GAIN3=,NOISE=")
+program femto("name=femto,P=,H=,F=,GAIN1=,GAIN2=,GAIN3=,NOISE=")
 
 option +d;
 option -c;
