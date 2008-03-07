@@ -46,15 +46,18 @@ dbLoadRecords("../../../std/stdApp/Db/misc.db", "P=stdTest:")
 
 iocInit
 
-# Start Femto amplifier sequence programs
+### Start Femto amplifier sequence programs
 #   P=<prefix>
 #   H=<hardware-type> (i.e. fem01: - femto amplifier)
 #   F=<functionality> (i.e. seq01: - sequencer)
-#   GAIN=<gain bit1>
-#   GAIN=<gain bit2>
-#   GAIN=<gain bit3>
-#   NOISE=<low/high noise bit>
-#seq femto,"name=femto1,P=stdTest:,H=fem01:,F=seq01:,GAIN1=,GAIN2=,GAIN3=,NOISE="
+#   G1=<gain bit1>
+#   G2=<gain bit2>
+#   G3=<gain bit3>
+#   NO=<low/high noise bit>
+#
+# NOTE: Below command line is limited to 128 chars
+#seq &femto,"name=fm1,P=stdTest:,H=fem01:,F=seq01:,G1=,G2=,G3=,NO="
+
 
 ### Start up the autosave task and tell it what to do.
 # The task is actually named "save_restore".
