@@ -1,18 +1,18 @@
 /*  femto - Femto Amplifier Control
     Calling seqeunce:
-        seq &femto,"name=,P=,H=,F=GAIN1=,GAIN2=,GAIN3=,NOISE="
+        seq &femto,"name=,P=,H=,F=G1=,G2=,G3=,NO="
  
     Where:
         P  = prefix of database and sequencer
         H  = hardware (i.e. fem01)
         F  = functionality (i.e. seq01)
-        GAIN1 = PV name for gain bit 0
-        GAIN2 = PV name for gain bit 1
-        GAIN3 = PV name for gain bit 2
-        NOISE = PV name for noise ctl bit
+        G1 = PV name for gain bit 0
+        G2 = PV name for gain bit 1
+        G3 = PV name for gain bit 2
+        NE = PV name for noise ctl bit
 
  */
-program femto("name=femto,P=,H=,F=,GAIN1=,GAIN2=,GAIN3=,NOISE=")
+program femto("name=femto,P=,H=,F=,G1=,G2=,G3=,NO=")
 
 option +d;
 option -c;
@@ -27,10 +27,10 @@ option -w;
 #define MAX_GAIN      15
 #define UNUSED_GAIN   7
 
-PV(int,t0,"{GAIN1}",EvFlag);
-PV(int,t1,"{GAIN2}",EvFlag);
-PV(int,t2,"{GAIN3}",EvFlag);
-PV(int,tx,"{NOISE}",EvFlag);
+PV(int,t0,"{G1}",EvFlag);
+PV(int,t1,"{G2}",EvFlag);
+PV(int,t2,"{G3}",EvFlag);
+PV(int,tx,"{NO}",EvFlag);
 PV(double,gain,"{P}{H}{F}gain",NoMon);
 PV(int,gainidx,"{P}{H}{F}gainidx",EvFlag);
 PV(int,debug_flag,"{P}{H}{F}debug",EvFlag);
