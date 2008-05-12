@@ -1,7 +1,7 @@
 
 file {
-	name="/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta11_shareR1.0/ipApp/op/adl/DAC_4.1.adl"
-	version=020303
+	name="/home/oxygen/MOONEY/epics/synApps/support/std/stdApp/op/adl/VME_DAC.adl"
+	version=030102
 }
 display {
 	object {
@@ -110,6 +110,8 @@ rectangle {
 		clr=14
 		bclr=0
 	}
+	limits {
+	}
 }
 text {
 	object {
@@ -135,6 +137,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 "text entry" {
 	object {
@@ -147,6 +151,8 @@ text {
 		chan="$(P)DAC$(D)_$(N).VAL"
 		clr=14
 		bclr=51
+	}
+	limits {
 	}
 }
 "text update" {
@@ -162,6 +168,8 @@ text {
 		bclr=4
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 text {
 	object {
@@ -226,6 +234,8 @@ text {
 		clr=14
 		bclr=51
 	}
+	limits {
+	}
 }
 text {
 	object {
@@ -260,8 +270,6 @@ composite {
 		height=20
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		"text entry" {
 			object {
@@ -274,6 +282,8 @@ composite {
 				chan="$(P)DAC$(D)_$(N).DRVL"
 				clr=14
 				bclr=51
+			}
+			limits {
 			}
 		}
 		text {
@@ -298,8 +308,6 @@ composite {
 		height=20
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		"message button" {
 			object {
@@ -343,6 +351,8 @@ composite {
 				clr=14
 				bclr=51
 			}
+			limits {
+			}
 		}
 	}
 }
@@ -355,9 +365,8 @@ composite {
 	}
 	display[0] {
 		label="Raw (fast) output"
-		name="DAC_rawOut.adl"
+		name="VME_DAC_rawOut.adl"
 		args="P=$(P),D=$(D),N=$(N)"
-		policy="replace display"
 	}
 	display[1] {
 		label="ROC calc (debug)"
@@ -366,7 +375,7 @@ composite {
 	}
 	clr=14
 	bclr=51
-	label=More
+	label="More"
 }
 composite {
 	object {
@@ -376,8 +385,6 @@ composite {
 		height=20
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -463,4 +470,6 @@ text {
 		bclr=15
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
