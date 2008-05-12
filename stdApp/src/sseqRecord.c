@@ -66,7 +66,9 @@ epicsExportAddress(int, sseqRecDebug);
 #define SELN_BIT_MASK	~(0xffff << NUM_LINKS)
 
 #define DBF_unknown -1
-/* This is what a link-group looks like in a string-sequence record */
+/* This is what a link-group looks like in a string-sequence record.  Note
+ * that this must match the .dbd file.
+ */
 struct	linkGroup {
 	double          dly;	/* Delay value (in seconds) */
 	DBLINK          dol;	/* Where to fetch the input value from */
@@ -78,13 +80,17 @@ struct	linkGroup {
 	epicsEnum16		usePutCallback;
 };
 
-/* Callback structure used by the watchdog function to queue link processing */
+/* Per-record-instance structure used to hold callback structures and callback-related
+ * information.
+ */
 #define LINKS_ALL_OK	0
 #define LINKS_NOT_OK	1
 struct callbackSeq {
+	/* the following are for processing link groups */
 	CALLBACK			callback;	/* used for the callback task */
 	struct linkGroup	*plinkGroups[NUM_LINKS+1]; /* Pointers to links to process */
 	int					index;
+	/* the following are for maintaining links */
 	CALLBACK			checkLinksCB;
 	short				pending_checkLinksCB;
 	short				linkStat; /* LINKS_ALL_OK, LINKS_NOT_OK */
@@ -364,6 +370,12 @@ static int processNextLink(sseqRecord *pR)
 		(*(struct rset *)(pR->rset)).process(pR);
 	} else {
 		if (plinkGroup->dly > 0.0) {
+			/* Note: Here's how I think one would cancel the callbackRequestDelayed:
+			 * timer = (&pcb->callback)->timer;
+			 * epicsTimerCancel(timer);
+			 * It might be good to send a sentinel callbackRequestDelayed to clear
+			 * the pipe.
+			 */
 			callbackRequestDelayed(&pcb->callback, plinkGroup->dly);
 		} else {
 			/* No delay, do it now.  Avoid recursion;  use callback task */
