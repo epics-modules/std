@@ -858,3 +858,52 @@ text {
 	textix="DISABLED"
 	align="horiz. centered"
 }
+"message button" {
+	object {
+		x=290
+		y=170
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)$(S).ABORT"
+		clr=14
+		bclr=51
+	}
+	label="ABORT"
+	press_msg="1"
+}
+text {
+	object {
+		x=340
+		y=175
+		width=50
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).ABORT"
+	}
+	textix="ABORTING"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=340
+		y=165
+		width=50
+		height=10
+	}
+	"basic attribute" {
+		clr=64
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S).BUSY"
+	}
+	textix="BUSY"
+	align="horiz. centered"
+}
