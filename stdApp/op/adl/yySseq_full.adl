@@ -1,6 +1,6 @@
 
 file {
-	name="/home/oxygen4/MOONEY/epics/synApps_5_1/support/std/cvs/stdApp/op/adl/yySseq_full.adl"
+	name="C:\cygwin\home\mooney\epics\synApps\support\all_adl\yySseq_full.adl"
 	version=030004
 }
 display {
@@ -1435,4 +1435,75 @@ text {
 	}
 	textix="NUMERIC"
 	align="horiz. centered"
+}
+composite {
+	object {
+		x=290
+		y=315
+		width=100
+		height=25
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=340
+				y=315
+				width=50
+				height=10
+			}
+			"basic attribute" {
+				clr=64
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)$(S).BUSY"
+			}
+			textix="BUSY"
+			align="horiz. centered"
+		}
+		composite {
+			object {
+				x=290
+				y=320
+				width=100
+				height=20
+			}
+			"composite name"=""
+			children {
+				"message button" {
+					object {
+						x=290
+						y=320
+						width=45
+						height=20
+					}
+					control {
+						chan="$(P)$(S).ABORT"
+						clr=14
+						bclr=51
+					}
+					label="ABORT"
+					press_msg="1"
+				}
+				text {
+					object {
+						x=340
+						y=325
+						width=50
+						height=10
+					}
+					"basic attribute" {
+						clr=20
+					}
+					"dynamic attribute" {
+						vis="if not zero"
+						chan="$(P)$(S).ABORT"
+					}
+					textix="ABORTING"
+					align="horiz. centered"
+				}
+			}
+		}
+	}
 }

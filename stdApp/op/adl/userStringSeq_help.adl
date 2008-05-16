@@ -5,10 +5,10 @@ file {
 }
 display {
 	object {
-		x=32
-		y=154
+		x=103
+		y=489
 		width=1100
-		height=510
+		height=590
 	}
 	clr=14
 	bclr=3
@@ -92,7 +92,7 @@ rectangle {
 		x=297
 		y=196
 		width=759
-		height=192
+		height=200
 	}
 	"basic attribute" {
 		clr=14
@@ -346,66 +346,6 @@ composite {
 				}
 			}
 		}
-	}
-}
-rectangle {
-	object {
-		x=481
-		y=230
-		width=39
-		height=19
-	}
-	"basic attribute" {
-		clr=51
-	}
-}
-text {
-	object {
-		x=481
-		y=233
-		width=40
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="PROC"
-	align="horiz. centered"
-}
-polyline {
-	object {
-		x=481
-		y=230
-		width=39
-		height=19
-	}
-	"basic attribute" {
-		clr=1
-		fill="outline"
-		width=1
-	}
-	points {
-		(481,248)
-		(481,230)
-		(519,230)
-	}
-}
-polyline {
-	object {
-		x=481
-		y=230
-		width=39
-		height=19
-	}
-	"basic attribute" {
-		clr=10
-		fill="outline"
-		width=1
-	}
-	points {
-		(519,230)
-		(519,248)
-		(481,248)
 	}
 }
 text {
@@ -930,7 +870,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="   value 'WAIT', then wait for"
+	textix="   value 'WAIT', the record will wait"
 }
 text {
 	object {
@@ -942,7 +882,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="   processing that results from (3)"
+	textix="   for processing that results from"
 }
 text {
 	object {
@@ -966,7 +906,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="   the forward link, if this is the"
+	textix="   the FORWARD LINK, if this is the"
 }
 text {
 	object {
@@ -978,7 +918,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="   last row)"
+	textix="   last row)."
 }
 text {
 	object {
@@ -1001,6 +941,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
+	textix="Note that the FORWARD LINK will always"
 }
 text {
 	object {
@@ -1012,6 +953,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
+	textix="be executed, and it will always be the"
 }
 text {
 	object {
@@ -1023,6 +965,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
+	textix="last thing executed."
 }
 text {
 	object {
@@ -1034,7 +977,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="   to complete before going on to"
+	textix="   (3) to complete before going on to"
 }
 text {
 	object {
@@ -3292,6 +3235,398 @@ composite {
 						}
 					}
 				}
+			}
+		}
+	}
+}
+text {
+	object {
+		x=643
+		y=365
+		width=50
+		height=10
+	}
+	"basic attribute" {
+		clr=64
+	}
+	textix="BUSY"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=643
+		y=375
+		width=50
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+	}
+	textix="ABORTING"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=430
+		y=440
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="While a sequence is active, the word 'BUSY' will be visible."
+}
+text {
+	object {
+		x=430
+		y=455
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="If the ABORT button is pressed, an active sequence will be aborted."
+}
+text {
+	object {
+		x=430
+		y=470
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="If the record is waiting for the completion callback from a 'WAIT'"
+}
+text {
+	object {
+		x=430
+		y=485
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="link, then the abort will finish after that callback is received."
+}
+text {
+	object {
+		x=430
+		y=500
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="(You can make the callback come immediately by overwriting the link.)"
+}
+oval {
+	object {
+		x=474
+		y=263
+		width=60
+		height=27
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+}
+oval {
+	object {
+		x=579
+		y=360
+		width=131
+		height=37
+	}
+	"basic attribute" {
+		clr=30
+		fill="outline"
+		width=2
+	}
+}
+oval {
+	object {
+		x=321
+		y=287
+		width=156
+		height=26
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+}
+oval {
+	object {
+		x=823
+		y=313
+		width=156
+		height=26
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+}
+oval {
+	object {
+		x=979
+		y=337
+		width=69
+		height=31
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+}
+polyline {
+	object {
+		x=271
+		y=269
+		width=58
+		height=28
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	points {
+		(272,270)
+		(328,296)
+	}
+}
+polyline {
+	object {
+		x=273
+		y=326
+		width=553
+		height=18
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	points {
+		(274,343)
+		(825,327)
+	}
+}
+polyline {
+	object {
+		x=279
+		y=362
+		width=712
+		height=62
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	points {
+		(280,423)
+		(939,423)
+		(990,363)
+	}
+}
+polyline {
+	object {
+		x=416
+		y=376
+		width=164
+		height=92
+	}
+	"basic attribute" {
+		clr=30
+		fill="outline"
+		width=2
+	}
+	points {
+		(417,467)
+		(417,409)
+		(579,377)
+	}
+}
+text {
+	object {
+		x=430
+		y=515
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="When the abort finished, the FORWARD LINK will be executed."
+}
+polyline {
+	object {
+		x=285
+		y=168
+		width=195
+		height=103
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	points {
+		(286,169)
+		(479,270)
+	}
+}
+composite {
+	object {
+		x=481
+		y=230
+		width=40
+		height=19
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=481
+				y=230
+				width=39
+				height=19
+			}
+			"basic attribute" {
+				clr=51
+			}
+		}
+		text {
+			object {
+				x=481
+				y=233
+				width=40
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="PROC"
+			align="horiz. centered"
+		}
+		polyline {
+			object {
+				x=481
+				y=230
+				width=39
+				height=19
+			}
+			"basic attribute" {
+				clr=1
+				fill="outline"
+				width=1
+			}
+			points {
+				(481,248)
+				(481,230)
+				(519,230)
+			}
+		}
+		polyline {
+			object {
+				x=481
+				y=230
+				width=39
+				height=19
+			}
+			"basic attribute" {
+				clr=10
+				fill="outline"
+				width=1
+			}
+			points {
+				(519,230)
+				(519,248)
+				(481,248)
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=593
+		y=370
+		width=45
+		height=19
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=593
+				y=370
+				width=44
+				height=19
+			}
+			"basic attribute" {
+				clr=51
+			}
+		}
+		text {
+			object {
+				x=593
+				y=373
+				width=45
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="ABORT"
+			align="horiz. centered"
+		}
+		polyline {
+			object {
+				x=593
+				y=370
+				width=43
+				height=19
+			}
+			"basic attribute" {
+				clr=1
+				fill="outline"
+				width=1
+			}
+			points {
+				(593,388)
+				(593,370)
+				(635,370)
+			}
+		}
+		polyline {
+			object {
+				x=593
+				y=370
+				width=43
+				height=19
+			}
+			"basic attribute" {
+				clr=10
+				fill="outline"
+				width=1
+			}
+			points {
+				(635,370)
+				(635,388)
+				(593,388)
 			}
 		}
 	}
