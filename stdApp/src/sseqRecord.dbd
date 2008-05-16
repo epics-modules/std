@@ -507,4 +507,14 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(ABORT,DBF_SHORT) {
+		prompt("Abort sequence")
+		interest(1)
+		special(SPC_MOD)
+	}
+	field(BUSY,DBF_SHORT) {
+		prompt("Sequence active")
+		interest(1)
+		special(SPC_NOMOD)
+	}
 }
