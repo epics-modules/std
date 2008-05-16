@@ -5,8 +5,8 @@ file {
 }
 display {
 	object {
-		x=103
-		y=489
+		x=12
+		y=422
 		width=1100
 		height=590
 	}
@@ -870,19 +870,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="   value 'WAIT', the record will wait"
-}
-text {
-	object {
-		x=10
-		y=425
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="   for processing that results from"
+	textix="   value 'WAIT', and the link has the"
 }
 text {
 	object {
@@ -895,89 +883,6 @@ text {
 		clr=14
 	}
 	textix="   typically .0166... seconds (60 Hz)."
-}
-text {
-	object {
-		x=10
-		y=470
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="   the FORWARD LINK, if this is the"
-}
-text {
-	object {
-		x=10
-		y=485
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="   last row)."
-}
-text {
-	object {
-		x=10
-		y=500
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-}
-text {
-	object {
-		x=10
-		y=515
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Note that the FORWARD LINK will always"
-}
-text {
-	object {
-		x=10
-		y=530
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="be executed, and it will always be the"
-}
-text {
-	object {
-		x=10
-		y=545
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="last thing executed."
-}
-text {
-	object {
-		x=10
-		y=440
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="   (3) to complete before going on to"
 }
 text {
 	object {
@@ -1085,18 +990,6 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-}
-text {
-	object {
-		x=9
-		y=455
-		width=275
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="   the next row (or before executing"
 }
 text {
 	object {
@@ -3265,66 +3158,6 @@ text {
 	textix="ABORTING"
 	align="horiz. centered"
 }
-text {
-	object {
-		x=430
-		y=440
-		width=480
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="While a sequence is active, the word 'BUSY' will be visible."
-}
-text {
-	object {
-		x=430
-		y=455
-		width=480
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="If the ABORT button is pressed, an active sequence will be aborted."
-}
-text {
-	object {
-		x=430
-		y=470
-		width=480
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="If the record is waiting for the completion callback from a 'WAIT'"
-}
-text {
-	object {
-		x=430
-		y=485
-		width=480
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="link, then the abort will finish after that callback is received."
-}
-text {
-	object {
-		x=430
-		y=500
-		width=480
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="(You can make the callback come immediately by overwriting the link.)"
-}
 oval {
 	object {
 		x=474
@@ -3426,24 +3259,6 @@ polyline {
 }
 polyline {
 	object {
-		x=279
-		y=362
-		width=712
-		height=62
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	points {
-		(280,423)
-		(939,423)
-		(990,363)
-	}
-}
-polyline {
-	object {
 		x=416
 		y=376
 		width=164
@@ -3459,18 +3274,6 @@ polyline {
 		(417,409)
 		(579,377)
 	}
-}
-text {
-	object {
-		x=430
-		y=515
-		width=480
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="When the abort finished, the FORWARD LINK will be executed."
 }
 polyline {
 	object {
@@ -3630,4 +3433,272 @@ composite {
 			}
 		}
 	}
+}
+text {
+	object {
+		x=430
+		y=430
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="While a sequence is active, the word 'BUSY' will be visible."
+}
+text {
+	object {
+		x=430
+		y=445
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="If the ABORT button is pressed, an active sequence will be aborted."
+}
+text {
+	object {
+		x=430
+		y=490
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="If the sseq record is waiting for the completion callback from a 'WAIT'"
+}
+text {
+	object {
+		x=430
+		y=505
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="link, then the abort will finish after that callback is received."
+}
+text {
+	object {
+		x=430
+		y=520
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="(You can release the sseq record from this wait by overwriting the"
+}
+text {
+	object {
+		x=430
+		y=535
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="WAIT-link field, but note that this will have no effect on any"
+}
+text {
+	object {
+		x=430
+		y=550
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="processing that the link field started.)"
+}
+text {
+	object {
+		x=430
+		y=460
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="This will stop the sseq record, but it will not stop any processing"
+}
+text {
+	object {
+		x=430
+		y=475
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="that the sseq record has already started with its links."
+}
+text {
+	object {
+		x=430
+		y=565
+		width=480
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="When the abort finishes, the FORWARD LINK will be executed."
+}
+polyline {
+	object {
+		x=278
+		y=366
+		width=730
+		height=52
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	points {
+		(279,417)
+		(921,417)
+		(1007,367)
+	}
+}
+composite {
+	object {
+		x=10
+		y=530
+		width=275
+		height=44
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=10
+				y=530
+				width=275
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Note that the FORWARD LINK will always"
+		}
+		text {
+			object {
+				x=10
+				y=545
+				width=275
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="be executed, and it will always be the"
+		}
+		text {
+			object {
+				x=10
+				y=560
+				width=275
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="last thing executed."
+		}
+	}
+}
+composite {
+	object {
+		x=9
+		y=440
+		width=276
+		height=74
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=10
+				y=485
+				width=275
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="   the FORWARD LINK, if this is the"
+		}
+		text {
+			object {
+				x=10
+				y=500
+				width=275
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="   last row)."
+		}
+		text {
+			object {
+				x=10
+				y=455
+				width=275
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="   (3) to complete before going on to"
+		}
+		text {
+			object {
+				x=9
+				y=470
+				width=275
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="   the next row (or before executing"
+		}
+		text {
+			object {
+				x=10
+				y=440
+				width=275
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="   for processing that results from"
+		}
+	}
+}
+text {
+	object {
+		x=10
+		y=425
+		width=275
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="   attribute 'CA', the record will wait"
 }
