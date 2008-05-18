@@ -2,22 +2,22 @@
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>The sseq record</title>
+   <title>The <b>sseq</b> record</title>
 </head>
 <body>
 <h1>
-The sseq (string sequence) record</h1>
+The <b>sseq</b> (string sequence) record</h1>
 
 <p>Contents:<!-- TOC -->
 <ol>
 <li><a href="#Introduction">Introduction</a>
-<li><a href="#ScanParameters">Scan Parameters</a>
-<li><a href="#DesiredOutput">Desired Output Parameters</a>
-<li><a href="#Output">Output/Wait Parameters</a>
-<li><a href="#Selection">Selection Algorithm Parameters</a>
-<li><a href="#Delay">Delay Parameters</a>
-<li><a href="#Display">Operator Display Parameters</a>
-<li><a href="#Alarms">Alarm Parameters</a>
+<li><a href="#ScanFields">Scan/Control Fields</a>
+<li><a href="#DesiredOutput">Desired Output Fields</a>
+<li><a href="#Output">Output/Wait Fields</a>
+<li><a href="#Selection">Selection Algorithm Fields</a>
+<li><a href="#Delay">Delay Fields</a>
+<li><a href="#Display">Operator Display Fields</a>
+<li><a href="#Alarms">Alarm Fields</a>
 <li><a href="#code">Record Support Routines</a>
 </ol>
 
@@ -26,56 +26,113 @@ The sseq (string sequence) record</h1>
 1. Introduction</h1>
 
 <hr>The <b>sseq</b> (String Sequence) record is derived from the <b>seq</b>
-(Sequence) record, and has all of its capabilities. In addition, it can link
-from either string or numeric fields to either string or numeric fields, and it
-can wait for processing that any of its output links triggers to complete. The
-record can execute a sequence of up to ten sets of
-<i>delay/get-value/put-value/wait-for-completion</i> operations.  All steps and
-sequences are optional; with default field values, the record does nothing at
-all.  The sseq record also implements several selection algorithms that allow a
-dtabase programmer or runtime user to specify which sets of
-<i>delay/get/put/wait</i> to execute. The record has no associated device
-support.
+(Sequence) record, and has all of its capabilities. In addition, the <b>sseq</b>
+record can link from either string or numeric fields to either string or numeric
+fields, it can wait for processing that any of its output links triggers to
+complete, and its execution can be aborted. The record can execute a sequence of
+up to ten sets of <i>delay/get-value/put-value/wait-for-completion</i>
+operations.  All steps and sequences are optional; with default field values, the
+record does nothing at all.  Like the <b>seq</b> record, the <b>sseq</b> record
+implements several selection algorithms that allow a database programmer, or
+run-time user, to specify which sets of <i>delay/get/put/wait</i> to execute. The
+record has no associated device support.
+
+<P>The <b>sseq</b> record's execution can be aborted by the user.  When this
+happens, the record itself will stop causing things to happen, but it cannot
+abort the execution of any other record that it started with one of its links, or
+of any CA client that it started by posting a value.  Also, aborting the
+<b>sseq</b> record will not prevent it from executing its forward link.  
 
 
 
 
-<h1><a NAME="ScanParameters"></a>
-2. Scan Parameters</h1>
+<h1><a NAME="ScanFields"></a>
+2. Scan/Control Fields</h1>
 
 
 <hr>Like all other EPICS records, the sequence record has the standard set of
-fields (SCAN, PINI, FLNK, etc) for specifying under what circumstances it will
-be processed, and what record, if any, should process immediately afterward. 
-See the EPICS Record Reference Manual for more information.
+fields (<tt>SCAN</tt>, <tt>PINI</tt>, <tt>FLNK</tt>, <tt>PROC</tt>, etc.) for
+specifying when or under what circumstances it should process, and what record,
+if any, should process immediately afterward.  See the <i>EPICS Record Reference
+Manual</i> for more information.
+
+<P>In addition to standard control fields, the <b>sseq</b> record has
+the field, <tt>ABORT</tt>:
+<P><table BORDER >
+<tr>
+<th>Field</th>
+<th>Summary</th>
+<th>Type</th>
+<th>DCT</th>
+<th>Initial</th>
+<th>Access</th>
+<th>Modify</th>
+<th>Rec Proc Monitor</th>
+<th>PP</th>
+</tr>
+
+<tr>
+<td>ABORT</td>
+<td>Abort execution</td>
+<td>SHORT</td>
+<td>No</td>
+<td>0</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+
+</table>
+
+<P>The user, or another EPICS record, can cause a running <b>sseq</b> record to
+stop executing links by writing '1' to the record's <tt>ABORT</tt> field.  (If
+this is done via an EPICS link, it should be a <tt>CA</tt> link.  Otherwise,
+EPICS may wait until the abort has completed, and then process the record again,
+because the link told it to process a record that was already processing.) The
+<tt>ABORT</tt> field will remain '1' until the record has finished aborting, at
+which time the field will be reset to '0'.  Only the execution of the record
+itself will stop when it is aborted.  Any processing that the record has already
+started will be unaffected by the abort, and the forward link will be executed in
+any case.
+
+<blockquote>It has become common practice for EPICS developers to treat a
+sequence record's forward link as an extra <tt>LNK<i>n</i></tt> field, and to
+chain a series of sequence records together using forward links.  These practices
+are not recommended for use with the <b>sseq</b> record, because the forward link
+is not subject to <tt>ABORT</tt>; it is <i>always</i> executed. </blockquote>
 
 <p><a NAME="DesiredOutput"></a>
 <h1>
-3. Desired Output Parameters</h1>
+3. Desired Output Fields</h1>
 
 <hr>These fields hold the values the record is to write to other records, or
 determine from where those values are to be read.
 
-<p>The sequence record can fetch up to 10 values from 10 locations. The
-user specifies the locations in the Desired Output Link fields (DOL1-DOLA),
-which can be either constants or links to other EPICS PVs. If a Desired Output
-Link is a constant, the corresponding value field for that link is initialized
-to the constant value. Otherwise, if the Desired Output Link is a link, a value
-is fetched from the link each time the record is processed. See the EPICS Record
-Reference Manual for information on how to specify database links.
+<p>The sequence record can fetch up to 10 values from 10 locations. The user
+specifies the locations in the Desired Output Link fields (<tt>DOL1-DOLA</tt>),
+which can be either numeric constants or links to other EPICS PVs. If a Desired
+Output Link is a numeric constant, the corresponding value field for that link is
+initialized to the constant value. Otherwise, if the Desired Output Link is a
+string, it is assumed to represent a link, a value is fetched from the link each
+time the record is processed. See the <i>EPICS Record Reference Manual</i> for
+information on how to specify database links.  If you want to initialize a string
+value, use <tt>STR<i>n</i></tt>.
 
 <p>The values fetched from the Desired Output Links are stored in the
-corresponding Desired Output fields (DO1-DOA and STR1-STRA). These fields can
-also be initialized to a constant value, and they can be changed at run time. 
-But note that the value of DO<i>n</i> and STR<i>n</i> will be overwritten if
-DOL<i>n</i> is a valid link (i.e., if DOL<i>n</i> contains the name of a PV to
-which the sseq record is able to make a channel-access connection).
+corresponding Desired Output fields (<tt>DO1-DOA</tt> and <tt>STR1-STRA</tt>).
+These fields can be initialized by a datbase configuration tool, and they can be
+changed at run time.  But note that the value of <tt>DO<i>n</i></tt> and
+<tt>STR<i>n</i></tt> will be overwritten if <tt>DOL<i>n</i></tt> is a valid link
+(i.e., if <tt>DOL<i>n</i></tt> contains the name of a PV to which the <b>sseq</b>
+record is able to make a channel-access connection).
 
-<P>Many EPICS records that have a DOL link field also have an OMSL (Output Mode
-Select) field, which determines whether or not the DOL field is used.  Like the
-seq record, the sseq record has no such field.  Its DOL<i>n</i> links are used
-if they contain text that could be a PV name, and value fields are overwritten
-if that use succeeds.
+<P>Many EPICS records that have a <tt>DOL</tt> link field also have an
+<tt>OMSL</tt> (Output Mode Select) field, which determines whether or not the
+<tt>DOL</tt> field is used.  Like the <b>seq</b> record, the <b>sseq</b> record
+has no such field.  Its <tt>DOL<i>n</i></tt> fields are treated as links if they
+contain text that could be a PV name, and value fields are overwritten if those
+links successfully retrieve values.
 
 <P><table BORDER >
 <tr>
@@ -130,78 +187,82 @@ if that use succeeds.
 
 <p><a NAME="Output"></a>
 <h1>
-4. Output/Wait Parameters</h1>
+4. Output/Wait Fields</h1>
 
-<hr>When the sseq record is processed, desired output values (DO<i>n</i> or
-STR<i>n</i>) are written to the corresponding output links (LNK<i>n</i>). These
-output links should either be blank (in which case no writing will occur), or
-contain the name of an EPICS PV; they cannot be device addresses. There are ten
-output links. Only those that contain valid PV names are used.  If a link field
-contains a PV name to which a CA connection cannot be made, the rest of the
-record currently continues to operate as though the unconnected link field were
-blank.  (This is probably not a good practice, and it is not guaranteed to
-persist as the record is improved.)
+<hr>When the <b>sseq</b> record is processed, desired output values
+(<tt>DO<i>n</i></tt> or <tt>STR<i>n</i></tt>) are written to the corresponding
+output links (<tt>LNK<i>n</i></tt>). These output links should either be blank
+(in which case no writing will occur), or contain the name of an EPICS PV; they
+cannot be device addresses. There are ten output links. Only those that contain
+valid PV names are used.  If a link field contains a PV name to which a CA
+connection cannot be made, the rest of the record currently continues to operate
+as though the unconnected link field were blank.  (This is probably not a good
+practice, and it is not guaranteed to persist as the record is improved.)
 
 <P>EPICS links can cause processing of the linked-to (i.e., target) record to
 occur.  Whether or not processing actually does occur depends on both the
-specification of the link, and the properties of the target record.  This is
-well documented in the EPICS Application Developer's Guide, but since some
+specification of the link, and the properties of the target record.  This is well
+documented in the <i>EPICS Application Developer's Guide</i>, but since some
 details of link behavior are essential prerequisites for an understanding of the
-sseq record's WAIT<i>n</i> fields, the (EPICS 3.14) behavior of the output
-links, LNK<i>n</i>, is summarized here:
+<b>sseq</b> record's <tt>WAIT<i>n</i></tt> fields, the (EPICS 3.14) behavior of
+the output links, <tt>LNK<i>n</i></tt>, is summarized here:
 
 <P> There are three possibilities:
 
 <DL>
 
-<DT>PP<DD>If LNK<i>n</i> has the attribute "PP" (e.g., "<code>targetRecord.field PP
-NMS</code>"), then the link will attempt to cause <code>targetRecord</code> to
-process.  The attempt will succeed, however, only if the target record is
-"Passive" (e.g., <code>targetRecord.SCAN</code> has the value
-<code>Passive</code>).  In other words, "PP" means "process if passive".
+<DT>PP<DD>If <tt>LNK<i>n</i></tt> has the attribute <tt>PP</tt> (e.g.,
+"<code>targetRecord.field PP NMS</code>"), then the link will attempt to cause
+<code>targetRecord</code> to process.  The attempt will succeed, however, only if
+the target record is "Passive" (e.g., <code>targetRecord.SCAN</code> has the
+value <code>Passive</code>).  In other words, <tt>PP</tt> means "process if
+passive".
 
-<DT>CA<DD>If LNK<i>n</i> has the attribute "CA" (e.g., "<code>targetRecord.field
-CA NMS</code>"), then <code>targetRecord</code> will process only if
-<code>field</code> has been designated by <code>targetRecord</code>'s
-record-support code as a "Process Passive" field.  You can tell if a field is
-"Process Passive" either by looking at the record's .dbd file, or by writing to
-it from any Channel Access client; if the record processes when the field is
-question is written to via Channel Access, then the field is Process Passive,
-and a CA link to that field from the sseq record will also cause the record to
-process.
+<DT>CA<DD>If <tt>LNK<i>n</i></tt> has the attribute <tt>CA</tt> (e.g.,
+"<code>targetRecord.field CA NMS</code>"), then <code>targetRecord</code> will
+process only if <code>field</code> has been designated by
+<code>targetRecord</code>'s record-support code as a "Process Passive" field. 
+You can tell if a field is "Process Passive" either by looking at the record's
+.dbd file, or by writing to it from any Channel Access client; if the record
+processes when the field in question is written to via Channel Access, then the
+field is Process Passive, and a <tt>CA</tt> link to that field from the <b>sseq</b> record
+will also cause the record to process.
 
-<DT>NPP<DD>If LNK<i>n</i> has the attribute "NPP", then
-<code>targetRecord</code> will not process as a result of LNK<i>n</i>.
+<DT>NPP<DD>If <tt>LNK<i>n</i></tt> has the attribute <tt>NPP</tt>, then
+<code>targetRecord</code> will not process as a result of <tt>LNK<i>n</i></tt>.
 
 </dl>
 
-<P>The sseq record is permitted to demand a completion callback from EPICS
-only if the LNK field it's processing has the attribute "CA".  A "PP" link
-is not permitted to make this demand.  If LNK<i>n</i> does have the "CA"
-attribute, and WAIT<i>n</i> has the value "Wait", then the sseq record will
-demand a completion callback.  In this case, it will wait after firing
-LNK<i>n</i> for the callback, before moving on to the next group of DLY/DOL/LNK
-fields.  If LNK<i>n</i> has any other attribute, WAIT<i>n</i> is irrelevant
-and its value will be ignored.
+<P>The <b>sseq</b> record is permitted to demand a completion callback from EPICS
+only if the <tt>LNK</tt> field it's processing has the attribute <tt>CA</tt>.  A
+<tt>PP</tt> link is not permitted to make this demand.  If <tt>LNK<i>n</i></tt>
+does have the <tt>CA</tt> attribute, and <tt>WAIT<i>n</i></tt> has the value
+<tt>Wait</tt>, then the <b>sseq</b> record will demand a completion callback.  In
+this case, it will wait after firing <tt>LNK<i>n</i></tt> for the callback,
+before moving on to the next group of <tt>DLY</tt>/<tt>DOL</tt>/<tt>LNK</tt>
+fields.  If <tt>LNK<i>n</i></tt> has any other attribute, <tt>WAIT<i>n</i></tt>
+is irrelevant and its value will be ignored.
 
-<P>If LNK<i>n</i> has the attribute "CA", and WAIT<i>n</i> has the value "Wait",
-but <code>targetRecord.field</code> is <i>not</i> a Process-Passive field, then
-<code>targetRecord</code>  will not process as a result of LNK<i>n</i>, but the
-sseq record will immediately receive a completion callback anyway, and will
-therefore not wait for <code>targetRecord</code> to process.
+<P>If <tt>LNK<i>n</i></tt> has the attribute <tt>CA</tt>, and
+<tt>WAIT<i>n</i></tt> has the value <tt>Wait</tt>, but
+<code>targetRecord.field</code> is <i>not</i> a Process-Passive field, then
+<code>targetRecord</code>  will not process as a result of <tt>LNK<i>n</i></tt>,
+but the <b>sseq</b> record will immediately receive a completion callback anyway,
+and will therefore not wait for <code>targetRecord</code> to process.
 
-<P>Finally, if the sseq record successfully waits for <code>targetRecord</code>
-to finish processing, it is still possible for other records to process as an
-<i>indirect</i> result of LNK<i>n</i>, and the sseq record cannot wait for this
-indirectly caused processing to finish unless the database developer has
-arranged for the indirectly caused processing to be traceable by EPICS.  For
-example, a channel access client may have a monitor on the field the sseq record
-writes to, and may do something when that field's value changes.  EPICS cannot
-trace this processing without special help from a database developer.  This
-issue is covered in depth in the documentation of the sscan record, which also
-relies on EPICS execution tracing to determine when processing it has caused
-finishes.  (See "Completion Reporting" in the Powerpoint presentation
-"Scans.ppt" in the synApps <b>sscan</b> module's documentation directory.)
+<P>Finally, if the <b>sseq</b> record successfully waits for
+<code>targetRecord</code> to finish processing, it is still possible for other
+records to process as an <i>indirect</i> result of <tt>LNK<i>n</i></tt>, and the
+<b>sseq</b> record cannot wait for this indirectly caused processing to finish
+unless the database developer has arranged for the indirectly caused processing
+to be traceable by EPICS.  For example, a channel access client may have a
+monitor on the field the <b>sseq</b> record writes to, and may do something when
+that field's value changes.  EPICS cannot trace this processing without special
+help from a database developer.  This issue is covered in depth in the
+documentation of the <b>sscan</b> record, which also relies on EPICS execution
+tracing to determine when processing it has caused finishes.  (See "Completion
+Reporting" in the Powerpoint presentation "Scans.ppt" in the synApps <b>sscan</b>
+module's documentation directory.)
 
 <P>
 <table BORDER >
@@ -240,47 +301,55 @@ finishes.  (See "Completion Reporting" in the Powerpoint presentation
 <td>N/A</td>
 <td>No</td>
 
-<tr><td colspan=9>These fields determine whether the sseq record waits for
+<tr><td colspan=9>These fields determine whether the <b>sseq</b> record waits for
 completion of any processing started by a LNK field before processing the next
-set of <i>DLY/DOL/LNK</i> fields. If WAIT<i>n</i> has the value "Wait",
-then the record will attempt to execute LNK<i>n</i> in such a way that it will
+set of <i>DLY/DOL/LNK</i> fields. If <tt>WAIT<i>n</i></tt> has the value "Wait",
+then the record will attempt to execute <tt>LNK<i>n</i></tt> in such a way that it will
 be able to wait for all processing started by the link to finish.
 </tr>
 
 </table>
 
+<P>By the way, because the <b>sseq</b> record can write strings, it can be used
+to write to link fields (its own, or those of another record).  This use can
+succeed only if the link field doing the writing has the attribute <tt>CA</tt>.
+
 <p><a NAME="Selection"></a>
 <h1>
-5. Selection Algorithm Parameters</h1>
+5. Selection Algorithm Fields</h1>
 
-<hr>When the sseq record is processed, it uses a selection algorithm similar to
+<hr>When the <b>sseq</b> record is processed, it uses a selection algorithm similar to
 that of the sel (selection) record to decide which links to process.  The select
-mechanism field (SELM) provides three algorithms to choose from: <tt>All</tt>,
+mechanism field (<tt>SELM</tt>) provides three algorithms to choose from: <tt>All</tt>,
 <tt>Specified</tt> or <tt>Mask</tt>.
 
 <DL>
 
 <DT><tt>All</tt><DD>All link groups are processed, in order from 1 to 10. Thus,
-if DOL1 or LNK1 is connected, record will wait for DLY1 seconds, fetch the
-desired output value from DOL1 (if DOL1 contains a PV name), place it in DO1 and
-STR1, and send it LNK1 (if LNK1 contains a PV name), optionally waiting for
-completion.  Then the record will move on to process DLY2, DOL2, DO2, STR2,
-LNK2, WAIT2, and so on until the last input and output link DOA and LNKA.  The
-SELN field is not used when SELM = <tt>All</tt>.
+if <tt>DOL1</tt> or <tt>LNK1</tt> is connected, record will wait for
+<tt>DLY1</tt> seconds, fetch the desired output value from <tt>DOL1</tt> (if
+<tt>DOL1</tt> contains a PV name), place it in DO1 and <tt>STR1</tt>, and send it
+<tt>LNK1</tt> (if <tt>LNK1</tt> contains a PV name), optionally waiting for
+completion.  Then the record will move on to process <tt>DLY2</tt>,
+<tt>DOL2</tt>, <tt>DO2</tt>, <tt>STR2</tt>, <tt>LNK2</tt>, <tt>WAIT2</tt>, and so
+on until the last input and output link <tt>DOA</tt> and <tt>LNKA</tt>.  The
+<tt>SELN</tt> field is not used when <tt>SELM</tt> = <tt>All</tt>.
 
 <DT><tt>Specified</tt><DD>Each time the
-record is processed it will get the integer value in the Link Selection (SELN)
+record is processed it will get the integer value in the Link Selection (<tt>SELN</tt>)
 field and uses that as the index of the link group to process. For instance,
-if SELN is 4, the desired output value from DO4 will be fetched and sent
-to LNK4. If DOL<i>n</i> is a constant, DO<i>n</i> is simply used without
+if <tt>SELN</tt> is 4, the desired output value from <tt>DO4</tt> will be fetched and sent
+to <tt>LNK4</tt>. If <tt>DOL<i>n</i></tt> is a constant, <tt>DO<i>n</i></tt> is simply used without
 the value being fetched from the input link.
 
 <DT><tt>Mask</tt><DD>Each time the record is processed, the record uses the
-integer value from the SELN field as a bit mask to determine which link groups to
-process. For example, if SELN is 1, then the value from DO1 will be written to
-the location in LNK1. If SELN is 3, the record will fetch the values from DO1
-and DO2 and write them to the locations in LNK1 and LNK2, respectively. If SELN
-is 63, DO1...DO6 will be written to LNK1...LNK6.
+integer value from the <tt>SELN</tt> field as a bit mask to determine which link
+groups to process. For example, if <tt>SELN</tt> is 1, then the value from
+<tt>DO1</tt> will be written to the location in <tt>LNK1</tt>. If <tt>SELN</tt>
+is 3, the record will fetch the values from <tt>DO1</tt> and <tt>DO2</tt> and
+write them to the locations in <tt>LNK1</tt> and <tt>LNK2</tt>, respectively. If
+<tt>SELN</tt> is 63, <tt>DO1</tt>...<tt>DO6</tt> will be written to
+<tt>LNK1</tt>...<tt>LNK6</tt>.
 
 </DL>
 
@@ -336,20 +405,20 @@ is 63, DO1...DO6 will be written to LNK1...LNK6.
 
 <p><a NAME="Delay"></a>
 <h1>
-6. Delay Parameters</h1>
+6. Delay Fields</h1>
 
-<hr>The delay parameters consist of 10 fields, one for each I/O link discussed
+<hr>There are ten delay-related fields, one for each I/O link discussed
 above. These fields cause the record to delay processing before fetching data
 from the associated input link, or writing to the associated output link. For
-example, if the user gives the DLY1 field a value of 3.0, each time the record
+example, if the user gives the <tt>DLY1</tt> field a value of 3.0, each time the record
 is processed at run-time, the record will delay processing for three seconds
-before fetching data from the DOL1 link.  If neither an input or an output link
+before fetching data from the <tt>DOL1</tt> link.  If neither an input or an output link
 exist, the associated delay will be ignored.
 
 <P>Delays are implemented with a time granularity of the system clock, which
 typically has a frequency of 60 Hz.  When a delay value is specified, the record
 rounds it to the nearest multiple of the system clock period, and writes it back
-to the DLY<i>n</i> field. 
+to the <tt>DLY<i>n</i></tt> field. 
 
 <table BORDER >
 <tr>
@@ -415,15 +484,15 @@ to the DLY<i>n</i> field.
 
 <p><a NAME="Display"></a>
 <h1>
-7. Operator Display Parameters</h1>
+7. Operator Display Fields</h1>
 
-<hr>These parameters are used to present meaningful data to the operator.
-The Precision field (PREC) determines the decimal precision for the VAL
+<hr>These fields are used to present meaningful data to the operator.
+The Precision field (<tt>PREC</tt>) determines the decimal precision for the <tt>VAL</tt>
 field when it is displayed. It is used when the <tt>get_precision</tt>
 record routine is called.
 
-<p>See the EPICS Record Reference Manual for more on the record name (NAME) and
-description (DESC) fields.
+<p>See the <i>EPICS Record Reference Manual</i> for more on the record name
+(<tt>NAME</tt>) and description (<tt>DESC</tt>) fields.
 
 <table BORDER >
 <tr>
@@ -473,14 +542,26 @@ description (DESC) fields.
 <td>No</td>
 <td>No</td>
 </tr>
+
+<tr>
+<td>BUSY</td>
+<td>Sequence active</td>
+<td>SHORT</td>
+<td>No</td>
+<td>0</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
 </table>
 
 <p><a NAME="Alarms"></a>
 <h1>
-8. Alarm Parameters</h1>
+8. Alarm Fields</h1>
 
-<hr>The sequence record has the alarm parameters common to all record types.
-See the EPICS Record Reference Manual for details.
+<hr>The sequence record has the alarm fields common to all record types.
+See the <i>EPICS Record Reference Manual</i> for details.
 <p><a NAME="code"></a>
 <h1>
 9. Record Support Routines</h1>
@@ -490,23 +571,22 @@ See the EPICS Record Reference Manual for details.
 <br>
 <dl>
 <dd>
-1. First, PACT is set to TRUE, and the link selection is fetched. Depending
+1. First, <tt>PACT</tt> is set to <tt>TRUE</tt>, and the link selection is fetched. Depending
 on the selection mechanism, the link selection output links are processed
-in order from LNK1 to LNKA. When LNK<i>n</i> is processed, the corresponding
-DLY<i>n</i> value is used to generate a delay via watchdog timer.</dd>
+in order from <tt>LNK1</tt> to <tt>LNKA</tt>. When <tt>LNK<i>n</i></tt> is processed, the corresponding
+<tt>DLY<i>n</i></tt> value is used to generate a delay via watchdog timer.</dd>
 
 <dd>
-2. After DLY<i>n</i> seconds have expired, the input value is fetched from
-DO<i>n</i> (if DOL<i>n</i> is constant) or DOL<i>n</i> (if DOL<i>n</i>
-is a database link or channel access link) and written to LNK<i>n</i>.</dd>
+2. After <tt>DLY<i>n</i></tt> seconds have expired, the input value is fetched from
+<tt>DO<i>n</i></tt> (if <tt>DOL<i>n</i></tt> is constant) or <tt>DOL<i>n</i></tt> (if <tt>DOL<i>n</i></tt>
+is a database link or channel access link) and written to <tt>LNK<i>n</i></tt>.</dd>
+
+<dd> 3. When all links are completed, an asynchronous completion call back to
+dbProcess is made (see the <i>EPICS Application Developer's Guide</i> for more
+information on asynchronous processing.)</dd>
 
 <dd>
-3. When all links are completed, an asynchronous completion call back to
-dbProcess is made (see the Application Developer's Guide for more information
-on asynchronous processing.)</dd>
-
-<dd>
-4. Then UDF is set to FALSE.</dd>
+4. Then <tt>UDF</tt> is set to <tt>FALSE</tt>.</dd>
 
 <dd>
 5. Monitors are checked.</dd>
@@ -514,17 +594,15 @@ on asynchronous processing.)</dd>
 <br>
 <p>
 <dd>
-6. The forward link is scanned, PACT is set FALSE, and the process routine
+6. The forward link is scanned, <tt>PACT</tt> is set <tt>FALSE</tt>, and the process routine
 returns.</dd>
 
-<br>
-<p></dl>
-For the delay mechanism to operate properly, the record is processed asynchronously.
-The only time the record will not be processed asynchronously is when there
-are no non-NULL output links selected (i.e. when it has nothing to do.)
-The processing of the links is done via callback tasks at the priority
-set in the PRIO field in dbCommon (see the Application Developer's Guide
-for more information.
+<br> <p></dl> For the delay mechanism to operate properly, the record is
+processed asynchronously. The only time the record will not be processed
+asynchronously is when there are no non-NULL output links selected (i.e. when it
+has nothing to do.) The processing of the links is done via callback tasks at the
+priority set in the <tt>PRIO</tt> field in dbCommon (see the <i>EPICS Application
+Developer's Guide</i> for more information.
 
 
 <hr>
