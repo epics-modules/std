@@ -1,7 +1,7 @@
 
 file {
-	name="/home/sricat/BCDA/epics/synApps_R3.13.1.1_R4.2/share/stdApp/op/adl/scaler_2.1.adl"
-	version=020303
+	name="/home/oxygen/MOONEY/epics/synApps/support/std/stdApp/op/adl/scaler.adl"
+	version=030102
 }
 display {
 	object {
@@ -293,6 +293,8 @@ text {
 		clr=30
 		bclr=47
 	}
+	limits {
+	}
 }
 composite {
 	object {
@@ -302,8 +304,6 @@ composite {
 		height=40
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -331,6 +331,8 @@ composite {
 				clr=14
 				bclr=51
 			}
+			limits {
+			}
 		}
 	}
 }
@@ -347,6 +349,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -361,6 +365,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -375,6 +381,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -389,6 +397,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -403,6 +413,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -417,6 +429,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -431,6 +445,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -445,6 +461,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "text update" {
 	object {
@@ -459,6 +477,8 @@ composite {
 		bclr=3
 	}
 	align="horiz. right"
+	limits {
+	}
 }
 "related display" {
 	object {
@@ -475,60 +495,49 @@ composite {
 	}
 	clr=0
 	bclr=17
-	label=-More
+	label="-More"
 }
-composite {
+text {
+	object {
+		x=2
+		y=245
+		width=110
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SYNC WITH SCALER:"
+}
+"text entry" {
 	object {
 		x=0
-		y=245
+		y=254
 		width=135
-		height=44
+		height=20
 	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		text {
-			object {
-				x=2
-				y=245
-				width=110
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-			textix="SYNC WITH SCALER:"
-		}
-		"text entry" {
-			object {
-				x=0
-				y=254
-				width=135
-				height=20
-			}
-			control {
-				chan="$(P)$(S).COUT"
-				clr=14
-				bclr=40
-			}
-			format="string"
-		}
-		"related display" {
-			object {
-				x=0
-				y=273
-				width=60
-				height=16
-			}
-			display[0] {
-				label="Terse link docs"
-				name="linkHelp.adl"
-			}
-			clr=0
-			bclr=17
-			label=-LINK HELP
-		}
+	control {
+		chan="$(P)$(S).COUT"
+		clr=14
+		bclr=40
 	}
+	format="string"
+	limits {
+	}
+}
+"related display" {
+	object {
+		x=0
+		y=273
+		width=60
+		height=16
+	}
+	display[0] {
+		label="Terse link docs"
+		name="outlinkHelp.adl"
+	}
+	clr=0
+	bclr=17
+	label="-LINK"
 }
