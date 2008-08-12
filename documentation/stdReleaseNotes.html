@@ -10,9 +10,21 @@
 <BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
 <H1 ALIGN=CENTER>std Release Notes</H1>
 
-
-<H2 ALIGN=CENTER>Release 2-5-5 (April XXX, 2007)</H2>
+<H2 ALIGN=CENTER>Release 2-6 (August 12, 2008)</H2>
 <UL>
+  <li> Added scaler16m.db database, and corresponding MEDM displays.  These
+       differ from scaler16.db and its display files only in the implementation
+	   of end calculations.  The new support provides end calcs for all 16 signals.
+  <li> New link-help displays.
+  <li> Added pvHistoryRegister to stdSupport.dbd
+  <li> Added field COUTP, an output link, to the caler record.  This is similar
+       to the COUT link, which sends the value of the CNT field to its target
+	   whenever CNT changes.  COUTP differs from COUT in that it doesn't wait for
+	   the delay specified in the DLY field, but sends promptly after CNT changes. 
+  <LI> Minor change to devScalerAsyn to support change in API for asyn callbacks.
+  <LI> Minor change to devEpidFast to support change in API for asyn callbacks.
+  <LI> Added ramp_tweak database and assoc. support
+
   <LI> Minor change to devScalerAsyn to support change in API for asyn callbacks.
   <LI> Minor change to devEpidFast to support change in API for asyn callbacks.
   <LI> Added ramp_tweak database and assoc. support
