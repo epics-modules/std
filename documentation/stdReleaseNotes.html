@@ -10,7 +10,32 @@
 <BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
 <H1 ALIGN=CENTER>std Release Notes</H1>
 
-<H2 ALIGN=CENTER>Release 2-6 (August 12, 2008)</H2>
+<H2 ALIGN=CENTER>Release 2-6 (Aug 6, 2008)</H2>
+
+<ul>
+
+<li>The sseq record was failing to process immediately after a reboot, when
+ordered to process because of a CP input link.
+
+<li>The gpibRecord has been replaced by the asynRecord, which is loaded from the
+asyn module.
+
+<li>New databases: alarmClock, autoShutter, countDownTimer, ramp_tweak, scaler16m
+
+<li>The sseqRecord (string Sequence, a variant of the seq record in EPICS base)
+can now be told to abort the sequence it's executing.
+
+<li>The scaler record has a new field, COUTP, which is like the COUT field, but
+is not delayed by a nonzero setting of the DLY field.
+
+<li>If the scaler-record DLY field was less that 1, it was not honored. 
+(Thanks to Xuesong Jiao for the fix.)
+
+<li>New link-help displays do a better job of describing the effects on link
+attributes, particularly as they bear on completion detection (i.e., the
+behavior of a data when written to by ca_put_callback).
+
+<H2 ALIGN=CENTER>Release 2-5-5 (April, 2007)</H2>
 <UL>
   <li> Added scaler16m.db database, and corresponding MEDM displays.  These
        differ from scaler16.db and its display files only in the implementation
