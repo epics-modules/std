@@ -544,6 +544,10 @@ processCallback(CALLBACK *pCallback)
 	if (sseqRecDebug > 10) printf("sseq:processCallback:dol_field_type=%d (%s)\n",
 			plinkGroup->dol_field_type, plinkGroup->dol_field_type>=0 ?
 				pamapdbfType[plinkGroup->dol_field_type].strvalue : "");
+
+	if (plinkGroup->dol_field_type == DBF_unknown)
+		plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
+
 	switch (plinkGroup->dol_field_type) {
 	case DBF_STRING: case DBF_CHAR: case DBF_ENUM: case DBF_MENU:
 	case DBF_DEVICE: case DBF_INLINK: case DBF_OUTLINK: case DBF_FWDLINK:
@@ -571,6 +575,10 @@ processCallback(CALLBACK *pCallback)
 	if (sseqRecDebug > 10) printf("sseq:processCallback:lnk_field_type=%d (%s)\n",
 			plinkGroup->lnk_field_type, plinkGroup->lnk_field_type>=0 ?
 				pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
+
+	if (plinkGroup->lnk_field_type == DBF_unknown)
+		plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
+
 	switch (plinkGroup->lnk_field_type) {
 	case DBF_STRING: case DBF_CHAR: case DBF_ENUM: case DBF_MENU:
 	case DBF_DEVICE: case DBF_INLINK: case DBF_OUTLINK: case DBF_FWDLINK:
