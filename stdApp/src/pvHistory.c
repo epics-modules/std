@@ -6,7 +6,7 @@
 #include <dbDefs.h>
 #include <dbCommon.h>
 #include <recSup.h>
-#include <genSubRecord.h>
+#include <aSubRecord.h>
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) > (b) ? (b) : (a))
@@ -14,18 +14,18 @@
 
 volatile int pvHistoryDebug=0;
 
-static long pvHistory_init(genSubRecord *pgsub)
+static long pvHistory_init(aSubRecord *pasub)
 {
 	double	*valb, *valc;
 	double	*vald, *vale, *valf;
 	long   	i, n;
 
-	valb = (double *)pgsub->valb;
-	valc = (double *)pgsub->valc;
-	vald = (double *)pgsub->vald;
-	vale = (double *)pgsub->vale;
-	valf = (double *)pgsub->valf;
-	n = pgsub->novb;
+	valb = (double *)pasub->valb;
+	valc = (double *)pasub->valc;
+	vald = (double *)pasub->vald;
+	vale = (double *)pasub->vale;
+	valf = (double *)pasub->valf;
+	n = pasub->novb;
 	for (i=0; i<n; i++) {
 		valb[i] = 0.0;
 		valc[i] = 0.0;
@@ -35,23 +35,23 @@ static long pvHistory_init(genSubRecord *pgsub)
 	}
 	return(0);
 }
-static long pvHistory(genSubRecord *pgsub)
+static long pvHistory(aSubRecord *pasub)
 {
 	double	*b, *valb, *valc;
 	double	*d, *vald, *e, *vale, *f, *valf;
 	long   	*a, i, n;
 
-	n = pgsub->novb;	/* max elements of arrays */
-	a = (long *)pgsub->a;
-	b = (double *)pgsub->b; /* current secsPastEpoch */
-	d = (double *)pgsub->d; /* current PV value */
-	e = (double *)pgsub->e; /* current PV value */
-	f = (double *)pgsub->f; /* current PV value */
-	valb = (double *)pgsub->valb; /* array of b values */
-	valc = (double *)pgsub->valc; /* (valb[] - curr_time), in hours */
-	vald = (double *)pgsub->vald; /* recorded PV value array */
-	vale = (double *)pgsub->vale; /* recorded PV value array */
-	valf = (double *)pgsub->valf; /* recorded PV value array */
+	n = pasub->novb;	/* max elements of arrays */
+	a = (long *)pasub->a;
+	b = (double *)pasub->b; /* current secsPastEpoch */
+	d = (double *)pasub->d; /* current PV value */
+	e = (double *)pasub->e; /* current PV value */
+	f = (double *)pasub->f; /* current PV value */
+	valb = (double *)pasub->valb; /* array of b values */
+	valc = (double *)pasub->valc; /* (valb[] - curr_time), in hours */
+	vald = (double *)pasub->vald; /* recorded PV value array */
+	vale = (double *)pasub->vale; /* recorded PV value array */
+	valf = (double *)pasub->valf; /* recorded PV value array */
 	/* clear everything */
 	if (*a) {
 		for(i=0; i<n; i++) {
