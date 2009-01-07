@@ -301,14 +301,25 @@ module's documentation directory.)
 <td>N/A</td>
 <td>No</td>
 
-<tr><td colspan=9>These fields determine whether the <b>sseq</b> record waits for
-completion of any processing started by a LNK field before processing the next
-set of <i>DLY/DOL/LNK</i> fields. If <tt>WAIT<i>n</i></tt> has the value "Wait",
-then the record will attempt to execute <tt>LNK<i>n</i></tt> in such a way that it will
-be able to wait for all processing started by the link to finish.
-</tr>
+<tr><td colspan=9>These fields determine whether the <b>sseq</b> record waits
+for completion of any processing started by a LNK field before processing the
+next set of <i>DLY/DOL/LNK</i> fields. If <tt>WAIT<i>n</i></tt> has the value
+"Wait", then the record will attempt to execute <tt>LNK<i>n</i></tt> in such a
+way that it will be able to wait for all processing started by the link to
+finish. </tr>
 
 </table>
+
+<P>To avoid any misunderstanding, let me emphasize that <tt>WAIT<i>n</i></tt>
+fields do not control or affect the <b>sseq</b> record's use of its delay
+(<tt>DLY<i>n</i></tt>) fields.  <tt>WAIT<i>n</i></tt> only controls whether the
+record will wait for processing started by <tt>LNK<i>n</i></tt> to complete.
+Thus, if <tt>WAIT<i>n</i></tt> is 0, the record will execute
+<tt>LNK<i>n</i></tt> and immediately pause for <tt>DLY<i>n</i></tt> seconds; if
+<tt>WAIT<i>n</i></tt> is 1, the record will execute <tt>LNK<i>n</i></tt>, wait for processing
+started by <tt>LNK<i>n</i></tt> to complete, and <i>then</i> pause for
+<tt>DLY<i>n</i></tt> seconds.
+
 
 <P>By the way, because the <b>sseq</b> record can write strings, it can be used
 to write to link fields (its own, or those of another record).  This use can
