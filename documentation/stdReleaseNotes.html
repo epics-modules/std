@@ -10,7 +10,18 @@
 <BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
 <H1 ALIGN=CENTER>std Release Notes</H1>
 
-<H2 ALIGN=CENTER>Release 2-7 (Sept 10, 2008)</H2>
+
+ <h2 align="CENTER">
+    Release 2-8 (Feb. xxx, 2009)</h2>
+  <ul>
+    <li>fast_pid_control.db, devEpidFast.c.  Added new parameters to the
+    INP field, because previously the DRV_USER strings for the data and
+    time interval were hardcoded.  The length of the resulting string
+    now is too large for INP in many cases, so put some of it in the DESC
+    field, which is ugly.</li>
+  </ul>
+
+  <H2 ALIGN=CENTER>Release 2-7 (Sept 10, 2008)</H2>
 <ul>
 <li>yySeq.adl, yySeq_full.adl - new files
 <li>genSub-record dependency replaced by aSub record in base 3.14.10
