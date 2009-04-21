@@ -53,14 +53,15 @@ typedef struct {
     double timePerPointActual;
     asynFloat64 *pfloat64Input;
     void *float64InputPvt;
-    asynDrvUser *pdrvUser;
-    void *drvUserPvt;
     asynFloat64 *pfloat64Output;
     void *float64OutputPvt;
-    int inputChannel;
     char *inputName;
-    int outputChannel;
+    int inputChannel;
+    char *inputDataString;
+    char *inputIntervalString;
     char *outputName;
+    int outputChannel;
+    char *outputDataString;
     asynUser *pcallbackDataAsynUser;
     asynUser *pcallbackIntervalAsynUser;
     asynUser *pfloat64OutputAsynUser;
@@ -110,7 +111,9 @@ static long init_record(epidRecord *pepid)
     char *p;
     const char *drvUserName;
     size_t drvUserSize;
-    char temp[100];
+    asynDrvUser *pdrvUser;
+    void *drvUserPvt;
+    char temp[256];
     void *registrarPvt;
 
     pPvt = callocMustSucceed(1, sizeof(*pPvt), "devEpidFast::init_record");
@@ -120,21 +123,65 @@ static long init_record(epidRecord *pepid)
     pPvt->highLimit =-1.;
 
     pinstio = (struct instio*)&(pepid->inp.value);
-    /* Parse to get inputName, inputChannel, 
-     * outputName, outputChannel 
+    /* Parse to get inputName, inputChannel, dataString, intervalString,
+     * outputName, outputChannel, outputString
      * Copy to temp, since epicsStrtok_r overwrites it */
-    strncpy(temp, pinstio->string, sizeof(temp));
+    strcpy(temp, pinstio->string);
+    strcat(temp, " ");
+    strcat(temp, pepid->desc);
     tok_save = NULL;
     p = epicsStrtok_r(temp, ", ", &tok_save);
+    if (!p) {
+        errlogPrintf("devEpidFast::init_record %s, INP field=\"%s\" is missing inputName\n",
+                     pepid->name, temp);
+        goto bad;
+    }
     pPvt->inputName = epicsStrDup(p);
     p = epicsStrtok_r(NULL, ", ", &tok_save);
+    if (!p) {
+        errlogPrintf("devEpidFast::init_record %s, INP field=\"%s\" is missing inputChannel\n",
+                     pepid->name, temp);
+        goto bad;
+    }
     pPvt->inputChannel = atoi(p);
     p = epicsStrtok_r(NULL, ", ", &tok_save);
+    if (!p) {
+        errlogPrintf("devEpidFast::init_record %s, INP field=\"%s\" is missing inputDataString\n",
+                     pepid->name, temp);
+        goto bad;
+    }
+    pPvt->inputDataString = epicsStrDup(p);
+    p = epicsStrtok_r(NULL, ", ", &tok_save);
+    if (!p) {
+        errlogPrintf("devEpidFast::init_record %s, INP field=\"%s\" is missing inputIntervalString\n",
+                     pepid->name, temp);
+        goto bad;
+    }
+    pPvt->inputIntervalString = epicsStrDup(p);
+    p = epicsStrtok_r(NULL, ", ", &tok_save);
+    if (!p) {
+        errlogPrintf("devEpidFast::init_record %s, INP field=\"%s\" is missing outputName\n",
+                     pepid->name, temp);
+        goto bad;
+    }
     pPvt->outputName = epicsStrDup(p);
     p = epicsStrtok_r(NULL, ", ", &tok_save);
+    if (!p) {
+        errlogPrintf("devEpidFast::init_record %s, INP field=\"%s\" is missing outputChannel\n",
+                     pepid->name, temp);
+        goto bad;
+    }
     pPvt->outputChannel = atoi(p);
+    p = epicsStrtok_r(NULL, ", ", &tok_save);
+    if (!p) {
+        errlogPrintf("devEpidFast::init_record %s, INP field=\"%s\" is missing outputDataString\n",
+                     pepid->name, temp);
+        goto bad;
+    }
+    pPvt->outputDataString = epicsStrDup(p);
     pPvt->mutexId = epicsMutexCreate();
 
+    /* Connect to input asyn driver */
     pasynUser = pasynManager->createAsynUser(0, 0);
     pPvt->pcallbackDataAsynUser = pasynUser;
     status = pasynManager->connectDevice(pasynUser, pPvt->inputName, 
@@ -164,9 +211,41 @@ static long init_record(epidRecord *pepid)
                      pepid->name, pasynUser->errorMessage);
         goto bad;
     }
-    pPvt->pdrvUser = (asynDrvUser *)pasynInterface->pinterface;
-    pPvt->drvUserPvt = pasynInterface->drvPvt;
+    pdrvUser = (asynDrvUser *)pasynInterface->pinterface;
+    drvUserPvt = pasynInterface->drvPvt;
 
+    status = pdrvUser->create(drvUserPvt, pPvt->pcallbackDataAsynUser, 
+                           pPvt->inputDataString, &drvUserName, &drvUserSize);
+    if (status) {
+        errlogPrintf("devEpidFast::init_record %s, asynDrvUser->create "
+                     "failed for input data string %s %s\n",
+                     pepid->name, pPvt->inputDataString, pPvt->pcallbackDataAsynUser->errorMessage);
+        goto bad;
+    }
+    pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
+                                               pPvt->pcallbackDataAsynUser,
+                                               dataCallback, pPvt, &registrarPvt);
+
+    pPvt->pcallbackIntervalAsynUser = pasynManager->duplicateAsynUser(
+                                           pPvt->pcallbackDataAsynUser, 0, 0);
+    status = pdrvUser->create(drvUserPvt, pPvt->pcallbackIntervalAsynUser, 
+                           pPvt->inputIntervalString, &drvUserName, &drvUserSize);
+    if (status) {
+        errlogPrintf("devEpidFast::init_record %s, asynDrvUser->create "
+                     "failed for interval string %s %s\n",
+                     pepid->name, pPvt->inputIntervalString, pPvt->pcallbackIntervalAsynUser->errorMessage);
+        goto bad;
+    }
+    pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
+                                               pPvt->pcallbackIntervalAsynUser,
+                                               intervalCallback, pPvt, 
+                                               &registrarPvt);
+    status = pPvt->pfloat64Input->read(pPvt->float64InputPvt,
+                                       pPvt->pcallbackIntervalAsynUser,
+                                       &pPvt->callbackInterval);
+
+
+    /* Connect to output asyn driver */
     pasynUser = pasynManager->createAsynUser(0, 0);
     pPvt->pfloat64OutputAsynUser = pasynUser;
     status = pasynManager->connectDevice(pasynUser, pPvt->outputName, 
@@ -188,35 +267,24 @@ static long init_record(epidRecord *pepid)
     pPvt->pfloat64Output = (asynFloat64 *)pasynInterface->pinterface;
     pPvt->float64OutputPvt = pasynInterface->drvPvt;
 
-    pPvt->pdrvUser->create(pPvt->drvUserPvt, pPvt->pcallbackDataAsynUser, 
-                           "data", &drvUserName, &drvUserSize);
-    if (!drvUserSize) {
-        errlogPrintf("devEpidFast::init_record %s, asynDrvUser->create "
-                     "failed for data %s\n",
-                     pepid->name, pPvt->pcallbackDataAsynUser->errorMessage);
+    pasynInterface = pasynManager->findInterface(pasynUser,
+                                                 asynDrvUserType, 1);
+    if (!pasynInterface) {
+        errlogPrintf("devEpidFast::init_record %s, cannot find "
+                     "asynDrvUser interface %s\n",
+                     pepid->name, pasynUser->errorMessage);
         goto bad;
     }
-    pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
-                                               pPvt->pcallbackDataAsynUser,
-                                               dataCallback, pPvt, &registrarPvt);
-
-    pPvt->pcallbackIntervalAsynUser = pasynManager->duplicateAsynUser(
-                                           pPvt->pcallbackDataAsynUser, 0, 0);
-    pPvt->pdrvUser->create(pPvt->drvUserPvt, pPvt->pcallbackIntervalAsynUser, 
-                           "SCAN_PERIOD", &drvUserName, &drvUserSize);
-    if (!drvUserSize) {
+    pdrvUser = (asynDrvUser *)pasynInterface->pinterface;
+    drvUserPvt = pasynInterface->drvPvt;
+    status = pdrvUser->create(drvUserPvt, pPvt->pfloat64OutputAsynUser, 
+                              pPvt->outputDataString, &drvUserName, &drvUserSize);
+    if (status) {
         errlogPrintf("devEpidFast::init_record %s, asynDrvUser->create "
-                     "failed for SCAN_PERIOD %s\n",
-                     pepid->name, pPvt->pcallbackIntervalAsynUser->errorMessage);
+                     "failed for output data string %s status=%d, drvUserSize=%d %s\n",
+                     pepid->name, pPvt->outputDataString, status, (int)drvUserSize, pPvt->pfloat64OutputAsynUser->errorMessage);
         goto bad;
     }
-    pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
-                                               pPvt->pcallbackIntervalAsynUser,
-                                               intervalCallback, pPvt, 
-                                               &registrarPvt);
-    status = pPvt->pfloat64Input->read(pPvt->float64InputPvt,
-                                       pPvt->pcallbackIntervalAsynUser,
-                                       &pPvt->callbackInterval);
     update_params(pepid);
     return(0);
 bad:
@@ -341,6 +409,7 @@ static void do_PID(epidFastPvt *pPvt, double readBack)
     double dt;
     double derror;
     double dI;
+    asynStatus status;
 
     dt = pPvt->callbackInterval;
     pPvt->actual = readBack;
@@ -386,9 +455,14 @@ static void do_PID(epidFastPvt *pPvt, double readBack)
 
     /* If feedback is on write output */
     if (pPvt->feedbackOn) {
-        pPvt->pfloat64Output->write(pPvt->float64OutputPvt, 
-                                    pPvt->pfloat64OutputAsynUser,
-                                    pPvt->output);
+        status = pPvt->pfloat64Output->write(pPvt->float64OutputPvt, 
+                    pPvt->pfloat64OutputAsynUser,
+                    pPvt->output);
+        if (status != asynSuccess) {
+            asynPrint(pPvt->pfloat64OutputAsynUser, ASYN_TRACE_ERROR,
+                "devEpidFast, error writing output %s\n",
+                pPvt->pfloat64OutputAsynUser->errorMessage);
+        }
     }
     /* Save state of feedback */
     pPvt->prevFeedbackOn = pPvt->feedbackOn;
