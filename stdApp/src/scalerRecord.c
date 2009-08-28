@@ -100,6 +100,7 @@ Modification Log:
 #include	<dbEvent.h>
 #include	<dbFldTypes.h>
 #include	<errMdef.h>
+#include	<errlog.h>
 #include	<recSup.h>
 #include	<recGbl.h>
 #include	<devSup.h>

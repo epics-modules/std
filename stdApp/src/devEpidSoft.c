@@ -47,6 +47,7 @@
 #include    <dbEvent.h>
 #include    <dbFldTypes.h>
 #include    <errMdef.h>
+#include    <errlog.h>
 #include    <recSup.h>
 #include    <devSup.h>
 #include    <epicsTime.h>
