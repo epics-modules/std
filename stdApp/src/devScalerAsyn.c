@@ -275,19 +275,19 @@ static long scaler_reset(scalerRecord *psr)
 static long scaler_read(scalerRecord *psr, unsigned long *val)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
-    return(scaler_command(psr, pPvt->readCommand, 0, 0, val));
+    return(scaler_command(psr, pPvt->readCommand, 0, 0, (long*)val));
 }
 
 static long scaler_write_preset(scalerRecord *psr, int signal, unsigned long val)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
-    return(scaler_command(psr, pPvt->presetCommand, signal, val, 0));
+    return(scaler_command(psr, pPvt->presetCommand, signal, val, NULL));
 }
 
 static long scaler_arm(scalerRecord *psr, int val)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
-    return(scaler_command(psr, pPvt->armCommand, 0, val, 0));
+    return(scaler_command(psr, pPvt->armCommand, 0, val, NULL));
 }
 
 static long scaler_done(scalerRecord *psr)
@@ -346,7 +346,7 @@ static void asynCallback(asynUser *pasynUser)
     scalerRecord *psr = pPvt->psr;
     scalerAsynMessage *pmsg = pasynUser->userData;
     int status;
-    int nread;
+    size_t nread;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "devScalerAsyn::asynCallback: %s command=%d, val=%d, pval=%p\n",
