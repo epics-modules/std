@@ -71,13 +71,13 @@ epicsExportAddress(int, sseqRecDebug);
  * that this must match the .dbd file.
  */
 struct	linkGroup {
-	double          dly;	/* Delay value (in seconds) */
+	epicsFloat64    dly;	/* Delay value (in seconds) */
 	DBLINK          dol;	/* Where to fetch the input value from */
-	double          dov;	/* If dol is CONSTANT, this is the CONSTANT value */
+	epicsFloat64    dov;	/* If dol is CONSTANT, this is the CONSTANT value */
 	DBLINK          lnk;	/* Where to put the value from dol */
 	char            s[40]; /* string value */
-	short			dol_field_type;
-	short			lnk_field_type;
+	epicsInt16		dol_field_type;
+	epicsInt16		lnk_field_type;
 	epicsEnum16		usePutCallback;
 };
 
