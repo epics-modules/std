@@ -44,6 +44,7 @@ std_SRCS += devScalerAsyn.c
 std_SRCS += drvScalerSoft.c
 std_SRCS += epidRecord.c
 std_SRCS += devEpidSoft.c
+std_SRCS += devEpidSoftCallback.c
 std_SRCS += devEpidFast.c
 std_SRCS += sseqRecord.c
 #std_SRCS += devVXStats.c
