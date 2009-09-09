@@ -25,16 +25,26 @@ recordtype(epid) {
 		promptgroup(GUI_PID)
 		interest(1)
 	}
-        field(INP,DBF_INLINK) {
+	field(INP,DBF_INLINK) {
 		prompt("Controlled Value Loc")
-                promptgroup(GUI_INPUTS)
-                interest(1)
-        }
-        field(OUTL,DBF_OUTLINK) {
-                prompt("Output Location")
-                promptgroup(GUI_PID)
-                interest(1)
-        }
+		promptgroup(GUI_INPUTS)
+		interest(1)
+	}
+	field(OUTL,DBF_OUTLINK) {
+		prompt("Output Location")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
+	field(TRIG,DBF_OUTLINK) {
+		prompt("Readback Trigger")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
+	field(TVAL,DBF_DOUBLE) {
+		prompt("Trigger Value")
+		promptgroup(GUI_PID)
+		interest(1)
+	}
 	field(CVAL,DBF_DOUBLE) {
 		prompt("Controlled Value")
 		special(SPC_NOMOD)
