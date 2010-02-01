@@ -3,7 +3,7 @@
 # Tell EPICS all about the record types, device-support modules, drivers,
 # etc. in this build from stdApp
 dbLoadDatabase("../../dbd/std.dbd")
-registerRecordDeviceDriver(pdbbase)
+std_registerRecordDeviceDriver(pdbbase)
 
 routerInit
 localMessageRouterStart(0)
