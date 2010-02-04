@@ -42,6 +42,7 @@ std_SRCS_vxWorks += aiCvtDouble.c
 std_SRCS += scalerRecord.c
 std_SRCS += devScalerAsyn.c
 std_SRCS += drvScalerSoft.c
+std_SRCS += drvScaler974.cpp
 std_SRCS += epidRecord.c
 std_SRCS += devEpidSoft.c
 std_SRCS += devEpidSoftCallback.c
