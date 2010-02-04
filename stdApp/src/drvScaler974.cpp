@@ -166,7 +166,7 @@ asynStatus Scaler974::writeInt32(asynUser *pasynUser, epicsInt32 value)
         int m,n;
         char newstr[20];
 
-        n=(int)log10(value);
+        n=(int)log10(double(value));
         m=(int)(value/pow(10.0,n));
         
         sprintf(newstr, "SET_COUNT_PRESET %d,%d", m, n);
