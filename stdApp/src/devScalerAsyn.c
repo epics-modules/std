@@ -124,7 +124,7 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     status = pasynManager->connectDevice(pasynUser, port, 0);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "devScalerAsyn::init_record, %s connectDevice failed to %s\n",
+                  "devScalerAsyn::init_record, %s initial connectDevice failed to %s\n",
                   psr->name, port);
         goto bad;
     }
@@ -240,13 +240,14 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
         status = pasynManager->connectDevice(pasynUser, port, i);
         if (status != asynSuccess) {
             asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "devScalerAsyn::init_record, %s connectDevice failed to %s\n",
+                      "devScalerAsyn::init_record, %s connectDevice failed to %s for channel %d\n",
                       psr->name, port);
             goto bad;
         }
     }
 
-    /* Register for callbacks when acquisition completes */
+    /* Register for callbacks when acquisition completes - use channel 0 */
+    pasynUser = pPvt->pasynUser[0];
     pasynUser->reason = pPvt->doneCommand;
     status = pPvt->pasynInt32->registerInterruptUser(pPvt->asynInt32Pvt,
                                                      pasynUser,
@@ -393,6 +394,8 @@ static void interruptCallback(void *drvPvt,  asynUser *pasynUser, epicsInt32 val
     scalerAsynPvt *pPvt = (scalerAsynPvt *)drvPvt;
     scalerRecord *psr = pPvt->psr;
 
+    /* Ignore callbacks when done value is 0 */
+    if (value == 0) return;
     pPvt->done = 1;
     asynPrint(pPvt->pasynUser[0], ASYN_TRACEIO_DEVICE,
         "%s devScalerAsyn::interruptCallback new value=%d\n",
