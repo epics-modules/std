@@ -51,14 +51,13 @@ in the EPID record compared to the PID record include:</p>
 
 <ul>
     <li>Separation of device support from the record. There is
-        Soft Record device support which uses EPICS database
+        "Soft Channel" device support which uses EPICS database
         links, and this is very similar to the PID record.
         However, the EPID record can also be used with other
         device support, for example to communicate with faster
-        feedback software, or with hardware controllers. Device
-        support is provided in the Message Passing Facility for
-        fast feedback (&gt; 1 kHz) using an Acromag IP330 ADC and
-        a Systran DAC128V DAC.</li>
+        feedback software, or with hardware controllers. Asyn
+        device support is provided for fast feedback (&gt; 1 kHz)
+        using an Acromag IP330 ADC and a Systran DAC128V DAC.</li>
     <li>Addition of many fields (OUTL, DRVH, DRVL) to simplify
         construction of databases</li>
     <li>The PID expression is computed as an absolute number,
@@ -76,11 +75,13 @@ in the EPID record compared to the PID record include:</p>
         processes at different times.</li>
     <li>Changed the time units of the KI and KD terms from
         minutes to seconds</li>
+	<li>Addition of fields to better support the use of an
+        asynchronous readback device.
 </ul>
 
 <p>Each time the record is processed the setpoint is read and
 then the <tt>do_pid()</tt> function in device support is called.
-The Soft Record device support reads the controlled value,
+The "Soft Channel" device support reads the controlled value,
 computes the PID expression and, if feedback is enabled, writes
 its output to the output link.</p>
 
@@ -108,7 +109,7 @@ meaning of the SCAN and MDT fields depends upon which device
 support is used:</p>
 
 <ul>
-    <li>Soft Record device support. The SCAN field controls the
+    <li>"Soft Channel" device support. The SCAN field controls the
         rate at which the feedback calculation is actually
         performed. The maximum rate is typically 10 Hz. If the
         amount of time between the last time the record was
@@ -119,17 +120,17 @@ support is used:</p>
 </ul>
 
 <ul>
-    <li>MPF Ip330PID device support. The SCAN field controls the
+    <li>"Fast Epid" device support. The SCAN field controls the
         rate at which new parameters (KP, KI, KD, VAL, etc.) are
         sent to the Ip330PID server, and the rate at which the
         current feedback parameters (P, I, D, CVAL, etc.) are
         read back from the server and displayed. Thus the SCAN
         field controls the rate at which the EPID record takes
         &quot;snapshots&quot; of the feedback processing running
-        on the MPF server. The feedback itself can actually be
+        on the fastPIDServer server. The feedback itself can actually be
         running much faster, i.e. 1 kHz or more. The MDT field is
         ignorred by this device support. The DT field is used to
-        control the time per feedback loop on the MPF server. The
+        control the time per feedback loop on the fastPIDServer server. The
         DT field is also modified by the device support to
         reflect the actual time per feedback loop, since this may
         differ from the requested time.</li>
@@ -171,7 +172,7 @@ Variable Parameters</a></h2>
 is used:</p>
 
 <menu>
-    <li>Soft Record device support. The input link field (INP) is
+    <li>"Soft Channel" device support. The input link field (INP) is
         used to obtain the value of the controlled process
         variable, i.e., the value read into the CVAL field. The
         link must be a database link. If it is not a database
@@ -181,10 +182,10 @@ is used:</p>
 </menu>
 
 <menu>
-    <li>MPF Ip330PID device support. The input link field (INP)
-        is used to specify the location of the MPF Ip330PID
-        server which actually performs the feedback. The Ip330PID
-        server is configured in the vxWorks MPF server startup
+    <li>"Fast Epid" device support. The input link field (INP)
+        is used to specify the location of the "Fast Epid"
+        server which actually performs the feedback. The fastPIDServer
+        server is configured in a startup-script
         file to specify which Ip330 ADC channel is used as the
         input from which the value is read into the CVAL field.
         The link must be a VME link, and <em>cannot</em> be
@@ -226,6 +227,8 @@ is used:</p>
         <td>No</td>
     </tr>
 </table>
+
+If 
 
 <p>&nbsp;</p>
 
@@ -308,7 +311,7 @@ record, FBON (Feedback On) and OUTL (Output Link). The meanings
 of the these fields depends upon what device support is used:</p>
 
 <menu>
-    <li>Soft Record device support. The output link field (OUTL)
+    <li>"Soft Channel" device support. The output link field (OUTL)
         is used to control where the computed output (OVAL) is
         sent. If OUTL is a database link and if FBON=1 then the
         output value (OVAL) is written to this link each time the
@@ -318,9 +321,9 @@ of the these fields depends upon what device support is used:</p>
 </menu>
 
 <menu>
-    <li>MPF Ip330PID device support. The output link field (OUTL)
-        is not used. Rather, the Ip330PID server is configured in
-        the vxWorks MPF server startup file to specify which
+    <li>"Fast Epid" device support. The output link field (OUTL)
+        is not used. Rather, the fastPIDServer server is configured in
+        a vxWorks startup-script file to specify which
         DAC128V DAC channel is used as the output. If FBON=1 then
         the computed output will be written to the DAC channel
         each time the feedback loop executes. The execution of
@@ -413,7 +416,7 @@ See the<a href="#Feedback Tuning"> guide to feedback tuning</a>
 below for more information on setting KP, KI and KD.</p>
 
 <p>The PID device support calculates the other terms of the
-expression. The Soft Record and MPF Ip330PID device support both
+expression. The "Soft Channel" and "Fast Epid" device support both
 calculate these as follows:</p>
 
 <dl>
@@ -468,8 +471,8 @@ calculate these as follows:</p>
     <dt>dT(n)</dt>
     <dd>This is the time difference between n and n-1, between
         current and last samplings. It is stored in the DT field.
-        For the Soft Record device support this field is
-        Read-Only. For the MPF Ip330PID device support this field
+        For the "Soft Channel" device support this field is
+        Read-Only. For the "Fast Epid" device support this field
         can be modified to control the time per feedback loop.</dd>
 </dl>
 
@@ -1055,9 +1058,9 @@ Support Routines</a></h2>
 <p>If STPL is a constant link, initialize VAL with it's value and
 set UDF to false.</p>
 
-<p>Call init_record routine in device support. For Soft Record
-device support this does nothing. For MPF Ip330PID device support
-this establishes the connection to the MPF server.</p>
+<p>Call init_record routine in device support. For "Soft Channel"
+device support this does nothing. For "Fast Epid" device support
+this establishes the connection to the fastPIDServer server.</p>
 
 <h3>process</h3>
 
@@ -1135,8 +1138,8 @@ this establishes the connection to the MPF server.</p>
     <li>If STPL is a database link and SMSL is CLOSED_LOOP then
         VAL is obtained from STPL and UDF is set to false.</li>
     <li>The device support <tt>do_pid</tt> routine is called. If device
-        supports sets PACT=true (which the MPF Ip330PID device support
-        does when it needs to communicate with the MPF server)
+        supports sets PACT=true (which the "Fast Epid" device support
+        does when it needs to communicate with the fastPIDServer server)
         then return immediately.</li>
     <li>Check alarms. This routine checks to see if the new VAL
         causes the alarm status and severity to change. If so
@@ -1169,11 +1172,11 @@ New device support for the
 EPID record could be written, for example, to communicate with
 hardware PID controllers.</p>
 
-<p>There is presently device support for Soft Record (which is
+<p>There is presently device support for "Soft Channel" (which is
 very similar to the record support in the EPICS PID record) and
-for the MPF Ip330PID server.</p>
+for the "Fast Epid" server.</p>
 
-<h3>Soft Record</h3>
+<h3>"Soft Channel"</h3>
 
 <dl>
     <dt>init_record()</dt>
@@ -1197,13 +1200,13 @@ for the MPF Ip330PID server.</p>
         link then OVAL is written to the output link.</li>
 </ol>
 
-<h3>MPF Ip330PID</h3>
+<h3>"Fast Epid"</h3>
 
 <dl>
     <dt>init_record()</dt>
-    <dd>This calls the dev_init routine, which creates the DevMpf
-        object and establishes communication with the MPF
-        Ip330PID server.</dd>
+    <dd>This calls the dev_init routine, which creates the asyn
+        objects and establishes communication with the
+        fastPIDServer server.</dd>
 </dl>
 
 <p>do_pid()</p>
@@ -1211,9 +1214,9 @@ for the MPF Ip330PID server.</p>
 <ol>
     <li>Checks to see if any of the parameters KP, KI, KD, DT,
         DRVH, DRVL, VAL, or FBON have changed and if so sends the
-        new values to the MPF server.</li>
+        new values to the fastPIDServer server.</li>
     <li>Reads the current values of CVAL, ERR, OVAL, P, I, D, and
-        DT from the MPF server.</li>
+        DT from the fastPIDServer server.</li>
 </ol>
 
 <hr>
