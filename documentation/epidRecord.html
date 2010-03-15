@@ -228,7 +228,51 @@ is used:</p>
     </tr>
 </table>
 
-If 
+If "Async Soft Channel" device support is selected, the following two
+fields are used to support an asynchronous readback device.  The
+device support is expected to accomplish this by writing the value
+of the TVAL field to the PV specified by the TRIG link field, using
+dbCaPutLinkCallback().  This is expected to cause the readback device
+to process.  EPICS will send a callback when that processing completes,
+at which time device support will read the readback value just as normal
+"Soft Channel" support would.
+
+<table border="1">
+    <tr>
+        <th>Field</th>
+        <th>Summary</th>
+        <th>Type</th>
+        <th>DCT</th>
+        <th>Initial</th>
+        <th>Access</th>
+        <th>Modify</th>
+        <th>Rec Proc Monitor</th>
+        <th>PP</th>
+    </tr>
+    <tr>
+        <td>TRIG</td>
+        <td>Readback Trigger (an output link)</td>
+        <td>OUTLINK</td>
+        <td>Yes</td>
+        <td>0</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>N/A</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>TVAL</td>
+        <td>Value written to TRIG link</td>
+        <td>DOUBLE</td>
+        <td>Yes</td>
+        <td>0</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>N/A</td>
+        <td>No</td>
+    </tr>
+</table>
+
 
 <p>&nbsp;</p>
 
