@@ -19,6 +19,11 @@
     time interval were hardcoded.  The length of the resulting string
     now is too large for INP in many cases, so put some of it in the DESC
     field, which is ugly.</li>
+	<li>epidRecord.dbd - added fields TRIG and TVAL, which are used by
+	    devEpidSoftCallback.c to support an asynchronous readback device by
+		waiting for completion before getting the readback value.
+	<li>async_pid_control.db, async_pid_control_settings.db, async_pid_control.adl --
+	    new files to support pid control with an asynchronous readback device.
   </ul>
 
   <H2 ALIGN=CENTER>Release 2-7 (Sept 10, 2008)</H2>
