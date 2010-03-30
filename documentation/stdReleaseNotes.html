@@ -12,7 +12,7 @@
 
 
  <h2 align="CENTER">
-    Release 2-8 (Feb. xxx, 2009)</h2>
+    Release 2-8 (Mar. 30, 2010)</h2>
   <ul>
     <li>fast_pid_control.db, devEpidFast.c.  Added new parameters to the
     INP field, because previously the DRV_USER strings for the data and
@@ -24,6 +24,13 @@
 		waiting for completion before getting the readback value.
 	<li>async_pid_control.db, async_pid_control_settings.db, async_pid_control.adl --
 	    new files to support pid control with an asynchronous readback device.
+	<li>sseq_settings.req - Added SCAN
+	<li>drvScaler974 - new file for Ortec 974 scaler
+	<li>devScalerAsyn.c - ignore callback when DONE==0, register callbacks on address 0.
+	<li>sseqRecord.c - fixed for 64-bit arch
+	<li>no longer build shareBase.dbd
+	<li>nameVal.adl, anyRecord.adl - new display files for any record type.
+	<li>deleted some unused .adl files
   </ul>
 
   <H2 ALIGN=CENTER>Release 2-7 (Sept 10, 2008)</H2>
