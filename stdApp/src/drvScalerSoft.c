@@ -45,7 +45,6 @@
 /***************/
 /* Definitions */
 /***************/
-#define MAX_SCALER_COMMANDS 6
 #define MAX_PVNAME_SIZE 40
 
 /**************/
@@ -622,7 +621,7 @@ static void acquireDoneCallbacks(scalerPvt *pPvt)
                     pPvt->driver);
                 pint32Interrupt->callback(pint32Interrupt->userPvt,
                     pint32Interrupt->pasynUser,
-                    0);
+                    1);
             }
             pNode = (interruptNode *)ellNext(&pNode->node);
         }
