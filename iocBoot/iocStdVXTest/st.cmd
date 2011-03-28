@@ -38,6 +38,9 @@ dbLoadRecords("../../../std/stdApp/Db/userStringCalcs10.db", "P=stdTest:")
 # Free-standing user transforms (transform records)
 dbLoadRecords("../../../std/stdApp/Db/userTransforms10.db", "P=stdTest:")
 
+# Free-standing user menu choices (mbbo records)
+#dbLoadRecords("../../../std/stdApp/Db/userMbbos10.db", "P=stdTest:")
+
 # Miscellaneous PV's, such as burtResult
 dbLoadRecords("../../../std/stdApp/Db/misc.db", "P=stdTest:")
 
