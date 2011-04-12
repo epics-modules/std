@@ -173,8 +173,6 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
     pPvt->channelsCommand = pasynUser->reason;
 
     status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, 
-                                        SCALER_READ_COMMAND_STRING, 0, 0);
-    status = pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, 
                                         SCALER_RESET_COMMAND_STRING, 0, 0);
     if(status!=asynSuccess) {
         printf("%s scaler_init_record drvUserCreate SCALER_RESET %s\n",
