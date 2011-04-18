@@ -518,6 +518,8 @@ processCallback(CALLBACK *pCallback)
 	int					status, did_putCallback=0;
 	char				str[40];
 	double				d;
+    /*epicsInt32				n_elements=1; */
+    long				n_elements=1;
 
 
 	dbScanLock((struct dbCommon *)pR);
@@ -549,7 +551,7 @@ processCallback(CALLBACK *pCallback)
 		plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
 
 	switch (plinkGroup->dol_field_type) {
-	case DBF_STRING: case DBF_CHAR: case DBF_ENUM: case DBF_MENU:
+	case DBF_STRING: case DBF_ENUM: case DBF_MENU:
 	case DBF_DEVICE: case DBF_INLINK: case DBF_OUTLINK: case DBF_FWDLINK:
 		status = dbGetLink(&(plinkGroup->dol), DBR_STRING, &(plinkGroup->s),0,0);
 		d = atof(plinkGroup->s);
@@ -558,7 +560,7 @@ processCallback(CALLBACK *pCallback)
 			db_post_events(pR, &plinkGroup->dov, DBE_VALUE);
 		}
 		break;
-	case DBF_UCHAR: case DBF_SHORT: case DBF_USHORT: case DBF_LONG:
+	case DBF_SHORT: case DBF_USHORT: case DBF_LONG:
 	case DBF_ULONG: case DBF_FLOAT: case DBF_DOUBLE:
 		status = dbGetLink(&(plinkGroup->dol), DBR_DOUBLE, &(plinkGroup->dov),0,0);
 		cvtDoubleToString(plinkGroup->dov, str, pR->prec);
@@ -567,20 +569,25 @@ processCallback(CALLBACK *pCallback)
 			db_post_events(pR, &plinkGroup->s, DBE_VALUE);
 		}
 		break;
+	case DBF_CHAR: case DBF_UCHAR:
+		dbGetNelements(&plinkGroup->dol, &n_elements);
+		if (n_elements>40) n_elements=40;
+		status = dbGetLink(&(plinkGroup->dol), plinkGroup->dol_field_type, &(plinkGroup->s),0,&n_elements);
+		break;
+
 	default:
 		break;
 	}
 
 	/* Dump the value to the destination field */
-	if (sseqRecDebug > 10) printf("sseq:processCallback:lnk_field_type=%d (%s)\n",
-			plinkGroup->lnk_field_type, plinkGroup->lnk_field_type>=0 ?
-				pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
-
 	if (plinkGroup->lnk_field_type == DBF_unknown)
 		plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
-
+	if (sseqRecDebug >= 5) {
+		printf("sseqRecord:processCallback: lnk_field_type = %d (%s)\n", plinkGroup->lnk_field_type,
+			plinkGroup->lnk_field_type>=0 ?	pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
+	}
 	switch (plinkGroup->lnk_field_type) {
-	case DBF_STRING: case DBF_CHAR: case DBF_ENUM: case DBF_MENU:
+	case DBF_STRING: case DBF_ENUM: case DBF_MENU:
 	case DBF_DEVICE: case DBF_INLINK: case DBF_OUTLINK: case DBF_FWDLINK:
 		if (plinkGroup->usePutCallback && (plinkGroup->lnk.type == CA_LINK)) {
 			if (sseqRecDebug >= 5)
@@ -594,7 +601,7 @@ processCallback(CALLBACK *pCallback)
 			status = dbPutLink(&(plinkGroup->lnk), DBR_STRING, &(plinkGroup->s),1);
 		}
 		break;
-	case DBF_UCHAR: case DBF_SHORT: case DBF_USHORT: case DBF_LONG:
+	case DBF_SHORT: case DBF_USHORT: case DBF_LONG:
 	case DBF_ULONG: case DBF_FLOAT: case DBF_DOUBLE:
 		if (plinkGroup->usePutCallback && (plinkGroup->lnk.type == CA_LINK)) {
 			if (sseqRecDebug >= 5)
@@ -606,6 +613,32 @@ processCallback(CALLBACK *pCallback)
 			if (sseqRecDebug >= 5)
 				printf("sseqRecord:processCallback: calling dbPutLink\n");
 			status = dbPutLink(&(plinkGroup->lnk), DBR_DOUBLE, &(plinkGroup->dov),1);
+		}
+		break;
+	case DBF_CHAR: case DBF_UCHAR:
+		dbGetNelements(&plinkGroup->lnk, &n_elements);
+		if (n_elements>40) n_elements = 40;
+		if (sseqRecDebug >= 5) printf("sseqRecord:processCallback: n_elements=%ld\n", n_elements); 
+		if (plinkGroup->usePutCallback && (plinkGroup->lnk.type == CA_LINK)) {
+			if (sseqRecDebug >= 5)
+				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback for %s\n",
+					plinkGroup->lnk_field_type==DBF_CHAR?"DBF_CHAR":"DBF_UCHAR");
+			if (n_elements>1) {
+				status = dbCaPutLinkCallback(&(plinkGroup->lnk), plinkGroup->lnk_field_type,
+					&(plinkGroup->s), n_elements, (dbCaCallback) putCallbackCB, (void *)(&(plinkGroup->lnk)));
+			} else {
+				status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_DOUBLE,
+					&(plinkGroup->dov), 1, (dbCaCallback) putCallbackCB, (void *)(&(plinkGroup->lnk)));
+			}
+			did_putCallback = 1;
+		} else {
+			if (sseqRecDebug >= 5)
+				printf("sseqRecord:processCallback: calling dbPutLink\n");
+			if (n_elements>1) {
+				status = dbPutLink(&(plinkGroup->lnk), plinkGroup->lnk_field_type, &(plinkGroup->s),n_elements);
+			} else {
+				status = dbPutLink(&(plinkGroup->lnk), DBR_DOUBLE, &(plinkGroup->dov),1);
+			}
 		}
 		break;
 	default:
