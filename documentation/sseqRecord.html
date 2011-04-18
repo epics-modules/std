@@ -43,7 +43,11 @@ abort the execution of any other record that it started with one of its links, o
 of any CA client that it started by posting a value.  Also, aborting the
 <b>sseq</b> record will not prevent it from executing its forward link.  
 
-
+<P>Beginning with std-module version R3-0, the <i>string field</i> mentioned
+above can be either a PV of type <tt>DBF_STRING</tt>, or an array PV whose
+elements are of type <tt>DBF_CHAR</tt> or <tt>DBF_UCHAR</tt>.  In any case, the
+length that will be read or written by the <b>sseq</b> record is the first 39
+characters, because the sseq record uses EPICS string PVs internally.
 
 
 <h1><a NAME="ScanFields"></a>
@@ -117,11 +121,22 @@ initialized to the constant value. Otherwise, if the Desired Output Link is a
 string, it is assumed to represent a link, a value is fetched from the link each
 time the record is processed. See the <i>EPICS Record Reference Manual</i> for
 information on how to specify database links.  If you want to initialize a string
-value, use <tt>STR<i>n</i></tt>.
+value, use <tt>STR<i>n</i></tt>.  For example, to write a database file that
+initializes the string <tt>STR1</tt> (the string that will be written by
+<tt>LNK1</tt>) to <tt>"abcdefg"</tt>, include the bold line below:
+
+
+<pre>
+	record(sseq,"mySeqRecord") {
+		...
+		<b>field("STR1","abcdef")</b>
+		...
+	}
+</pre>
 
 <p>The values fetched from the Desired Output Links are stored in the
 corresponding Desired Output fields (<tt>DO1-DOA</tt> and <tt>STR1-STRA</tt>).
-These fields can be initialized by a datbase configuration tool, and they can be
+These fields can be initialized by a database configuration tool, and they can be
 changed at run time.  But note that the value of <tt>DO<i>n</i></tt> and
 <tt>STR<i>n</i></tt> will be overwritten if <tt>DOL<i>n</i></tt> is a valid link
 (i.e., if <tt>DOL<i>n</i></tt> contains the name of a PV to which the <b>sseq</b>
