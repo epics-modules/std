@@ -155,7 +155,7 @@ init_record(sseqRecord *pR, int pass)
 	if (pass==0) return(0);
 
 	if (sseqRecDebug > 5) {
-		printf("init_record(%s) entered\n", pR->name);
+		errlogPrintf("init_record(%s) entered\n", pR->name);
 	}
 
 	/* Allocate a callback structure for use in processing */
@@ -174,7 +174,7 @@ init_record(sseqRecord *pR, int pass)
 	/* Get link selection if sell is a constant and nonzero */
 	if (pR->sell.type==CONSTANT) {
 		if (sseqRecDebug > 5) {
-			printf("init_record(%s) SELL is a constant\n", pR->name);
+			errlogPrintf("init_record(%s) SELL is a constant\n", pR->name);
 		}
 		recGblInitConstantLink(&pR->sell,DBF_USHORT,&pR->seln);
 	}
@@ -194,7 +194,7 @@ init_record(sseqRecord *pR, int pass)
 			plinkGroup->dol_field_type = DBF_NOACCESS;
         } else if (!dbNameToAddr(plinkGroup->dol.value.pv_link.pvname, pAddr)) {
 			plinkGroup->dol_field_type = pAddr->field_type;
-			if (sseqRecDebug > 5) printf("sseq:init:dol_field_type=%d (%s)\n",
+			if (sseqRecDebug > 5) errlogPrintf("sseq:init:dol_field_type=%d (%s)\n",
 				plinkGroup->dol_field_type, plinkGroup->dol_field_type>=0 ?
 					pamapdbfType[plinkGroup->dol_field_type].strvalue : "");
 		} else {
@@ -207,7 +207,7 @@ init_record(sseqRecord *pR, int pass)
 			plinkGroup->lnk_field_type = DBF_unknown;
         } else if (!dbNameToAddr(plinkGroup->lnk.value.pv_link.pvname, pAddr)) {
 			plinkGroup->lnk_field_type = pAddr->field_type;
-			if (sseqRecDebug > 5) printf("sseq:init:lnk_field_type=%d (%s)\n",
+			if (sseqRecDebug > 5) errlogPrintf("sseq:init:lnk_field_type=%d (%s)\n",
 				plinkGroup->lnk_field_type, plinkGroup->lnk_field_type>=0 ?
 					pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
 		} else {
@@ -265,7 +265,7 @@ process(sseqRecord *pR)
 	int					tmp;
 
 	if (sseqRecDebug) {
-		printf("sseqRecord: process(%s) pact = %d\n", pR->name, pR->pact);
+		errlogPrintf("sseqRecord: process(%s) pact = %d\n", pR->name, pR->pact);
 	}
 
 	if (pR->pact) {
@@ -313,14 +313,14 @@ process(sseqRecord *pR)
 	plinkGroup = (struct linkGroup *)(&(pR->dly1));
 	for (tmp = 1; lmask; lmask >>= 1, plinkGroup++, tmp++) {
 		if (sseqRecDebug > 10) {
-			printf("sseqRec:process: link %d - lnk.type=%d dol.type=%d\n",
+			errlogPrintf("sseqRec:process: link %d - lnk.type=%d dol.type=%d\n",
 				tmp, plinkGroup->lnk.type, plinkGroup->dol.type);
 		}
 
 		if ((lmask & 1) && ((plinkGroup->lnk.type != CONSTANT) ||
 				(plinkGroup->dol.type != CONSTANT))) {
 			if (sseqRecDebug > 10) {
-				printf("  sseqRec:process: Adding link %d at index %d\n",
+				errlogPrintf("  sseqRec:process: Adding link %d at index %d\n",
 					tmp, pcb->index);
 			}
 			pcb->plinkGroups[pcb->index] = plinkGroup;
@@ -364,7 +364,7 @@ static int processNextLink(sseqRecord *pR)
 		(struct linkGroup *)(pcb->plinkGroups[pcb->index]);
 
 	if (sseqRecDebug > 5) {
-		printf("processNextLink(%s) looking for work to do, index = %d, abort=%d\n",
+		errlogPrintf("processNextLink(%s) looking for work to do, index = %d, abort=%d\n",
 			pR->name, pcb->index, pR->abort);
 	}
 
@@ -406,7 +406,7 @@ asyncFinish(sseqRecord *pR)
 	unsigned short MonitorMask;
 
 	if (sseqRecDebug > 5) {
-		printf("asyncFinish(%s) completing processing\n", pR->name);
+		errlogPrintf("asyncFinish(%s) completing processing\n", pR->name);
 	}
 	pR->udf = FALSE;
  
@@ -418,7 +418,7 @@ asyncFinish(sseqRecord *pR)
 	}
 
 	if (pR->abort) {
-		if (sseqRecDebug > 5) printf("asyncFinish(%s) abort completed.\n", pR->name);
+		if (sseqRecDebug > 5) errlogPrintf("asyncFinish(%s) abort completed.\n", pR->name);
 		pR->abort = 0;
 		db_post_events(pR, &pR->abort, MonitorMask);
 	}
@@ -427,7 +427,7 @@ asyncFinish(sseqRecord *pR)
 	 * Process the forward scan link record.  Note that we have to do this, even if
 	 * we're aborting, because this signals EPICS (putNotify) that we are done.
 	 */
-	if (sseqRecDebug>=2) printf("sseqRecord:asyncFinish: calling recGblFwdLink\n");
+	if (sseqRecDebug>=2) errlogPrintf("sseqRecord:asyncFinish: calling recGblFwdLink\n");
 	recGblFwdLink(pR);
 
 	recGblGetTimeStamp(pR);
@@ -447,7 +447,7 @@ void epicsShareAPI putCallbackCB(void *arg)
 	struct callbackSeq	*pcb = (struct callbackSeq *) (pR->dpvt);
 	struct linkGroup	*plinkGroup;
 
-	if (sseqRecDebug>=2) printf("sseqRecord:putCallbackCB: entry\n");
+	if (sseqRecDebug>=2) errlogPrintf("sseqRecord:putCallbackCB: entry\n");
 
 	dbScanLock((struct dbCommon *)pR);
 
@@ -459,7 +459,7 @@ void epicsShareAPI putCallbackCB(void *arg)
 		 * has elapsed.  Thus, abort is simple.
 		 * Call process to finish up.
 		 */
-		if (sseqRecDebug > 5) printf("putCallbackCB(%s) aborting\n", pR->name);
+		if (sseqRecDebug > 5) errlogPrintf("putCallbackCB(%s) aborting\n", pR->name);
 		(*(struct rset *)(pR->rset)).process(pR);
 		dbScanUnlock((struct dbCommon *)pR);
 		return;
@@ -469,13 +469,13 @@ void epicsShareAPI putCallbackCB(void *arg)
 
 	if (pcb->saveDOV != plinkGroup->dov) {
 		if (sseqRecDebug > 5) {
-			printf("link %d changed from %f to %f\n", pcb->index,
+			errlogPrintf("link %d changed from %f to %f\n", pcb->index,
 				pcb->saveDOV, plinkGroup->dov);
 		}
 		db_post_events(pR, &plinkGroup->dov, DBE_VALUE|DBE_LOG);
 	} else if (strcmp(pcb->saveString, plinkGroup->s)) {
 		if (sseqRecDebug > 5) {
-			printf("link %d changed from '%s' to '%s'\n", pcb->index,
+			errlogPrintf("link %d changed from '%s' to '%s'\n", pcb->index,
 				pcb->saveString, plinkGroup->s);
 		}
 		db_post_events(pR, &plinkGroup->s, DBE_VALUE|DBE_LOG);
@@ -526,7 +526,7 @@ processCallback(CALLBACK *pCallback)
 
 	if (pR->abort) {
 		if (sseqRecDebug >= 5)
-			printf("sseqRecord:processCallback(%s) aborting at field index %d\n", pR->name, pcb->index);
+			errlogPrintf("sseqRecord:processCallback(%s) aborting at field index %d\n", pR->name, pcb->index);
 		/* Finish up. */
 		(*(struct rset *)(pR->rset)).process(pR);
 		dbScanUnlock((struct dbCommon *)pR);
@@ -534,7 +534,7 @@ processCallback(CALLBACK *pCallback)
 	}
 
 	if (sseqRecDebug >= 5) {
-		printf("sseqRecord:processCallback(%s) processing field index %d\n",
+		errlogPrintf("sseqRecord:processCallback(%s) processing field index %d\n",
 			pR->name, pcb->index);
 	}
 
@@ -543,7 +543,7 @@ processCallback(CALLBACK *pCallback)
 	strcpy(pcb->saveString, plinkGroup->s);
 
 	/* get the value */
-	if (sseqRecDebug > 10) printf("sseq:processCallback:dol_field_type=%d (%s)\n",
+	if (sseqRecDebug > 10) errlogPrintf("sseq:processCallback:dol_field_type=%d (%s)\n",
 			plinkGroup->dol_field_type, plinkGroup->dol_field_type>=0 ?
 				pamapdbfType[plinkGroup->dol_field_type].strvalue : "");
 
@@ -583,7 +583,7 @@ processCallback(CALLBACK *pCallback)
 	if (plinkGroup->lnk_field_type == DBF_unknown)
 		plinkGroup->lnk_field_type = dbGetLinkDBFtype(&plinkGroup->lnk);
 	if (sseqRecDebug >= 5) {
-		printf("sseqRecord:processCallback: lnk_field_type = %d (%s)\n", plinkGroup->lnk_field_type,
+		errlogPrintf("sseqRecord:processCallback: lnk_field_type = %d (%s)\n", plinkGroup->lnk_field_type,
 			plinkGroup->lnk_field_type>=0 ?	pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
 	}
 	switch (plinkGroup->lnk_field_type) {
@@ -591,13 +591,13 @@ processCallback(CALLBACK *pCallback)
 	case DBF_DEVICE: case DBF_INLINK: case DBF_OUTLINK: case DBF_FWDLINK:
 		if (plinkGroup->usePutCallback && (plinkGroup->lnk.type == CA_LINK)) {
 			if (sseqRecDebug >= 5)
-				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
+				errlogPrintf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
 			status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_STRING,
 				&(plinkGroup->s), 1, (dbCaCallback) putCallbackCB, (void *)(&(plinkGroup->lnk)));
 			did_putCallback = 1;
 		} else {
 			if (sseqRecDebug >= 5)
-				printf("sseqRecord:processCallback: calling dbPutLink\n");
+				errlogPrintf("sseqRecord:processCallback: calling dbPutLink\n");
 			status = dbPutLink(&(plinkGroup->lnk), DBR_STRING, &(plinkGroup->s),1);
 		}
 		break;
@@ -605,23 +605,23 @@ processCallback(CALLBACK *pCallback)
 	case DBF_ULONG: case DBF_FLOAT: case DBF_DOUBLE:
 		if (plinkGroup->usePutCallback && (plinkGroup->lnk.type == CA_LINK)) {
 			if (sseqRecDebug >= 5)
-				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
+				errlogPrintf("sseqRecord:processCallback: calling dbCaPutLinkCallback\n");
 			status = dbCaPutLinkCallback(&(plinkGroup->lnk), DBR_DOUBLE,
 				&(plinkGroup->dov), 1, (dbCaCallback) putCallbackCB, (void *)(&(plinkGroup->lnk)));
 			did_putCallback = 1;
 		} else {
 			if (sseqRecDebug >= 5)
-				printf("sseqRecord:processCallback: calling dbPutLink\n");
+				errlogPrintf("sseqRecord:processCallback: calling dbPutLink\n");
 			status = dbPutLink(&(plinkGroup->lnk), DBR_DOUBLE, &(plinkGroup->dov),1);
 		}
 		break;
 	case DBF_CHAR: case DBF_UCHAR:
 		dbGetNelements(&plinkGroup->lnk, &n_elements);
 		if (n_elements>40) n_elements = 40;
-		if (sseqRecDebug >= 5) printf("sseqRecord:processCallback: n_elements=%ld\n", n_elements); 
+		if (sseqRecDebug >= 5) errlogPrintf("sseqRecord:processCallback: n_elements=%ld\n", n_elements); 
 		if (plinkGroup->usePutCallback && (plinkGroup->lnk.type == CA_LINK)) {
 			if (sseqRecDebug >= 5)
-				printf("sseqRecord:processCallback: calling dbCaPutLinkCallback for %s\n",
+				errlogPrintf("sseqRecord:processCallback: calling dbCaPutLinkCallback for %s\n",
 					plinkGroup->lnk_field_type==DBF_CHAR?"DBF_CHAR":"DBF_UCHAR");
 			if (n_elements>1) {
 				status = dbCaPutLinkCallback(&(plinkGroup->lnk), plinkGroup->lnk_field_type,
@@ -633,7 +633,7 @@ processCallback(CALLBACK *pCallback)
 			did_putCallback = 1;
 		} else {
 			if (sseqRecDebug >= 5)
-				printf("sseqRecord:processCallback: calling dbPutLink\n");
+				errlogPrintf("sseqRecord:processCallback: calling dbPutLink\n");
 			if (n_elements>1) {
 				status = dbPutLink(&(plinkGroup->lnk), plinkGroup->lnk_field_type, &(plinkGroup->s),n_elements);
 			} else {
@@ -648,13 +648,13 @@ processCallback(CALLBACK *pCallback)
 	if (did_putCallback == 0) {
 		if (pcb->saveDOV != plinkGroup->dov) {
 			if (sseqRecDebug > 10) {
-				printf("link %d changed from %f to %f\n", pcb->index, pcb->saveDOV,
+				errlogPrintf("link %d changed from %f to %f\n", pcb->index, pcb->saveDOV,
 					plinkGroup->dov);
 			}
 			db_post_events(pR, &plinkGroup->dov, DBE_VALUE|DBE_LOG);
 		} else if (strcmp(pcb->saveString, plinkGroup->s)) {
 			if (sseqRecDebug > 10) {
-				printf("link %d changed from '%s' to '%s'\n", pcb->index,
+				errlogPrintf("link %d changed from '%s' to '%s'\n", pcb->index,
 					pcb->saveString, plinkGroup->s);
 			}
 			db_post_events(pR, &plinkGroup->s, DBE_VALUE|DBE_LOG);
@@ -697,7 +697,7 @@ static void checkLinksCallback(CALLBACK *pCallback)
     pdpvt = (struct callbackSeq	*)pR->dpvt;
 
 	if (!interruptAccept) {
-		if (sseqRecDebug >= 10) printf("sseq:checkLinksCB(%s), before interruptAccept\n",
+		if (sseqRecDebug >= 10) errlogPrintf("sseq:checkLinksCB(%s), before interruptAccept\n",
 			pR->name);
 		/* Can't call dbScanLock yet.  Schedule another CALLBACK */
 		pdpvt->pending_checkLinksCB = 1;  /* make sure */
@@ -717,19 +717,19 @@ static void checkLinks(sseqRecord *pR)
 	struct callbackSeq	*pdpvt = (struct callbackSeq *)pR->dpvt;
 	int i;
 
-	if (sseqRecDebug > 10) printf("sseq:checkLinks(%s)\n", pR->name);
+	if (sseqRecDebug > 10) errlogPrintf("sseq:checkLinks(%s)\n", pR->name);
 
 	pdpvt->linkStat = LINKS_ALL_OK;
 	for (i = 0; i < NUM_LINKS; i++, plinkGroup++) {
 		if (sseqRecDebug > 10)
-			printf("sseq:checkLinks(%s): checking link %d\n", pR->name, i);
+			errlogPrintf("sseq:checkLinks(%s): checking link %d\n", pR->name, i);
 		plinkGroup->dol_field_type = DBF_unknown;
 		if (plinkGroup->dol.value.pv_link.pvname &&
 		    plinkGroup->dol.value.pv_link.pvname[0]) {
 			plinkGroup->dol_field_type = dbGetLinkDBFtype(&plinkGroup->dol);
 			if (plinkGroup->dol_field_type < 0) pdpvt->linkStat = LINKS_NOT_OK;
 			if (sseqRecDebug > 10) {
-				printf("sseq:checkLinks:dol_field_type=%d (%s), linked to %s\n",
+				errlogPrintf("sseq:checkLinks:dol_field_type=%d (%s), linked to %s\n",
 					plinkGroup->dol_field_type,
 					plinkGroup->dol_field_type>=0 ?
 						pamapdbfType[plinkGroup->dol_field_type].strvalue : "???",
@@ -744,7 +744,7 @@ static void checkLinks(sseqRecord *pR)
 			if (plinkGroup->usePutCallback && (plinkGroup->lnk.type != CA_LINK))
 				pdpvt->linkStat = LINKS_NOT_OK;
 			if (sseqRecDebug > 10) {
-				printf("sseq:checkLinks:lnk_field_type=%d (%s), linked to %s\n",
+				errlogPrintf("sseq:checkLinks:lnk_field_type=%d (%s), linked to %s\n",
 					plinkGroup->lnk_field_type,
 					plinkGroup->lnk_field_type>=0 ?
 						pamapdbfType[plinkGroup->lnk_field_type].strvalue : "???",
@@ -756,16 +756,16 @@ static void checkLinks(sseqRecord *pR)
 		if (!pdpvt->pending_checkLinksCB) {
 			/* Schedule another callback */
 			if (sseqRecDebug > 10)
-				printf("sseq:checkLinks(%s): scheduling another callback\n", pR->name);
+				errlogPrintf("sseq:checkLinks(%s): scheduling another callback\n", pR->name);
 			pdpvt->pending_checkLinksCB = 1;
 			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 		} else {
 			/* We need another callback, but one has already been scheduled */
 			if (sseqRecDebug > 10)
-				printf("sseq:checkLinks(%s): callback already pending\n", pR->name);
+				errlogPrintf("sseq:checkLinks(%s): callback already pending\n", pR->name);
 		}
 	} else {
-		if (sseqRecDebug > 10) printf("sseq:checkLinks(%s): links ok\n", pR->name);
+		if (sseqRecDebug > 10) errlogPrintf("sseq:checkLinks(%s): links ok\n", pR->name);
 	}
 }
 
@@ -780,7 +780,7 @@ static long special(struct dbAddr *paddr, int after)
 	char				str[40];
 	double				d;
 
-	if (sseqRecDebug > 5) printf("sseq:special(%s)\n", pR->name);
+	if (sseqRecDebug > 5) errlogPrintf("sseq:special(%s)\n", pR->name);
 	if (!after) return(0);
 	switch (fieldIndex) {
 	case(sseqRecordDOL1):
@@ -806,7 +806,7 @@ static long special(struct dbAddr *paddr, int after)
 			pdpvt->pending_checkLinksCB = 1;
 			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 		}
-		if (sseqRecDebug > 5) printf("sseq:special:dol_field_type=%d (%s)\n",
+		if (sseqRecDebug > 5) errlogPrintf("sseq:special:dol_field_type=%d (%s)\n",
 			plinkGroup->dol_field_type, plinkGroup->dol_field_type>=0 ?
 				pamapdbfType[plinkGroup->dol_field_type].strvalue : "");
 		return(0);
@@ -826,8 +826,8 @@ static long special(struct dbAddr *paddr, int after)
 		plinkGroup = (struct linkGroup *)&pR->dly1;
 		plinkGroup += lnkIndex;
 		if (sseqRecDebug > 5) {
-			printf("sseq:special:lnkIndex=%d\n", lnkIndex);
-			printf("sseq:special: &lnk1=%p, &plinkGroup->lnk=%p\n",
+			errlogPrintf("sseq:special:lnkIndex=%d\n", lnkIndex);
+			errlogPrintf("sseq:special: &lnk1=%p, &plinkGroup->lnk=%p\n",
 				&pR->lnk1, &plinkGroup->lnk);
 		}
 		plinkGroup->lnk_field_type = DBF_unknown;
@@ -840,7 +840,7 @@ static long special(struct dbAddr *paddr, int after)
 			pdpvt->pending_checkLinksCB = 1;
 			callbackRequestDelayed(&pdpvt->checkLinksCB, 0.5);
 		}
-		if (sseqRecDebug > 5) printf("sseq:special:lnk_field_type=%d (%s)\n",
+		if (sseqRecDebug > 5) errlogPrintf("sseq:special:lnk_field_type=%d (%s)\n",
 			plinkGroup->lnk_field_type, plinkGroup->lnk_field_type>=0 ?
 				pamapdbfType[plinkGroup->lnk_field_type].strvalue : "");
 		return(0);
@@ -911,11 +911,11 @@ static long special(struct dbAddr *paddr, int after)
 		 * If there is an outstanding dbCaPutLinkCallback, we'd like to cancel it.
 		 */
 		if (sseqRecDebug>=2)
-			printf("sseqRecord:special: abort\n");
+			errlogPrintf("sseqRecord:special: abort\n");
 
 		if (!pR->busy) {
 			pR->abort = 0;
-			printf("sseqRecord:special: no activity to abort\n");
+			errlogPrintf("sseqRecord:special: no activity to abort\n");
 			db_post_events(pR, &pR->busy, DBE_VALUE);
 		}
 		plinkGroup = pdpvt->plinkGroups[pdpvt->index];
@@ -923,19 +923,19 @@ static long special(struct dbAddr *paddr, int after)
 			/* There is a current link group */
 			CALLBACK *pcallback = &(pdpvt->callback);
 			epicsTimerId timer = (epicsTimerId)(pcallback->timer);
-			if (sseqRecDebug>=2) printf("sseqRecord:special: timer=%p\n", timer);
+			if (sseqRecDebug>=2) errlogPrintf("sseqRecord:special: timer=%p\n", timer);
 			if (timer) {
 				double expire = epicsTimerGetExpireDelay(timer);
 				if ((sseqRecDebug>=2) && (expire > 0.) && (expire < DBL_MAX))
-					printf("sseqRecord:special: expire=%f\n", expire);
+					errlogPrintf("sseqRecord:special: expire=%f\n", expire);
 				if ((expire > 0.1) && (expire < DBL_MAX)) {
-					if (sseqRecDebug>=2) printf("sseqRecord:special: calling epicsTimerCancel\n");
+					if (sseqRecDebug>=2) errlogPrintf("sseqRecord:special: calling epicsTimerCancel\n");
 					epicsTimerCancel(timer);
 					/* We should not get the timer's callback, so we have to
 					 * complete the abort from here.
 					 */
 					if (sseqRecDebug>=2)
-						printf("sseqRecord:special: calling callbackRequest() to abort\n");
+						errlogPrintf("sseqRecord:special: calling callbackRequest() to abort\n");
 					callbackRequest(&pdpvt->callback);
 				}
 			}
