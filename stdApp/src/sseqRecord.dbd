@@ -6,7 +6,24 @@ menu(sseqSELM) {
 menu(sseqWAIT) {
 	choice(sseqWAIT_NoWait,"NoWait")
 	choice(sseqWAIT_Wait,"Wait")
+	choice(sseqWAIT_Wait1,"After1")
+	choice(sseqWAIT_Wait2,"After2")
+	choice(sseqWAIT_Wait3,"After3")
+	choice(sseqWAIT_Wait4,"After4")
+	choice(sseqWAIT_Wait5,"After5")
+	choice(sseqWAIT_Wait6,"After6")
+	choice(sseqWAIT_Wait7,"After7")
+	choice(sseqWAIT_Wait8,"After8")
+	choice(sseqWAIT_Wait9,"After9")
+	choice(sseqWAIT_Wait10,"AfterA")
 }
+menu(sseqLNKV) {
+	choice(sseqLNKV_EXT_NC,"Ext PV NC")
+	choice(sseqLNKV_EXT,"Ext PV OK")
+	choice(sseqLNKV_LOC,"Local PV")
+	choice(sseqLNKV_CON,"Constant")
+}
+
 recordtype(sseq) {
 	include "dbCommon.dbd" 
 	field(VAL,DBF_LONG) {
@@ -36,7 +53,7 @@ recordtype(sseq) {
 		interest(1)
 	}
 # The next 70 fields are used in sseqRecord.c as a 10-element array of
-# 7-field long structures ("struct linkGroup").
+# 10-field long structures ("struct linkGroup").
 	field(DLY1,DBF_DOUBLE) {
 		prompt("Delay 1")
 		promptgroup(GUI_SEQ1)
@@ -84,6 +101,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG1,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX1,DBF_SHORT) {
+		interest(2)
+		initial(0)
+		special(SPC_NOMOD)
+	}
+	field(DOL1V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK1V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLY2,DBF_DOUBLE) {
 		prompt("Delay 2")
 		promptgroup(GUI_SEQ1)
@@ -131,6 +172,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG2,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX2,DBF_SHORT) {
+		interest(2)
+		initial(1)
+		special(SPC_NOMOD)
+	}
+	field(DOL2V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK2V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLY3,DBF_DOUBLE) {
 		prompt("Delay 3")
 		promptgroup(GUI_SEQ1)
@@ -178,6 +243,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG3,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX3,DBF_SHORT) {
+		interest(2)
+		initial(2)
+		special(SPC_NOMOD)
+	}
+	field(DOL3V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK3V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLY4,DBF_DOUBLE) {
 		prompt("Delay 4")
 		promptgroup(GUI_SEQ2)
@@ -225,6 +314,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG4,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX4,DBF_SHORT) {
+		interest(2)
+		initial(3)
+		special(SPC_NOMOD)
+	}
+	field(DOL4V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK4V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLY5,DBF_DOUBLE) {
 		prompt("Delay 5")
 		promptgroup(GUI_SEQ2)
@@ -272,6 +385,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG5,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX5,DBF_SHORT) {
+		interest(2)
+		initial(4)
+		special(SPC_NOMOD)
+	}
+	field(DOL5V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK5V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLY6,DBF_DOUBLE) {
 		prompt("Delay 6")
 		promptgroup(GUI_SEQ2)
@@ -319,6 +456,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG6,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX6,DBF_SHORT) {
+		interest(2)
+		initial(5)
+		special(SPC_NOMOD)
+	}
+	field(DOL6V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK6V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLY7,DBF_DOUBLE) {
 		prompt("Delay 7")
 		promptgroup(GUI_SEQ3)
@@ -366,6 +527,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG7,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX7,DBF_SHORT) {
+		interest(2)
+		initial(6)
+		special(SPC_NOMOD)
+	}
+	field(DOL7V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK7V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLY8,DBF_DOUBLE) {
 		prompt("Delay 8")
 		promptgroup(GUI_SEQ3)
@@ -413,6 +598,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG8,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX8,DBF_SHORT) {
+		interest(2)
+		initial(7)
+		special(SPC_NOMOD)
+	}
+	field(DOL8V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK8V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLY9,DBF_DOUBLE) {
 		prompt("Delay 9")
 		promptgroup(GUI_SEQ3)
@@ -460,6 +669,30 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTG9,DBF_SHORT) {
+		interest(1)
+		special(SPC_NOMOD)
+	}
+	field(IX9,DBF_SHORT) {
+		interest(2)
+		initial(8)
+		special(SPC_NOMOD)
+	}
+	field(DOL9V,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNK9V,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(DLYA,DBF_DOUBLE) {
 		prompt("Delay 10")
 		promptgroup(GUI_SEQ3)
@@ -507,8 +740,35 @@ recordtype(sseq) {
 		interest(1)
 		menu(sseqWAIT)
 	}
+	field(WTGA,DBF_SHORT) {
+		interest(1)
+	}
+	field(IXA,DBF_SHORT) {
+		interest(2)
+		initial(9)
+	}
+	field(DOLAV,DBF_MENU) {
+		prompt("DOL LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+	field(LNKAV,DBF_MENU) {
+		prompt("LNK LINK Status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(sseqLNKV)
+		initial("1")
+	}
+
 	field(ABORT,DBF_SHORT) {
 		prompt("Abort sequence")
+		interest(1)
+		special(SPC_MOD)
+	}
+	field(ABORTING,DBF_SHORT) {
+		prompt("Aborting")
 		interest(1)
 		special(SPC_MOD)
 	}
