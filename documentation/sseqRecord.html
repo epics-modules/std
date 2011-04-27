@@ -27,28 +27,40 @@ The <b>sseq</b> (string sequence) record</h1>
 
 <hr>The <b>sseq</b> (String Sequence) record is derived from the <b>seq</b>
 (Sequence) record, and has all of its capabilities. In addition, the <b>sseq</b>
-record can link from either string or numeric fields to either string or numeric
-fields, it can wait for processing that any of its output links triggers to
-complete, and its execution can be aborted. The record can execute a sequence of
-up to ten sets of <i>delay/get-value/put-value/wait-for-completion</i>
-operations.  All steps and sequences are optional; with default field values, the
-record does nothing at all.  Like the <b>seq</b> record, the <b>sseq</b> record
-implements several selection algorithms that allow a database programmer, or
-run-time user, to specify which sets of <i>delay/get/put/wait</i> to execute. The
-record has no associated device support.
+record can read from either string or numeric fields, and write to either string
+or numeric fields; it can wait for processing that any of its output links
+triggers to complete; and its execution can be aborted. The record can execute a
+sequence of up to ten sets of
+<i>delay/get-value/put-value/wait-for-completion</i> operations.  All steps and
+sequences are optional; with default field values, the record does nothing at
+all.  Like the <b>seq</b> record, the <b>sseq</b> record implements several
+selection algorithms that allow a database programmer, or run-time user, to
+specify which sets of <i>delay/get/put/wait</i> to execute. The record has no
+associated device support.
 
 <P>The <b>sseq</b> record's execution can be aborted by the user.  When this
-happens, the record itself will stop causing things to happen, but it cannot
-abort the execution of any other record that it started with one of its links, or
-of any CA client that it started by posting a value.  Also, aborting the
-<b>sseq</b> record will not prevent it from executing its forward link.  
+happens, the record will immediately stop causing other records to process, but
+it cannot abort any execution it already started with one of its links.  Also,
+aborting the <b>sseq</b> record will not prevent it from executing its forward
+link.  
 
 <P>Beginning with std-module version R3-0, the <i>string field</i> mentioned
 above can be either a PV of type <tt>DBF_STRING</tt>, or an array PV whose
 elements are of type <tt>DBF_CHAR</tt> or <tt>DBF_UCHAR</tt>.  In any case, the
-length that will be read or written by the <b>sseq</b> record is the first 39
-characters, because the sseq record uses EPICS string PVs internally.
+length that will be read or written by the <b>sseq</b> record is limited to the
+first 39 characters, because the sseq record uses EPICS string PVs internally.
 
+<P>Beginning with std-module version R3-0, the <b>sseq</b> record posts the
+states of its input and output links (but not its forward link), and posts
+PVs that indicate which output links are waiting for callbacks.
+
+<P>When writing to a PV of type <tt>DBF_MENU</tt> or <tt>DBF_ENUM</tt>, the
+<b>sseq</b> record <i>always</i> writes its string value.  (Examples of such PVs
+are any record's <tt>SCAN</tt> field, and the <tt>VAL</tt> field of a <b>bo</b>
+or <b>mbbo</b> record.)  This is awkward, because it's common practice to write
+numeric values to such fields, but doing so with the <b>sseq</b> record will not
+have the expected result.  Worse, if there are no strings defined for such a PV,
+then the <b>sseq</b> record simply cannot write to that PV.
 
 <h1><a NAME="ScanFields"></a>
 2. Scan/Control Fields</h1>
@@ -90,15 +102,24 @@ the field, <tt>ABORT</tt>:
 </table>
 
 <P>The user, or another EPICS record, can cause a running <b>sseq</b> record to
-stop executing links by writing '1' to the record's <tt>ABORT</tt> field.  (If
-this is done via an EPICS link, it should be a <tt>CA</tt> link.  Otherwise,
-EPICS may wait until the abort has completed, and then process the record again,
-because the link told it to process a record that was already processing.) The
+stop executing links by writing '1' to the record's <tt>ABORT</tt> field.  The
 <tt>ABORT</tt> field will remain '1' until the record has finished aborting, at
 which time the field will be reset to '0'.  Only the execution of the record
 itself will stop when it is aborted.  Any processing that the record has already
-started will be unaffected by the abort, and the forward link will be executed in
-any case.
+started (via its links) will be unaffected by the abort, and the forward link
+will be executed in any case.
+
+<P>The first write of '1' to the abort field waits for outstanding callbacks to
+arrive before returning the record to the idle state.  This is the preferred way
+to abort an executing sequence.  However, it may be that a callback the record is
+waiting for will never arrive.  In this case, a more thorough abort is required,
+to put the record back into an executable state.  Therefore, if a second write of
+'1' to the abort field occurs while the record is waiting for callbacks, the
+record will abandon outstanding callbacks, and return immediately to the idle
+state. However, any abandoned callbacks remain outstanding, and can arrive at any
+time. If one comes in while the record is idle, it will be ignored, but if it
+comes in while the record is executing a fresh sequence, it may be treated as the
+result of that fresh sequence.
 
 <blockquote>It has become common practice for EPICS developers to treat a
 sequence record's forward link as an extra <tt>LNK<i>n</i></tt> field, and to
@@ -106,11 +127,17 @@ chain a series of sequence records together using forward links.  These practice
 are not recommended for use with the <b>sseq</b> record, because the forward link
 is not subject to <tt>ABORT</tt>; it is <i>always</i> executed. </blockquote>
 
+<blockquote>For previous versions of the record (earlier than std-module version
+R3-0), users were cautioned not to write to the <tt>ABORT</tt> the record via a
+<tt>PP</tt> link, because this could cause EPICS to reprocess the record after
+the abort had succeeded.  The record now defends itself against this possibility,
+by clearing its <tt>RPRO</tt> field as the last step of an abort. </blockquote> 
+
 <p><a NAME="DesiredOutput"></a>
 <h1>
 3. Desired Output Fields</h1>
 
-<hr>These fields hold the values the record is to write to other records, or
+<hr>These link fields hold the values the record is to write to other records, or
 determine from where those values are to be read.
 
 <p>The sequence record can fetch up to 10 values from 10 locations. The user
@@ -164,7 +191,7 @@ links successfully retrieve values.
 
 <tr>
 <td>DOL1...DOLA</td>
-<td>Desired Output Links 1-10</td>
+<td>Desired Output Link</td>
 <td>INLINK</td>
 <td>Yes</td>
 <td>0</td>
@@ -175,8 +202,20 @@ links successfully retrieve values.
 </tr>
 
 <tr>
+<td>DOL1V...DOLAV</td>
+<td>Desired Output Link Valid</td>
+<td>MENU ("Ext PV NC", "Ext PV OK", "Local PV", "Constant")</td>
+<td>No</td>
+<td>0</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+
+<tr>
 <td>DO1...D0A</td>
-<td>Desired Output Values 1-10</td>
+<td>Desired Output Value</td>
 <td>DOUBLE</td>
 <td>No</td>
 <td>0</td>
@@ -188,7 +227,7 @@ links successfully retrieve values.
 
 <tr>
 <td>STR1...STRA</td>
-<td>Desired Output Strings 1-10</td>
+<td>Desired Output String</td>
 <td>STRING</td>
 <td>No</td>
 <td>0</td>
@@ -208,19 +247,19 @@ links successfully retrieve values.
 (<tt>DO<i>n</i></tt> or <tt>STR<i>n</i></tt>) are written to the corresponding
 output links (<tt>LNK<i>n</i></tt>). These output links should either be blank
 (in which case no writing will occur), or contain the name of an EPICS PV; they
-cannot be device addresses. There are ten output links. Only those that contain
+may not be device addresses. There are ten output links. Only those that contain
 valid PV names are used.  If a link field contains a PV name to which a CA
 connection cannot be made, the rest of the record currently continues to operate
 as though the unconnected link field were blank.  (This is probably not a good
 practice, and it is not guaranteed to persist as the record is improved.)
 
-<P>EPICS links can cause processing of the linked-to (i.e., target) record to
-occur.  Whether or not processing actually does occur depends on both the
-specification of the link, and the properties of the target record.  This is well
-documented in the <i>EPICS Application Developer's Guide</i>, but since some
-details of link behavior are essential prerequisites for an understanding of the
-<b>sseq</b> record's <tt>WAIT<i>n</i></tt> fields, the (EPICS 3.14) behavior of
-the output links, <tt>LNK<i>n</i></tt>, is summarized here:
+<P>EPICS links can cause processing of the linked-to (i.e., target)
+record to occur.  Whether or not processing actually does occur depends on both
+the specification of the link, and the properties of the target record.  This is
+well documented in the <i>EPICS Application Developer's Guide</i>, but since
+some details of link behavior are essential prerequisites for an understanding
+of the <b>sseq</b> record's <tt>WAIT<i>n</i></tt> fields, the (EPICS 3.14)
+behavior of the output links, <tt>LNK<i>n</i></tt>, is summarized here:
 
 <P> There are three possibilities:
 
@@ -248,15 +287,16 @@ will also cause the record to process.
 
 </dl>
 
-<P>The <b>sseq</b> record is permitted to demand a completion callback from EPICS
-only if the <tt>LNK</tt> field it's processing has the attribute <tt>CA</tt>.  A
-<tt>PP</tt> link is not permitted to make this demand.  If <tt>LNK<i>n</i></tt>
-does have the <tt>CA</tt> attribute, and <tt>WAIT<i>n</i></tt> has the value
-<tt>Wait</tt>, then the <b>sseq</b> record will demand a completion callback.  In
-this case, it will wait after firing <tt>LNK<i>n</i></tt> for the callback,
-before moving on to the next group of <tt>DLY</tt>/<tt>DOL</tt>/<tt>LNK</tt>
-fields.  If <tt>LNK<i>n</i></tt> has any other attribute, <tt>WAIT<i>n</i></tt>
-is irrelevant and its value will be ignored.
+<P>The <b>sseq</b> record is permitted to demand a completion callback from
+EPICS only if the output-link field it's processing has the attribute
+<tt>CA</tt>.  A <tt>PP</tt> link is not permitted to make this demand.  If
+<tt>LNK<i>n</i></tt> does have the <tt>CA</tt> attribute, and
+<tt>WAIT<i>n</i></tt> has the value <tt>Wait</tt>, then the <b>sseq</b> record
+will demand a completion callback.  In this case, it will wait after firing
+<tt>LNK<i>n</i></tt> for the callback, before moving on to the next group of
+<tt>DLY</tt>/<tt>DOL</tt>/<tt>LNK</tt> fields.  If <tt>LNK<i>n</i></tt> has any
+attribute other than 'CA', <tt>WAIT<i>n</i></tt> is irrelevant and its value
+will be ignored.
 
 <P>If <tt>LNK<i>n</i></tt> has the attribute <tt>CA</tt>, and
 <tt>WAIT<i>n</i></tt> has the value <tt>Wait</tt>, but
@@ -295,7 +335,7 @@ module's documentation directory.)
 
 <tr>
 <td>LNK1...LNKA</td>
-<td>Output links 1-10</td>
+<td>Output link</td>
 <td>OUTLINK</td>
 <td>Yes</td>
 <td>blank</td>
@@ -306,9 +346,21 @@ module's documentation directory.)
 </tr>
 
 <tr>
+<td>LNK1V...LNKAV</td>
+<td>Output Link Valid</td>
+<td>MENU ("Ext PV NC", "Ext PV OK", "Local PV", "Constant")</td>
+<td>No</td>
+<td>0</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+
+<tr>
 <td>WAIT1...WAITA</td>
-<td>Waits 1-10</td>
-<td>MENU ("NoWait"/"Wait")</td>
+<td>Wait Command</td>
+<td>MENU ("NoWait", "Wait", "After1", ..., "After10")</td>
 <td>Yes</td>
 <td>"NoWait"</td>
 <td>Yes</td>
@@ -317,11 +369,46 @@ module's documentation directory.)
 <td>No</td>
 
 <tr><td colspan=9>These fields determine whether the <b>sseq</b> record waits
-for completion of any processing started by a LNK field before processing the
-next set of <i>DLY/DOL/LNK</i> fields. If <tt>WAIT<i>n</i></tt> has the value
-"Wait", then the record will attempt to execute <tt>LNK<i>n</i></tt> in such a
-way that it will be able to wait for all processing started by the link to
-finish. </tr>
+for completion of processing started by an output link, and at what point in the
+sequence the record waits.  If <tt>WAIT<i>n</i></tt> has any value other than
+"NoWait", the record will wait.  To accomplish this, the record will attempt to
+execute <tt>LNK<i>n</i></tt> in such a way that the record will be notified when
+all processing started by the link has finished.  This attempt can succeed only
+if the link has the attribute "CA".
+
+<P>If <tt>WAIT<i>n</i></tt> has the value "Wait", the record will wait for
+completion before going on to the next action.
+
+<P>If <tt>WAIT<i>n</i></tt> has the value "After<i>i</i>, where <i>i</i> is in
+[1,10], then the record will process actions up to and including action <i>i</i>
+before waiting for completion.
+
+<P>Thus, for example, if you want to execute links 1 and 2 in quick succession,
+and then wait for completion of processing started by both links, before moving
+on to link 3, you would set <tt>WAIT1</tt> to "After2", and set <tt>WAIT2</tt>
+to either "Wait" or "After2".  (For link <i>n</i>, "Wait" means the same thing
+as "After<i>n</i>").
+
+<P>The sseq record cannot go back in time.  If you specify "After2" for link 3,
+the record will behave as though you had specified "Wait" or (equivalently) 
+"After3".
+
+</tr>
+
+<tr>
+<td>WTG1...WTGA</td>
+<td>Waiting</td>
+<td>SHORT</td>
+<td>No</td>
+<td>0</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+
+<tr><td colspan=9>These fields display the waiting states of their respective
+links.  While the record is waiting for completion of processing started by a
+link, this field will have the value 1. </tr>
 
 </table>
 
