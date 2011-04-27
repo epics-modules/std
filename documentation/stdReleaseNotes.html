@@ -14,9 +14,23 @@
  <h2 align="CENTER">
     Release 3-0 (May 18, 2011)</h2>
   <ul>
+
     <li>The sseq record can now treat array PVs whose elements are of type DBF_CHAR
 		or DBF_UCHAR, as strings.  Only the first 39 characters are handled, because
-		the sseq record uses PVs of type DBF_STRING internally. 
+		the sseq record uses PVs of type DBF_STRING internally.
+
+	<li>Previously, sseq record links could wait or not wait for completion,
+		before going on to the next action.  Now links can wait for
+		completion after a specified action.  For example, you can execute
+		the first two actions without waiting in between, and then wait for both
+		to complete before processing the third action.
+
+	<li>The sseq record now displays the states of its DOL and LNK links.
+	
+	<li>Previously the sseq record did not defend itself against the possibility that
+	    it would be executed by channel access and aborted by a PV link, which would
+		cause the record to be executed again, immediately after the abort succeeded.
+
   </ul>
 
  <h2 align="CENTER">
