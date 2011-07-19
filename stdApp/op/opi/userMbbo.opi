@@ -1,0 +1,1434 @@
+<display typeId="org.csstudio.opibuilder.Display" version="1.0">
+  <auto_zoom_to_fit_all>false</auto_zoom_to_fit_all>
+  <macros>
+    <include_parent_macros>true</include_parent_macros>
+  </macros>
+  <scripts />
+  <show_ruler>true</show_ruler>
+  <height>170</height>
+  <name>userMbbo</name>
+  <snap_to_geometry>false</snap_to_geometry>
+  <show_grid>false</show_grid>
+  <background_color>
+    <color name="Gray_3" />
+  </background_color>
+  <foreground_color>
+    <color name="Gray_14" />
+  </foreground_color>
+  <widget_type>Display</widget_type>
+  <show_close_button>true</show_close_button>
+  <width>400</width>
+  <rules />
+  <show_edit_range>true</show_edit_range>
+  <grid_space>5</grid_space>
+  <actions hook="false" />
+  <y>109</y>
+  <x>104</x>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <fill_level>100.0</fill_level>
+    <line_color>
+      <color red="128" green="0" blue="255" />
+    </line_color>
+    <scripts />
+    <height>26</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Rectangle</name>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color red="0" green="0" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_1" />
+    </foreground_color>
+    <widget_type>Rectangle</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>400</width>
+    <border_style>0</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <line_width>0</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>0</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>0</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <fill_level>100.0</fill_level>
+    <line_color>
+      <color red="128" green="0" blue="255" />
+    </line_color>
+    <scripts />
+    <height>44</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Rectangle</name>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color red="0" green="0" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_3" />
+    </foreground_color>
+    <widget_type>Rectangle</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>17</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0!=0">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)$(C).DOLV</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <line_width>0</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>216</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>160</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <fill_level>100.0</fill_level>
+    <line_color>
+      <color red="128" green="0" blue="255" />
+    </line_color>
+    <scripts />
+    <height>20</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Rectangle</name>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color red="0" green="0" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="MEDM_COLOR_61" />
+    </foreground_color>
+    <widget_type>Rectangle</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>20</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="!">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(!)">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)$(C)</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <line_width>0</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>67</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>300</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <fill_level>100.0</fill_level>
+    <line_color>
+      <color red="128" green="0" blue="255" />
+    </line_color>
+    <scripts />
+    <height>20</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Rectangle</name>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color red="0" green="0" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="MEDM_COLOR_61" />
+    </foreground_color>
+    <widget_type>Rectangle</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>20</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0-1)">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(!(pv0-1))">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)$(C)</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <line_width>0</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>92</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>300</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <fill_level>100.0</fill_level>
+    <line_color>
+      <color red="128" green="0" blue="255" />
+    </line_color>
+    <scripts />
+    <height>20</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Rectangle</name>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color red="0" green="0" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="MEDM_COLOR_61" />
+    </foreground_color>
+    <widget_type>Rectangle</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>20</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0-2)">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(!(pv0-2))">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)$(C)</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <line_width>0</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>117</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>300</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <fill_level>100.0</fill_level>
+    <line_color>
+      <color red="128" green="0" blue="255" />
+    </line_color>
+    <scripts />
+    <height>20</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Rectangle</name>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color red="0" green="0" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="MEDM_COLOR_61" />
+    </foreground_color>
+    <widget_type>Rectangle</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>20</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0-3)">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(!(pv0-3))">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)$(C)</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <line_width>0</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>142</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>300</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.polygon" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <fill_level>100.0</fill_level>
+    <line_color>
+      <color red="128" green="0" blue="255" />
+    </line_color>
+    <rotation_angle>0.0</rotation_angle>
+    <scripts />
+    <height>11</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Polygon</name>
+    <points>
+      <point x="169" y="226" />
+      <point x="169" y="216" />
+      <point x="159" y="220" />
+      <point x="159" y="220" />
+      <point x="169" y="226" />
+    </points>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color red="0" green="0" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="MEDM_COLOR_49" />
+    </foreground_color>
+    <widget_type>Polygon</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>11</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0!=0">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)$(C).DOPT</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <line_width>0</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>216</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>159</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.polyline" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <fill_arrow>true</fill_arrow>
+    <arrow_length>20</arrow_length>
+    <visible>true</visible>
+    <fill_level>0.0</fill_level>
+    <rotation_angle>0.0</rotation_angle>
+    <scripts />
+    <arrows>0</arrows>
+    <height>1</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Polyline</name>
+    <points>
+      <point x="172" y="221" />
+      <point x="161" y="221" />
+    </points>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color name="MEDM_COLOR_49" />
+    </background_color>
+    <foreground_color>
+      <color red="255" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Polyline</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>12</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0!=0">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)$(C).DOPT</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <line_width>2</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>221</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>161</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <actions_from_pv>true</actions_from_pv>
+    <scripts />
+    <height>16</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Menu Button</name>
+    <transparent>false</transparent>
+    <pv_name>$(P)$(C).SCAN</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Menu Button</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <width>100</width>
+    <border_style>6</border_style>
+    <label />
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <y>30</y>
+    <actions hook="false" />
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>0</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.polyline" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <fill_arrow>true</fill_arrow>
+    <arrow_length>20</arrow_length>
+    <visible>true</visible>
+    <fill_level>0.0</fill_level>
+    <rotation_angle>0.0</rotation_angle>
+    <scripts />
+    <arrows>0</arrows>
+    <height>1</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Polyline</name>
+    <points>
+      <point x="1" y="28" />
+      <point x="397" y="28" />
+    </points>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color name="ioc_read_fg" />
+    </background_color>
+    <foreground_color>
+      <color red="255" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Polyline</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>397</width>
+    <border_style>0</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <line_width>3</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>28</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>1</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>26</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>1</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).DESC</pv_name>
+    <background_color>
+      <color name="Gray_1" />
+    </background_color>
+    <foreground_color>
+      <color name="ioc_read_fg" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="18" style="0" />
+    </font>
+    <width>240</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>0</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>0</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <visible>true</visible>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>14</height>
+    <name>Label</name>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="255" green="255" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Label</widget_type>
+    <enabled>true</enabled>
+    <text>($(P)$(C))</text>
+    <font>
+      <fontdata fontName="Sans" height="8" style="0" />
+    </font>
+    <width>140</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0!=0">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)userMbboEnable.VAL</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <actions hook="false" />
+    <y>6</y>
+    <wrap_words>true</wrap_words>
+    <tooltip />
+    <x>240</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.polyline" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <fill_arrow>true</fill_arrow>
+    <arrow_length>20</arrow_length>
+    <visible>true</visible>
+    <fill_level>0.0</fill_level>
+    <rotation_angle>0.0</rotation_angle>
+    <scripts />
+    <arrows>0</arrows>
+    <height>40</height>
+    <anti_alias>true</anti_alias>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Polyline</name>
+    <points>
+      <point x="171" y="260" />
+      <point x="171" y="221" />
+    </points>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color name="MEDM_COLOR_49" />
+    </background_color>
+    <foreground_color>
+      <color red="255" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Polyline</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <line_style>0</line_style>
+    <width>1</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0!=0">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)$(C).DOPT</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <line_width>2</line_width>
+    <horizontal_fill>true</horizontal_fill>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <actions hook="false" />
+    <y>221</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>171</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <visible>true</visible>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <name>Label</name>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="255" green="255" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="alarm" />
+    </foreground_color>
+    <widget_type>Label</widget_type>
+    <enabled>true</enabled>
+    <text>DISABLED</text>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>80</width>
+    <border_style>0</border_style>
+    <rules>
+      <rule name="Visibility" prop_id="visible" out_exp="false">
+        <exp bool_exp="pv0==0">
+          <value>true</value>
+        </exp>
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv trig="true">$(P)userMbboEnable.VAL</pv>
+      </rule>
+    </rules>
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <actions hook="false" />
+    <y>5</y>
+    <wrap_words>true</wrap_words>
+    <tooltip />
+    <x>270</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <visible>true</visible>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <name>Label</name>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="255" green="255" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Label</widget_type>
+    <enabled>true</enabled>
+    <text>0</text>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>23</width>
+    <border_style>0</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>70</y>
+    <wrap_words>true</wrap_words>
+    <tooltip />
+    <x>0</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <visible>true</visible>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <name>Label</name>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="255" green="255" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Label</widget_type>
+    <enabled>true</enabled>
+    <text>1</text>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>23</width>
+    <border_style>0</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>95</y>
+    <wrap_words>true</wrap_words>
+    <tooltip />
+    <x>0</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <visible>true</visible>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <name>Label</name>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="255" green="255" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Label</widget_type>
+    <enabled>true</enabled>
+    <text>2</text>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>23</width>
+    <border_style>0</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>120</y>
+    <wrap_words>true</wrap_words>
+    <tooltip />
+    <x>0</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <visible>true</visible>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <name>Label</name>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="255" green="255" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Label</widget_type>
+    <enabled>true</enabled>
+    <text>3</text>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>23</width>
+    <border_style>0</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>145</y>
+    <wrap_words>true</wrap_words>
+    <tooltip />
+    <x>0</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <visible>true</visible>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>10</height>
+    <name>Label</name>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="255" green="255" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Label</widget_type>
+    <enabled>true</enabled>
+    <text>numerical value</text>
+    <font>
+      <fontdata fontName="Sans" height="6" style="0" />
+    </font>
+    <width>100</width>
+    <border_style>0</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>55</y>
+    <wrap_words>true</wrap_words>
+    <tooltip />
+    <x>28</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>4</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).ZRVL</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>100</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>67</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>28</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>4</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).ONVL</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>100</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>92</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>28</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>4</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).TWVL</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>100</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>117</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>28</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>20</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>4</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).THVL</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="14" style="0" />
+    </font>
+    <width>100</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>142</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>28</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
+    <visible>true</visible>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>10</height>
+    <name>Label</name>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="255" green="255" blue="255" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Label</widget_type>
+    <enabled>true</enabled>
+    <text>string value</text>
+    <font>
+      <fontdata fontName="Sans" height="6" style="0" />
+    </font>
+    <width>160</width>
+    <border_style>0</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>55</y>
+    <wrap_words>true</wrap_words>
+    <tooltip />
+    <x>134</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>24</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>1</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).ZRST</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="18" style="0" />
+    </font>
+    <width>160</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>65</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>134</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>24</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>1</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).ONST</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="18" style="0" />
+    </font>
+    <width>160</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>90</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>134</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>24</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>1</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).TWST</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="18" style="0" />
+    </font>
+    <width>160</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>115</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>134</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <minimum>-Infinity</minimum>
+    <vertical_alignment>1</vertical_alignment>
+    <show_units>false</show_units>
+    <multiline_input>false</multiline_input>
+    <auto_size>false</auto_size>
+    <scripts />
+    <height>24</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Text Input</name>
+    <format_type>1</format_type>
+    <precision_from_pv>true</precision_from_pv>
+    <transparent>false</transparent>
+    <selector_type>0</selector_type>
+    <pv_name>$(P)$(C).THST</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Text Input</widget_type>
+    <enabled>true</enabled>
+    <text />
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <precision>0</precision>
+    <font>
+      <fontdata fontName="Sans" height="18" style="0" />
+    </font>
+    <width>160</width>
+    <border_style>3</border_style>
+    <rules />
+    <border_width>1</border_width>
+    <maximum>Infinity</maximum>
+    <limits_from_pv>false</limits_from_pv>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <horizontal_alignment>0</horizontal_alignment>
+    <actions hook="false" />
+    <y>140</y>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>134</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <actions_from_pv>false</actions_from_pv>
+    <scripts />
+    <height>20</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Menu Button</name>
+    <transparent>false</transparent>
+    <pv_name />
+    <background_color>
+      <color name="callup_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_0" />
+    </foreground_color>
+    <widget_type>Menu Button</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <width>40</width>
+    <border_style>6</border_style>
+    <label>More</label>
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <y>30</y>
+    <actions hook="false">
+      <action type="OPEN_DISPLAY">
+        <path>userMbbo_full.opi</path>
+        <macros>
+          <include_parent_macros>true</include_parent_macros>
+        </macros>
+        <replace>false</replace>
+        <description>all 16 settings</description>
+      </action>
+    </actions>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>310</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <actions_from_pv>true</actions_from_pv>
+    <scripts />
+    <height>16</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Menu Button</name>
+    <transparent>false</transparent>
+    <pv_name>$(P)$(C)</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Menu Button</widget_type>
+    <enabled>true</enabled>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <width>120</width>
+    <border_style>6</border_style>
+    <label />
+    <rules />
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <y>30</y>
+    <actions hook="false" />
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>110</x>
+  </widget>
+  <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <visible>true</visible>
+    <scripts />
+    <height>20</height>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <name>Action Button</name>
+    <pv_name>$(P)$(C).PROC</pv_name>
+    <background_color>
+      <color name="ioc_write_bg" />
+    </background_color>
+    <foreground_color>
+      <color name="Gray_14" />
+    </foreground_color>
+    <widget_type>Action Button</widget_type>
+    <enabled>true</enabled>
+    <text>PROC</text>
+    <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+    <font>
+      <opifont.name>Default</opifont.name>
+    </font>
+    <width>40</width>
+    <push_action_index>0</push_action_index>
+    <border_style>0</border_style>
+    <image />
+    <rules />
+    <toggle_button>false</toggle_button>
+    <border_width>1</border_width>
+    <border_color>
+      <color red="0" green="128" blue="255" />
+    </border_color>
+    <y>30</y>
+    <actions hook="false">
+      <action type="WRITE_PV">
+        <pv_name>$(P)$(C).PROC</pv_name>
+        <value>1</value>
+        <timeout>10</timeout>
+        <description />
+      </action>
+    </actions>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    <x>240</x>
+  </widget>
+</display>
