@@ -12,9 +12,8 @@
 
 
  <h2 align="CENTER">
-    Release 3-0 (May 18, 2011)</h2>
+    Release 3-0 (Aug ??, 2011)</h2>
   <ul>
-
     <li>The sseq record can now treat array PVs whose elements are of type DBF_CHAR
 		or DBF_UCHAR, as strings.  Only the first 39 characters are handled, because
 		the sseq record uses PVs of type DBF_STRING internally.
@@ -31,6 +30,17 @@
 	    it would be executed by channel access and aborted by a PV link, which would
 		cause the record to be executed again, immediately after the abort succeeded.
 
+	<li>Added support for femto_DxPCA_x00 Femto amplifier
+
+	<li>drvScalerSoft.c: The callback for done must pass the value 1, not 0
+	
+	<li>Added userMbbo, a database of ten user-controlled menu choices.
+	
+	<li>scaler16m.db: Added COPT=="Always" to $(P)$(S)_calc1 (transform record)
+
+	<li>Modified RELEASE; deleted RELEASE.arch
+	
+	<li>Added .opi display files for CSS-BOY
   </ul>
 
  <h2 align="CENTER">
