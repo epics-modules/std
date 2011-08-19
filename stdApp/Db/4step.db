@@ -94,13 +94,13 @@ grecord(ao,"$(P)4step:sig1:B") {
 	field(PREC,"6")
 }
 grecord(ao,"$(P)4step:det2TrigVal") {
-	field(PINI,"YES")
-	field(OUT,"$(P)4step:det2TrigInfo.DO2  PP MS")
+	field(PINI,"RUNNING")
+	field(OUT,"$(P)4step:det2TrigDOLDInfo.DO1  PP MS")
 	field(DOL,"1")
 }
 grecord(ao,"$(P)4step:det1TrigVal") {
-	field(PINI,"YES")
-	field(OUT,"$(P)4step:det1TrigInfo.DO2  PP MS")
+	field(PINI,"RUNNING")
+	field(OUT,"$(P)4step:det1TrigDOLDInfo.DO1  PP MS")
 	field(DOL,"1")
 }
 grecord(ao,"$(P)4step:sig1:A") {
@@ -191,30 +191,30 @@ grecord(mbbo,"$(P)4step:numSteps") {
 	field(FRST,"Four")
 }
 grecord(stringout,"$(P)4step:sig3:Desc") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(VAL,"signal 3")
 	field(OUT,"$(P)4step:sig3:sFan.STR1  PP MS")
 }
 grecord(stringout,"$(P)4step:sig2:Desc") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(VAL,"signal 2")
 	field(OUT,"$(P)4step:sig2:sFan.STR1  PP MS")
 }
 grecord(stringout,"$(P)4step:sig1:Desc") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(VAL,"signal 1")
 	field(OUT,"$(P)4step:sig1:sFan.STR1  PP MS")
 }
 grecord(stringout,"$(P)4step:det2TrigName") {
-	field(PINI,"YES")
-	field(OUT,"$(P)4step:det2TrigInfo.STR1  PP MS")
+	field(PINI,"RUNNING")
+	field(OUT,"$(P)4step:det2TrigOUTNInfo.STR1  PP MS")
 }
 grecord(stringout,"$(P)4step:det1TrigName") {
-	field(PINI,"YES")
-	field(OUT,"$(P)4step:det1TrigInfo.STR1  PP MS")
+	field(PINI,"RUNNING")
+	field(OUT,"$(P)4step:det1TrigOUTNInfo.STR1  PP MS")
 }
 grecord(stringout,"$(P)4step:sig4:Desc") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(VAL,"signal 4")
 	field(OUT,"$(P)4step:sig4:sFan.STR1  PP MS")
 }
@@ -463,7 +463,7 @@ grecord(sseq,"$(P)4step:sig4:sFan") {
 	field(LNK8,"$(P)4step:sig4:H.DESC  PP MS")
 }
 grecord(sseq,"$(P)4step:sig3:sFan") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(DOL1,"0")
 	field(LNK1,"$(P)4step:sig3:A.DESC  PP MS")
 	field(DOL2,"$(P)4step:sig3:sFan.STR1  NPP MS")
@@ -499,40 +499,50 @@ grecord(sseq,"$(P)4step:sig2:sFan") {
 	field(DOL8,"$(P)4step:sig2:sFan.STR1  NPP MS")
 	field(LNK8,"$(P)4step:sig2:H.DESC  PP MS")
 }
-grecord(sseq,"$(P)4step:det2TrigInfo") {
-	field(LNK1,"$(P)4step:Atrig2.OUTN  NPP MS")
-	field(LNK2,"$(P)4step:Atrig2.DOLD  NPP MS")
-	field(DOL3,"$(P)4step:det2TrigInfo.STR1  NPP MS")
-	field(LNK3,"$(P)4step:Btrig2.OUTN  NPP MS")
-	field(DOL4,"$(P)4step:det2TrigInfo.DO2  NPP MS")
-	field(LNK4,"$(P)4step:Btrig2.DOLD  NPP MS")
-	field(DOL5,"$(P)4step:det2TrigInfo.STR1  NPP MS")
-	field(LNK5,"$(P)4step:Ctrig2.OUTN  NPP MS")
-	field(DOL6,"$(P)4step:det2TrigInfo.DO2  NPP MS")
-	field(LNK6,"$(P)4step:Ctrig2.DOLD  NPP MS")
-	field(DOL7,"$(P)4step:det2TrigInfo.STR1  NPP MS")
-	field(LNK7,"$(P)4step:Dtrig2.OUTN  NPP MS")
-	field(DOL8,"$(P)4step:det2TrigInfo.DO2  NPP MS")
-	field(LNK8,"$(P)4step:Dtrig2.DOLD  NPP MS")
+grecord(seq,"$(P)4step:det2TrigDOLDInfo") {
+	field(DOL1,"0")
+	field(LNK1,"$(P)4step:Atrig2.DOLD  NPP MS")
+	field(DOL2,"$(P)4step:det2TrigDOLDInfo.DO1  NPP MS")
+	field(LNK2,"$(P)4step:Btrig2.DOLD  NPP MS")
+	field(DOL3,"$(P)4step:det2TrigDOLDInfo.DO1  NPP MS")
+	field(LNK3,"$(P)4step:Ctrig2.DOLD  NPP MS")
+	field(DOL4,"$(P)4step:det2TrigDOLDInfo.DO1  NPP MS")
+	field(LNK4,"$(P)4step:Dtrig2.DOLD  NPP MS")
 }
-grecord(sseq,"$(P)4step:det1TrigInfo") {
+grecord(sseq,"$(P)4step:det2TrigOUTNInfo") {
+	field(TPRO,"1")
+	field(STR1,"")
+	field(LNK1,"$(P)4step:Atrig2.OUTN  NPP MS")
+	field(DOL2,"$(P)4step:det2TrigOUTNInfo.STR1  NPP MS")
+	field(LNK2,"$(P)4step:Btrig2.OUTN  NPP MS")
+	field(DOL3,"$(P)4step:det2TrigOUTNInfo.STR1  NPP MS")
+	field(LNK3,"$(P)4step:Ctrig2.OUTN  NPP MS")
+	field(DOL4,"$(P)4step:det2TrigOUTNInfo.STR1  NPP MS")
+	field(LNK4,"$(P)4step:Dtrig2.OUTN  NPP MS")
+}
+grecord(seq,"$(P)4step:det1TrigDOLDInfo") {
+	field(DOL1,"0")
+	field(LNK1,"$(P)4step:Atrig1.DOLD  NPP MS")
+	field(DOL2,"$(P)4step:det1TrigDOLDInfo.DO1  NPP MS")
+	field(LNK2,"$(P)4step:Btrig1.DOLD  NPP MS")
+	field(DOL3,"$(P)4step:det1TrigDOLDInfo.DO1  NPP MS")
+	field(LNK3,"$(P)4step:Ctrig1.DOLD  NPP MS")
+	field(DOL4,"$(P)4step:det1TrigDOLDInfo.DO1  NPP MS")
+	field(LNK4,"$(P)4step:Dtrig1.DOLD  NPP MS")
+}
+grecord(sseq,"$(P)4step:det1TrigOUTNInfo") {
+	field(TPRO,"1")
+	field(STR1,"")
 	field(LNK1,"$(P)4step:Atrig1.OUTN  NPP MS")
-	field(LNK2,"$(P)4step:Atrig1.DOLD  NPP MS")
-	field(DOL3,"$(P)4step:det1TrigInfo.STR1  NPP MS")
-	field(LNK3,"$(P)4step:Btrig1.OUTN  NPP MS")
-	field(DOL4,"$(P)4step:det1TrigInfo.DO2  NPP MS")
-	field(LNK4,"$(P)4step:Btrig1.DOLD  NPP MS")
-	field(DOL5,"$(P)4step:det1TrigInfo.STR1  NPP MS")
-	field(LNK5,"$(P)4step:Ctrig1.OUTN  NPP MS")
-	field(DOL6,"$(P)4step:det1TrigInfo.DO2  NPP MS")
-	field(LNK6,"$(P)4step:Ctrig1.DOLD  NPP MS")
-	field(DOL7,"$(P)4step:det1TrigInfo.STR1  NPP MS")
-	field(LNK7,"$(P)4step:Dtrig1.OUTN  NPP MS")
-	field(DOL8,"$(P)4step:det1TrigInfo.DO2  NPP MS")
-	field(LNK8,"$(P)4step:Dtrig1.DOLD  NPP MS")
+	field(DOL2,"$(P)4step:det1TrigOUTNInfo.STR1  NPP MS")
+	field(LNK2,"$(P)4step:Btrig1.OUTN  NPP MS")
+	field(DOL3,"$(P)4step:det1TrigOUTNInfo.STR1  NPP MS")
+	field(LNK3,"$(P)4step:Ctrig1.OUTN  NPP MS")
+	field(DOL4,"$(P)4step:det1TrigOUTNInfo.STR1  NPP MS")
+	field(LNK4,"$(P)4step:Dtrig1.OUTN  NPP MS")
 }
 grecord(sseq,"$(P)4step:calcSendH") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(DOL1,"$(P)4step:sig1.CLCH  CP MS")
 	field(LNK1,"$(P)4step:sig2.CLCH  NPP MS")
 	field(DOL2,"$(P)4step:calcSendH.STR1  NPP MS")
@@ -544,7 +554,7 @@ grecord(sseq,"$(P)4step:calcSendH") {
 	field(DOL6,"0")
 }
 grecord(sseq,"$(P)4step:calcSendG") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(DOL1,"$(P)4step:sig1.CLCG  CP MS")
 	field(LNK1,"$(P)4step:sig2.CLCG  NPP MS")
 	field(DOL2,"$(P)4step:calcSendG.STR1  NPP MS")
@@ -556,7 +566,7 @@ grecord(sseq,"$(P)4step:calcSendG") {
 	field(DOL6,"0")
 }
 grecord(sseq,"$(P)4step:calcSendF") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(DOL1,"$(P)4step:sig1.CLCF  CP MS")
 	field(LNK1,"$(P)4step:sig2.CLCF  NPP MS")
 	field(DOL2,"$(P)4step:calcSendF.STR1  NPP MS")
@@ -568,7 +578,7 @@ grecord(sseq,"$(P)4step:calcSendF") {
 	field(DOL6,"0")
 }
 grecord(sseq,"$(P)4step:calcSendE") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(DOL1,"$(P)4step:sig1.CLCE  CP MS")
 	field(LNK1,"$(P)4step:sig2.CLCE  NPP MS")
 	field(DOL2,"$(P)4step:calcSendE.STR1  NPP MS")
@@ -595,7 +605,7 @@ grecord(sseq,"$(P)4step:Aseq") {
 	field(PREC,"3")
 }
 grecord(sseq,"$(P)4step:sig1:sFan") {
-	field(PINI,"YES")
+	field(PINI,"RUNNING")
 	field(DOL1,"0")
 	field(LNK1,"$(P)4step:sig1:A.DESC  PP MS")
 	field(DOL2,"$(P)4step:sig1:sFan.STR1  NPP MS")
