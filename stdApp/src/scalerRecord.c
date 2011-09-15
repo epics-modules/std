@@ -436,7 +436,7 @@ scalerRecord *pscal;
 			}
 		} else if (!pscal->cnt) {
 			/*** stop counting ***/
-			(*pdset->arm)(pscal, 0);
+			if (pscal->ss != SCALER_STATE_IDLE)	(*pdset->arm)(pscal, 0);
 			pscal->ss = SCALER_STATE_IDLE;
 			pscal->us = USER_STATE_IDLE;
 			justFinishedUserCount = 1;
