@@ -12,8 +12,12 @@
 
 
  <h2 align="CENTER">
-    Release 3-0 (Aug ??, 2011)</h2>
+    Release 3-0 (Sept 15, 2011)</h2>
   <ul>
+    <li>The scaler record no longer makes two calls to disarm the hardware
+	    (dset->arm(0)) when the scaler completes counting normally.  (Previously,
+		the code supporting user abort of a count was also executed after normal
+		completion.)
     <li>The sseq record can now treat array PVs whose elements are of type DBF_CHAR
 		or DBF_UCHAR, as strings.  Only the first 39 characters are handled, because
 		the sseq record uses PVs of type DBF_STRING internally.
