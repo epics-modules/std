@@ -26,14 +26,15 @@ record(ai, "$(P)history$(N)_secsPastEpoch") {
 }
 
 record(stringin, "$(P)history$(N)_timeOfDay2") {
-  field(PHAS, "1")
   field(FLNK, "$(P)history$(N)_timeOfDay PP NMS")
-  field(DTYP, "Time of Day")
+  field(DTYP, "Soft Timestamp")
+  field(INP, "@%m/%d/%y %H:%M:%S")
 }
 
 record(stringin, "$(P)history$(N)_timeOfDay") {
-  field(DTYP, "Time of Day")
   field(FLNK, "$(P)history$(N)_Interval PP NMS")
+  field(DTYP, "Soft Timestamp")
+  field(INP, "@%b %d, %Y %H:%M")
 }
 
 record(bi, "$(P)history$(N)_StopScan") {
