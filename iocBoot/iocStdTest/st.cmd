@@ -5,16 +5,18 @@
 dbLoadDatabase("../../dbd/std.dbd")
 std_registerRecordDeviceDriver(pdbbase)
 
-routerInit
-localMessageRouterStart(0)
-
-showSymbol
-
 # Set up 2 serial ports
-initTtyPort("serial1", "/dev/ttyS0", 9600, "N", 1, 8, "N", 1000)
-initTtyPort("serial2", "/dev/ttyS1", 19200, "N", 1, 8, "N", 1000)
-initSerialServer("serial1", "serial1", 1000, 20, "")
-initSerialServer("serial2", "serial2", 1000, 20, "")
+drvAsynSerialPortConfigure("serial1", "/dev/ttyS0", 0, 0, 0)
+asynSetOption("serial1", 0, "baud", "9600")
+asynSetOption("serial1", 0, "parity", "none")
+asynSetOption("serial1", 0, "bits", "8")
+asynSetOption("serial1", 0, "stop", "1")
+
+drvAsynSerialPortConfigure("serial2", "/dev/ttyS1", 0, 0, 0)
+asynSetOption("serial1", 0, "baud", "19200")
+asynSetOption("serial1", 0, "parity", "none")
+asynSetOption("serial1", 0, "bits", "8")
+asynSetOption("serial1", 0, "stop", "1")
 
 #PID slow
 dbLoadTemplate "pid_slow.template"
