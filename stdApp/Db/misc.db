@@ -8,7 +8,7 @@ record(stringin, "$(P)iso8601")
   field(DTYP,"Soft Timestamp")
   field(DESC,"Current Time, ISO8601")
   field(INP, "@%Y-%m-%dT%H:%M:%S")
-  field(SCAN,"9")
+  field(SCAN,".1 second")
 }
 
 # IOC timestamp PV friendlier than ISO8601   yyyy-mm-dd hh:mm:ss
@@ -18,5 +18,5 @@ record(stringin, "$(P)datetime")
   field(DTYP,"Soft Timestamp")
   field(DESC,"Current Time")
   field(INP, "@%Y-%m-%d %H:%M:%S")
-  field(SCAN,"9")
+  field(SCAN,".1 second")
 }
