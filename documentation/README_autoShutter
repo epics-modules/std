@@ -1,0 +1,61 @@
+-------------- ST.CMD -------------------------------
+# Auto-Shutter Open Substitution File
+# P=PV prefix
+# S=control shutter(usually A)
+# BL=##(beamline number)
+# T1=pre-open delay timer ID (usually 1 see - countDownTimer.vdb)
+# T2=post-open count timer ID (usually 2)
+# A=lease clock ID (usually 1 see - alarmClock.vdb)
+dbLoadTemplate("autoShutter.substitutions")
+
+------ AUTOSAVE/RESTORE FILE (auto_settings.req) ------
+file autoShutter.req P=$(P), S=A, T1=1, T2=2, A=1
+
+---------------- MEDM - related display ---------------
+# S = Control shutter (usually A)
+# T1 = CountDownTimer used for auto-open delay function
+# T2 = CountDownTimer used for shutter open timer (time since shutter opened)
+# A  = alarmClock number bused for 'lease' function
+autoShutter.adl P=xxx:,S=A,T1=1,T2=2, A=1
+
+
+RELEASE NOTES:
+--------------------------------------------------------------
+1.1 Initial release installed in synApps v5.2
+1.2 Release Changes installed in synApps v5.2.1
+     *  Redefined autoShutter.vdb 'BL' macro argument to include 
+	the 'ID' or 'BM' identifier. 'BL' is now defined as a four character 
+        beamline ID...
+		<Sector #><ID/BM> (example: 08ID)
+	See comments in xxx/iocBoot/iocvxWorks/autoShutter.substitutions. 
+
+     *  Removed Shtr:Trigger OUT link to the remoteShutter Open PV. 
+	The OUT link should be programmed at 'RUN' time to allow for
+	more flexibility in how the shutter is opened. The OUT field
+	is now in the backup/restore request file. 
+
+	The OUT link is calculated by shtr:CalcTrigOutput to assure that
+	the PP attribute is on the PV Link to the shutter Open record. . 
+
+	The Trigger OUT link is checked by Shtr:TrigOutOK for a valid
+	PV. The Shtr:Arm calc now includes the TrigOutOK check. 
+
+
+      * Renamed old 'Shtr:Open' PV to 'Shtr:Active' and changed the
+	ZNAM and ONAM to 'NO' and 'YES'. 
+
+      * Changed autoShutter.vdb 'ALM' macro argument to 'A' to be consistant 
+        with MEDM argument list. 
+
+      * MEDM 'autoShutter.adl' 
+		Shutter Control 'Edit' and status fields are added to reflect
+		the changes to 'Shtr:Trigger.OUT' and 'Shtr:Arm'. 
+
+      		Changed 'Last Open Timer' lable to 'Open Notify Timer'
+
+
+		Added 'Shutter Control' section to allow programming 
+		of 'Remote Shutter Control' PV. Red/Green status indicates
+		if PV has been programmed or not. 
+
+
