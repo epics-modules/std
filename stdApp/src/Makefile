@@ -22,7 +22,6 @@ include $(TOP)/configure/CONFIG
 # xxxRecord.h will be created from xxxRecord.dbd
 
 DBDINC += scalerRecord
-DBDINC += sseqRecord
 DBDINC += epidRecord
 DBDINC += timestampRecord
 
@@ -46,8 +45,6 @@ std_SRCS += epidRecord.c
 std_SRCS += devEpidSoft.c
 std_SRCS += devEpidSoftCallback.c
 std_SRCS += devEpidFast.c
-std_SRCS += sseqRecord.c
-#std_SRCS += devVXStats.c
 
 # timestamp record
 std_SRCS += timestampRecord.c
