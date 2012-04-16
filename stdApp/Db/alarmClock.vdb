@@ -38,11 +38,20 @@ record(scalcout, "$(P)AClock$(N):Set") {
   field(CALC, "AA+':'+$P('%d',E)+':'+$P('%d',F)")
 }
 
+record(stringin, "$(P)AClock$(N):curTimeDate")
+{
+    field(DESC, "Current time and date")
+    field(DTYP, "Soft Timestamp")
+    field(INP, "@%m/%d/%y %H:%M:%S")
+    field(SCAN, "1 second")
+}
+
 # Parse TOD
 record(stringin, "$(P)AClock$(N):TOD") {
   field(SCAN, "Passive")
   field(DTYP, "Soft Channel")
-  field(INP, "S:IOC:timeOfDayForm2SI CP")
+#  field(INP, "S:IOC:timeOfDayForm2SI CP")
+  field(INP, "$(P)AClock$(N):curTimeDate CP")
 }
 
 record(calcout, "$(P)AClock$(N):Trigger") {
