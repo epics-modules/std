@@ -121,10 +121,12 @@ static long createString(psi)
        
         recGblGetTimeStamp(psi);	/* get time stamp NOW */
         if(psi->phas) {
-            tsStampToText(&psi->time, TS_TEXT_MMDDYY, psi->val);
+            /*OLD tsStampToText(&psi->time, TS_TEXT_MMDDYY, psi->val);*/
+			epicsTimeToStrftime(psi->val, 28, "%m/%d/%y %H:%M:%S.%09f", &psi->time);
         }
         else {
-            tsStampToText(&psi->time, TS_TEXT_MONDDYYYY, psi->val);
+            /*OLD tsStampToText(&psi->time, TS_TEXT_MONDDYYYY, psi->val);*/
+			epicsTimeToStrftime(psi->val, 32, "%b %d, %Y %H:%M:%S.%09f", &psi->time);
         }
 
         /* truncate string to seconds */
