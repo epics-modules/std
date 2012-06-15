@@ -94,3 +94,4 @@ epidRecord$(OBJ):          $(COMMON_DIR)/epidRecord.h
 devEpidSoft$(OBJ):         $(COMMON_DIR)/epidRecord.h
 devEpidSoftCallback$(OBJ): $(COMMON_DIR)/epidRecord.h
 devEpidFast$(OBJ):         $(COMMON_DIR)/epidRecord.h
+timestampRecord$(OBJ):     $(COMMON_DIR)/timestampRecord.h
