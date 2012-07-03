@@ -215,34 +215,50 @@ static long init_record(epidRecord *pepid)
     drvUserPvt = pasynInterface->drvPvt;
 
     status = pdrvUser->create(drvUserPvt, pPvt->pcallbackDataAsynUser, 
-                           pPvt->inputDataString, &drvUserName, &drvUserSize);
+                              pPvt->inputDataString, &drvUserName, &drvUserSize);
     if (status) {
         errlogPrintf("devEpidFast::init_record %s, asynDrvUser->create "
                      "failed for input data string %s %s\n",
                      pepid->name, pPvt->inputDataString, pPvt->pcallbackDataAsynUser->errorMessage);
         goto bad;
     }
-    pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
-                                               pPvt->pcallbackDataAsynUser,
-                                               dataCallback, pPvt, &registrarPvt);
+    status = pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
+                                                        pPvt->pcallbackDataAsynUser,
+                                                        dataCallback, pPvt, &registrarPvt);
+    if (status) {
+        errlogPrintf("devEpidFast::init_record %s, pfloat64Input->registerInterruptUser failed for dataCallback %s\n",
+                     pepid->name, pPvt->pcallbackDataAsynUser->errorMessage);
+        goto bad;
+    }
 
-    pPvt->pcallbackIntervalAsynUser = pasynManager->duplicateAsynUser(
-                                           pPvt->pcallbackDataAsynUser, 0, 0);
+    pasynUser = pasynManager->createAsynUser(0, 0);
+    pPvt->pcallbackIntervalAsynUser = pasynUser;
+    status = pasynManager->connectDevice(pasynUser, pPvt->inputName, 0);
     status = pdrvUser->create(drvUserPvt, pPvt->pcallbackIntervalAsynUser, 
-                           pPvt->inputIntervalString, &drvUserName, &drvUserSize);
+                              pPvt->inputIntervalString, &drvUserName, &drvUserSize);
     if (status) {
         errlogPrintf("devEpidFast::init_record %s, asynDrvUser->create "
                      "failed for interval string %s %s\n",
                      pepid->name, pPvt->inputIntervalString, pPvt->pcallbackIntervalAsynUser->errorMessage);
         goto bad;
     }
-    pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
-                                               pPvt->pcallbackIntervalAsynUser,
-                                               intervalCallback, pPvt, 
-                                               &registrarPvt);
+    status = pPvt->pfloat64Input->registerInterruptUser(pPvt->float64InputPvt, 
+                                                        pPvt->pcallbackIntervalAsynUser,
+                                                        intervalCallback, pPvt, 
+                                                        &registrarPvt);
+    if (status) {
+        errlogPrintf("devEpidFast::init_record %s, pfloat64Input->registerInterruptUser failed for intervalCallback %s\n",
+                     pepid->name, pPvt->pcallbackIntervalAsynUser->errorMessage);
+        goto bad;
+    }
     status = pPvt->pfloat64Input->read(pPvt->float64InputPvt,
                                        pPvt->pcallbackIntervalAsynUser,
                                        &pPvt->callbackInterval);
+    if (status) {
+        errlogPrintf("devEpidFast::init_record %s, pfloat64Input->read failed for callbackInterval %s\n",
+                     pepid->name, pPvt->pcallbackIntervalAsynUser->errorMessage);
+        goto bad;
+    }
 
 
     /* Connect to output asyn driver */
