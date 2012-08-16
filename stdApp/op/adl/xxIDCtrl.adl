@@ -1,7 +1,7 @@
 
 file {
-	name="/home/sricat/BCDA/epics/3.13.0/baseR3.13.0.beta12_shareR1.0/stdApp/op/adl/xxIDCtrl_1.4.adl"
-	version=020305
+	name="/home/oxygen4/MOONEY/epics/synAppsSVN/support/std/stdApp/op/adl/xxIDCtrl.adl"
+	version=030105
 }
 display {
 	object {
@@ -128,6 +128,8 @@ polyline {
 		bclr=0
 	}
 	align="horiz. centered"
+	limits {
+	}
 }
 polyline {
 	object {
@@ -170,8 +172,8 @@ polyline {
 	}
 	display[2] {
 		label="ID basic control"
-		name="xx_ID_ctrl.adl"
-		args="xx=$(xx)"
+		name="IDControl.adl"
+		args="ID=$(xx)"
 	}
 	clr=0
 	bclr=17
@@ -201,6 +203,8 @@ text {
 		chan="ID$(xx):AccessSecurity"
 		clr=54
 		bclr=1
+	}
+	limits {
 	}
 }
 rectangle {
@@ -292,8 +296,6 @@ composite {
 		height=10
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -353,8 +355,6 @@ composite {
 		height=10
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		composite {
 			object {
@@ -364,8 +364,6 @@ composite {
 				height=10
 			}
 			"composite name"=""
-			vis="static"
-			chan=""
 			children {
 				text {
 					object {
@@ -427,8 +425,6 @@ composite {
 		height=110
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -457,6 +453,8 @@ composite {
 				bclr=3
 			}
 			align="horiz. centered"
+			limits {
+			}
 		}
 		"text entry" {
 			object {
@@ -469,6 +467,8 @@ composite {
 				chan="$(P)ID$(xx)_gap"
 				clr=14
 				bclr=51
+			}
+			limits {
 			}
 		}
 		"text update" {
@@ -484,6 +484,8 @@ composite {
 				bclr=3
 			}
 			align="horiz. centered"
+			limits {
+			}
 		}
 		composite {
 			object {
@@ -493,8 +495,6 @@ composite {
 				height=20
 			}
 			"composite name"=""
-			vis="static"
-			chan=""
 			children {
 				"message button" {
 					object {
@@ -522,6 +522,8 @@ composite {
 						chan="$(P)ID$(xx)_gapTweak.E"
 						clr=14
 						bclr=51
+					}
+					limits {
 					}
 				}
 				"message button" {
@@ -553,6 +555,8 @@ composite {
 				clr=54
 				bclr=3
 			}
+			limits {
+			}
 		}
 	}
 }
@@ -564,8 +568,6 @@ composite {
 		height=110
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
@@ -593,6 +595,8 @@ composite {
 				clr=14
 				bclr=51
 			}
+			limits {
+			}
 		}
 		"text update" {
 			object {
@@ -605,6 +609,8 @@ composite {
 				chan="ID$(xx):Energy"
 				clr=54
 				bclr=3
+			}
+			limits {
 			}
 		}
 		"message button" {
@@ -633,6 +639,8 @@ composite {
 				chan="$(P)ID$(xx)_energyTweak.E"
 				clr=14
 				bclr=51
+			}
+			limits {
 			}
 		}
 		"message button" {
