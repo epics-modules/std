@@ -49,6 +49,9 @@ dbLoadRecords("../../../std/stdApp/Db/misc.db", "P=stdTest:")
 # Femto amplifier
 #dbLoadRecords("../../../std/femto.db","P=stdTest:,H=fem01:,F=seq01:")
 
+# General purpose selector
+dbLoadTemplate("selector.substitutions")
+
 iocInit
 
 ### Start Femto amplifier sequence programs
