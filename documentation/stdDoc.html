@@ -68,7 +68,7 @@ corrections to a control PV.  This record-based feedback loop is for low-speed
 applications, and is very general because it can use any EPICS PVs for readback
 and control.
 
-<P ALIGN=CENTER><IMG SRC="pid_control.adl.jpg" ><IMG SRC="pid_parameters.adl.jpg" ><BR>pid_parameters.adl
+<P ALIGN=CENTER><IMG SRC="pid_control.adl.jpg" ><IMG SRC="pid_parameters.adl.jpg" ><BR>pid_control.adl, pid_parameters.adl
 </P>
 
 <h3>async_pid_control.db, async_pid_control.adl</h3>
@@ -108,7 +108,18 @@ device, such as the DAV128V.
 
 <h3>ramp_tweak.db, ramp_tweak*.adl</h3>
 
-<P>Adds ramp and tweak functionality to any floating point PV 
+<P>Adds ramp and tweak functionality to any numeric PV.  To use, type the name
+of the PV into the "targetPV:" text-entry field (or use Drag-And-Drop), and set
+the step period and size.  If you don't want ramping, set the step size to zero.
+
+<P>This database supports ca_put_callback.  When the desired-value or tweak
+fields are written to by a ca_put_callback, the callback will not be sent until
+the target has reached the new desired value.  The database also supports
+autosave, and will correctly initialize itself after a reboot.
+
+
+<P ALIGN=CENTER><IMG SRC="ramp_tweak.adl.jpg" ><IMG SRC="ramp_tweakSetup.adl.jpg" ><BR>ramp_tweak.adl, ramp_tweakSetup.adl
+</P>
 
 <h3>genericState.db, genericState.adl
 genericStateAux.db
@@ -175,6 +186,21 @@ motor or other motorlike collection of PVs.
 mode, writing zero to its VAL field, and putting it into "Use" mode.  zero2 does
 the same thing for two motors.
 
+<h3>selector.db</h3>
+
+<P>A general purpose selector, which allows the deployer to attach a menu to a
+list of actions.  For example, to implement control of a motor for which
+discrete positions have special significance (mirror stripe, sample-wheel
+angle), one edits selector.substitutions (see iocBoot/iocStdTest) with the names
+and motor positions, and the target PV (or PVs) to which those positions should be
+written.  The menu selection can be made by a client using ca_put_callback().
+
+<P>It's possible to configure the target PV at run time.  If this is done, it's
+important to note that the links shown below in selector_more.adl must have the
+attribute "CA", because the record is configured to wait for completion, which
+can't be done with a PP link.
+
+<P ALIGN=CENTER><IMG SRC="selector.adl.jpg" ><IMG SRC="selector_choice.adl.jpg" ><IMG SRC="selector_more.adl.jpg" ><BR>selector.adl, selector_choice.adl,selector_more.adl
 
 <p>
 
