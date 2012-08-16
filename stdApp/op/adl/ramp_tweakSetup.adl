@@ -1,7 +1,7 @@
 
 file {
-	name="/home/oxygen/MOONEY/epics/synApps/support/std/stdApp/op/adl/ramp_tweakSetup.adl"
-	version=030102
+	name="/home/oxygen4/MOONEY/epics/synAppsSVN/support/std/stdApp/op/adl/ramp_tweakSetup.adl"
+	version=030105
 }
 display {
 	object {
@@ -136,270 +136,259 @@ text {
 	textix="ramp/tweak setup"
 	align="horiz. centered"
 }
-composite {
+"text update" {
+	object {
+		x=10
+		y=65
+		width=100
+		height=20
+	}
+	monitor {
+		chan="$(P)$(Q)Readback"
+		clr=54
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=120
+		y=65
+		width=50
+		height=20
+	}
+	monitor {
+		chan="$(P)$(Q)Busy"
+		clr=17
+		bclr=2
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=10
+		y=85
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)$(Q)Ramp.VAL"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"message button" {
+	object {
+		x=120
+		y=85
+		width=50
+		height=30
+	}
+	control {
+		chan="$(P)$(Q)RampStop.PROC"
+		clr=30
+		bclr=20
+	}
+	label="Stop"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=30
+		y=105
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(Q)TweakVal.VAL"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"message button" {
+	object {
+		x=90
+		y=105
+		width=20
+		height=20
+	}
+	control {
+		chan="$(P)$(Q)Tweak.B"
+		clr=14
+		bclr=51
+	}
+	label="+"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=10
+		y=105
+		width=20
+		height=20
+	}
+	control {
+		chan="$(P)$(Q)Tweak.A"
+		clr=14
+		bclr=51
+	}
+	label="-"
+	press_msg="1"
+}
+"related display" {
+	object {
+		x=133
+		y=136
+		width=35
+		height=15
+	}
+	display[0] {
+		label="CheckValCalc"
+		name="yyCalcoutRecord.adl"
+		args="P=$(P)$(Q),C=RampCheckOutput"
+	}
+	display[1] {
+		label="StopCalc"
+		name="yyCalcoutRecord.adl"
+		args="P=$(P)$(Q),C=RampStop"
+	}
+	display[2] {
+		label="CheckDoneCalc"
+		name="yyCalcoutRecord.adl"
+		args="P=$(P)$(Q),C=RampCheckDone"
+	}
+	display[3] {
+		label="LinkCalc"
+		name="yysCalcoutRecord.adl"
+		args="P=$(P)$(Q),C=PutLinkCalc"
+	}
+	display[4] {
+		label="PutValueSeq"
+		name="yySseq.adl"
+		args="P=$(P)$(Q),S=PutValue"
+	}
+	clr=0
+	bclr=17
+	label="-DEBUG"
+}
+"related display" {
+	object {
+		x=120
+		y=115
+		width=50
+		height=20
+	}
+	display[0] {
+		label="use"
+		name="ramp_tweak.adl"
+		args="P=$(P),Q=$(Q)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=17
+	label="-LESS"
+}
+"text entry" {
+	object {
+		x=120
+		y=206
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(Q)Ramp.OROC"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=120
+		y=186
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(Q)RampCheckOutput.ODLY"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
 	object {
 		x=5
-		y=65
+		y=186
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="step period"
+}
+text {
+	object {
+		x=5
+		y=206
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="step size"
+}
+text {
+	object {
+		x=5
+		y=140
 		width=170
-		height=161
+		height=20
 	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=10
-				y=65
-				width=100
-				height=20
-			}
-			monitor {
-				chan="$(P)$(Q)Readback"
-				clr=54
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=120
-				y=65
-				width=50
-				height=20
-			}
-			monitor {
-				chan="$(P)$(Q)Busy"
-				clr=17
-				bclr=2
-			}
-			format="string"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=10
-				y=85
-				width=100
-				height=20
-			}
-			control {
-				chan="$(P)$(Q)Ramp.VAL"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"message button" {
-			object {
-				x=120
-				y=85
-				width=50
-				height=30
-			}
-			control {
-				chan="$(P)$(Q)RampStop.PROC"
-				clr=30
-				bclr=20
-			}
-			label="Stop"
-			press_msg="1"
-		}
-		"text entry" {
-			object {
-				x=30
-				y=105
-				width=60
-				height=20
-			}
-			control {
-				chan="$(P)$(Q)TweakVal.VAL"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"message button" {
-			object {
-				x=90
-				y=105
-				width=20
-				height=20
-			}
-			control {
-				chan="$(P)$(Q)Tweak.B"
-				clr=14
-				bclr=51
-			}
-			label="+"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=10
-				y=105
-				width=20
-				height=20
-			}
-			control {
-				chan="$(P)$(Q)Tweak.A"
-				clr=14
-				bclr=51
-			}
-			label="-"
-			press_msg="1"
-		}
-		"related display" {
-			object {
-				x=133
-				y=136
-				width=35
-				height=15
-			}
-			display[0] {
-				label="CheckValCalc"
-				name="yyCalcoutRecord.adl"
-				args="P=$(P)$(Q),C=RampCheckOutput"
-			}
-			display[1] {
-				label="StopCalc"
-				name="yyCalcoutRecord.adl"
-				args="P=$(P)$(Q),C=RampStop"
-			}
-			display[2] {
-				label="CheckDoneCalc"
-				name="yyCalcoutRecord.adl"
-				args="P=$(P)$(Q),C=RampCheckDone"
-			}
-			display[3] {
-				label="LinkCalc"
-				name="yysCalcoutRecord.adl"
-				args="P=$(P)$(Q),C=LinkCalc"
-			}
-			display[4] {
-				label="PutValueSeq"
-				name="yySseq.adl"
-				args="P=$(P)$(Q),S=PutValue"
-			}
-			clr=0
-			bclr=17
-			label="-DEBUG"
-		}
-		"related display" {
-			object {
-				x=120
-				y=115
-				width=50
-				height=20
-			}
-			display[0] {
-				label="use"
-				name="ramp_tweak.adl"
-				args="P=$(P),Q=$(Q)"
-				policy="replace display"
-			}
-			clr=0
-			bclr=17
-			label="-LESS"
-		}
-		"text entry" {
-			object {
-				x=120
-				y=206
-				width=40
-				height=20
-			}
-			control {
-				chan="$(P)$(Q)Ramp.OROC"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=120
-				y=186
-				width=40
-				height=20
-			}
-			control {
-				chan="$(P)$(Q)RampCheckOutput.ODLY"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=5
-				y=186
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="step period"
-		}
-		text {
-			object {
-				x=5
-				y=206
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="step size"
-		}
-		text {
-			object {
-				x=5
-				y=140
-				width=170
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="targetPV:"
-		}
-		"text entry" {
-			object {
-				x=5
-				y=159
-				width=170
-				height=20
-			}
-			control {
-				chan="$(P)$(Q)PutLinkCalc.AA"
-				clr=14
-				bclr=35
-			}
-			format="string"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=160
-				y=186
-				width=10
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="s"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="targetPV:"
+}
+"text entry" {
+	object {
+		x=5
+		y=159
+		width=170
+		height=20
+	}
+	control {
+		chan="$(P)$(Q)PutLinkCalc.AA"
+		clr=14
+		bclr=35
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=160
+		y=186
+		width=10
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="s"
 }
 composite {
 	object {
