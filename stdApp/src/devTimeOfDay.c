@@ -62,7 +62,6 @@
 #include "dbCommon.h"
 #include "stringinRecord.h"
 #include "aiRecord.h"
-#include "tsDefs.h"
 #include "epicsEvent.h"
 #include "epicsSignal.h"
 #include "epicsString.h"
@@ -121,11 +120,9 @@ static long createString(psi)
        
         recGblGetTimeStamp(psi);	/* get time stamp NOW */
         if(psi->phas) {
-            /*OLD tsStampToText(&psi->time, TS_TEXT_MMDDYY, psi->val);*/
 			epicsTimeToStrftime(psi->val, 28, "%m/%d/%y %H:%M:%S.%09f", &psi->time);
         }
         else {
-            /*OLD tsStampToText(&psi->time, TS_TEXT_MONDDYYYY, psi->val);*/
 			epicsTimeToStrftime(psi->val, 32, "%b %d, %Y %H:%M:%S.%09f", &psi->time);
         }
 
