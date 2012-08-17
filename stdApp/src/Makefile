@@ -81,6 +81,7 @@ stdApp_SRCS_vxWorks += -nil-
 stdApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 stdApp_LIBS += std seq pv asyn $(EPICS_BASE_IOC_LIBS)
+stdApp_SYS_LIBS_solaris += socket
 
 #===========================
 
