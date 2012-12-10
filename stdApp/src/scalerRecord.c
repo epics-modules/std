@@ -78,8 +78,6 @@ Modification Log:
 *******************************************************************************/
 #define VERSION 3.19
 
-#include	<epicsVersion.h>
-
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -111,6 +109,13 @@ Modification Log:
 #undef GEN_SIZE_OFFSET
 #include	"devScaler.h"
 #include	<epicsExport.h>
+
+#include	<epicsVersion.h>
+#ifndef EPICS_VERSION_INT
+#define VERSION_INT(V,R,M,P) ( ((V)<<24) | ((R)<<16) | ((M)<<8) | (P))
+#define EPICS_VERSION_INT VERSION_INT(EPICS_VERSION, EPICS_REVISION, EPICS_MODIFICATION, EPICS_PATCH_LEVEL)
+#endif
+#define LT_EPICSBASE(V,R,M,P) (EPICS_VERSION_INT < VERSION_INT((V),(R),(M),(P)))
 
 #define SCALER_STATE_IDLE 0
 #define SCALER_STATE_WAITING 1
@@ -748,7 +753,11 @@ static void do_alarm(pscal)
 scalerRecord *pscal;
 {
 	if(pscal->udf == TRUE ){
+#if LT_EPICSBASE(3,15,0,2)
 		recGblSetSevr(pscal,UDF_ALARM,INVALID_ALARM);
+#else
+		recGblSetSevr(pscal,UDF_ALARM,pscal->udfs);
+#endif
 		return;
 	}
 	return;

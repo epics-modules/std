@@ -90,6 +90,13 @@
 #include "menuOmsl.h"
 #include    <epicsExport.h>
 
+#include	<epicsVersion.h>
+#ifndef EPICS_VERSION_INT
+#define VERSION_INT(V,R,M,P) ( ((V)<<24) | ((R)<<16) | ((M)<<8) | (P))
+#define EPICS_VERSION_INT VERSION_INT(EPICS_VERSION, EPICS_REVISION, EPICS_MODIFICATION, EPICS_PATCH_LEVEL)
+#endif
+#define LT_EPICSBASE(V,R,M,P) (EPICS_VERSION_INT < VERSION_INT((V),(R),(M),(P)))
+
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
 #define initialize NULL
@@ -186,7 +193,11 @@ static long process(epidRecord *pepid)
             if (RTN_SUCCESS(status)) pepid->udf=FALSE;
         }
         if (pepid->udf == TRUE ) {
+#if LT_EPICSBASE(3,15,0,2)
             recGblSetSevr(pepid,UDF_ALARM,INVALID_ALARM);
+#else
+            recGblSetSevr(pepid,UDF_ALARM,pepid->udfs);
+#endif
             return(0);
         }
     }
