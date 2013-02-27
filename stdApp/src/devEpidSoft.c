@@ -31,7 +31,7 @@
 
 /* A discrete form of the PID algorithm is as follows
  * M(n) = KP*(E(n) + KI*SUMi(E(i)*dT(i))
- *         + KD*(E(n) -E(n-1))/dT(n)
+ *         + KD*(E(n) -E(n-1)))/dT(n)
  * where
  *  M(n)    Value of manipulated variable at nth sampling instant
  *  KP,KI,KD Proportional, Integral, and Differential Gains
