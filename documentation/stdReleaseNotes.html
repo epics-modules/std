@@ -12,11 +12,31 @@
 
 <cr>
  <h2 align="CENTER">
-    Release 3-2 (??? ??, ????)</h2>
+    Release 3-2 (Apr. 17, 2013)</h2>
   <ul>
-  	<li>The sseq record was moved from the std module to the calc module, along
-with all of its databases, request files, and display files.
-<li>Added general purpose selector (e.g., for mirror stripe) selector.db, etc.
+
+	<li>The sseq record was moved from the std module to the calc module, along
+		with all of its databases, request files, and display files.
+
+	<li>Added general purpose selector (e.g., for mirror stripe) selector.db,
+		etc.
+
+	<li>misc.db - added two current time PVs, P:iso8601 and P:datetime
+	
+	<li>pvHistory.db - use Soft Timestamp device support, because it's in base
+
+	<li>epid.req - add autosave/restore request file for epid record
+
+	<li>countDownTimer.vdb - New calc engine in base requires ?: expression to
+		have both ? and :
+
+	<li>devTimeOfDay.c - Use epicsTimeToStrftime, instead of to-be-deleted
+		tsStampToText.
+
+	<li>selector.db, selector*.adl - general purpose selector
+	
+	<li>Added display files for CSS-BOY and caQtDM
+
   </ul><cr>
 
 
