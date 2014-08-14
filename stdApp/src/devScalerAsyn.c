@@ -41,7 +41,7 @@
 typedef struct {
     int command;
     long val;
-    epicsInt32 *pval;
+    epicsUInt32 *pval;
 } scalerAsynMessage;
 
 typedef struct {
@@ -67,13 +67,13 @@ typedef struct {
 /* These functions are in the DSET */
 static long scaler_init_record(struct scalerRecord *psr, CALLBACK *pcallback);
 static long scaler_reset(scalerRecord *psr);
-static long scaler_read(scalerRecord *psr, unsigned long *val);
+static long scaler_read(scalerRecord *psr, epicsUInt32 *val);
 static long scaler_write_preset(scalerRecord *psr, int signal, unsigned long val);
 static long scaler_arm(scalerRecord *psr, int val);
 static long scaler_done(scalerRecord *psr);
 
 /* These are other functions */
-static long scaler_command(scalerRecord *psr, int command, long channel, long val, long *pval);
+static long scaler_command(scalerRecord *psr, int command, long channel, long val, epicsUInt32 *pval);
 static void asynCallback(asynUser *pasynUser);
 static void interruptCallback(void *drvPvt,  asynUser *pasynUser, epicsInt32 value);
 
@@ -239,7 +239,7 @@ static long scaler_init_record(scalerRecord *psr, CALLBACK *pcallback)
         if (status != asynSuccess) {
             asynPrint(pasynUser, ASYN_TRACE_ERROR,
                       "devScalerAsyn::init_record, %s connectDevice failed to %s for channel %d\n",
-                      psr->name, port);
+                      psr->name, port, i);
             goto bad;
         }
     }
@@ -271,10 +271,10 @@ static long scaler_reset(scalerRecord *psr)
     return(scaler_command(psr, pPvt->resetCommand, 0, 0, 0));
 }
 
-static long scaler_read(scalerRecord *psr, unsigned long *val)
+static long scaler_read(scalerRecord *psr, epicsUInt32 *val)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
-    return(scaler_command(psr, pPvt->readCommand, 0, 0, (long*)val));
+    return(scaler_command(psr, pPvt->readCommand, 0, 0, val));
 }
 
 static long scaler_write_preset(scalerRecord *psr, int signal, unsigned long val)
@@ -301,7 +301,7 @@ static long scaler_done(scalerRecord *psr)
 }
 
 
-static long scaler_command(scalerRecord *psr, int command, long channel, long val, long *pval)
+static long scaler_command(scalerRecord *psr, int command, long channel, long val, epicsUInt32 *pval)
 {
     scalerAsynPvt *pPvt = (scalerAsynPvt *)psr->dpvt;
     asynUser *pasynUser = pPvt->pasynUser[channel];
@@ -322,7 +322,7 @@ static long scaler_command(scalerRecord *psr, int command, long channel, long va
 
     pmsg->command = command;
     pmsg->val = val;
-    pmsg->pval = (epicsInt32 *)pval;
+    pmsg->pval = pval;
     pasynUser->userData = pmsg;
 
     /* Queue asyn request, so we get a callback when driver is ready */
@@ -348,7 +348,7 @@ static void asynCallback(asynUser *pasynUser)
     size_t nread;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-              "devScalerAsyn::asynCallback: %s command=%d, val=%d, pval=%p\n",
+              "devScalerAsyn::asynCallback: %s command=%d, val=%ld, pval=%p\n",
               psr->name, pmsg->command, pmsg->val, pmsg->pval);
     pasynUser->reason = pmsg->command;
 
@@ -359,10 +359,11 @@ static void asynCallback(asynUser *pasynUser)
     else if (pmsg->command == pPvt->readCommand) {
         /* Read the values of the scalers */
        pPvt->pasynInt32Array->read(pPvt->asynInt32ArrayPvt, pasynUser, 
-                                   pmsg->pval, psr->nch, &nread);
+                                   (epicsInt32 *)pmsg->pval, psr->nch, &nread);
        asynPrint(pasynUser, ASYN_TRACE_FLOW,
-         "devScalerAsyn::asynCallback readCommand nread=%d, counts[0]=%d\n",
-         nread, pmsg->pval[0]);        
+         "devScalerAsyn::asynCallback readCommand nread=%d, counts[]=%d %d %d %d %d %d %d %d\n",
+         nread, pmsg->pval[0], pmsg->pval[1], pmsg->pval[2], pmsg->pval[3], 
+                pmsg->pval[4], pmsg->pval[5], pmsg->pval[6], pmsg->pval[7]);        
     }
     else if (pmsg->command == pPvt->presetCommand) {
         /* Send preset command */
