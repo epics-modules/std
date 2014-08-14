@@ -234,8 +234,8 @@ void Scaler974::eventThread()
             sscanf(response, "%d;%d;%d;%d;", 
                    &counts[0], &counts[1], &counts[2], &counts[3]);
             asynPrint(this->pasynUserSelf, ASYN_TRACEIO_DRIVER,
-                "%s:%s counts=%d %d %d %d\n",
-                driverName, functionName, counts[0], counts[1], counts[2], counts[3]);
+                "%s:%s status=%d, counts=%d %d %d %d\n",
+                driverName, functionName, status, counts[0], counts[1], counts[2], counts[3]);
             this->lock();
             /* Get value of done in case scaler was stopped by scalerArm(0) */
             getIntegerParam(scalerDone, &done);
@@ -255,8 +255,7 @@ void Scaler974::eventThread()
 
 extern "C" int initScaler974(const char *portName, const char *serialPort, int serialAddr, int poll)
 {
-    Scaler974 *pScaler974=new Scaler974(portName, serialPort, serialAddr, poll);
-    pScaler974 = NULL;
+    new Scaler974(portName, serialPort, serialAddr, poll);
     return(asynSuccess);
 }
 
