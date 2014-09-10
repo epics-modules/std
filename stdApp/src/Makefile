@@ -56,6 +56,9 @@ std_SRCS += pvHistory.c
 # Femto amplifier
 std_SRCS += femto.st
 
+#delayCmd command
+std_SRCS += delayCmd.cpp
+
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
 INC += devScaler.h
