@@ -1,6 +1,7 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
+#include <string.h>
 
 #include "iocsh.h"
 #include "epicsExport.h"
@@ -49,7 +50,7 @@ static int delayCmd (const char* cmd)
 	struct cmdNode* nextcmd;
 
 	nextcmd = (struct cmdNode*) callocMustSucceed(1, sizeof(*nextcmd), "cmdnode");
-	nextcmd->cmd = (char*) callocMustSucceed(sizeof(cmd), sizeof(char), "cmdstring");
+	nextcmd->cmd = (char*) callocMustSucceed(strlen(cmd), sizeof(char), "cmdstring");
 
 	strcpy(nextcmd->cmd, cmd);
 
