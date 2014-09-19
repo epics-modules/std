@@ -1,7 +1,6 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
-#include <string.h>
 
 #include "iocsh.h"
 #include "epicsExport.h"
@@ -31,15 +30,15 @@ static void runDelayed (initHookState state)
 
 		printf("%s\n", node->cmd);
 		iocshCmd(node->cmd);
-        
-        free(node->cmd);
+
+		free(node->cmd);
 	}
-    
-    ellFree(&allcmds);
+
+	ellFree(&allcmds);
 }
 
 
-static int delayCmd (const char* cmd)
+int delayCmd (const char* cmd)
 {
 	if (! registered)
 	{
