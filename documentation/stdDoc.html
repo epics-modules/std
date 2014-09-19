@@ -14,13 +14,13 @@
 The std module publishes the following software items for use by ioc applications
 :
 
-<h2>Records</h2>
+<h2>Records<hr></h2>
 <dl>
 <dt><a href="epidRecord.html">epidRecord.html</a><dd>Extended PID feedback record
 <dt><a href="scalerRecord.html">scalerRecord.html</a><dd>Scaler record
 </dl>
 
-<h2>Databases and GUI display files</h2>
+<h2>Databases and GUI display files<hr></h2>
 
 
 <h3>4step.db, 4step.adl</h3>
@@ -203,6 +203,40 @@ can't be done with a PP link.
 <P ALIGN=CENTER><IMG SRC="selector.adl.jpg" ><IMG SRC="selector_choice.adl.jpg" ><IMG SRC="selector_more.adl.jpg" ><BR>selector.adl, selector_choice.adl,selector_more.adl
 
 <p>
+<h2>Other code<hr></h2>
+<h3>doAfterIocInit(char *cmd)</h3>
+
+<P>Stores the string <tt>cmd</tt> and executes it with <tt>iocshCmd()</tt> after
+iocInit.  This is useful to simplify maintenance of command files that specify
+databases which must be paired with code (such as State Notation Language
+programs) that must be invoked after iocInit. It's tedious and error prone to
+have the commands separated.  doAfterIocInit() allows this:
+
+<blockquote><pre>
+# editSseq - edit any sseq or seq record
+dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
+# Don't forget to run the sequence program, editSseq, below
+
+...
+unrelated commands
+...
+
+iocInit
+
+...
+more unrelated commands
+...
+
+seq &editSseq, 'P=xxxL:,Q=ES:'
+</pre></blockquote>
+
+to be replaced by this:
+
+<blockquote><pre>
+# editSseq - edit any sseq or seq record
+dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
+doAfterIocInit("seq &editSseq, 'P=xxxL:,Q=ES:'")
+</pre></blockquote>
 
 
 </body>
