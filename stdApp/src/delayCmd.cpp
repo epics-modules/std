@@ -38,7 +38,7 @@ static void runDelayed (initHookState state)
 }
 
 
-int delayCmd (const char* cmd)
+int doAfterIocInit (const char* cmd)
 {
 	if (! registered)
 	{
@@ -63,11 +63,11 @@ extern "C"
 {
 	static const iocshArg delay_arg            = { "commandString", iocshArgString };
 	static const iocshArg* const delay_args[1] = { &delay_arg };
-	static const iocshFuncDef delay_func       = {"delayCmd", 1, delay_args};
+	static const iocshFuncDef delay_func       = {"doAfterIocInit", 1, delay_args};
 
 
-	static void call_delay_func(const iocshArgBuf* args) { delayCmd(args[0].sval); }
-	static void delayCmdRegistrar(void)                  { iocshRegister(&delay_func, call_delay_func); }
+	static void call_delay_func(const iocshArgBuf* args) { doAfterIocInit(args[0].sval); }
+	static void doAfterIocInitRegistrar(void)                  { iocshRegister(&delay_func, call_delay_func); }
 
-	epicsExportRegistrar(delayCmdRegistrar);
+	epicsExportRegistrar(doAfterIocInitRegistrar);
 }
