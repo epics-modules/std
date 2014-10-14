@@ -313,6 +313,14 @@ static asynStatus int32Write(void *drvPvt, asynUser *pasynUser,
           break;
 
         case scalerArmCommand:
+
+          /* clear scaler data, to avoid immediate done */
+          if (pPvt->connectState != stateConnected) return(asynError);
+          for (i=0; i<pPvt->maxChans; i++) {
+              pPvt->counts[i] = 0;
+              (void)dbPutField(&pPvt->inputAddr[i], DBR_LONG, &pPvt->counts[i], 1);
+          }
+
           /* Arm or disarm scaler */
           pPvt->acquiring = value;
           if (value) pPvt->prevAcquiring = value;
