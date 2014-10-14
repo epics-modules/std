@@ -12,12 +12,27 @@
 
 <cr>
  <h2 align="CENTER">
-    Release 3-3 (Sep. 19, 2014)</h2>
+    Release 3-3 (Oct. 10, 2014)</h2>
   <ul>
 
 	<li>Added function "doAfterIocInit()", so that databases paired with SNL
 		programs can be specified in the same place.  (Thanks to Kenan Lang)
 
+	<li>scalerRecord.c: use "epicsUInt32" instead of "unsigned long" for Sn and
+		PRn fields
+
+	<li>devScalerAsyn.c: Changed pointers from unsigned long to epicsUInt32;
+		changes to avoid compiler warnings
+
+	<li>Added displays for the aSub, compress, and sub records
+	
+	<li>translated .adl files for caQtDM and CSS-BOY
+
+	<li>drvScalerSoft.c: modified to zero scaler-count PVs when scaler is
+		started.
+
+	<li>Added scalerSoftCtrl database and settings file; added softScaler.cmd
+		example of loading soft scaler into ioc.
   </ul><cr>
 
 <cr>
