@@ -59,6 +59,9 @@ std_SRCS += femto.st
 #delayCmd command
 std_SRCS += delayCmd.cpp
 
+# vxCall command
+std_SRCS_vxWorks += vxcall.cpp
+
 # publish this file so it can be included by device support for scaler
 # built in the MCA module
 INC += devScaler.h
