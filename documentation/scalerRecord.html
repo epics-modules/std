@@ -537,12 +537,14 @@ from a startup file that supports scalers:
 dbLoadDatabase("dbd/xxxApp.dbd")
 
 # scalers
-dbLoadRecords("$(STD)/stdApp/Db/scaler.db","P=xxx:,S=scaler1,C=0,DTYP=Joerger VSC8/16,FREQ=10000000")
-dbLoadRecords("$(STD)/stdApp/Db/scaler.db","P=xxx:,S=scaler2,C=0,DTYP=Joerger VS,FREQ=10000000")
-dbLoadRecords("$(STD)/stdApp/Db/scaler.db","P=xxx:,S=scaler3,C=0,DTYP=Struck STR7201 Scaler,FREQ=25000000")
-dbLoadRecords("$(STD)/stdApp/Db/scaler.db","P=xxx:,S=scaler4,C=0,DTYP=CAMAC scaler,FREQ=10000000")
+dbLoadRecords("$(STD)/stdApp/Db/scaler16m.db","P=xxx:,S=scaler1,OUT=#C0 S0 @,DTYP=Joerger VSC8/16,FREQ=10000000")
+dbLoadRecords("$(STD)/stdApp/Db/scaler16m.db","P=xxx:,S=scaler2,OUT=#C0 S0 @,DTYP=Joerger VS,FREQ=10000000")
+dbLoadRecords("$(STD)/stdApp/Db/scaler16m.db","P=xxx:,S=scaler3,OUT=#C0 S0 @,DTYP=Struck STR7201 Scaler,FREQ=25000000")
+dbLoadRecords("$(STD)/stdApp/Db/scaler16m.db","P=xxx:,S=scaler4,OUT=#C0 S0 @,DTYP=CAMAC scaler,FREQ=10000000")
+dbLoadRecords("$(STD)/stdApp/Db/scaler32.db", "P=xxx:,S=scaler5,OUT=@asyn($(PORT)),DTYP=Asyn Scaler,FREQ=50000000")
 </PRE>
 
+<blockquote>
 <P><TABLE BORDER CELLPADDING=5>
 <TR><TH COLSPAN=2><PRE>
 VSCSetup(int nCards, char *baseAddress, unisgned intVectBase)
@@ -556,8 +558,8 @@ VSCSetup(int nCards, char *baseAddress, unisgned intVectBase)
 with address jumpers on the actual card(s).
 <P>Joerger VSC8 and VSC16 have base addresses in the A32 address space,
 on a 256-byte (0x100) boundary.  (I.e., these cards require 256 bytes
-each, and must all be addressed contiguously as, e.g., 0xD0000000,
-0xD0000100,...).
+each, and must all be addressed contiguously as, e.g., 0xB0000000,
+0xB0000100,...).
 </TD></TR>
 <TR VALIGN=TOP><TD>intVectBase</TD>
 <TD>the interrupt vector that will be loaded into the first card of a
@@ -567,8 +569,11 @@ is read from the hardware.)</TD>
 </TR>
 </TABLE>
 </FONT>
-VSCSetup(2, 0xD0000000, 200)
+</blockquote>
 
+<PRE>VSCSetup(2, 0xB0000000, 200)</PRE>
+
+<blockquote>
 <P><TABLE BORDER CELLPADDING=5>
 <TR><TH COLSPAN=2><PRE>
 scalerVS_Setup(int nCards, char *baseAddress, unsigned intVectBase, int intLevel)
@@ -593,58 +598,46 @@ intVectBase+2, etc.  Stay in the range [64..255].
 </TR>
 </TABLE>
 </FONT>
+</blockquote>
+
+<PRE>
 scalerVS_Setup(1, 0x2000, 205, 5)
+</PRE>
 
-
-<P><TABLE BORDER CELLPADDING=5>
-<TR><TH>Setup for SIS3801 and Struck 7201 multichannel scalers</TH></TR>
-
-<TR><TD>
+<blockquote>
 	<TABLE BORDER CELLPADDING=5>
-	<TR><TH COLSPAN=2><PRE>STR7201Setup(int nCards, int baseAddress, int intVectBase, int intLevel)</PRE></TH></TR>
-	<TR VALIGN=TOP><TD>nCards</TD>
-	<TD>the actual number of cards may be less than, but not greater than this
+	<TR><TH COLSPAN=2><PRE>drvSIS3801Config(Port, baseAddress, intVectBase, intLevel, 2048, 32)</PRE></TH></TR>
+	<TR VALIGN=TOP><TD>Port
+	<TD>name to give to asyn port defined by drvSIS3801Config()
 	</TR>
-	<TR VALIGN=TOP><TD>baseAddress</TD>
+	<TR VALIGN=TOP><TD>baseAddress
 	<TD>the base address of the first card of a series.  This must agree
 	with address jumpers on the actual card(s).
 	<P>SIS3801 scalers have base addresses in the A32 address space,
 	on a 2048-byte (0x800) boundary.  (I.e., these cards require 2048 bytes
 	each, and must all be addressed contiguously as, e.g., 0x90000000, 0x90000800,...).
 	</TD></TR>
-	<TR VALIGN=TOP><TD>intVectBase</TD>
+	<TR VALIGN=TOP><TD>intVectBase
 	<TD>the interrupt vector that will be loaded into the first card of a
 	series.  Succeeding cards will be loaded with intVectBase+1,
 	intVectBase+2, etc.  Stay in the range [64..255].
-	<TR VALIGN=TOP><TD>intLevel</TD>
-	<TD>the interrupt level this board should use.</TD>
+	<TR VALIGN=TOP><TD>intLevel
+	<TD>the interrupt level this board should use.
+
+	<TR VALIGN=TOP><TD>channels
+	<TD>number of channels for each signal.
+
+	<TR VALIGN=TOP><TD>signals
+	<TD>number of signals (i.e., counter inputs)
 	</TR>
 	</TABLE>
-STR7201Setup(2, 0x90000000, 220, 6)
-</TD></TR>
+</blockquote>
+<pre>
+drvSIS3801Config($(PORT), 0xA0000000, 220, 6, $(MAX_CHANS), $(MAX_SIGNALS))
+</pre>
 
-<TR><TD>
-	<TABLE BORDER CELLPADDING=5>
-	<TR><TH COLSPAN=2><PRE>STR7201Config(int card, int maxSignals, int maxChans, int enable25MHzClock)</PRE></TH>
-	<TR VALIGN=TOP><TD>card</TD>
-	<TD>card to which this setup command refers
-	</TR>
-	<TR VALIGN=TOP><TD>maxSignals</TD>
-	<TD>the number of scaler channels to use.
-	</TD></TR>
-	<TR VALIGN=TOP><TD>maxChans</TD>
-	<TD>number of samples per channel to save (for multichannel-scaler operation).
-	<TR VALIGN=TOP><TD>enable25MHzClock</TD>
-	<TD>if '1', the 25-MHz clock is routed to scaler channel 1</TD>
-	</TR>
-	</TABLE>
-STR7201Config(0, 8, 1000, 0)
-</TD></TR>
-</TABLE>
+</table>
 
-</TD>
-</TR>
-</TABLE>
 
 <P><TABLE BORDER CELLPADDING=5>
 <TR><TH COLSPAN=2>BACKUP/RESTORE (BURT) REQUEST FILES<BR></TH></TR>
