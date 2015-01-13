@@ -238,6 +238,12 @@ dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
 doAfterIocInit("seq &editSseq, 'P=xxxL:,Q=ES:'")
 </pre></blockquote>
 
+<h3>vxCall(char *funcName [, char *arg1, char *arg2, ...])</h3>
+
+<P>Searches the vxWorks symbol table for a function that matches the string
+<tt>funcName</tt>, then executes the function with the given arguments.
+<tt>vxCall</tt> will parse each argument to determine if it represents a 
+number or a string and pass the correct values to the vxWorks function.
 
 </body>
 </html>
