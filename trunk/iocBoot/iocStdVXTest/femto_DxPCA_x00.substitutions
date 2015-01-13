@@ -1,0 +1,33 @@
+#Uncomment the femto amplifier you want to use.
+
+# P=Prefix
+# A=Amplifier name
+# G1=Gain first (lowest) bit
+# G2=Gain second bit
+# G3=Gain third bit
+# G4=Gain fourth bit (DDPCA-300)
+# SN=High speed/Low noise bit (DHPCA-100 and DLPCA-200)
+# C=Coupling (DHPCA-100 and DLPCA-200)
+# F10=10 MHz Filter (DHPCA-100)
+# F1=1 MHz Filter (DHPCA-100)
+
+#file "$(STD)/stdApp/Db/femto_DDPCA_300.db"
+#{
+#pattern
+#{P       A       G1          G2          G3          G4         }
+#{xxx:  femto1  Unidig1Bo0  Unidig1Bo1  Unidig1Bo2  Unidig1Bo3 }
+#}
+
+#file "$(STD)/stdApp/Db/femto_DLPCA_200.db"
+#{
+#pattern
+#{P       A       G1          G2          G3          SN          C          }
+#{xxx:  femto2  Unidig1Bo4  Unidig1Bo5  Unidig1Bo6  Unidig1Bo7  Unidig1Bo8 }
+#}
+
+#file "$(STD)/stdApp/Db/femto_DHPCA_100.db"
+#{
+#pattern
+#{P       A       G1          G2           G3           SN           C            F10          F1          }
+#{xxx:  femto3  Unidig1Bo9  Unidig1Bo10  Unidig1Bo11  Unidig1Bo12  Unidig1Bo13  Unidig1Bo14  Unidig1Bo15 }
+#}

@@ -1,0 +1,1503 @@
+
+file {
+	name="/home/phoebus/SULLIVAN/epics/synApps_cvs/support/std/stdApp/op/adl/autoShutter.adl"
+	version=030101
+}
+display {
+	object {
+		x=600
+		y=457
+		width=530
+		height=445
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+"text update" {
+	object {
+		x=407
+		y=193
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(S)Shtr:Active"
+		clr=14
+		bclr=1
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=207
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		chan="$(P)$(S)Shtr:srCurrentOk"
+	}
+}
+text {
+	object {
+		x=9
+		y=183
+		width=107
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Storage Ring"
+}
+text {
+	object {
+		x=42
+		y=237
+		width=50
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Threshold"
+}
+rectangle {
+	object {
+		x=180
+		y=207
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:srCurrentOk"
+	}
+}
+"text update" {
+	object {
+		x=98
+		y=220
+		width=61
+		height=13
+	}
+	monitor {
+		chan="S:SRcurrentAI"
+		clr=14
+		bclr=1
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=44
+		y=223
+		width=50
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Current"
+}
+text {
+	object {
+		x=31
+		y=205
+		width=140
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Current > Threshold"
+	align="horiz. right"
+}
+text {
+	object {
+		x=386
+		y=166
+		width=107
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Open Command"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=2
+		y=178
+		width=200
+		height=98
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=2
+		y=274
+		width=200
+		height=63
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+polyline {
+	object {
+		x=224
+		y=86
+		width=3
+		height=343
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(225,87)
+		(226,428)
+	}
+}
+polyline {
+	object {
+		x=201
+		y=86
+		width=25
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(202,88)
+		(225,87)
+	}
+}
+polyline {
+	object {
+		x=200
+		y=233
+		width=25
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(201,235)
+		(224,234)
+	}
+}
+polyline {
+	object {
+		x=201
+		y=315
+		width=25
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(202,317)
+		(225,316)
+	}
+}
+polyline {
+	object {
+		x=226
+		y=200
+		width=47
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(227,202)
+		(272,201)
+	}
+}
+"text update" {
+	object {
+		x=278
+		y=195
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(S)Shtr:Status"
+		clr=14
+		bclr=1
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=254
+		y=166
+		width=107
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Shutter"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=275
+		y=192
+		width=64
+		height=19
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(S)Shtr:Status"
+	}
+}
+rectangle {
+	object {
+		x=275
+		y=192
+		width=64
+		height=19
+	}
+	"basic attribute" {
+		clr=15
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:Status"
+	}
+}
+text {
+	object {
+		x=351
+		y=58
+		width=165
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Open Delay Timer"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=404
+		y=118
+		width=60
+		height=20
+	}
+	display[0] {
+		label="CountDownTime Setup"
+		name="countDownTimer_more.adl"
+		args="P=$(P),N=$(T1)"
+	}
+	clr=0
+	bclr=53
+	label="-Edit"
+}
+rectangle {
+	object {
+		x=347
+		y=53
+		width=175
+		height=91
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=303
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		chan="$(P)$(S)Shtr:BlepsShtrPermit"
+	}
+}
+text {
+	object {
+		x=11
+		y=278
+		width=135
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Shutter Permits"
+}
+"text update" {
+	object {
+		x=102
+		y=302
+		width=70
+		height=13
+	}
+	monitor {
+		chan="$(P)$(S)Shtr:BlepsShtrPermit"
+		clr=14
+		bclr=1
+	}
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=303
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:BlepsShtrPermit"
+	}
+}
+text {
+	object {
+		x=56
+		y=302
+		width=45
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="FE-EPS"
+}
+rectangle {
+	object {
+		x=180
+		y=319
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		chan="$(P)$(S)Shtr:AcisShtrPermit"
+	}
+}
+"text update" {
+	object {
+		x=102
+		y=318
+		width=70
+		height=13
+	}
+	monitor {
+		chan="$(P)$(S)Shtr:AcisShtrPermit"
+		clr=14
+		bclr=1
+	}
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=319
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:AcisShtrPermit"
+	}
+}
+text {
+	object {
+		x=56
+		y=318
+		width=45
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ACIS"
+}
+rectangle {
+	object {
+		x=399
+		y=272
+		width=70
+		height=37
+	}
+	"basic attribute" {
+		clr=30
+		width=1
+	}
+}
+"text update" {
+	object {
+		x=446
+		y=288
+		width=20
+		height=20
+	}
+	monitor {
+		chan="$(P)cdt$(T2):timeSec"
+		clr=14
+		bclr=30
+	}
+	format="truncated"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=402
+		y=275
+		width=40
+		height=35
+	}
+	monitor {
+		chan="$(P)cdt$(T2):timeMin"
+		clr=14
+		bclr=30
+	}
+	align="horiz. right"
+	format="truncated"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=399
+		y=272
+		width=72
+		height=38
+	}
+	"basic attribute" {
+		clr=0
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		chan="8idi:cdt1:start"
+	}
+}
+text {
+	object {
+		x=440
+		y=283
+		width=11
+		height=21
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="."
+	align="horiz. centered"
+}
+text {
+	object {
+		x=352
+		y=252
+		width=165
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Open Notify Timer"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=404
+		y=313
+		width=60
+		height=20
+	}
+	display[0] {
+		label="CountDownTime Setup"
+		name="countDownTimer_more.adl"
+		args="P=$(P),N=$(T2)"
+	}
+	clr=0
+	bclr=53
+	label="-Edit"
+}
+rectangle {
+	object {
+		x=347
+		y=247
+		width=175
+		height=91
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=255
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		chan="$(P)$(S)Shtr:modeOk"
+	}
+}
+"text update" {
+	object {
+		x=72
+		y=254
+		width=100
+		height=13
+	}
+	monitor {
+		chan="S:DesiredMode"
+		clr=14
+		bclr=1
+	}
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=255
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:modeOk"
+	}
+}
+text {
+	object {
+		x=21
+		y=254
+		width=45
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Op Mode"
+}
+polyline {
+	object {
+		x=201
+		y=165
+		width=25
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(202,167)
+		(225,166)
+	}
+}
+rectangle {
+	object {
+		x=399
+		y=272
+		width=72
+		height=38
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)cdt$(T2):trigger"
+	}
+}
+text {
+	object {
+		x=165
+		y=222
+		width=10
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ma"
+}
+text {
+	object {
+		x=165
+		y=240
+		width=10
+		height=12
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ma"
+}
+"text update" {
+	object {
+		x=97
+		y=236
+		width=61
+		height=13
+	}
+	monitor {
+		chan="$(P)$(S)Shtr:ThresholdCurrent"
+		clr=14
+		bclr=1
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=193
+		y=4
+		width=170
+		height=24
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Auto Open"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=194
+		y=32
+		width=170
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="$(P)$(S)"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=14
+		y=7
+		width=170
+		height=24
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Auto Open"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=2
+		y=2
+		width=200
+		height=120
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=2
+		y=120
+		width=200
+		height=60
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+text {
+	object {
+		x=11
+		y=126
+		width=135
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Lease Date"
+}
+"text update" {
+	object {
+		x=57
+		y=158
+		width=120
+		height=13
+	}
+	monitor {
+		chan="$(P)AClock$(A):Set.SVAL"
+		clr=14
+		bclr=1
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=10
+		y=158
+		width=45
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Expire"
+}
+rectangle {
+	object {
+		x=180
+		y=158
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)AClock$(A):Trigger"
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=158
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)AClock$(A):Trigger"
+	}
+}
+"related display" {
+	object {
+		x=125
+		y=126
+		width=60
+		height=20
+	}
+	display[0] {
+		label="Alarm Clock"
+		name="alarmClock.adl"
+		args="P=$(P),A=$(A)"
+	}
+	clr=0
+	bclr=53
+	label="-Edit"
+}
+text {
+	object {
+		x=15
+		y=35
+		width=170
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="$(P)$(S)"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=16
+		y=362
+		width=60
+		height=20
+	}
+	display[0] {
+		label="User Arm Calc"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=$(S)Shtr:UserArm"
+	}
+	clr=0
+	bclr=53
+	label="-Edit"
+}
+text {
+	object {
+		x=11
+		y=339
+		width=140
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Custom Arm Calc"
+}
+rectangle {
+	object {
+		x=180
+		y=369
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		chan="$(P)$(S)Shtr:UserArm"
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=369
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:UserArm"
+	}
+}
+"message button" {
+	object {
+		x=58
+		y=90
+		width=80
+		height=21
+	}
+	control {
+		chan="$(P)$(S)Shtr:Enable"
+		clr=35
+		bclr=24
+	}
+	label="Disable"
+	press_msg="0"
+}
+rectangle {
+	object {
+		x=180
+		y=94
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(S)Shtr:Enable"
+	}
+}
+"message button" {
+	object {
+		x=58
+		y=64
+		width=80
+		height=21
+	}
+	control {
+		chan="$(P)$(S)Shtr:Enable"
+		clr=60
+		bclr=64
+	}
+	label="Enable"
+	press_msg="1"
+}
+rectangle {
+	object {
+		x=180
+		y=68
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:Enable"
+	}
+}
+rectangle {
+	object {
+		x=2
+		y=335
+		width=200
+		height=55
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+composite {
+	object {
+		x=399
+		y=78
+		width=72
+		height=38
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=399
+				y=78
+				width=70
+				height=37
+			}
+			"basic attribute" {
+				clr=30
+				width=1
+			}
+		}
+		"text update" {
+			object {
+				x=446
+				y=94
+				width=20
+				height=20
+			}
+			monitor {
+				chan="$(P)cdt$(T1):timeSec"
+				clr=14
+				bclr=30
+			}
+			format="truncated"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=402
+				y=81
+				width=40
+				height=35
+			}
+			monitor {
+				chan="$(P)cdt$(T1):timeMin"
+				clr=14
+				bclr=30
+			}
+			align="horiz. right"
+			format="truncated"
+			limits {
+			}
+		}
+		rectangle {
+			object {
+				x=399
+				y=78
+				width=72
+				height=38
+			}
+			"basic attribute" {
+				clr=0
+				fill="outline"
+				width=2
+			}
+			"dynamic attribute" {
+				chan="8idi:cdt1:start"
+			}
+		}
+		text {
+			object {
+				x=440
+				y=89
+				width=11
+				height=21
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="."
+			align="horiz. centered"
+		}
+		rectangle {
+			object {
+				x=399
+				y=78
+				width=72
+				height=38
+			}
+			"basic attribute" {
+				clr=20
+				fill="outline"
+				width=2
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)cdt$(T1):trigger"
+			}
+		}
+	}
+}
+polyline {
+	object {
+		x=201
+		y=374
+		width=25
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(202,376)
+		(225,375)
+	}
+}
+"related display" {
+	object {
+		x=476
+		y=390
+		width=42
+		height=16
+	}
+	display[0] {
+		label="Arm Calc"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=$(S)Shtr:Arm"
+	}
+	display[1] {
+		label="Trigger"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=$(S)Shtr:Trigger"
+	}
+	display[2] {
+		label="PostTrigger"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=$(S)Shtr:PostTrig"
+	}
+	display[3] {
+		label="Enable Off"
+		name="yyCalcoutRecord_full.adl"
+		args="P=$(P),C=$(S)Shtr:EnableOff"
+	}
+	display[4] {
+		label="Shutter Open"
+		name="yySseq.adl"
+		args="P=$(P),S=$(S)Shtr:Open"
+	}
+	display[5] {
+		label="User Arm Calc"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=$(S)Shtr:UserArm"
+	}
+	display[6] {
+		label="Remote Link Calc"
+		name="yysCalcoutRecord_full.adl"
+		args="P=$(P),C=$(S)Shtr:CalcTrigOut"
+	}
+	clr=0
+	bclr=53
+	label="-Detail"
+}
+"related display" {
+	object {
+		x=472
+		y=413
+		width=50
+		height=20
+	}
+	display[0] {
+		label="AutoShutter Less"
+		name="autoShutter_less.adl"
+		args="P=$(P),S=$(S),T1=$(T1),T2=$(T2),A=$(A)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=17
+	label="-Less"
+}
+text {
+	object {
+		x=269
+		y=386
+		width=140
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="SR Current Threshold"
+}
+composite {
+	object {
+		x=351
+		y=401
+		width=105
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=351
+				y=401
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)$(S)Shtr:ThresholdCurrent"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=436
+				y=401
+				width=20
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="ma"
+		}
+	}
+}
+rectangle {
+	object {
+		x=263
+		y=383
+		width=200
+		height=50
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=405
+		y=192
+		width=64
+		height=19
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(S)Shtr:Active"
+	}
+}
+rectangle {
+	object {
+		x=405
+		y=192
+		width=64
+		height=19
+	}
+	"basic attribute" {
+		clr=15
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:Active"
+	}
+}
+text {
+	object {
+		x=11
+		y=392
+		width=160
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Shutter Control"
+}
+"related display" {
+	object {
+		x=18
+		y=415
+		width=60
+		height=20
+	}
+	display[0] {
+		label="RemoteShutter Setting"
+		name="autoShutter_Remote.adl"
+		args="P=$(P),S=$(S)"
+	}
+	clr=0
+	bclr=53
+	label="-Edit"
+}
+rectangle {
+	object {
+		x=180
+		y=422
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		chan="$(P)$(S)Shtr:TrigOutOK"
+	}
+}
+rectangle {
+	object {
+		x=180
+		y=422
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:TrigOutOK"
+	}
+}
+rectangle {
+	object {
+		x=2
+		y=388
+		width=200
+		height=55
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+}
+polyline {
+	object {
+		x=201
+		y=426
+		width=25
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(202,428)
+		(225,427)
+	}
+}
+polyline {
+	object {
+		x=339
+		y=200
+		width=66
+		height=3
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+		width=2
+	}
+	points {
+		(340,202)
+		(404,201)
+	}
+}
+"text update" {
+	object {
+		x=360
+		y=222
+		width=120
+		height=13
+	}
+	monitor {
+		chan="$(P)$(S)Shtr:OpenTimeStamp"
+		clr=14
+		bclr=1
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=277
+		y=222
+		width=80
+		height=13
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Last Opened"
+}

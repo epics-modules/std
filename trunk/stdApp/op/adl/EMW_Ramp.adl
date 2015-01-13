@@ -1,0 +1,1013 @@
+
+file {
+	name="/net/epics/xfd/operations/EMW_Ramp.adl"
+	version=020303
+}
+display {
+	object {
+		x=10
+		y=10
+		width=399
+		height=800
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+"choice button" {
+	object {
+		x=20
+		y=119
+		width=60
+		height=60
+	}
+	control {
+		chan="ID11:0RT.MODE"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=78
+		y=98
+		width=315
+		height=15
+	}
+	monitor {
+		chan="ID11:0RT.ERRM"
+		clr=14
+		bclr=6
+	}
+}
+text {
+	object {
+		x=31
+		y=97
+		width=76
+		height=17
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Mode"
+}
+"message button" {
+	object {
+		x=94
+		y=125
+		width=62
+		height=20
+	}
+	control {
+		chan="ID11:0RT.SWAP"
+		clr=14
+		bclr=51
+	}
+	label="SWAP"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=171
+		y=151
+		width=130
+		height=23
+	}
+	control {
+		chan="ID11:0RT.MADJ"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=171
+		y=129
+		width=110
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Manual Adjust"
+}
+"text entry" {
+	object {
+		x=309
+		y=151
+		width=74
+		height=23
+	}
+	control {
+		chan="ID11:0RT.GAIN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=309
+		y=130
+		width=74
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Gain"
+}
+"message button" {
+	object {
+		x=94
+		y=148
+		width=62
+		height=20
+	}
+	control {
+		chan="ID11:0RT.RARM"
+		clr=14
+		bclr=51
+	}
+	label="RARM"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=200
+		y=356
+		width=61
+		height=20
+	}
+	control {
+		chan="ID11:syncBO"
+		clr=14
+		bclr=51
+	}
+	label="SYNC"
+	press_msg="1"
+	release_msg="0"
+}
+rectangle {
+	object {
+		x=4
+		y=4
+		width=391
+		height=34
+	}
+	"basic attribute" {
+		clr=7
+	}
+}
+text {
+	object {
+		x=115
+		y=10
+		width=160
+		height=21
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="EMW Ramp Test"
+}
+text {
+	object {
+		x=7
+		y=45
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ID11:0RT"
+}
+text {
+	object {
+		x=140
+		y=72
+		width=90
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="New Table"
+}
+rectangle {
+	object {
+		x=113
+		y=74
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		width=3
+	}
+}
+rectangle {
+	object {
+		x=115
+		y=76
+		width=21
+		height=6
+	}
+	"basic attribute" {
+		clr=15
+		width=3
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID11:0RT.NEWT"
+	}
+}
+rectangle {
+	object {
+		x=115
+		y=76
+		width=21
+		height=6
+	}
+	"basic attribute" {
+		clr=20
+		width=3
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID11:0RT.ERRC"
+	}
+}
+"choice button" {
+	object {
+		x=21
+		y=264
+		width=60
+		height=60
+	}
+	control {
+		chan="ID11:1RT.MODE"
+		clr=14
+		bclr=51
+	}
+}
+"text update" {
+	object {
+		x=78
+		y=245
+		width=315
+		height=15
+	}
+	monitor {
+		chan="ID11:1RT.ERRM"
+		clr=14
+		bclr=6
+	}
+}
+text {
+	object {
+		x=31
+		y=244
+		width=76
+		height=17
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Mode"
+}
+"message button" {
+	object {
+		x=94
+		y=270
+		width=62
+		height=20
+	}
+	control {
+		chan="ID11:1RT.SWAP"
+		clr=14
+		bclr=51
+	}
+	label="SWAP"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=171
+		y=292
+		width=130
+		height=23
+	}
+	control {
+		chan="ID11:1RT.MADJ"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=171
+		y=270
+		width=110
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Manual Adjust"
+}
+"text entry" {
+	object {
+		x=309
+		y=291
+		width=74
+		height=23
+	}
+	control {
+		chan="ID11:1RT.GAIN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=309
+		y=270
+		width=74
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Gain"
+}
+"message button" {
+	object {
+		x=94
+		y=293
+		width=62
+		height=20
+	}
+	control {
+		chan="ID11:1RT.RARM"
+		clr=14
+		bclr=51
+	}
+	label="RARM"
+	press_msg="1"
+}
+text {
+	object {
+		x=10
+		y=194
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ID11:1RT"
+}
+text {
+	object {
+		x=141
+		y=220
+		width=90
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="New Table"
+}
+rectangle {
+	object {
+		x=114
+		y=222
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		width=3
+	}
+}
+rectangle {
+	object {
+		x=116
+		y=224
+		width=21
+		height=6
+	}
+	"basic attribute" {
+		clr=15
+		width=3
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID11:1RT.NEWT"
+	}
+}
+rectangle {
+	object {
+		x=116
+		y=224
+		width=21
+		height=6
+	}
+	"basic attribute" {
+		clr=20
+		width=3
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID11:1RT.ERRC"
+	}
+}
+rectangle {
+	object {
+		x=4
+		y=352
+		width=280
+		height=28
+	}
+	"basic attribute" {
+		clr=7
+	}
+}
+text {
+	object {
+		x=21
+		y=356
+		width=170
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Make desired changes above,"
+}
+text {
+	object {
+		x=21
+		y=366
+		width=170
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="then press SYNC to activate."
+}
+"text entry" {
+	object {
+		x=234
+		y=67
+		width=74
+		height=23
+	}
+	control {
+		chan="ID11:0RT.TIMF"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=309
+		y=70
+		width=74
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="RampTime"
+}
+text {
+	object {
+		x=310
+		y=218
+		width=74
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="RampTime"
+}
+"text entry" {
+	object {
+		x=234
+		y=216
+		width=74
+		height=23
+	}
+	control {
+		chan="ID11:1RT.TIMF"
+		clr=14
+		bclr=51
+	}
+}
+"message button" {
+	object {
+		x=10
+		y=400
+		width=101
+		height=26
+	}
+	control {
+		chan="ID11:0PD.PROC"
+		clr=14
+		bclr=4
+	}
+	label="PROC"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=125
+		y=471
+		width=122
+		height=19
+	}
+	control {
+		chan="ID11:0PD.WIDE"
+		clr=14
+		bclr=4
+	}
+}
+"text entry" {
+	object {
+		x=125
+		y=451
+		width=122
+		height=19
+	}
+	control {
+		chan="ID11:0PD.DLY"
+		clr=14
+		bclr=4
+	}
+}
+"choice button" {
+	object {
+		x=266
+		y=400
+		width=110
+		height=100
+	}
+	control {
+		chan="ID11:0PD.UNIT"
+		clr=14
+		bclr=4
+	}
+}
+text {
+	object {
+		x=10
+		y=431
+		width=101
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNIT:"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=125
+		y=431
+		width=119
+		height=15
+	}
+	monitor {
+		chan="ID11:0PD.UNIT"
+		clr=14
+		bclr=4
+	}
+	align="horiz. centered"
+	format="string"
+}
+text {
+	object {
+		x=52
+		y=451
+		width=59
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DLY:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=37
+		y=471
+		width=74
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="WIDE:"
+	align="horiz. right"
+}
+"message button" {
+	object {
+		x=10
+		y=500
+		width=101
+		height=26
+	}
+	control {
+		chan="ID11:1PD.PROC"
+		clr=14
+		bclr=4
+	}
+	label="PROC"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=125
+		y=571
+		width=122
+		height=19
+	}
+	control {
+		chan="ID11:1PD.WIDE"
+		clr=14
+		bclr=4
+	}
+}
+"text entry" {
+	object {
+		x=125
+		y=551
+		width=122
+		height=19
+	}
+	control {
+		chan="ID11:1PD.DLY"
+		clr=14
+		bclr=4
+	}
+}
+"choice button" {
+	object {
+		x=266
+		y=499
+		width=110
+		height=100
+	}
+	control {
+		chan="ID11:1PD.UNIT"
+		clr=14
+		bclr=4
+	}
+}
+text {
+	object {
+		x=10
+		y=531
+		width=101
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNIT:"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=125
+		y=531
+		width=119
+		height=15
+	}
+	monitor {
+		chan="ID11:1PD.UNIT"
+		clr=14
+		bclr=4
+	}
+	align="horiz. centered"
+	format="string"
+}
+text {
+	object {
+		x=52
+		y=551
+		width=59
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DLY:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=37
+		y=571
+		width=74
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="WIDE:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=11
+		y=622
+		width=100
+		height=16
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNIT:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=11
+		y=646
+		width=100
+		height=16
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PER:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=11
+		y=669
+		width=100
+		height=16
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DCY:"
+	align="horiz. right"
+}
+"choice button" {
+	object {
+		x=266
+		y=598
+		width=110
+		height=100
+	}
+	control {
+		chan="ID11:0PT.UNIT"
+		clr=14
+		bclr=4
+	}
+}
+"text entry" {
+	object {
+		x=125
+		y=649
+		width=119
+		height=19
+	}
+	control {
+		chan="ID11:0PT.PER"
+		clr=14
+		bclr=4
+	}
+}
+"text entry" {
+	object {
+		x=125
+		y=670
+		width=119
+		height=19
+	}
+	control {
+		chan="ID11:0PT.DCY"
+		clr=14
+		bclr=4
+	}
+}
+"message button" {
+	object {
+		x=11
+		y=592
+		width=100
+		height=26
+	}
+	control {
+		chan="ID11:0PT.PROC"
+		clr=14
+		bclr=4
+	}
+	label="PROC"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=125
+		y=623
+		width=119
+		height=19
+	}
+	control {
+		chan="ID11:0PT.UNIT"
+		clr=14
+		bclr=4
+	}
+}
+text {
+	object {
+		x=10
+		y=724
+		width=101
+		height=17
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UNIT:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=10
+		y=749
+		width=101
+		height=17
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PER:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=10
+		y=773
+		width=101
+		height=17
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DCY:"
+	align="horiz. right"
+}
+"choice button" {
+	object {
+		x=266
+		y=697
+		width=110
+		height=100
+	}
+	control {
+		chan="ID11:1PT.UNIT"
+		clr=14
+		bclr=4
+	}
+}
+"text entry" {
+	object {
+		x=125
+		y=752
+		width=121
+		height=19
+	}
+	control {
+		chan="ID11:1PT.PER"
+		clr=14
+		bclr=4
+	}
+}
+"text entry" {
+	object {
+		x=125
+		y=775
+		width=121
+		height=19
+	}
+	control {
+		chan="ID11:1PT.DCY"
+		clr=14
+		bclr=4
+	}
+}
+"message button" {
+	object {
+		x=10
+		y=693
+		width=101
+		height=26
+	}
+	control {
+		chan="ID11:1PT.PROC"
+		clr=14
+		bclr=4
+	}
+	label="PROC"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=125
+		y=728
+		width=121
+		height=19
+	}
+	control {
+		chan="ID11:1PT.UNIT"
+		clr=14
+		bclr=4
+	}
+}

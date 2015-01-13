@@ -1,0 +1,332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>stdReleaseNotes</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 7  (Solaris Sparc)">
+	<META NAME="CREATED" CONTENT="20060828;8453100">
+	<META NAME="CHANGED" CONTENT="20060828;8514200">
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
+<H1 ALIGN=CENTER>std Release Notes</H1>
+
+<cr>
+ <h2 align="CENTER">
+	Release 3-4 (Jan. 13, 2015)</h2>
+  <ul>
+	
+	<li>Added function "vxCall()", so that all built in vxWorks functions can
+		be invoked from the IOC shell.
+		
+  </ul><cr>
+
+
+ <h2 align="CENTER">
+    Release 3-3 (Nov. 10, 2014)</h2>
+  <ul>
+
+	<li>Added function "doAfterIocInit()", so that databases paired with SNL
+		programs can be specified in the same place.  (Thanks to Keenan Lang)
+
+	<li>scalerRecord.c: use "epicsUInt32" instead of "unsigned long" for Sn and
+		PRn fields
+
+	<li>devScalerAsyn.c: Changed pointers from unsigned long to epicsUInt32;
+		changes to avoid compiler warnings
+
+	<li>Added displays for the aSub, compress, and sub records
+	
+	<li>translated .adl files for caQtDM and CSS-BOY
+
+	<li>drvScalerSoft.c: modified to zero scaler-count PVs when scaler is
+		started.
+
+	<li>Added scalerSoftCtrl database and settings file; added softScaler.cmd
+		example of loading soft scaler into ioc.
+
+	<li>Modified 4step.db, replacing hard-wired "4step:" with "$(Q)".  Modified
+		4step_settings.req, replacing "$(Q):" with "$(Q)".
+
+  </ul><cr>
+
+<cr>
+ <h2 align="CENTER">
+    Release 3-2 (Apr. 17, 2013)</h2>
+  <ul>
+
+	<li>The sseq record was moved from the std module to the calc module, along
+		with all of its databases, request files, and display files.
+
+	<li>Added general purpose selector (e.g., for mirror stripe) selector.db,
+		etc.
+
+	<li>misc.db - added two current time PVs, P:iso8601 and P:datetime
+	
+	<li>pvHistory.db - use Soft Timestamp device support, because it's in base
+
+	<li>epid.req - add autosave/restore request file for epid record
+
+	<li>countDownTimer.vdb - New calc engine in base requires ?: expression to
+		have both ? and :
+
+	<li>devTimeOfDay.c - Use epicsTimeToStrftime, instead of to-be-deleted
+		tsStampToText.
+
+	<li>selector.db, selector*.adl - general purpose selector
+	
+	<li>Added display files for CSS-BOY and caQtDM
+
+  </ul><cr>
+
+
+ <h2 align="CENTER">
+    Release 3-1 (Nov 14, 2011)</h2>
+  <ul>
+  	<li>Added databases and MEDM-display files for genericState database.
+  </ul><cr>
+
+
+ <h2 align="CENTER">
+    Release 3-0 (Sept 15, 2011)</h2>
+  <ul>
+    <li>The scaler record no longer makes two calls to disarm the hardware
+	    (dset->arm(0)) when the scaler completes counting normally.  (Previously,
+		the code supporting user abort of a count was also executed after normal
+		completion.)
+    <li>The sseq record can now treat array PVs whose elements are of type DBF_CHAR
+		or DBF_UCHAR, as strings.  Only the first 39 characters are handled, because
+		the sseq record uses PVs of type DBF_STRING internally.
+
+	<li>Previously, sseq record links could wait or not wait for completion,
+		before going on to the next action.  Now links can wait for
+		completion after a specified action.  For example, you can execute
+		the first two actions without waiting in between, and then wait for both
+		to complete before processing the third action.
+
+	<li>The sseq record now displays the states of its DOL and LNK links.
+	
+	<li>Previously the sseq record did not defend itself against the possibility that
+	    it would be executed by channel access and aborted by a PV link, which would
+		cause the record to be executed again, immediately after the abort succeeded.
+
+	<li>Added support for femto_DxPCA_x00 Femto amplifier
+
+	<li>drvScalerSoft.c: The callback for done must pass the value 1, not 0
+	
+	<li>Added userMbbo, a database of ten user-controlled menu choices.
+	
+	<li>scaler16m.db: Added COPT=="Always" to $(P)$(S)_calc1 (transform record)
+
+	<li>Modified RELEASE; deleted RELEASE.arch
+	
+	<li>Added .opi display files for CSS-BOY
+  </ul>
+
+ <h2 align="CENTER">
+    Release 2-9 (Aug. 10, 2010)</h2>
+  <ul>
+    <li>ramp_tweak.db had an illegal link in it's Init record.
+  </ul>
+
+
+ <h2 align="CENTER">
+    Release 2-8 (Mar. 30, 2010)</h2>
+  <ul>
+    <li>fast_pid_control.db, devEpidFast.c.  Added new parameters to the
+    INP field, because previously the DRV_USER strings for the data and
+    time interval were hardcoded.  The length of the resulting string
+    now is too large for INP in many cases, so put some of it in the DESC
+    field, which is ugly.</li>
+	<li>epidRecord.dbd - added fields TRIG and TVAL, which are used by
+	    devEpidSoftCallback.c to support an asynchronous readback device by
+		waiting for completion before getting the readback value.
+	<li>async_pid_control.db, async_pid_control_settings.db, async_pid_control.adl --
+	    new files to support pid control with an asynchronous readback device.
+	<li>sseq_settings.req - Added SCAN
+	<li>drvScaler974 - new file for Ortec 974 scaler
+	<li>devScalerAsyn.c - ignore callback when DONE==0, register callbacks on address 0.
+	<li>sseqRecord.c - fixed for 64-bit arch
+	<li>no longer build shareBase.dbd
+	<li>nameVal.adl, anyRecord.adl - new display files for any record type.
+	<li>deleted some unused .adl files
+  </ul>
+
+  <H2 ALIGN=CENTER>Release 2-7 (Sept 10, 2008)</H2>
+<ul>
+<li>yySeq.adl, yySeq_full.adl - new files
+<li>genSub-record dependency replaced by aSub record in base 3.14.10
+</ul>
+
+
+<H2 ALIGN=CENTER>Release 2-6 (Sept 10, 2008)</H2>
+
+<ul>
+
+<li>The sseq record was failing to process immediately after a reboot, when
+ordered to process because of a CP input link.
+
+<li>The gpibRecord has been replaced by the asynRecord, which is loaded from the
+asyn module.
+
+<li>New databases: alarmClock, autoShutter, countDownTimer, ramp_tweak, scaler16m
+
+<li>The sseqRecord (string Sequence, a variant of the seq record in EPICS base)
+can now be told to abort the sequence it's executing.
+
+<li>The scaler record has a new field, COUTP, which is like the COUT field, but
+is not delayed by a nonzero setting of the DLY field.
+
+<li>If the scaler-record DLY field was less that 1, it was not honored. 
+(Thanks to Xuesong Jiao for the fix.)
+
+<li>New link-help displays do a better job of describing the effects on link
+attributes, particularly as they bear on completion detection (i.e., the
+behavior of a data when written to by ca_put_callback).
+
+<H2 ALIGN=CENTER>Release 2-5-5 (April, 2007)</H2>
+<UL>
+  <li> Added scaler16m.db database, and corresponding MEDM displays.  These
+       differ from scaler16.db and its display files only in the implementation
+	   of end calculations.  The new support provides end calcs for all 16 signals.
+  <li> New link-help displays.
+  <li> Added pvHistoryRegister to stdSupport.dbd
+  <li> Added field COUTP, an output link, to the caler record.  This is similar
+       to the COUT link, which sends the value of the CNT field to its target
+	   whenever CNT changes.  COUTP differs from COUT in that it doesn't wait for
+	   the delay specified in the DLY field, but sends promptly after CNT changes. 
+  <LI> Minor change to devScalerAsyn to support change in API for asyn callbacks.
+  <LI> Minor change to devEpidFast to support change in API for asyn callbacks.
+  <LI> Added ramp_tweak database and assoc. support
+
+  <LI> Minor change to devScalerAsyn to support change in API for asyn callbacks.
+  <LI> Minor change to devEpidFast to support change in API for asyn callbacks.
+  <LI> Added ramp_tweak database and assoc. support
+</UL>
+
+<H2 ALIGN=CENTER>Release 2-5-4 (Dec. 6, 2006)</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Changes to scaler record:
+        <UL>
+          <LI>PRn and Sn fields are now DBF_ULONG rather than DBF_LONG.
+	  <LI>No longer hardcode VME_IO device type in the record logic.
+	  <LI>Removed .CARD record field.
+          <LI>Changed interface to device support so that all functions pass precord 
+              rather than card, and init_record passes pointer to device callback structure.
+          <LI>Move callback structures from dpvt to rpvt so record does not access dpvt.
+	</P>
+        </UL>
+	<LI><P STYLE="margin-bottom: 0in">Added asyn device support for scaler record. This is
+            currently used by the SIS3820 device support in mcaApp/SISSrc, but all scaler
+            device support will eventually be changed to use asyn.
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Changed stdApp/Db/scaler*.db so that $(OUT) is a
+            macro parameter, rather than assuming VME_IO link type.
+	<LI><P STYLE="margin-bottom: 0in">Deleted CARD field from stdApp/op/adl/scaler*.adl.
+	<LI><P STYLE="margin-bottom: 0in">Deleted stdApp/src/femto.dbd, not needed.
+	<li><P STYLE="margin-bottom: 0in">Added timer.db (resettable software timer) and
+		related software: timer.req, timer*.adl
+	</P>
+</UL>
+<H2 ALIGN=CENTER>Release 2-5-3</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">epid record still had some FLOAT
+	stuff to convert to DOUBLE. Fixed record and docs. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">added userStringSeq10 database,
+	autosave request, and medm display files.</P>
+	<LI><P STYLE="margin-bottom: 0in">Added support for the Femto
+	current amplifier (<A HREF="http://www.femto.de/">www.femto.de</A>).</P>
+</UL>
+<H2 ALIGN=CENTER>Release 2-5-2</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">sseqRecord.html rewritten. The old
+	version was a minimal modification of seqRecord.html, from the EPICS
+	Record Reference Manual, and was not very clear. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">scaler record: v3.18: Don't post
+	CNT field unless record-support changed its value. Modified debug
+	macro. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">devEpidFast.c: changed strtok_r to
+	epicsStrtok_r 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">pvHistory: new software to
+	maintain short-term history of a few PV's in the ioc. Software
+	comprises pvHistory.c (genSub routines), devTimeOfDay.c,
+	pvHistory.db, pvHistory.req (autosave-request file), and
+	pvHistory*.adl, and relies on autosave to save/restore the value
+	arrays. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">softMotor.db: shortened some .DESC
+	field values so they fit. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">all_com_4.db: new file 
+	</P>
+	<LI><P>softMotorConfig.adl: related-display callups were using
+	sCalcout files for calcout records, because synApps did not contain
+	calcout medm displays. Now the calc module does contain calcout
+	displays, so we use them. 
+	</P>
+</UL>
+<H2 ALIGN=CENTER>Release 2-4</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">mpf-related stuff replaced by
+	asyn-related stuff 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">minor scaler-record changes to
+	accommodate Joerger VS series. Existing support for other scaler
+	devices should not require any modifications. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">BitBus is no longer supported 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">ioc-status info now provided by
+	vxStats module 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">PID support rearranged around the
+	asyn module 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">SSEQ-record delays now snap to
+	nearest clock period, and show user the delay that will actually be
+	used. Fixed bug that was crashing on Linux and Windows. 
+	</P>
+	<LI><P><A HREF="cvsLog_R2-4.txt">cvs log</A> 
+	</P>
+</UL>
+<H2 ALIGN=CENTER>Release 2-3</H2>
+<P ALIGN=LEFT>This is what's left of the synApps std module after the
+modules autosave, calc, optics, sscan, and vme were split out. 
+</P>
+<P>This version is intended to build with EPICS base 3.14.5.
+Differences from std 2.2: 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">scaler record - device support
+	that used &quot;struct callback&quot; defined in devScaler.h must
+	now replace that with &quot;CALLBACK&quot;, and must include
+	epics/base/include/callback.h 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">sseq record - Now allows user to
+	specify whether or not the record should wait, after putting a link
+	value, for the resulting processing to complete before processing
+	the next link. Some code cleanup. Added seqRecDebug. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">topDAC8.adl - Deleted to avoid
+	conflict with dac128V module. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">VXstats_full.adl 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">pid_control_settings.req - added
+	delta time 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Added device-independent scaler
+	database and save-restore settings files. 
+	</P>
+	<LI><P>timeString.db - new capability in 3.14.5: stringin record can
+	get time date. 
+	</P>
+</UL>
+<ADDRESS>Suggestions and Comments to: <BR><A HREF="mailto:mooney@aps.anl.gov">Tim
+Mooney </A>: (mooney@aps.anl.gov) 
+</ADDRESS>
+</BODY>
+</HTML>

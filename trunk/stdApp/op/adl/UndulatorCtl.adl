@@ -1,0 +1,723 @@
+
+file {
+	name="/net/epics/xfd/operations/UndulatorCtl.adl"
+	version=020305
+}
+display {
+	object {
+		x=539
+		y=44
+		width=310
+		height=620
+	}
+	clr=55
+	bclr=55
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+"message button" {
+	object {
+		x=162
+		y=277
+		width=140
+		height=40
+	}
+	control {
+		chan="ID$(xx):Stop.VAL"
+		clr=20
+		bclr=23
+	}
+	label="Stop "
+	press_msg="1"
+}
+rectangle {
+	object {
+		x=5
+		y=166
+		width=300
+		height=80
+	}
+	"basic attribute" {
+		clr=54
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=5
+		y=84
+		width=300
+		height=80
+	}
+	"basic attribute" {
+		clr=49
+		width=2
+	}
+}
+"text update" {
+	object {
+		x=60
+		y=43
+		width=203
+		height=13
+	}
+	monitor {
+		chan="ID$(xx):Device"
+		clr=37
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=0
+		y=548
+		width=310
+		height=16
+	}
+	monitor {
+		chan="ID$(xx):Message2.VAL"
+		clr=14
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=0
+		y=527
+		width=310
+		height=16
+	}
+	monitor {
+		chan="ID$(xx):Message1.VAL"
+		clr=54
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=194
+		y=90
+		width=104
+		height=30
+	}
+	monitor {
+		chan="ID$(xx):Energy.VAL"
+		clr=60
+		bclr=49
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=59
+		y=167
+		width=120
+		height=38
+	}
+	control {
+		chan="ID$(xx):GapSet.VAL"
+		clr=0
+		bclr=54
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=197
+		y=167
+		width=100
+		height=38
+	}
+	control {
+		chan="ID$(xx):EnergySet.VAL"
+		clr=0
+		bclr=54
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=60
+		y=91
+		width=120
+		height=30
+	}
+	monitor {
+		chan="ID$(xx):Gap.VAL"
+		clr=60
+		bclr=49
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=7
+		y=200
+		width=45
+		height=12
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="Desired"
+}
+"text update" {
+	object {
+		x=62
+		y=27
+		width=190
+		height=15
+	}
+	monitor {
+		chan="ID$(xx):Location"
+		clr=53
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=73
+		y=1
+		width=170
+		height=26
+	}
+	"basic attribute" {
+		clr=53
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="ID$(xx):Attention"
+	}
+	textix="ID Gap Control"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=12
+		y=122
+		width=45
+		height=12
+	}
+	"basic attribute" {
+		clr=60
+	}
+	textix="Current"
+}
+text {
+	object {
+		x=61
+		y=250
+		width=240
+		height=18
+	}
+	"basic attribute" {
+		clr=49
+	}
+	textix=" Gap (mm)        Energy (keV)  "
+}
+"message button" {
+	object {
+		x=8
+		y=277
+		width=140
+		height=40
+	}
+	control {
+		chan="ID$(xx):Start.VAL"
+		clr=60
+		bclr=63
+	}
+	label="Start"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=199
+		y=410
+		width=100
+		height=25
+	}
+	control {
+		chan="ID$(xx):DeviceLimit.VAL"
+		clr=0
+		bclr=54
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=209
+		y=381
+		width=80
+		height=25
+	}
+	control {
+		chan="ID$(xx):DeadbandGap"
+		clr=0
+		bclr=41
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=9
+		y=331
+		width=120
+		height=18
+	}
+	"basic attribute" {
+		clr=20
+	}
+	textix=" Access Mode :"
+}
+"text update" {
+	object {
+		x=132
+		y=325
+		width=170
+		height=25
+	}
+	monitor {
+		chan="ID$(xx):AccessSecurity.VAL"
+		clr=21
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=11
+		y=384
+		width=180
+		height=18
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Gap Deadband (micron):"
+}
+text {
+	object {
+		x=11
+		y=413
+		width=180
+		height=18
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Bl. Comm. Limit (mm):"
+}
+text {
+	object {
+		x=11
+		y=504
+		width=180
+		height=18
+	}
+	"basic attribute" {
+		clr=20
+	}
+	textix="Status Messages:"
+}
+"text entry" {
+	object {
+		x=59
+		y=207
+		width=120
+		height=38
+	}
+	control {
+		chan="ID$(xx):TaperGapSet.VAL"
+		clr=0
+		bclr=54
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=197
+		y=207
+		width=100
+		height=38
+	}
+	control {
+		chan="ID$(xx):TaperEnergySet.VAL"
+		clr=0
+		bclr=54
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=21
+		y=175
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="Avg"
+}
+text {
+	object {
+		x=21
+		y=217
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="Tpr"
+}
+"text update" {
+	object {
+		x=194
+		y=129
+		width=104
+		height=30
+	}
+	monitor {
+		chan="ID$(xx):TaperEnergy.VAL"
+		clr=60
+		bclr=49
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=60
+		y=130
+		width=120
+		height=30
+	}
+	monitor {
+		chan="ID$(xx):TaperGap.VAL"
+		clr=60
+		bclr=49
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=21
+		y=98
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=60
+	}
+	textix="Avg"
+}
+text {
+	object {
+		x=21
+		y=139
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=60
+	}
+	textix="Tpr"
+}
+text {
+	object {
+		x=11
+		y=355
+		width=180
+		height=18
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Harmonic Select (1-7):"
+}
+"text entry" {
+	object {
+		x=234
+		y=352
+		width=30
+		height=25
+	}
+	control {
+		chan="ID$(xx):HarmonicValue"
+		clr=0
+		bclr=41
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=199
+		y=61
+		width=80
+		height=15
+	}
+	monitor {
+		chan="ID$(xx):Version"
+		clr=21
+		bclr=55
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=33
+		y=61
+		width=152
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Software Version:"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=0
+		y=569
+		width=310
+		height=16
+	}
+	monitor {
+		chan="ID$(xx):Message3.VAL"
+		clr=20
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=7
+		y=591
+		width=100
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Time Left:"
+}
+"text update" {
+	object {
+		x=110
+		y=592
+		width=80
+		height=16
+	}
+	monitor {
+		chan="ID$(xx):ShClosedTime.VAL"
+		clr=14
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=191
+		y=595
+		width=80
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="seconds"
+}
+text {
+	object {
+		x=8
+		y=480
+		width=120
+		height=18
+	}
+	"basic attribute" {
+		clr=39
+	}
+	textix="Total Power:"
+}
+"text update" {
+	object {
+		x=105
+		y=477
+		width=100
+		height=25
+	}
+	monitor {
+		chan="ID$(xx):TotalPower.VAL"
+		clr=39
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=213
+		y=486
+		width=80
+		height=15
+	}
+	"basic attribute" {
+		clr=39
+	}
+	textix="W /100ma"
+}
+text {
+	object {
+		x=162
+		y=445
+		width=120
+		height=21
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID$(xx):Busy.VAL"
+	}
+	textix="Moving"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=11
+		y=446
+		width=150
+		height=18
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Device Status:"
+}
+text {
+	object {
+		x=138
+		y=445
+		width=120
+		height=21
+	}
+	"basic attribute" {
+		clr=18
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="ID$(xx):Busy.VAL"
+	}
+	textix="Not Moving"
+	align="horiz. centered"
+}

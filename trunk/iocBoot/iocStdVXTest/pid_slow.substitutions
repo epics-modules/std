@@ -1,0 +1,9 @@
+# This file demonstrates slow feedback.  The initial INP and OUT assume the first channel
+# of an IP330 ADC connected to the first channel of a DAC128V DAC.
+file "$(STD)/stdApp/Db/pid_control.db"
+{
+pattern
+{P,      PID,              INP,        OUT, LOPR,   HOPR,  DRVL, DRVH,  PREC,      KP,  KI,   KD,  SCAN}
+{xxx:,   pid_slow, xxx:IP330_1, xxx:DAC3_1,    0,    100,     0,    5,     3,     0.2,  3.,   0.,  ".1 second"}
+}
+

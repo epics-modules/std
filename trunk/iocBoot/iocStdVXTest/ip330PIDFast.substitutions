@@ -1,0 +1,7 @@
+file "$(STD)/stdApp/Db/fast_pid_control.db"
+{
+# Fast feedback using second channel (#1) of Ip300 and dac128V
+pattern
+{P,     PID,           INPUT, ICHAN, OUTPUT, OCHAN,    LOPR,     HOPR,  DRVL,  DRVH,  PREC,   KP,    KI,  KD,   DT,        SCAN}
+{xxx:, ip330PIDFast, Ip330_1,     1,   DAC1,     1,       0,    65535,     0,  4095,     3,  .02,  100.,  0., .001, ".1 second"}
+}

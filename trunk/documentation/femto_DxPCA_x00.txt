@@ -1,0 +1,56 @@
+Files labeled "femto_DxPCA_x00", "femto_DHPCA_100", "femto_DLPCA_200",
+"femto_DDPCA_300" belong to the same family of femto amplifier drivers.
+
+The "femto_DxPCA_x00" files apply to all three models.
+The "femto_DHPCA_100" files apply to the DHPCA-100 model.
+The "femto_DLPCA_200" files apply to the DLPCA-200 model.
+The "femto_DDPCA_300" files apply to the DDPCA-300 model.
+
+To use these drivers, you can include the file
+"femto_DxPCA_x00.substitutions" in your st.cmd file and edit it for
+your particular driver(s).  At the end of this file is a copy of this
+file if yours does not exist.  Otherwise, you can call the database
+directly by specifying the location of the TTL bits, using the
+following substitution file as an example.  You might however exceed
+maximum length (hence the use of a substitution file).
+
+These drivers are based on transform records.  There is another driver
+for the femto DLPCA-200, based on sequence programming under the
+"femto" name.  These drivers are independent of each other.
+
+
+############################# femto_DxPCA_x00.substitutions #################
+
+#Uncomment the femto amplifier you want to use.
+
+# P=Prefix
+# A=Amplifier name
+# G1=Gain first (lowest) bit
+# G2=Gain second bit
+# G3=Gain third bit
+# G4=Gain fourth bit (DDPCA-300)
+# SN=High speed/Low noise bit (DHPCA-100 and DLPCA-200)
+# C=Coupling (DHPCA-100 and DLPCA-200)
+# F10=10 MHz Filter (DHPCA-100)
+# F1=1 MHz Filter (DHPCA-100)
+
+#file "$(STD)/stdApp/Db/femto_DDPCA_300.db"
+#{
+#pattern
+#{P       A       G1          G2          G3          G4         }
+#{crate:  femto1  Unidig1Bo0  Unidig1Bo1  Unidig1Bo2  Unidig1Bo3 }
+#}
+
+#file "$(STD)/stdApp/Db/femto_DLPCA_200.db"
+#{
+#pattern
+#{P       A       G1          G2          G3          SN          C          }
+#{crate:  femto2  Unidig1Bo4  Unidig1Bo5  Unidig1Bo6  Unidig1Bo7  Unidig1Bo8 }
+#}
+
+#file "$(STD)/stdApp/Db/femto_DHPCA_100.db"
+#{
+#pattern
+#{P       A       G1          G2           G3           SN           C            F10          F1          }
+#{crate:  femto3  Unidig1Bo9  Unidig1Bo10  Unidig1Bo11  Unidig1Bo12  Unidig1Bo13  Unidig1Bo14  Unidig1Bo15 }
+#}
