@@ -19,6 +19,20 @@ grecord(motor,"$(P)$(SM)") {
     field(DINP,"$(P)$(SM)CalcMove.VAL NPP MS")
     field(STOO,"$(P)$(SM)CalcStop.A PP MS")        
 }
+grecord(transform,"$(P)$(SM)_ableput") {
+  field(CLCB,"a")
+  field(CLCC,"a")
+  field(OUTA,"$(P)$(SM).DISA NPP NMS")
+  field(OUTB,"$(P)$(SM).DISP NPP NMS")
+  field(OUTC,"$(P)$(SM).DISA NPP NMS")
+}
+grecord(bo,"$(P)$(SM)_able") {
+  field(DESC,"softmotor enable")
+  field(PINI,"YES")
+  field(OUT,"$(P)$(SM)_ableput.A PP MS")
+  field(ZNAM,"Enable")
+  field(ONAM,"Disable")
+}
 grecord(dfanout,"$(P)$(SM)Init") {
 	field(SCAN,"1 second")
 	field(DOL,"1")
