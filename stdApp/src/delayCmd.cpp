@@ -49,7 +49,7 @@ int doAfterIocInit (const char* cmd)
 	struct cmdNode* nextcmd;
 
 	nextcmd = (struct cmdNode*) callocMustSucceed(1, sizeof(*nextcmd), "cmdnode");
-	nextcmd->cmd = (char*) callocMustSucceed(strlen(cmd), sizeof(char), "cmdstring");
+	nextcmd->cmd = (char*) callocMustSucceed(strlen(cmd)+1, sizeof(char), "cmdstring");
 
 	strcpy(nextcmd->cmd, cmd);
 
