@@ -9,6 +9,14 @@
 #include <cstring>
 #include <cstdlib>
 
+ /*
+ * VxWorks 6 defines SYM_IS_TEXT in symbol.h, but earlier versions do not, so
+ * define it if it is not already defined.
+ */
+#if !defined(SYM_IS_TEXT)
+#define SYM_IS_TEXT(symType)	((symType) & SYM_TEXT)
+#endif
+
 /*
  * We are going to use symEach and need to return information about the number
  * and type of symbols found. The necessary header to use symEach doesn't allow
