@@ -56,6 +56,9 @@ std_SRCS += pvHistory.c
 # Femto amplifier
 std_SRCS += femto.st
 
+# delayDo
+std_SRCS += delayDo.st
+
 #delayCmd command
 std_SRCS += delayCmd.cpp
 
