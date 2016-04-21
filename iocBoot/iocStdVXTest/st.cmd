@@ -47,6 +47,9 @@ dbLoadRecords("../../../std/stdApp/Db/misc.db", "P=stdTest:")
 # Femto amplifier
 #dbLoadRecords("../../../std/femto.db","P=stdTest:,H=fem01:,F=seq01:")
 
+# Throttle record
+#dbLoadRecords "../../../std/stdApp/Db/throttle.db", "P=stdTest:,THR=thr1"
+
 iocInit
 
 ### Start Femto amplifier sequence programs

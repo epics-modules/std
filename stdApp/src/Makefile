@@ -24,6 +24,7 @@ include $(TOP)/configure/CONFIG
 DBDINC += scalerRecord
 DBDINC += epidRecord
 DBDINC += timestampRecord
+DBDINC += throttleRecord
 
 # <name>.dbd will be created from <name>Include.dbd
 DBD += std.dbd
@@ -48,6 +49,9 @@ std_SRCS += devEpidFast.c
 
 # timestamp record
 std_SRCS += timestampRecord.c
+
+# throttle record
+std_SRCS += throttlerRecord.c
 
 # pvHistory stuff
 std_SRCS += devTimeOfDay.c 
