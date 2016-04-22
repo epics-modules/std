@@ -51,7 +51,7 @@ std_SRCS += devEpidFast.c
 std_SRCS += timestampRecord.c
 
 # throttle record
-std_SRCS += throttlerRecord.c
+std_SRCS += throttleRecord.c
 
 # pvHistory stuff
 std_SRCS += devTimeOfDay.c 
@@ -111,3 +111,4 @@ devEpidFast$(OBJ):         $(COMMON_DIR)/epidRecord.h
 scalerRecord$(OBJ):        $(COMMON_DIR)/scalerRecord.h
 devScalerAsyn$(OBJ):       $(COMMON_DIR)/scalerRecord.h
 timestampRecord$(OBJ):     $(COMMON_DIR)/timestampRecord.h
+throttleRecord$(OBJ):      $(COMMON_DIR)/throttleRecord.h
