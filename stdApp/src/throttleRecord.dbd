@@ -22,6 +22,10 @@ menu(throttleDRVLC) {
         choice(throttleDRVLC_OFF,"Off")
         choice(throttleDRVLC_ON,"On")
 }
+menu(throttleSYNC) {
+        choice(throttleSYNC_IDLE,"Idle")
+        choice(throttleSYNC_PROC,"Process")
+}
 recordtype(throttle) {
         include "dbCommon.dbd" 
         field(VAL,DBF_DOUBLE   ) {
@@ -134,4 +138,24 @@ recordtype(throttle) {
 		menu(throttleOV)
 		initial("1")
 	}
+	field(SINP,DBF_INLINK) {
+		prompt("Sync Input")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(SIV,DBF_MENU) {
+		prompt("Sync Input link valid")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(throttleOV)
+		initial("1")
+	}
+	field(SYNC,DBF_MENU) {
+		prompt("Sync values")
+		special(SPC_MOD)
+		menu(throttleSYNC)
+		initial("Idle")
+	}
+
 }

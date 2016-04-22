@@ -5,10 +5,10 @@ file {
 }
 display {
 	object {
-		x=797
-		y=732
+		x=790
+		y=788
 		width=360
-		height=250
+		height=260
 	}
 	clr=14
 	bclr=4
@@ -90,7 +90,7 @@ display {
 "text update" {
 	object {
 		x=85
-		y=110
+		y=75
 		width=150
 		height=20
 	}
@@ -107,7 +107,7 @@ display {
 "text entry" {
 	object {
 		x=85
-		y=135
+		y=100
 		width=150
 		height=20
 	}
@@ -123,7 +123,7 @@ display {
 text {
 	object {
 		x=10
-		y=135
+		y=100
 		width=60
 		height=20
 	}
@@ -136,7 +136,7 @@ text {
 text {
 	object {
 		x=10
-		y=110
+		y=75
 		width=60
 		height=20
 	}
@@ -149,7 +149,7 @@ text {
 rectangle {
 	object {
 		x=75
-		y=135
+		y=100
 		width=10
 		height=20
 	}
@@ -166,7 +166,7 @@ rectangle {
 "text entry" {
 	object {
 		x=80
-		y=220
+		y=230
 		width=150
 		height=20
 	}
@@ -182,7 +182,7 @@ rectangle {
 text {
 	object {
 		x=20
-		y=220
+		y=230
 		width=50
 		height=20
 	}
@@ -195,7 +195,7 @@ text {
 "text entry" {
 	object {
 		x=80
-		y=195
+		y=205
 		width=150
 		height=20
 	}
@@ -211,7 +211,7 @@ text {
 text {
 	object {
 		x=20
-		y=195
+		y=205
 		width=50
 		height=20
 	}
@@ -224,7 +224,7 @@ text {
 text {
 	object {
 		x=265
-		y=135
+		y=100
 		width=80
 		height=20
 	}
@@ -241,7 +241,7 @@ text {
 rectangle {
 	object {
 		x=235
-		y=135
+		y=100
 		width=10
 		height=20
 	}
@@ -258,7 +258,7 @@ rectangle {
 text {
 	object {
 		x=265
-		y=110
+		y=75
 		width=80
 		height=20
 	}
@@ -276,7 +276,7 @@ text {
 "choice button" {
 	object {
 		x=280
-		y=195
+		y=205
 		width=50
 		height=48
 	}
@@ -289,7 +289,7 @@ text {
 text {
 	object {
 		x=270
-		y=170
+		y=180
 		width=80
 		height=20
 	}
@@ -301,8 +301,8 @@ text {
 }
 "text entry" {
 	object {
-		x=17
-		y=62
+		x=152
+		y=37
 		width=200
 		height=20
 	}
@@ -317,8 +317,8 @@ text {
 }
 rectangle {
 	object {
-		x=15
-		y=60
+		x=150
+		y=35
 		width=204
 		height=24
 	}
@@ -335,21 +335,21 @@ rectangle {
 }
 text {
 	object {
-		x=75
-		y=35
+		x=60
+		y=40
 		width=80
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Output"
+	textix="Output Link"
 	align="horiz. right"
 }
 "text entry" {
 	object {
-		x=260
-		y=60
+		x=270
+		y=5
 		width=80
 		height=20
 	}
@@ -363,8 +363,8 @@ text {
 }
 text {
 	object {
-		x=265
-		y=35
+		x=185
+		y=5
 		width=80
 		height=20
 	}
@@ -374,10 +374,72 @@ text {
 	textix="Delay (s)"
 	align="horiz. right"
 }
+"message button" {
+	object {
+		x=20
+		y=140
+		width=50
+		height=27
+	}
+	control {
+		chan="$(P)$(THR).SYNC"
+		clr=14
+		bclr=51
+	}
+	label="Sync"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=137
+		y=145
+		width=200
+		height=20
+	}
+	control {
+		chan="$(P)$(THR).SINP"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+rectangle {
+	object {
+		x=135
+		y=143
+		width=204
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="(A == 0) || (A == 3)"
+		chan="$(P)$(THR).SIV"
+	}
+}
+text {
+	object {
+		x=80
+		y=143
+		width=50
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Input"
+	align="horiz. right"
+}
 text {
 	object {
 		x=110
-		y=170
+		y=180
 		width=80
 		height=20
 	}
@@ -390,7 +452,7 @@ text {
 polyline {
 	object {
 		x=0
-		y=30
+		y=65
 		width=351
 		height=2
 	}
@@ -402,58 +464,39 @@ polyline {
 		chan="$(P)$(THR).DLY"
 	}
 	points {
-		(1,31)
-		(350,31)
+		(1,66)
+		(350,66)
+	}
+}
+polyline {
+	object {
+		x=0
+		y=175
+		width=351
+		height=2
+	}
+	"basic attribute" {
+		clr=14
+		width=2
+	}
+	"dynamic attribute" {
+		chan="$(P)$(THR).DLY"
+	}
+	points {
+		(1,176)
+		(350,176)
 	}
 }
 text {
 	object {
-		x=70
+		x=10
 		y=5
-		width=165
+		width=150
 		height=20
 	}
 	"basic attribute" {
-		clr=14
+		clr=54
 	}
 	textix="$(P)"
 	align="horiz. centered"
-}
-polyline {
-	object {
-		x=5
-		y=90
-		width=351
-		height=2
-	}
-	"basic attribute" {
-		clr=14
-		width=2
-	}
-	"dynamic attribute" {
-		chan="$(P)$(THR).DLY"
-	}
-	points {
-		(6,91)
-		(355,91)
-	}
-}
-polyline {
-	object {
-		x=5
-		y=160
-		width=349
-		height=2
-	}
-	"basic attribute" {
-		clr=14
-		width=2
-	}
-	"dynamic attribute" {
-		chan="$(P)$(THR).DLY"
-	}
-	points {
-		(6,161)
-		(353,161)
-	}
 }
