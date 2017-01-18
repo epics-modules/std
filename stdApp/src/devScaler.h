@@ -1,4 +1,5 @@
 /* devScaler.h */
+#include <devSup.h>
 
 /* ----------------Device Support Entry Table for devScaler----------------- */
 
