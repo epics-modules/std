@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/epics-modules/std.svg?branch=master)](https://travis-ci.org/epics-modules/std)
+
 # std
 APS BCDA synApps module: std
 
