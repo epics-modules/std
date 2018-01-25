@@ -767,12 +767,18 @@ static void monitor(pscal)
 scalerRecord *pscal;
 {
 	unsigned short monitor_mask;
+	epicsUInt32 *pscaler = (epicsUInt32 *)&(pscal->s1);
+	int i;
 
 	monitor_mask = recGblResetAlarms(pscal);
 
 	monitor_mask|=(DBE_VALUE|DBE_LOG);
 
 	/* check all value fields for changes */
+	/* post scaler values */
+	for (i=0; i<pscal->nch; i++) {
+		db_post_events(pscal,&(pscaler[i]),DBE_LOG);
+	}
 	return;
 }
 
