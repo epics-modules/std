@@ -87,6 +87,100 @@ display {
 		1a7309,
 	}
 }
+rectangle {
+	object {
+		x=0
+		y=0
+		width=400
+		height=26
+	}
+	"basic attribute" {
+		clr=1
+	}
+}
+rectangle {
+	object {
+		x=160
+		y=216
+		width=17
+		height=44
+	}
+	"basic attribute" {
+		clr=3
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(C).DOLV"
+	}
+}
+rectangle {
+	object {
+		x=300
+		y=67
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		clr="discrete"
+		vis="calc"
+		calc="!a"
+		chan="$(P)$(C)"
+	}
+}
+rectangle {
+	object {
+		x=300
+		y=92
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		clr="discrete"
+		vis="calc"
+		calc="!(a-1)"
+		chan="$(P)$(C)"
+	}
+}
+rectangle {
+	object {
+		x=300
+		y=117
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		clr="discrete"
+		vis="calc"
+		calc="!(a-2)"
+		chan="$(P)$(C)"
+	}
+}
+rectangle {
+	object {
+		x=300
+		y=142
+		width=20
+		height=20
+	}
+	"basic attribute" {
+		clr=61
+	}
+	"dynamic attribute" {
+		clr="discrete"
+		vis="calc"
+		calc="!(a-3)"
+		chan="$(P)$(C)"
+	}
+}
 polygon {
 	object {
 		x=159
@@ -128,17 +222,6 @@ polyline {
 	points {
 		(172,221)
 		(161,221)
-	}
-}
-rectangle {
-	object {
-		x=0
-		y=0
-		width=400
-		height=26
-	}
-	"basic attribute" {
-		clr=1
 	}
 }
 menu {
@@ -221,21 +304,6 @@ polyline {
 	points {
 		(171,260)
 		(171,221)
-	}
-}
-rectangle {
-	object {
-		x=160
-		y=216
-		width=17
-		height=44
-	}
-	"basic attribute" {
-		clr=3
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(C).DOLV"
 	}
 }
 text {
@@ -449,74 +517,6 @@ text {
 		bclr=51
 	}
 	limits {
-	}
-}
-rectangle {
-	object {
-		x=300
-		y=67
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=61
-	}
-	"dynamic attribute" {
-		clr="discrete"
-		vis="calc"
-		calc="!a"
-		chan="$(P)$(C)"
-	}
-}
-rectangle {
-	object {
-		x=300
-		y=92
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=61
-	}
-	"dynamic attribute" {
-		clr="discrete"
-		vis="calc"
-		calc="!(a-1)"
-		chan="$(P)$(C)"
-	}
-}
-rectangle {
-	object {
-		x=300
-		y=117
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=61
-	}
-	"dynamic attribute" {
-		clr="discrete"
-		vis="calc"
-		calc="!(a-2)"
-		chan="$(P)$(C)"
-	}
-}
-rectangle {
-	object {
-		x=300
-		y=142
-		width=20
-		height=20
-	}
-	"basic attribute" {
-		clr=61
-	}
-	"dynamic attribute" {
-		clr="discrete"
-		vis="calc"
-		calc="!(a-3)"
-		chan="$(P)$(C)"
 	}
 }
 "related display" {

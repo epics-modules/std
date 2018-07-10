@@ -87,6 +87,60 @@ display {
 		1a7309,
 	}
 }
+rectangle {
+	object {
+		x=50
+		y=1
+		width=154
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=52
+		y=3
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=40
+	}
+	"dynamic attribute" {
+		chan="$(P)$(T).INPA"
+	}
+}
+rectangle {
+	object {
+		x=50
+		y=100
+		width=154
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=52
+		y=102
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=35
+	}
+	"dynamic attribute" {
+		chan="$(P)$(T).INPA"
+	}
+}
 text {
 	object {
 		x=5
@@ -110,47 +164,9 @@ text {
 	}
 	textix="This"
 }
-composite {
-	object {
-		x=50
-		y=1
-		width=154
-		height=24
-	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		rectangle {
-			object {
-				x=50
-				y=1
-				width=154
-				height=24
-			}
-			"basic attribute" {
-				clr=20
-				fill="outline"
-				width=2
-			}
-		}
-		rectangle {
-			object {
-				x=52
-				y=3
-				width=150
-				height=20
-			}
-			"basic attribute" {
-				clr=40
-			}
-			"dynamic attribute" {
-				chan="$(P)$(T).INPA"
-			}
-		}
-	}
-}
-text {
+han=""
+hildren {
+
 	object {
 		x=210
 		y=5
@@ -162,84 +178,35 @@ text {
 	}
 	textix="is a standard EPICS link"
 }
-composite {
+han=""
+hildren {
+text {
 	object {
 		x=5
-		y=100
-		width=495
-		height=24
+		y=104
+		width=40
+		height=20
 	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		text {
-			object {
-				x=5
-				y=104
-				width=40
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="This"
-		}
-		composite {
-			object {
-				x=50
-				y=100
-				width=154
-				height=24
-			}
-			"composite name"=""
-			vis="static"
-			chan=""
-			children {
-				rectangle {
-					object {
-						x=50
-						y=100
-						width=154
-						height=24
-					}
-					"basic attribute" {
-						clr=20
-						fill="outline"
-						width=2
-					}
-				}
-				rectangle {
-					object {
-						x=52
-						y=102
-						width=150
-						height=20
-					}
-					"basic attribute" {
-						clr=35
-					}
-					"dynamic attribute" {
-						chan="$(P)$(T).INPA"
-					}
-				}
-			}
-		}
-		text {
-			object {
-				x=210
-				y=104
-				width=290
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="is a 'recDyn' link"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="This"
 }
-text {
+han=""
+hildren {
+
+	object {
+		x=210
+		y=104
+		width=290
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="is a 'recDyn' link"
+}
+
 	object {
 		x=5
 		y=30

@@ -195,56 +195,45 @@ text {
 	textix="Current time:"
 	align="horiz. right"
 }
-composite {
+"message button" {
+	object {
+		x=55
+		y=153
+		width=30
+		height=20
+	}
+	control {
+		chan="$(P)timer$(N):update.PROC"
+		clr=14
+		bclr=51
+	}
+	label="NOW"
+	press_msg="1"
+}
+text {
 	object {
 		x=5
-		y=153
-		width=80
-		height=42
+		y=155
+		width=50
+		height=14
 	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=55
-				y=153
-				width=30
-				height=20
-			}
-			control {
-				chan="$(P)timer$(N):update.PROC"
-				clr=14
-				bclr=51
-			}
-			label="NOW"
-			press_msg="1"
-		}
-		text {
-			object {
-				x=5
-				y=155
-				width=50
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="UPDATE:"
-			align="horiz. right"
-		}
-		menu {
-			object {
-				x=5
-				y=175
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)timer$(N):update.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
+	"basic attribute" {
+		clr=14
+	}
+	textix="UPDATE:"
+	align="horiz. right"
+}
+menu {
+	object {
+		x=5
+		y=175
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)timer$(N):update.SCAN"
+		clr=14
+		bclr=51
 	}
 }
 "text update" {

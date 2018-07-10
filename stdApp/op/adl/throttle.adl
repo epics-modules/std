@@ -87,6 +87,76 @@ display {
 		1a7309,
 	}
 }
+rectangle {
+	object {
+		x=75
+		y=100
+		width=10
+		height=20
+	}
+	"basic attribute" {
+		clr=30
+		width=2
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="A==1"
+		chan="$(P)$(THR).DRVLS"
+	}
+}
+rectangle {
+	object {
+		x=235
+		y=100
+		width=10
+		height=20
+	}
+	"basic attribute" {
+		clr=30
+		width=2
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="A==2"
+		chan="$(P)$(THR).DRVLS"
+	}
+}
+rectangle {
+	object {
+		x=150
+		y=35
+		width=204
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="(A == 0) || (A == 3)"
+		chan="$(P)$(THR).OV"
+	}
+}
+rectangle {
+	object {
+		x=135
+		y=143
+		width=204
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="calc"
+		calc="(A == 0) || (A == 3)"
+		chan="$(P)$(THR).SIV"
+	}
+}
 "text update" {
 	object {
 		x=85
@@ -145,23 +215,6 @@ text {
 	}
 	textix="Sent"
 	align="horiz. right"
-}
-rectangle {
-	object {
-		x=75
-		y=100
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=30
-		width=2
-	}
-	"dynamic attribute" {
-		vis="calc"
-		calc="A==1"
-		chan="$(P)$(THR).DRVLS"
-	}
 }
 "text entry" {
 	object {
@@ -238,23 +291,6 @@ text {
 	textix="Waiting"
 	align="horiz. centered"
 }
-rectangle {
-	object {
-		x=235
-		y=100
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=30
-		width=2
-	}
-	"dynamic attribute" {
-		vis="calc"
-		calc="A==2"
-		chan="$(P)$(THR).DRVLS"
-	}
-}
 text {
 	object {
 		x=265
@@ -313,24 +349,6 @@ text {
 	}
 	format="string"
 	limits {
-	}
-}
-rectangle {
-	object {
-		x=150
-		y=35
-		width=204
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="calc"
-		calc="(A == 0) || (A == 3)"
-		chan="$(P)$(THR).OV"
 	}
 }
 text {
@@ -403,24 +421,6 @@ text {
 	}
 	format="string"
 	limits {
-	}
-}
-rectangle {
-	object {
-		x=135
-		y=143
-		width=204
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="calc"
-		calc="(A == 0) || (A == 3)"
-		chan="$(P)$(THR).SIV"
 	}
 }
 text {

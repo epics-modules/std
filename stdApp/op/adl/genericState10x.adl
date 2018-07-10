@@ -98,116 +98,94 @@ rectangle {
 		clr=2
 	}
 }
-composite {
+text {
 	object {
 		x=131
 		y=40
-		width=519
+		width=147
 		height=27
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=131
-				y=40
-				width=147
-				height=27
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Mode"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=315
-				y=40
-				width=90
-				height=27
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Value"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=430
-				y=40
-				width=220
-				height=27
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="PV to Save/Apply"
-			align="horiz. centered"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="Mode"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=315
+		y=40
+		width=90
+		height=27
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Value"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=430
+		y=40
+		width=220
+		height=27
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PV to Save/Apply"
+	align="horiz. centered"
 }
 composite {
 	object {
 		x=20
 		y=75
 		width=729
-		height=150
+		height=26
 	}
 	"composite name"=""
-	children {
-		composite {
-			object {
-				x=20
-				y=75
-				width=729
-				height=26
-			}
-			"composite name"=""
-			"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N1)"
-		}
-		composite {
-			object {
-				x=20
-				y=106
-				width=729
-				height=26
-			}
-			"composite name"=""
-			"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N2)"
-		}
-		composite {
-			object {
-				x=20
-				y=137
-				width=729
-				height=26
-			}
-			"composite name"=""
-			"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N3)"
-		}
-		composite {
-			object {
-				x=20
-				y=168
-				width=729
-				height=26
-			}
-			"composite name"=""
-			"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N4)"
-		}
-		composite {
-			object {
-				x=20
-				y=199
-				width=729
-				height=26
-			}
-			"composite name"=""
-			"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N5)"
-		}
+	"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N1)"
+}
+composite {
+	object {
+		x=20
+		y=106
+		width=729
+		height=26
 	}
+	"composite name"=""
+	"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N2)"
+}
+composite {
+	object {
+		x=20
+		y=137
+		width=729
+		height=26
+	}
+	"composite name"=""
+	"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N3)"
+}
+composite {
+	object {
+		x=20
+		y=168
+		width=729
+		height=26
+	}
+	"composite name"=""
+	"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N4)"
+}
+composite {
+	object {
+		x=20
+		y=199
+		width=729
+		height=26
+	}
+	"composite name"=""
+	"composite file"="genericState.adl;P=$(P),S=$(S),N=$(N5)"
 }
 text {
 	object {
@@ -261,73 +239,62 @@ text {
 	}
 	textix="$(P)$(S)"
 }
-composite {
+"message button" {
+	object {
+		x=595
+		y=395
+		width=154
+		height=28
+	}
+	control {
+		chan="$(P)$(S)$(G)apply"
+		clr=14
+		bclr=15
+	}
+	label="Apply All"
+	press_msg="1"
+}
+"message button" {
 	object {
 		x=20
 		y=395
-		width=729
+		width=154
 		height=28
 	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=595
-				y=395
-				width=154
-				height=28
-			}
-			control {
-				chan="$(P)$(S)$(G)apply"
-				clr=14
-				bclr=15
-			}
-			label="Apply All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=20
-				y=395
-				width=154
-				height=28
-			}
-			control {
-				chan="$(P)$(S)$(G)save"
-				clr=14
-				bclr=20
-			}
-			label="Save All"
-			press_msg="1"
-		}
-		"choice button" {
-			object {
-				x=350
-				y=395
-				width=219
-				height=28
-			}
-			control {
-				chan="$(P)$(S)$(G)mode"
-				clr=14
-				bclr=3
-			}
-			stacking="column"
-		}
-		text {
-			object {
-				x=199
-				y=395
-				width=145
-				height=28
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Master Mode:"
-			align="horiz. centered"
-		}
+	control {
+		chan="$(P)$(S)$(G)save"
+		clr=14
+		bclr=20
 	}
+	label="Save All"
+	press_msg="1"
+}
+"choice button" {
+	object {
+		x=350
+		y=395
+		width=219
+		height=28
+	}
+	control {
+		chan="$(P)$(S)$(G)mode"
+		clr=14
+		bclr=3
+	}
+	stacking="column"
+}
+text {
+	object {
+		x=199
+		y=395
+		width=145
+		height=28
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Master Mode:"
+	align="horiz. centered"
 }
 composite {
 	object {

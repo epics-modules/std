@@ -99,6 +99,56 @@ rectangle {
 		width=3
 	}
 }
+rectangle {
+	object {
+		x=5
+		y=73
+		width=181
+		height=31
+	}
+	"basic attribute" {
+		clr=60
+		width=1
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID$(xx):Busy"
+	}
+}
+rectangle {
+	object {
+		x=5
+		y=73
+		width=181
+		height=31
+	}
+	"basic attribute" {
+		clr=14
+		width=1
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID$(xx):AccessSecurity"
+	}
+}
+rectangle {
+	object {
+		x=5
+		y=73
+		width=181
+		height=31
+	}
+	"basic attribute" {
+		clr=20
+		style="dash"
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID$(xx):AccessSecurity"
+	}
+}
 polyline {
 	object {
 		x=1
@@ -207,56 +257,6 @@ text {
 	limits {
 	}
 }
-rectangle {
-	object {
-		x=5
-		y=73
-		width=181
-		height=31
-	}
-	"basic attribute" {
-		clr=60
-		width=1
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="ID$(xx):Busy"
-	}
-}
-rectangle {
-	object {
-		x=5
-		y=73
-		width=181
-		height=31
-	}
-	"basic attribute" {
-		clr=14
-		width=1
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="ID$(xx):AccessSecurity"
-	}
-}
-rectangle {
-	object {
-		x=5
-		y=73
-		width=181
-		height=31
-	}
-	"basic attribute" {
-		clr=20
-		style="dash"
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="ID$(xx):AccessSecurity"
-	}
-}
 polyline {
 	object {
 		x=95
@@ -288,50 +288,39 @@ polyline {
 	label="SYNC"
 	press_msg="0"
 }
-composite {
+text {
 	object {
 		x=80
 		y=165
 		width=25
 		height=10
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=80
-				y=165
-				width=25
-				height=10
-			}
-			"basic attribute" {
-				clr=30
-				fill="outline"
-			}
-			"dynamic attribute" {
-				vis="if not zero"
-				chan="ID$(xx):Busy.VAL"
-			}
-			textix="BUSY"
-		}
-		text {
-			object {
-				x=80
-				y=165
-				width=25
-				height=10
-			}
-			"basic attribute" {
-				clr=27
-				fill="outline"
-			}
-			"dynamic attribute" {
-				vis="if zero"
-				chan="ID$(xx):Busy.VAL"
-			}
-			textix="DONE"
-		}
+	"basic attribute" {
+		clr=30
+		fill="outline"
 	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ID$(xx):Busy.VAL"
+	}
+	textix="BUSY"
+}
+text {
+	object {
+		x=80
+		y=165
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=27
+		fill="outline"
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="ID$(xx):Busy.VAL"
+	}
+	textix="DONE"
 }
 text {
 	object {
@@ -347,318 +336,263 @@ text {
 	textix="ID STATUS:"
 	align="horiz. right"
 }
-composite {
+text {
+	object {
+		x=80
+		y=175
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=30
+		fill="outline"
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)ID$(xx)_busy.VAL"
+	}
+	textix="BUSY"
+}
+text {
+	object {
+		x=80
+		y=175
+		width=25
+		height=10
+	}
+	"basic attribute" {
+		clr=27
+		fill="outline"
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)ID$(xx)_busy.VAL"
+	}
+	textix="DONE"
+}
+text {
 	object {
 		x=0
 		y=175
-		width=105
+		width=80
 		height=10
 	}
-	"composite name"=""
-	children {
-		composite {
-			object {
-				x=80
-				y=175
-				width=25
-				height=10
-			}
-			"composite name"=""
-			children {
-				text {
-					object {
-						x=80
-						y=175
-						width=25
-						height=10
-					}
-					"basic attribute" {
-						clr=30
-						fill="outline"
-					}
-					"dynamic attribute" {
-						vis="if not zero"
-						chan="$(P)ID$(xx)_busy.VAL"
-					}
-					textix="BUSY"
-				}
-				text {
-					object {
-						x=80
-						y=175
-						width=25
-						height=10
-					}
-					"basic attribute" {
-						clr=27
-						fill="outline"
-					}
-					"dynamic attribute" {
-						vis="if zero"
-						chan="$(P)ID$(xx)_busy.VAL"
-					}
-					textix="DONE"
-				}
-			}
-		}
-		text {
-			object {
-				x=0
-				y=175
-				width=80
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-			textix="LOCAL STATUS:"
-			align="horiz. right"
-		}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="LOCAL STATUS:"
+	align="horiz. right"
+}
+text {
+	object {
+		x=8
+		y=25
+		width=80
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Gap (mm)"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=8
+		y=45
+		width=75
+		height=10
+	}
+	monitor {
+		chan="ID$(xx):DeviceLimit.DRVH"
+		clr=54
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
 	}
 }
-composite {
+"text entry" {
+	object {
+		x=8
+		y=76
+		width=80
+		height=25
+	}
+	control {
+		chan="$(P)ID$(xx)_gap"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=8
+		y=105
+		width=75
+		height=10
+	}
+	monitor {
+		chan="ID$(xx):DeviceLimit.DRVL"
+		clr=54
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"message button" {
 	object {
 		x=5
-		y=25
-		width=85
-		height=110
+		y=115
+		width=20
+		height=20
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=8
-				y=25
-				width=80
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-			textix="Gap (mm)"
-			align="horiz. centered"
-		}
-		"text update" {
-			object {
-				x=8
-				y=45
-				width=75
-				height=10
-			}
-			monitor {
-				chan="ID$(xx):DeviceLimit.DRVH"
-				clr=54
-				bclr=3
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=8
-				y=76
-				width=80
-				height=25
-			}
-			control {
-				chan="$(P)ID$(xx)_gap"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=8
-				y=105
-				width=75
-				height=10
-			}
-			monitor {
-				chan="ID$(xx):DeviceLimit.DRVL"
-				clr=54
-				bclr=3
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		composite {
-			object {
-				x=5
-				y=115
-				width=85
-				height=20
-			}
-			"composite name"=""
-			children {
-				"message button" {
-					object {
-						x=5
-						y=115
-						width=20
-						height=20
-					}
-					control {
-						chan="$(P)ID$(xx)_gapTweak.A"
-						clr=14
-						bclr=51
-					}
-					label="<"
-					press_msg="1"
-				}
-				"text entry" {
-					object {
-						x=25
-						y=115
-						width=45
-						height=20
-					}
-					control {
-						chan="$(P)ID$(xx)_gapTweak.E"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"message button" {
-					object {
-						x=70
-						y=115
-						width=20
-						height=20
-					}
-					control {
-						chan="$(P)ID$(xx)_gapTweak.B"
-						clr=14
-						bclr=51
-					}
-					label=">"
-					press_msg="1"
-				}
-			}
-		}
-		"text update" {
-			object {
-				x=13
-				y=55
-				width=75
-				height=18
-			}
-			monitor {
-				chan="ID$(xx):Gap"
-				clr=54
-				bclr=3
-			}
-			limits {
-			}
-		}
+	control {
+		chan="$(P)ID$(xx)_gapTweak.A"
+		clr=14
+		bclr=51
+	}
+	label="<"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=25
+		y=115
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)ID$(xx)_gapTweak.E"
+		clr=14
+		bclr=51
+	}
+	limits {
 	}
 }
-composite {
+"message button" {
+	object {
+		x=70
+		y=115
+		width=20
+		height=20
+	}
+	control {
+		chan="$(P)ID$(xx)_gapTweak.B"
+		clr=14
+		bclr=51
+	}
+	label=">"
+	press_msg="1"
+}
+"text update" {
+	object {
+		x=13
+		y=55
+		width=75
+		height=18
+	}
+	monitor {
+		chan="ID$(xx):Gap"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=103
+		y=25
+		width=80
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Energy (keV)"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=103
+		y=76
+		width=80
+		height=25
+	}
+	control {
+		chan="$(P)ID$(xx)_energy"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=108
+		y=55
+		width=75
+		height=18
+	}
+	monitor {
+		chan="ID$(xx):Energy"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"message button" {
 	object {
 		x=100
-		y=25
-		width=85
-		height=110
+		y=115
+		width=20
+		height=20
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=103
-				y=25
-				width=80
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-			textix="Energy (keV)"
-			align="horiz. centered"
-		}
-		"text entry" {
-			object {
-				x=103
-				y=76
-				width=80
-				height=25
-			}
-			control {
-				chan="$(P)ID$(xx)_energy"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=108
-				y=55
-				width=75
-				height=18
-			}
-			monitor {
-				chan="ID$(xx):Energy"
-				clr=54
-				bclr=3
-			}
-			limits {
-			}
-		}
-		"message button" {
-			object {
-				x=100
-				y=115
-				width=20
-				height=20
-			}
-			control {
-				chan="$(P)ID$(xx)_energyTweak.A"
-				clr=14
-				bclr=51
-			}
-			label="<"
-			press_msg="1"
-		}
-		"text entry" {
-			object {
-				x=120
-				y=115
-				width=45
-				height=20
-			}
-			control {
-				chan="$(P)ID$(xx)_energyTweak.E"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"message button" {
-			object {
-				x=165
-				y=115
-				width=20
-				height=20
-			}
-			control {
-				chan="$(P)ID$(xx)_energyTweak.B"
-				clr=14
-				bclr=51
-			}
-			label=">"
-			press_msg="1"
-		}
+	control {
+		chan="$(P)ID$(xx)_energyTweak.A"
+		clr=14
+		bclr=51
 	}
+	label="<"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=120
+		y=115
+		width=45
+		height=20
+	}
+	control {
+		chan="$(P)ID$(xx)_energyTweak.E"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"message button" {
+	object {
+		x=165
+		y=115
+		width=20
+		height=20
+	}
+	control {
+		chan="$(P)ID$(xx)_energyTweak.B"
+		clr=14
+		bclr=51
+	}
+	label=">"
+	press_msg="1"
 }
 menu {
 	object {

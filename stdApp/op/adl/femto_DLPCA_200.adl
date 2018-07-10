@@ -87,32 +87,6 @@ display {
 		1a7309,
 	}
 }
-text {
-	object {
-		x=80
-		y=4
-		width=340
-		height=20
-	}
-	"basic attribute" {
-		clr=0
-	}
-	textix="Femto DLPCA-200 Current Amplifier"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=6
-		y=34
-		width=120
-		height=14
-	}
-	"basic attribute" {
-		clr=30
-	}
-	textix="$(P)$(A)"
-	align="horiz. centered"
-}
 rectangle {
 	object {
 		x=6
@@ -124,216 +98,6 @@ rectangle {
 		clr=0
 		fill="outline"
 	}
-}
-"message button" {
-	object {
-		x=115
-		y=86
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e5"
-	press_msg="0"
-}
-"message button" {
-	object {
-		x=158
-		y=86
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e6"
-	press_msg="1"
-}
-"message button" {
-	object {
-		x=201
-		y=86
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e7"
-	press_msg="2"
-}
-"message button" {
-	object {
-		x=244
-		y=86
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e8"
-	press_msg="3"
-}
-"message button" {
-	object {
-		x=287
-		y=86
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e9"
-	press_msg="4"
-}
-"message button" {
-	object {
-		x=330
-		y=86
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e10"
-	press_msg="5"
-}
-"message button" {
-	object {
-		x=373
-		y=86
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e11"
-	press_msg="6"
-}
-"message button" {
-	object {
-		x=115
-		y=109
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e3"
-	press_msg="8"
-}
-"message button" {
-	object {
-		x=158
-		y=109
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e4"
-	press_msg="9"
-}
-"message button" {
-	object {
-		x=201
-		y=109
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e5"
-	press_msg="10"
-}
-"message button" {
-	object {
-		x=244
-		y=109
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e6"
-	press_msg="11"
-}
-"message button" {
-	object {
-		x=287
-		y=109
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e7"
-	press_msg="12"
-}
-"message button" {
-	object {
-		x=330
-		y=109
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e8"
-	press_msg="13"
-}
-"message button" {
-	object {
-		x=373
-		y=109
-		width=40
-		height=20
-	}
-	control {
-		chan="$(P)$(A):GainIndex"
-		clr=0
-		bclr=26
-	}
-	label="1e9"
-	press_msg="14"
 }
 rectangle {
 	object {
@@ -587,6 +351,300 @@ rectangle {
 		chan="$(P)$(A):GainIndex"
 	}
 }
+rectangle {
+	object {
+		x=6
+		y=62
+		width=412
+		height=18
+	}
+	"basic attribute" {
+		clr=0
+		fill="outline"
+	}
+}
+rectangle {
+	object {
+		x=435
+		y=80
+		width=29
+		height=27
+	}
+	"basic attribute" {
+		clr=60
+		fill="outline"
+		width=3
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(A):Coupling"
+	}
+}
+rectangle {
+	object {
+		x=460
+		y=80
+		width=29
+		height=27
+	}
+	"basic attribute" {
+		clr=60
+		fill="outline"
+		width=3
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(A):Coupling"
+	}
+}
+rectangle {
+	object {
+		x=432
+		y=62
+		width=60
+		height=48
+	}
+	"basic attribute" {
+		clr=0
+		fill="outline"
+	}
+}
+text {
+	object {
+		x=80
+		y=4
+		width=340
+		height=20
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="Femto DLPCA-200 Current Amplifier"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=6
+		y=34
+		width=120
+		height=14
+	}
+	"basic attribute" {
+		clr=30
+	}
+	textix="$(P)$(A)"
+	align="horiz. centered"
+}
+"message button" {
+	object {
+		x=115
+		y=86
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e5"
+	press_msg="0"
+}
+"message button" {
+	object {
+		x=158
+		y=86
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e6"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=201
+		y=86
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e7"
+	press_msg="2"
+}
+"message button" {
+	object {
+		x=244
+		y=86
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e8"
+	press_msg="3"
+}
+"message button" {
+	object {
+		x=287
+		y=86
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e9"
+	press_msg="4"
+}
+"message button" {
+	object {
+		x=330
+		y=86
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e10"
+	press_msg="5"
+}
+"message button" {
+	object {
+		x=373
+		y=86
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e11"
+	press_msg="6"
+}
+"message button" {
+	object {
+		x=115
+		y=109
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e3"
+	press_msg="8"
+}
+"message button" {
+	object {
+		x=158
+		y=109
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e4"
+	press_msg="9"
+}
+"message button" {
+	object {
+		x=201
+		y=109
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e5"
+	press_msg="10"
+}
+"message button" {
+	object {
+		x=244
+		y=109
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e6"
+	press_msg="11"
+}
+"message button" {
+	object {
+		x=287
+		y=109
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e7"
+	press_msg="12"
+}
+"message button" {
+	object {
+		x=330
+		y=109
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e8"
+	press_msg="13"
+}
+"message button" {
+	object {
+		x=373
+		y=109
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(A):GainIndex"
+		clr=0
+		bclr=26
+	}
+	label="1e9"
+	press_msg="14"
+}
 text {
 	object {
 		x=55
@@ -654,132 +712,109 @@ text {
 	textix="Gain"
 	align="horiz. centered"
 }
-composite {
+text {
 	object {
-		x=6
-		y=62
-		width=412
-		height=18
+		x=12
+		y=67
+		width=90
+		height=11
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=12
-				y=67
-				width=90
-				height=11
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="Max Freq (kHz):"
-			align="horiz. centered"
-		}
-		rectangle {
-			object {
-				x=6
-				y=62
-				width=412
-				height=18
-			}
-			"basic attribute" {
-				clr=0
-				fill="outline"
-			}
-		}
-		text {
-			object {
-				x=125
-				y=67
-				width=20
-				height=11
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="500"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=168
-				y=67
-				width=20
-				height=11
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="500"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=211
-				y=67
-				width=20
-				height=11
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="400"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=254
-				y=67
-				width=20
-				height=11
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="200"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=297
-				y=67
-				width=20
-				height=11
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="50"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=340
-				y=67
-				width=20
-				height=11
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="7"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=383
-				y=67
-				width=20
-				height=11
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="1.2"
-			align="horiz. centered"
-		}
+	"basic attribute" {
+		clr=0
 	}
+	textix="Max Freq (kHz):"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=125
+		y=67
+		width=20
+		height=11
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="500"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=168
+		y=67
+		width=20
+		height=11
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="500"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=211
+		y=67
+		width=20
+		height=11
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="400"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=254
+		y=67
+		width=20
+		height=11
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="200"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=297
+		y=67
+		width=20
+		height=11
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="50"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=340
+		y=67
+		width=20
+		height=11
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="7"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=383
+		y=67
+		width=20
+		height=11
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="1.2"
+	align="horiz. centered"
 }
 "message button" {
 	object {
@@ -811,40 +846,6 @@ composite {
 	label="DC"
 	press_msg="1"
 }
-rectangle {
-	object {
-		x=435
-		y=80
-		width=29
-		height=27
-	}
-	"basic attribute" {
-		clr=60
-		fill="outline"
-		width=3
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(A):Coupling"
-	}
-}
-rectangle {
-	object {
-		x=460
-		y=80
-		width=29
-		height=27
-	}
-	"basic attribute" {
-		clr=60
-		fill="outline"
-		width=3
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(A):Coupling"
-	}
-}
 text {
 	object {
 		x=432
@@ -858,96 +859,62 @@ text {
 	textix="Coupling"
 	align="horiz. centered"
 }
-rectangle {
-	object {
-		x=432
-		y=62
-		width=60
-		height=48
-	}
-	"basic attribute" {
-		clr=0
-		fill="outline"
-	}
-}
-composite {
+text {
 	object {
 		x=390
 		y=35
-		width=101
+		width=40
 		height=14
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=390
-				y=35
-				width=40
-				height=14
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="Gain:"
-			align="horiz. centered"
-		}
-		"text update" {
-			object {
-				x=431
-				y=35
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)$(A):Gain"
-				clr=50
-				bclr=14
-			}
-			align="horiz. centered"
-			format="exponential"
-			limits {
-			}
-		}
+	"basic attribute" {
+		clr=0
+	}
+	textix="Gain:"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=431
+		y=35
+		width=60
+		height=14
+	}
+	monitor {
+		chan="$(P)$(A):Gain"
+		clr=50
+		bclr=14
+	}
+	align="horiz. centered"
+	format="exponential"
+	limits {
 	}
 }
-composite {
+"text entry" {
 	object {
-		x=135
+		x=180
 		y=33
-		width=245
+		width=200
 		height=19
 	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=180
-				y=33
-				width=200
-				height=19
-			}
-			control {
-				chan="$(P)$(A):Description"
-				clr=50
-				bclr=14
-			}
-			format="string"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=135
-				y=35
-				width=40
-				height=14
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="Descr:"
-			align="horiz. centered"
-		}
+	control {
+		chan="$(P)$(A):Description"
+		clr=50
+		bclr=14
 	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=135
+		y=35
+		width=40
+		height=14
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="Descr:"
+	align="horiz. centered"
 }

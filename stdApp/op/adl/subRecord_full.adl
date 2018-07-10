@@ -783,101 +783,79 @@ menu {
 	label="PROC"
 	press_msg="1"
 }
-composite {
+polyline {
 	object {
 		x=0
 		y=335
 		width=399
-		height=27
+		height=3
 	}
-	"composite name"=""
-	children {
-		polyline {
-			object {
-				x=0
-				y=335
-				width=399
-				height=3
-			}
-			"basic attribute" {
-				clr=54
-				fill="outline"
-				width=3
-			}
-			points {
-				(1,336)
-				(397,336)
-			}
-		}
-		composite {
-			object {
-				x=5
-				y=341
-				width=236
-				height=20
-			}
-			"composite name"=""
-			children {
-				"text entry" {
-					object {
-						x=55
-						y=341
-						width=186
-						height=20
-					}
-					control {
-						chan="$(P)$(R).FLNK"
-						clr=14
-						bclr=40
-					}
-					format="string"
-					limits {
-					}
-				}
-				text {
-					object {
-						x=5
-						y=341
-						width=40
-						height=10
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="FORWARD"
-					align="horiz. centered"
-				}
-				text {
-					object {
-						x=5
-						y=351
-						width=40
-						height=10
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="LINK"
-					align="horiz. centered"
-				}
-			}
-		}
-		"related display" {
-			object {
-				x=335
-				y=342
-				width=40
-				height=20
-			}
-			display[0] {
-				label="fewer fields"
-				name="subRecord.adl"
-				args="P=$(P),R=$(R)"
-				policy="replace display"
-			}
-			clr=0
-			bclr=63
-			label="-Less"
-		}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=3
 	}
+	points {
+		(1,336)
+		(397,336)
+	}
+}
+"text entry" {
+	object {
+		x=55
+		y=341
+		width=186
+		height=20
+	}
+	control {
+		chan="$(P)$(R).FLNK"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=5
+		y=341
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="FORWARD"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=5
+		y=351
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="LINK"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=335
+		y=342
+		width=40
+		height=20
+	}
+	display[0] {
+		label="fewer fields"
+		name="subRecord.adl"
+		args="P=$(P),R=$(R)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=63
+	label="-Less"
 }

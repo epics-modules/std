@@ -87,6 +87,63 @@ display {
 		1a7309,
 	}
 }
+rectangle {
+	object {
+		x=7
+		y=41
+		width=138
+		height=45
+	}
+	"basic attribute" {
+		clr=30
+		width=1
+	}
+}
+rectangle {
+	object {
+		x=7
+		y=41
+		width=139
+		height=45
+	}
+	"basic attribute" {
+		clr=0
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)cdt$(N):trigger"
+	}
+}
+rectangle {
+	object {
+		x=7
+		y=41
+		width=139
+		height=45
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)cdt$(N):trigger"
+	}
+}
+rectangle {
+	object {
+		x=7
+		y=5
+		width=200
+		height=29
+	}
+	"basic attribute" {
+		clr=2
+	}
+}
 "choice button" {
 	object {
 		x=156
@@ -98,18 +155,6 @@ display {
 		chan="$(P)cdt$(N):start"
 		clr=14
 		bclr=51
-	}
-}
-rectangle {
-	object {
-		x=7
-		y=41
-		width=138
-		height=45
-	}
-	"basic attribute" {
-		clr=30
-		width=1
 	}
 }
 "text update" {
@@ -161,23 +206,6 @@ rectangle {
 	align="horiz. right"
 	format="truncated"
 	limits {
-	}
-}
-rectangle {
-	object {
-		x=7
-		y=41
-		width=139
-		height=45
-	}
-	"basic attribute" {
-		clr=0
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)cdt$(N):trigger"
 	}
 }
 text {
@@ -245,57 +273,18 @@ text {
 	textix="sec"
 	align="horiz. right"
 }
-rectangle {
+text {
 	object {
-		x=7
-		y=41
-		width=139
-		height=45
+		x=10
+		y=9
+		width=196
+		height=21
 	}
 	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
+		clr=14
 	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)cdt$(N):trigger"
-	}
-}
-composite {
-	object {
-		x=7
-		y=5
-		width=200
-		height=29
-	}
-	"composite name"=""
-	children {
-		rectangle {
-			object {
-				x=7
-				y=5
-				width=200
-				height=29
-			}
-			"basic attribute" {
-				clr=2
-			}
-		}
-		text {
-			object {
-				x=10
-				y=9
-				width=196
-				height=21
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="$(P)cdt$(N)"
-			align="horiz. centered"
-		}
-	}
+	textix="$(P)cdt$(N)"
+	align="horiz. centered"
 }
 "related display" {
 	object {
