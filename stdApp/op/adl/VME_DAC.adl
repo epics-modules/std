@@ -98,6 +98,17 @@ rectangle {
 		clr=15
 	}
 }
+rectangle {
+	object {
+		x=0
+		y=123
+		width=110
+		height=24
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
 "text entry" {
 	object {
 		x=5
@@ -262,98 +273,76 @@ text {
 	}
 	textix="EGU's/s"
 }
-composite {
+"text entry" {
+	object {
+		x=25
+		y=100
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)DAC$(D)_$(N).DRVL"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
 	object {
 		x=5
 		y=100
-		width=100
+		width=20
 		height=20
 	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=25
-				y=100
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)DAC$(D)_$(N).DRVL"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=5
-				y=100
-				width=20
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="LO"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="LO"
 }
-composite {
+"message button" {
+	object {
+		x=85
+		y=125
+		width=20
+		height=20
+	}
+	control {
+		chan="$(P)DAC$(D)_$(N)_tweak.B"
+		clr=14
+		bclr=51
+	}
+	label=">"
+	press_msg="1"
+}
+"message button" {
 	object {
 		x=5
 		y=125
-		width=100
+		width=20
 		height=20
 	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=85
-				y=125
-				width=20
-				height=20
-			}
-			control {
-				chan="$(P)DAC$(D)_$(N)_tweak.B"
-				clr=14
-				bclr=51
-			}
-			label=">"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=5
-				y=125
-				width=20
-				height=20
-			}
-			control {
-				chan="$(P)DAC$(D)_$(N)_tweak.A"
-				clr=14
-				bclr=51
-			}
-			label="<"
-			press_msg="1"
-		}
-		"text entry" {
-			object {
-				x=25
-				y=125
-				width=60
-				height=20
-			}
-			control {
-				chan="$(P)DAC$(D)_$(N)_tweakVal"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
+	control {
+		chan="$(P)DAC$(D)_$(N)_tweak.A"
+		clr=14
+		bclr=51
+	}
+	label="<"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=25
+		y=125
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)DAC$(D)_$(N)_tweakVal"
+		clr=14
+		bclr=51
+	}
+	limits {
 	}
 }
 "related display" {
@@ -377,61 +366,39 @@ composite {
 	bclr=51
 	label="More"
 }
-composite {
+text {
 	object {
 		x=55
 		y=149
 		width=50
 		height=20
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=55
-				y=149
-				width=50
-				height=20
-			}
-			"basic attribute" {
-				clr=30
-			}
-			"dynamic attribute" {
-				vis="if not zero"
-				chan="$(P)DAC$(D)_$(N)_busy.VAL"
-			}
-			textix="Busy"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=55
-				y=149
-				width=50
-				height=20
-			}
-			"basic attribute" {
-				clr=30
-			}
-			"dynamic attribute" {
-				vis="if zero"
-				chan="$(P)DAC$(D)_$(N)_busy.VAL"
-			}
-			textix="Done"
-			align="horiz. centered"
-		}
+	"basic attribute" {
+		clr=30
 	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)DAC$(D)_$(N)_busy.VAL"
+	}
+	textix="Busy"
+	align="horiz. centered"
 }
-rectangle {
+text {
 	object {
-		x=0
-		y=123
-		width=110
-		height=24
+		x=55
+		y=149
+		width=50
+		height=20
 	}
 	"basic attribute" {
-		clr=14
+		clr=30
 	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)DAC$(D)_$(N)_busy.VAL"
+	}
+	textix="Done"
+	align="horiz. centered"
 }
 text {
 	object {

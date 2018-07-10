@@ -125,19 +125,6 @@ rectangle {
 		chan="$(P)AClock$(A):Enable"
 	}
 }
-"choice button" {
-	object {
-		x=242
-		y=10
-		width=50
-		height=30
-	}
-	control {
-		chan="$(P)AClock$(A):Enable"
-		clr=14
-		bclr=51
-	}
-}
 rectangle {
 	object {
 		x=295
@@ -151,6 +138,53 @@ rectangle {
 	"dynamic attribute" {
 		vis="if not zero"
 		chan="$(P)AClock$(A):Enable"
+	}
+}
+rectangle {
+	object {
+		x=11
+		y=50
+		width=290
+		height=45
+	}
+	"basic attribute" {
+		clr=0
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)AClock$(A):Trigger"
+	}
+}
+rectangle {
+	object {
+		x=11
+		y=50
+		width=290
+		height=45
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)AClock$(A):Trigger"
+	}
+}
+"choice button" {
+	object {
+		x=242
+		y=10
+		width=50
+		height=30
+	}
+	control {
+		chan="$(P)AClock$(A):Enable"
+		clr=14
+		bclr=51
 	}
 }
 "text entry" {
@@ -568,40 +602,6 @@ text {
 	}
 	textix="$(P)AClock$(A)"
 	align="horiz. centered"
-}
-rectangle {
-	object {
-		x=11
-		y=50
-		width=290
-		height=45
-	}
-	"basic attribute" {
-		clr=0
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)AClock$(A):Trigger"
-	}
-}
-rectangle {
-	object {
-		x=11
-		y=50
-		width=290
-		height=45
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)AClock$(A):Trigger"
-	}
 }
 text {
 	object {

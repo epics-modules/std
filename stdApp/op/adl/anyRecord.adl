@@ -87,6 +87,17 @@ display {
 		1a7309,
 	}
 }
+rectangle {
+	object {
+		x=1
+		y=0
+		width=300
+		height=26
+	}
+	"basic attribute" {
+		clr=1
+	}
+}
 "text entry" {
 	object {
 		x=50
@@ -103,42 +114,31 @@ display {
 	limits {
 	}
 }
-composite {
+text {
 	object {
 		x=16
 		y=120
 		width=30
-		height=20
+		height=10
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=16
-				y=120
-				width=30
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="FWD"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=16
-				y=130
-				width=30
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="LINK"
-			align="horiz. centered"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="FWD"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=16
+		y=130
+		width=30
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="LINK"
+	align="horiz. centered"
 }
 "text entry" {
 	object {
@@ -166,17 +166,6 @@ text {
 		clr=14
 	}
 	textix="$(P)$(R).VAL"
-}
-rectangle {
-	object {
-		x=1
-		y=0
-		width=300
-		height=26
-	}
-	"basic attribute" {
-		clr=1
-	}
 }
 "text entry" {
 	object {

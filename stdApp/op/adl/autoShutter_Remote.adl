@@ -98,6 +98,23 @@ rectangle {
 		clr=1
 	}
 }
+rectangle {
+	object {
+		x=211
+		y=85
+		width=190
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(S)Shtr:Trigger.OUTV"
+	}
+}
 text {
 	object {
 		x=109
@@ -148,23 +165,6 @@ text {
 		clr=14
 	}
 	textix="$(S) Shutter Open PV"
-}
-rectangle {
-	object {
-		x=211
-		y=85
-		width=190
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(S)Shtr:Trigger.OUTV"
-	}
 }
 "text entry" {
 	object {

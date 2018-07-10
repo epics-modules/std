@@ -87,19 +87,6 @@ display {
 		1a7309,
 	}
 }
-text {
-	object {
-		x=14
-		y=7
-		width=170
-		height=24
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Auto Open"
-	align="horiz. centered"
-}
 rectangle {
 	object {
 		x=2
@@ -125,6 +112,79 @@ rectangle {
 		fill="outline"
 		width=2
 	}
+}
+rectangle {
+	object {
+		x=179
+		y=158
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)AClock$(A):Trigger"
+	}
+}
+rectangle {
+	object {
+		x=179
+		y=158
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)AClock$(A):Trigger"
+	}
+}
+rectangle {
+	object {
+		x=179
+		y=96
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(S)Shtr:Enable"
+	}
+}
+rectangle {
+	object {
+		x=179
+		y=70
+		width=12
+		height=12
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)Shtr:Enable"
+	}
+}
+text {
+	object {
+		x=14
+		y=7
+		width=170
+		height=24
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Auto Open"
+	align="horiz. centered"
 }
 text {
 	object {
@@ -183,36 +243,6 @@ text {
 	bclr=17
 	label="-More"
 }
-rectangle {
-	object {
-		x=179
-		y=158
-		width=12
-		height=12
-	}
-	"basic attribute" {
-		clr=20
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)AClock$(A):Trigger"
-	}
-}
-rectangle {
-	object {
-		x=179
-		y=158
-		width=12
-		height=12
-	}
-	"basic attribute" {
-		clr=15
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)AClock$(A):Trigger"
-	}
-}
 "related display" {
 	object {
 		x=125
@@ -257,21 +287,6 @@ text {
 	label="Disable"
 	press_msg="0"
 }
-rectangle {
-	object {
-		x=179
-		y=96
-		width=12
-		height=12
-	}
-	"basic attribute" {
-		clr=20
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(S)Shtr:Enable"
-	}
-}
 "message button" {
 	object {
 		x=57
@@ -286,19 +301,4 @@ rectangle {
 	}
 	label="Enable"
 	press_msg="1"
-}
-rectangle {
-	object {
-		x=179
-		y=70
-		width=12
-		height=12
-	}
-	"basic attribute" {
-		clr=15
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(S)Shtr:Enable"
-	}
 }

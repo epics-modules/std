@@ -102,6 +102,156 @@ rectangle {
 		chan="SRFB:GBL:HLoopStatusBI"
 	}
 }
+rectangle {
+	object {
+		x=229
+		y=92
+		width=200
+		height=25
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="ACIS:ShutterPermit"
+	}
+}
+rectangle {
+	object {
+		x=229
+		y=92
+		width=200
+		height=25
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="ACIS:ShutterPermit"
+	}
+}
+rectangle {
+	object {
+		x=246
+		y=3
+		width=240
+		height=25
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="S:injectingStatusBI"
+	}
+}
+rectangle {
+	object {
+		x=227
+		y=215
+		width=220
+		height=25
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="S:OrbitCorrection:CC"
+	}
+}
+rectangle {
+	object {
+		x=227
+		y=215
+		width=220
+		height=25
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="S:OrbitCorrection:CC"
+	}
+}
+rectangle {
+	object {
+		x=9
+		y=242
+		width=220
+		height=25
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="S:OrbitControlLawYFineBO"
+	}
+}
+rectangle {
+	object {
+		x=252
+		y=243
+		width=220
+		height=25
+	}
+	"basic attribute" {
+		clr=20
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="S:OrbitControlLawXFineBO"
+	}
+}
+rectangle {
+	object {
+		x=283
+		y=186
+		width=90
+		height=25
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="SRFB:GBL:VLoopStatusBI"
+	}
+}
+rectangle {
+	object {
+		x=227
+		y=186
+		width=50
+		height=25
+	}
+	"basic attribute" {
+		clr=15
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="SRFB:GBL:LoopStatusBI"
+	}
+}
+rectangle {
+	object {
+		x=227
+		y=186
+		width=50
+		height=25
+	}
+	"basic attribute" {
+		clr=36
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="SRFB:GBL:LoopStatusBI"
+	}
+}
 text {
 	object {
 		x=2
@@ -220,51 +370,6 @@ text {
 	}
 	textix="Hours"
 }
-rectangle {
-	object {
-		x=229
-		y=92
-		width=200
-		height=25
-	}
-	"basic attribute" {
-		clr=15
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="ACIS:ShutterPermit"
-	}
-}
-rectangle {
-	object {
-		x=229
-		y=92
-		width=200
-		height=25
-	}
-	"basic attribute" {
-		clr=20
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="ACIS:ShutterPermit"
-	}
-}
-rectangle {
-	object {
-		x=246
-		y=3
-		width=240
-		height=25
-	}
-	"basic attribute" {
-		clr=20
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="S:injectingStatusBI"
-	}
-}
 text {
 	object {
 		x=320
@@ -329,75 +434,64 @@ text {
 	textix="Shutter Status :"
 	align="horiz. right"
 }
-composite {
+han=""
+hildren {
+oval {
 	object {
 		x=17
 		y=535
 		width=8
-		height=88
+		height=8
 	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		oval {
-			object {
-				x=17
-				y=535
-				width=8
-				height=8
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		oval {
-			object {
-				x=17
-				y=555
-				width=8
-				height=8
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		oval {
-			object {
-				x=17
-				y=575
-				width=8
-				height=8
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		oval {
-			object {
-				x=17
-				y=595
-				width=8
-				height=8
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		oval {
-			object {
-				x=17
-				y=615
-				width=8
-				height=8
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
+	"basic attribute" {
+		clr=14
 	}
 }
-"text update" {
+oval {
+	object {
+		x=17
+		y=555
+		width=8
+		height=8
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+oval {
+	object {
+		x=17
+		y=575
+		width=8
+		height=8
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+oval {
+	object {
+		x=17
+		y=595
+		width=8
+		height=8
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+oval {
+	object {
+		x=17
+		y=615
+		width=8
+		height=8
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+
 	object {
 		x=38
 		y=570
@@ -555,36 +649,6 @@ text {
 	textix="Fill Number :"
 	align="horiz. right"
 }
-rectangle {
-	object {
-		x=227
-		y=215
-		width=220
-		height=25
-	}
-	"basic attribute" {
-		clr=15
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="S:OrbitCorrection:CC"
-	}
-}
-rectangle {
-	object {
-		x=227
-		y=215
-		width=220
-		height=25
-	}
-	"basic attribute" {
-		clr=20
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="S:OrbitCorrection:CC"
-	}
-}
 text {
 	object {
 		x=237
@@ -631,36 +695,6 @@ text {
 	}
 	textix="Orbit Status :"
 	align="horiz. right"
-}
-rectangle {
-	object {
-		x=9
-		y=242
-		width=220
-		height=25
-	}
-	"basic attribute" {
-		clr=20
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="S:OrbitControlLawYFineBO"
-	}
-}
-rectangle {
-	object {
-		x=252
-		y=243
-		width=220
-		height=25
-	}
-	"basic attribute" {
-		clr=20
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="S:OrbitControlLawXFineBO"
-	}
 }
 text {
 	object {
@@ -709,21 +743,6 @@ text {
 	textix="Feedback Status :"
 	align="horiz. right"
 }
-rectangle {
-	object {
-		x=283
-		y=186
-		width=90
-		height=25
-	}
-	"basic attribute" {
-		clr=15
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="SRFB:GBL:VLoopStatusBI"
-	}
-}
 text {
 	object {
 		x=283
@@ -740,36 +759,6 @@ text {
 	}
 	textix="Vertical"
 	align="horiz. centered"
-}
-rectangle {
-	object {
-		x=227
-		y=186
-		width=50
-		height=25
-	}
-	"basic attribute" {
-		clr=15
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="SRFB:GBL:LoopStatusBI"
-	}
-}
-rectangle {
-	object {
-		x=227
-		y=186
-		width=50
-		height=25
-	}
-	"basic attribute" {
-		clr=36
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="SRFB:GBL:LoopStatusBI"
-	}
 }
 text {
 	object {

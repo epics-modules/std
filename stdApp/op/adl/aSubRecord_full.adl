@@ -87,6 +87,17 @@ display {
 		1a7309,
 	}
 }
+rectangle {
+	object {
+		x=0
+		y=0
+		width=730
+		height=26
+	}
+	"basic attribute" {
+		clr=1
+	}
+}
 text {
 	object {
 		x=125
@@ -110,17 +121,6 @@ text {
 		clr=14
 	}
 	textix="DOUBLE VARIABLES"
-}
-rectangle {
-	object {
-		x=0
-		y=0
-		width=730
-		height=26
-	}
-	"basic attribute" {
-		clr=1
-	}
 }
 "text entry" {
 	object {
@@ -267,103 +267,81 @@ menu {
 	label="PROC"
 	press_msg="1"
 }
-composite {
+polyline {
 	object {
 		x=0
 		y=530
 		width=728
-		height=27
+		height=3
 	}
-	"composite name"=""
-	children {
-		polyline {
-			object {
-				x=0
-				y=530
-				width=728
-				height=3
-			}
-			"basic attribute" {
-				clr=54
-				fill="outline"
-				width=3
-			}
-			points {
-				(1,531)
-				(726,531)
-			}
-		}
-		composite {
-			object {
-				x=5
-				y=536
-				width=236
-				height=20
-			}
-			"composite name"=""
-			children {
-				"text entry" {
-					object {
-						x=55
-						y=536
-						width=186
-						height=20
-					}
-					control {
-						chan="$(P)$(R).FLNK"
-						clr=14
-						bclr=40
-					}
-					format="string"
-					limits {
-					}
-				}
-				text {
-					object {
-						x=5
-						y=536
-						width=40
-						height=10
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="FORWARD"
-					align="horiz. centered"
-				}
-				text {
-					object {
-						x=5
-						y=546
-						width=40
-						height=10
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="LINK"
-					align="horiz. centered"
-				}
-			}
-		}
-		"related display" {
-			object {
-				x=685
-				y=537
-				width=40
-				height=20
-			}
-			display[0] {
-				label="fewer fields"
-				name="aSubRecord.adl"
-				args="P=$(P),R=$(R)"
-				policy="replace display"
-			}
-			clr=0
-			bclr=63
-			label="-Less"
-		}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=3
 	}
+	points {
+		(1,531)
+		(726,531)
+	}
+}
+"text entry" {
+	object {
+		x=55
+		y=536
+		width=186
+		height=20
+	}
+	control {
+		chan="$(P)$(R).FLNK"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=5
+		y=536
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="FORWARD"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=5
+		y=546
+		width=40
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="LINK"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=685
+		y=537
+		width=40
+		height=20
+	}
+	display[0] {
+		label="fewer fields"
+		name="aSubRecord.adl"
+		args="P=$(P),R=$(R)"
+		policy="replace display"
+	}
+	clr=0
+	bclr=63
+	label="-Less"
 }
 composite {
 	object {

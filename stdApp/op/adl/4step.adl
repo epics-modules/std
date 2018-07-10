@@ -110,6 +110,163 @@ rectangle {
 		clr=4
 	}
 }
+rectangle {
+	object {
+		x=10
+		y=240
+		width=95
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+rectangle {
+	object {
+		x=10
+		y=125
+		width=95
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=0
+		width=700
+		height=20
+	}
+	"basic attribute" {
+		clr=0
+	}
+}
+rectangle {
+	object {
+		x=143
+		y=98
+		width=109
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)4step:sig1.IDV"
+	}
+}
+rectangle {
+	object {
+		x=145
+		y=125
+		width=450
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+rectangle {
+	object {
+		x=145
+		y=240
+		width=450
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+rectangle {
+	object {
+		x=258
+		y=98
+		width=109
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)4step:sig2.IDV"
+	}
+}
+rectangle {
+	object {
+		x=373
+		y=98
+		width=109
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)4step:sig3.IDV"
+	}
+}
+rectangle {
+	object {
+		x=488
+		y=98
+		width=109
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)4step:sig4.IDV"
+	}
+}
+rectangle {
+	object {
+		x=130
+		y=33
+		width=184
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)4step:Atrig1.OUTV"
+	}
+}
+rectangle {
+	object {
+		x=375
+		y=33
+		width=184
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)4step:Atrig2.OUTV"
+	}
+}
 "message button" {
 	object {
 		x=0
@@ -332,17 +489,6 @@ text {
 	limits {
 	}
 }
-rectangle {
-	object {
-		x=10
-		y=240
-		width=95
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
-}
 text {
 	object {
 		x=15
@@ -355,17 +501,6 @@ text {
 	}
 	textix="CALC EXPRESSION"
 	align="horiz. centered"
-}
-rectangle {
-	object {
-		x=10
-		y=125
-		width=95
-		height=14
-	}
-	"basic attribute" {
-		clr=14
-	}
 }
 text {
 	object {
@@ -554,17 +689,6 @@ text {
 	limits {
 	}
 }
-rectangle {
-	object {
-		x=0
-		y=0
-		width=700
-		height=20
-	}
-	"basic attribute" {
-		clr=0
-	}
-}
 polyline {
 	object {
 		x=0
@@ -722,23 +846,6 @@ text {
 	limits {
 	}
 }
-rectangle {
-	object {
-		x=143
-		y=98
-		width=109
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)4step:sig1.IDV"
-	}
-}
 "text entry" {
 	object {
 		x=145
@@ -771,75 +878,31 @@ rectangle {
 	limits {
 	}
 }
-composite {
+text {
 	object {
-		x=145
-		y=125
-		width=450
-		height=14
+		x=166
+		y=127
+		width=408
+		height=10
 	}
-	"composite name"=""
-	children {
-		rectangle {
-			object {
-				x=145
-				y=125
-				width=450
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		text {
-			object {
-				x=166
-				y=127
-				width=408
-				height=10
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="MEASURED VALUES"
-			align="horiz. centered"
-		}
+	"basic attribute" {
+		clr=0
 	}
+	textix="MEASURED VALUES"
+	align="horiz. centered"
 }
-composite {
+text {
 	object {
-		x=145
-		y=240
-		width=450
-		height=14
+		x=166
+		y=242
+		width=408
+		height=10
 	}
-	"composite name"=""
-	children {
-		rectangle {
-			object {
-				x=145
-				y=240
-				width=450
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		text {
-			object {
-				x=166
-				y=242
-				width=408
-				height=10
-			}
-			"basic attribute" {
-				clr=0
-			}
-			textix="CALCULATED VALUES"
-			align="horiz. centered"
-		}
+	"basic attribute" {
+		clr=0
 	}
+	textix="CALCULATED VALUES"
+	align="horiz. centered"
 }
 "text update" {
 	object {
@@ -967,23 +1030,6 @@ composite {
 	}
 	align="horiz. centered"
 	limits {
-	}
-}
-rectangle {
-	object {
-		x=258
-		y=98
-		width=109
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)4step:sig2.IDV"
 	}
 }
 "text entry" {
@@ -1146,23 +1192,6 @@ rectangle {
 	limits {
 	}
 }
-rectangle {
-	object {
-		x=373
-		y=98
-		width=109
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)4step:sig3.IDV"
-	}
-}
 "text entry" {
 	object {
 		x=375
@@ -1323,23 +1352,6 @@ rectangle {
 	limits {
 	}
 }
-rectangle {
-	object {
-		x=488
-		y=98
-		width=109
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)4step:sig4.IDV"
-	}
-}
 "text entry" {
 	object {
 		x=490
@@ -1401,23 +1413,6 @@ text {
 	textix="DETECTOR 1 TRIGGER NAME"
 	align="horiz. centered"
 }
-rectangle {
-	object {
-		x=130
-		y=33
-		width=184
-		height=24
-	}
-	"basic attribute" {
-		clr=20
-		fill="outline"
-		width=2
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)4step:Atrig1.OUTV"
-	}
-}
 "text entry" {
 	object {
 		x=317
@@ -1446,90 +1441,62 @@ text {
 	textix="VALUE"
 	align="horiz. centered"
 }
-composite {
+"text entry" {
 	object {
-		x=375
+		x=377
+		y=35
+		width=180
+		height=20
+	}
+	control {
+		chan="$(P)4step:det2TrigName.VAL"
+		clr=14
+		bclr=35
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=377
 		y=25
-		width=217
-		height=32
+		width=180
+		height=10
 	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=377
-				y=35
-				width=180
-				height=20
-			}
-			control {
-				chan="$(P)4step:det2TrigName.VAL"
-				clr=14
-				bclr=35
-			}
-			format="string"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=377
-				y=25
-				width=180
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="DETECTOR 2 TRIGGER NAME"
-			align="horiz. centered"
-		}
-		rectangle {
-			object {
-				x=375
-				y=33
-				width=184
-				height=24
-			}
-			"basic attribute" {
-				clr=20
-				fill="outline"
-				width=2
-			}
-			"dynamic attribute" {
-				vis="if not zero"
-				chan="$(P)4step:Atrig2.OUTV"
-			}
-		}
-		"text entry" {
-			object {
-				x=562
-				y=35
-				width=30
-				height=20
-			}
-			control {
-				chan="$(P)4step:det1TrigVal.VAL"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=562
-				y=25
-				width=30
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="VALUE"
-			align="horiz. centered"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="DETECTOR 2 TRIGGER NAME"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=562
+		y=35
+		width=30
+		height=20
+	}
+	control {
+		chan="$(P)4step:det1TrigVal.VAL"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=562
+		y=25
+		width=30
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="VALUE"
+	align="horiz. centered"
 }
 "text entry" {
 	object {

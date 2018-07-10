@@ -109,6 +109,22 @@ rectangle {
 		clr=1
 	}
 }
+rectangle {
+	object {
+		x=1
+		y=79
+		width=79
+		height=78
+	}
+	"basic attribute" {
+		clr=30
+		width=3
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)init_reminder.VAL"
+	}
+}
 text {
 	object {
 		x=7
@@ -248,22 +264,6 @@ text {
 		clr=14
 	}
 	textix="$(p) SLOT NO."
-}
-rectangle {
-	object {
-		x=1
-		y=79
-		width=79
-		height=78
-	}
-	"basic attribute" {
-		clr=30
-		width=3
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(S)init_reminder.VAL"
-	}
 }
 "choice button" {
 	object {
@@ -718,109 +718,98 @@ text {
 	limits {
 	}
 }
-composite {
+han=""
+hildren {
+"text entry" {
 	object {
 		x=163
-		y=201
-		width=293
-		height=30
+		y=211
+		width=220
+		height=20
 	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		"text entry" {
-			object {
-				x=163
-				y=211
-				width=220
-				height=20
-			}
-			control {
-				chan="$(P)$(S)$(p)_calcout.CALC"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=165
-				y=201
-				width=132
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="CALCULATION EXPRESSION"
-		}
-		"text update" {
-			object {
-				x=386
-				y=211
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(S)$(p)_calcout.VAL"
-				clr=14
-				bclr=55
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=401
-				y=201
-				width=44
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="RESULT"
-		}
-		text {
-			object {
-				x=337
-				y=201
-				width=45
-				height=10
-			}
-			"basic attribute" {
-				clr=21
-			}
-			"dynamic attribute" {
-				vis="if not zero"
-				chan="$(P)$(S)$(p)_calcout.CLCV"
-			}
-			textix="INVALID"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=343
-				y=201
-				width=33
-				height=10
-			}
-			"basic attribute" {
-				clr=54
-			}
-			"dynamic attribute" {
-				vis="if zero"
-				chan="$(P)$(S)$(p)_calcout.CLCV"
-			}
-			textix="VALID"
-			align="horiz. centered"
-		}
+	control {
+		chan="$(P)$(S)$(p)_calcout.CALC"
+		clr=14
+		bclr=51
+	}
+	limits {
 	}
 }
 text {
+	object {
+		x=165
+		y=201
+		width=132
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="CALCULATION EXPRESSION"
+}
+"text update" {
+	object {
+		x=386
+		y=211
+		width=70
+		height=20
+	}
+	monitor {
+		chan="$(P)$(S)$(p)_calcout.VAL"
+		clr=14
+		bclr=55
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+text {
+	object {
+		x=401
+		y=201
+		width=44
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="RESULT"
+}
+text {
+	object {
+		x=337
+		y=201
+		width=45
+		height=10
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(S)$(p)_calcout.CLCV"
+	}
+	textix="INVALID"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=343
+		y=201
+		width=33
+		height=10
+	}
+	"basic attribute" {
+		clr=54
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(S)$(p)_calcout.CLCV"
+	}
+	textix="VALID"
+	align="horiz. centered"
+}
+
 	object {
 		x=5
 		y=175

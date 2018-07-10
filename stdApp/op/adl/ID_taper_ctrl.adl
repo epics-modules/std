@@ -407,6 +407,30 @@ display {
 		inten=0
 	}
 }
+rectangle {
+	object {
+		x=0
+		y=158
+		width=290
+		height=80
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=77
+		width=290
+		height=80
+	}
+}
+rectangle {
+	object {
+		x=160
+		y=44
+		width=120
+		height=25
+	}
+}
 "message button" {
 	object {
 		x=150
@@ -432,28 +456,12 @@ display {
 		width=2
 	}
 }
-rectangle {
-	object {
-		x=0
-		y=158
-		width=290
-		height=80
-	}
-}
 "basic attribute" {
 	attr {
 		clr=49
 		style="solid"
 		fill="solid"
 		width=2
-	}
-}
-rectangle {
-	object {
-		x=0
-		y=77
-		width=290
-		height=80
 	}
 }
 "text update" {
@@ -488,52 +496,41 @@ rectangle {
 	align="horiz. centered"
 	format="decimal"
 }
-composite {
+han=""
+hildren {
+"text update" {
+	object {
+		x=184
+		y=119
+		width=104
+		height=30
+	}
+	monitor {
+		rdbk="ID$(xx):UN:keVdsAO.VAL"
+		clr=60
+		bclr=49
+	}
+	clrmod="static"
+	align="horiz. centered"
+	format="decimal"
+}
+"text update" {
 	object {
 		x=184
 		y=83
 		width=104
-		height=66
+		height=30
 	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		"text update" {
-			object {
-				x=184
-				y=119
-				width=104
-				height=30
-			}
-			monitor {
-				rdbk="ID$(xx):UN:keVdsAO.VAL"
-				clr=60
-				bclr=49
-			}
-			clrmod="static"
-			align="horiz. centered"
-			format="decimal"
-		}
-		"text update" {
-			object {
-				x=184
-				y=83
-				width=104
-				height=30
-			}
-			monitor {
-				rdbk="ID$(xx):UN:keVusAO.VAL"
-				clr=60
-				bclr=49
-			}
-			clrmod="static"
-			align="horiz. centered"
-			format="decimal"
-		}
+	monitor {
+		rdbk="ID$(xx):UN:keVusAO.VAL"
+		clr=60
+		bclr=49
 	}
+	clrmod="static"
+	align="horiz. centered"
+	format="decimal"
 }
-composite {
+
 	object {
 		x=44
 		y=83
@@ -578,50 +575,39 @@ composite {
 		}
 	}
 }
-composite {
+han=""
+hildren {
+"text entry" {
+	object {
+		x=185
+		y=199
+		width=100
+		height=38
+	}
+	control {
+		ctrl="ID$(xx):UN:keVdsAI.VAL"
+		clr=0
+		bclr=54
+	}
+	clrmod="static"
+	format="decimal"
+}
+"text entry" {
 	object {
 		x=54
 		y=199
-		width=231
+		width=120
 		height=38
 	}
-	"composite name"=""
-	vis="static"
-	chan=""
-	children {
-		"text entry" {
-			object {
-				x=185
-				y=199
-				width=100
-				height=38
-			}
-			control {
-				ctrl="ID$(xx):UN:keVdsAI.VAL"
-				clr=0
-				bclr=54
-			}
-			clrmod="static"
-			format="decimal"
-		}
-		"text entry" {
-			object {
-				x=54
-				y=199
-				width=120
-				height=38
-			}
-			control {
-				ctrl="ID$(xx):UN:setdsAI.VAL"
-				clr=0
-				bclr=54
-			}
-			clrmod="static"
-			format="decimal"
-		}
+	control {
+		ctrl="ID$(xx):UN:setdsAI.VAL"
+		clr=0
+		bclr=54
 	}
+	clrmod="static"
+	format="decimal"
 }
-composite {
+
 	object {
 		x=54
 		y=159
@@ -1039,14 +1025,6 @@ text {
 		param {
 			chan="ID$(xx):accessSecurityMI.VAL"
 		}
-	}
-}
-rectangle {
-	object {
-		x=160
-		y=44
-		width=120
-		height=25
 	}
 }
 "basic attribute" {
