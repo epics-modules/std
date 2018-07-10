@@ -87,6 +87,54 @@ display {
 		1a7309,
 	}
 }
+rectangle {
+	object {
+		x=40
+		y=31
+		width=155
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=42
+		y=33
+		width=151
+		height=20
+	}
+	"basic attribute" {
+		clr=40
+	}
+}
+rectangle {
+	object {
+		x=40
+		y=425
+		width=154
+		height=24
+	}
+	"basic attribute" {
+		clr=20
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=42
+		y=427
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=35
+	}
+}
 text {
 	object {
 		x=0
@@ -134,41 +182,6 @@ text {
 		clr=14
 	}
 	textix=" followed by an alarm command (e.g., ' NMS'; ignore this.)"
-}
-composite {
-	object {
-		x=40
-		y=31
-		width=155
-		height=24
-	}
-	"composite name"=""
-	children {
-		rectangle {
-			object {
-				x=40
-				y=31
-				width=155
-				height=24
-			}
-			"basic attribute" {
-				clr=20
-				fill="outline"
-				width=2
-			}
-		}
-		rectangle {
-			object {
-				x=42
-				y=33
-				width=151
-				height=20
-			}
-			"basic attribute" {
-				clr=40
-			}
-		}
-	}
 }
 text {
 	object {
@@ -379,175 +392,140 @@ text {
 	}
 	textix=" in this case, you must use a 'dynamic' link, described below.)"
 }
-composite {
+text {
+	object {
+		x=0
+		y=481
+		width=500
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=" this may or may not cause the target record to process.  (The target"
+}
+text {
+	object {
+		x=0
+		y=451
+		width=500
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=" of the CA EPICS link command described above.  This type of link"
+}
+text {
+	object {
+		x=0
+		y=431
+		width=40
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=" This"
+}
+text {
+	object {
+		x=200
+		y=431
+		width=300
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="is a 'dynamic' link, an early prototype"
+}
+polyline {
 	object {
 		x=-1
 		y=415
 		width=507
-		height=140
+		height=2
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=0
-				y=481
-				width=500
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix=" this may or may not cause the target record to process.  (The target"
-		}
-		text {
-			object {
-				x=0
-				y=451
-				width=500
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix=" of the CA EPICS link command described above.  This type of link"
-		}
-		text {
-			object {
-				x=0
-				y=431
-				width=40
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix=" This"
-		}
-		rectangle {
-			object {
-				x=40
-				y=425
-				width=154
-				height=24
-			}
-			"basic attribute" {
-				clr=20
-				fill="outline"
-				width=2
-			}
-		}
-		rectangle {
-			object {
-				x=42
-				y=427
-				width=150
-				height=20
-			}
-			"basic attribute" {
-				clr=35
-			}
-		}
-		text {
-			object {
-				x=200
-				y=431
-				width=300
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="is a 'dynamic' link, an early prototype"
-		}
-		polyline {
-			object {
-				x=-1
-				y=415
-				width=507
-				height=2
-			}
-			"basic attribute" {
-				clr=14
-				width=2
-			}
-			points {
-				(0,416)
-				(505,416)
-			}
-		}
-		text {
-			object {
-				x=43
-				y=430
-				width=150
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="xxx:scan1.EXSC"
-		}
-		text {
-			object {
-				x=0
-				y=496
-				width=500
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix=" record will decide.)  If processing does occur, this link type"
-		}
-		text {
-			object {
-				x=0
-				y=511
-				width=500
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix=" normally will wait for it to complete.  (Some displays will have a"
-		}
-		text {
-			object {
-				x=0
-				y=526
-				width=500
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix=" menu field nearby, which allows you to choose whether or not to wait.)"
-		}
-		text {
-			object {
-				x=0
-				y=541
-				width=500
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		text {
-			object {
-				x=0
-				y=466
-				width=500
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix=" accepts only a PV name.  It will write a value to the named PV, and"
-		}
+	"basic attribute" {
+		clr=14
+		width=2
 	}
+	points {
+		(0,416)
+		(505,416)
+	}
+}
+text {
+	object {
+		x=43
+		y=430
+		width=150
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="xxx:scan1.EXSC"
+}
+text {
+	object {
+		x=0
+		y=496
+		width=500
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=" record will decide.)  If processing does occur, this link type"
+}
+text {
+	object {
+		x=0
+		y=511
+		width=500
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=" normally will wait for it to complete.  (Some displays will have a"
+}
+text {
+	object {
+		x=0
+		y=526
+		width=500
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=" menu field nearby, which allows you to choose whether or not to wait.)"
+}
+text {
+	object {
+		x=0
+		y=541
+		width=500
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+}
+text {
+	object {
+		x=0
+		y=466
+		width=500
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix=" accepts only a PV name.  It will write a value to the named PV, and"
 }
 text {
 	object {

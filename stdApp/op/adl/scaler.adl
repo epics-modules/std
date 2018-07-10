@@ -87,19 +87,6 @@ display {
 		1a7309,
 	}
 }
-"choice button" {
-	object {
-		x=0
-		y=0
-		width=55
-		height=40
-	}
-	control {
-		chan="$(P)$(S).CNT"
-		clr=14
-		bclr=51
-	}
-}
 rectangle {
 	object {
 		x=0
@@ -111,6 +98,19 @@ rectangle {
 		clr=1
 		fill="outline"
 		width=2
+	}
+}
+"choice button" {
+	object {
+		x=0
+		y=0
+		width=55
+		height=40
+	}
+	control {
+		chan="$(P)$(S).CNT"
+		clr=14
+		bclr=51
 	}
 }
 text {
@@ -296,44 +296,33 @@ text {
 	limits {
 	}
 }
-composite {
+text {
 	object {
 		x=55
 		y=0
 		width=50
-		height=40
+		height=20
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=55
-				y=0
-				width=50
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-			textix="time"
-			align="horiz. centered"
-		}
-		"text entry" {
-			object {
-				x=55
-				y=20
-				width=50
-				height=20
-			}
-			control {
-				chan="$(P)$(S).TP"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="time"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=55
+		y=20
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)$(S).TP"
+		clr=14
+		bclr=51
+	}
+	limits {
 	}
 }
 "text update" {

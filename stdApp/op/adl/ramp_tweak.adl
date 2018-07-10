@@ -99,6 +99,17 @@ rectangle {
 		width=3
 	}
 }
+rectangle {
+	object {
+		x=0
+		y=0
+		width=180
+		height=21
+	}
+	"basic attribute" {
+		clr=0
+	}
+}
 text {
 	object {
 		x=0
@@ -111,17 +122,6 @@ text {
 	}
 	textix="($(P)$(Q))"
 	align="horiz. centered"
-}
-rectangle {
-	object {
-		x=0
-		y=0
-		width=180
-		height=21
-	}
-	"basic attribute" {
-		clr=0
-	}
 }
 text {
 	object {
@@ -260,83 +260,61 @@ text {
 	bclr=17
 	label="-MORE"
 }
-composite {
+text {
+	object {
+		x=5
+		y=40
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="TARGET"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=5
+		y=50
+		width=35
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PV"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=45
+		y=40
+		width=130
+		height=20
+	}
+	monitor {
+		chan="$(P)$(Q)PutLinkCalc.AA"
+		clr=54
+		bclr=2
+	}
+	format="string"
+	limits {
+	}
+}
+polyline {
 	object {
 		x=-1
-		y=40
+		y=60
 		width=183
-		height=23
+		height=3
 	}
-	"composite name"=""
-	children {
-		composite {
-			object {
-				x=5
-				y=40
-				width=35
-				height=20
-			}
-			"composite name"=""
-			children {
-				text {
-					object {
-						x=5
-						y=40
-						width=35
-						height=10
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="TARGET"
-					align="horiz. centered"
-				}
-				text {
-					object {
-						x=5
-						y=50
-						width=35
-						height=10
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="PV"
-					align="horiz. centered"
-				}
-			}
-		}
-		"text update" {
-			object {
-				x=45
-				y=40
-				width=130
-				height=20
-			}
-			monitor {
-				chan="$(P)$(Q)PutLinkCalc.AA"
-				clr=54
-				bclr=2
-			}
-			format="string"
-			limits {
-			}
-		}
-		polyline {
-			object {
-				x=-1
-				y=60
-				width=183
-				height=3
-			}
-			"basic attribute" {
-				clr=54
-				width=3
-			}
-			points {
-				(0,61)
-				(180,61)
-			}
-		}
+	"basic attribute" {
+		clr=54
+		width=3
+	}
+	points {
+		(0,61)
+		(180,61)
 	}
 }

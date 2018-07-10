@@ -741,43 +741,32 @@ text {
 	bclr=17
 	label="-LINK"
 }
-composite {
+text {
+	object {
+		x=2
+		y=405
+		width=110
+		height=10
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SYNC WITH SCALER:"
+}
+"text entry" {
 	object {
 		x=0
-		y=405
+		y=414
 		width=135
-		height=29
+		height=20
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=2
-				y=405
-				width=110
-				height=10
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-			textix="SYNC WITH SCALER:"
-		}
-		"text entry" {
-			object {
-				x=0
-				y=414
-				width=135
-				height=20
-			}
-			control {
-				chan="$(P)$(S).COUT"
-				clr=14
-				bclr=40
-			}
-			format="string"
-			limits {
-			}
-		}
+	control {
+		chan="$(P)$(S).COUT"
+		clr=14
+		bclr=40
+	}
+	format="string"
+	limits {
 	}
 }
