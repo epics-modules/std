@@ -6,7 +6,7 @@ APS BCDA synApps module: std
 contact: Tim Mooney
 
 Full list of synApps modules and contacts: 
-  https://epics.anl.gov/BCDA/synApps/Included-Modules
+  https://epics.anl.gov/bcda/synApps/Included-Modules
 
 For more information about synApps, see
    https://epics.anl.gov/bcda/synApps
