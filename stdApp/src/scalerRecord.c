@@ -143,15 +143,15 @@ volatile int scaler_wait_time = 10;
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
 #define initialize NULL
-static long init_record();
-static long process();
-static long special();
+static long init_record(dbCommon *pcommon, int pass);
+static long process(dbCommon *pcommon);
+static long special(const DBADDR *paddr, int after);
 #define get_value NULL
 #define cvt_dbaddr NULL
 #define get_array_info NULL
 #define put_array_info NULL
 #define get_units NULL
-static long get_precision();
+static long get_precision(const DBADDR *paddr, long *precision);
 #define get_enum_str NULL
 #define get_enum_strs NULL
 #define put_enum_str NULL
@@ -241,10 +241,9 @@ static void autoCallbackFunc(CALLBACK *pcb)
 	(void)scanOnce((void *)pscal);
 }
 
-static long init_record(pscal,pass)
-scalerRecord *pscal;
-int pass;
+static long init_record(dbCommon *pcommon, int pass)
 {
+	scalerRecord *pscal = (scalerRecord *) pcommon;
 	long status;
 	SCALERDSET *pdset = (SCALERDSET *)(pscal->dset);
 	CALLBACK *pcallbacks, *pupdateCallback, *pdelayCallback,
@@ -341,9 +340,9 @@ int pass;
 }
 
 
-static long process(pscal)
-scalerRecord *pscal;
+static long process(dbCommon *pcommon)
 {
+	scalerRecord *pscal = (scalerRecord *) pcommon;
 	int i, status, prev_scaler_state, save_pr1, old_pr1;
 	double old_freq;
 	int justFinishedUserCount=0, justStartedUserCount=0, putNotifyOperation=0;
@@ -604,9 +603,7 @@ static void updateCounts(scalerRecord *pscal)
 }
 
 
-static long special(paddr,after)
-struct dbAddr *paddr;
-int	after;
+static long special(const DBADDR *paddr, int after)
 {
 	scalerRecord *pscal = (scalerRecord *)(paddr->precord);
 	int i=0, status;
@@ -730,9 +727,7 @@ int	after;
 	return(0);
 }
 
-static long get_precision(paddr, precision)
-struct dbAddr *paddr;
-long *precision;
+static long get_precision(const DBADDR *paddr, long *precision)
 {
 	scalerRecord *pscal = (scalerRecord *) paddr->precord;
 	int fieldIndex = dbGetFieldIndex(paddr);
@@ -749,8 +744,7 @@ long *precision;
 }
 
 
-static void do_alarm(pscal)
-scalerRecord *pscal;
+static void do_alarm(scalerRecord *pscal)
 {
 	if(pscal->udf == TRUE ){
 #if LT_EPICSBASE(3,15,0,2)
@@ -763,8 +757,7 @@ scalerRecord *pscal;
 	return;
 }
 
-static void monitor(pscal)
-scalerRecord *pscal;
+static void monitor(scalerRecord *pscal)
 {
 	unsigned short monitor_mask;
 	epicsUInt32 *pscaler = (epicsUInt32 *)&(pscal->s1);
