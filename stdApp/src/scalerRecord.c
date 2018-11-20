@@ -159,7 +159,7 @@ static long get_precision(const DBADDR *paddr, long *precision);
 #define get_control_double NULL
 #define get_alarm_double NULL
 
-struct rset scalerRSET = {
+rset scalerRSET = {
 	RSETNUMBER,
 	report,
 	initialize,
