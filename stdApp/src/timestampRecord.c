@@ -36,12 +36,13 @@
 #include	<timestampRecord.h>
 #undef  GEN_SIZE_OFFSET
 
+static void monitor();
+
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
 #define initialize NULL
 #define init_record NULL
-static long process();
-static void monitor();
+static long process(dbCommon *pcommon);
 #define special NULL
 #define cvt_dbaddr NULL
 #define get_array_info NULL
@@ -75,9 +76,11 @@ rset timestampRSET={
 	get_alarm_double };
 epicsExportAddress(rset,timestampRSET);
 
-static long process(struct timestampRecord *ptimestamp){
+static long process(dbCommon *pcommon) {
 
- const char * format=NULL; 
+  timestampRecord *ptimestamp = (timestampRecord *) pcommon;
+
+  const char * format=NULL; 
   ptimestamp->udf  = FALSE;
   ptimestamp->pact = TRUE;
 
@@ -146,8 +149,7 @@ static long process(struct timestampRecord *ptimestamp){
 }
 
 
-static void monitor(ptimestamp)
-     struct timestampRecord             *ptimestamp;
+static void monitor(timestampRecord *ptimestamp)
 {
   unsigned short  monitor_mask;
   
