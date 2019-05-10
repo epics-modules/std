@@ -1,14 +1,14 @@
 
 file {
-	name="/home/oxygen4/MOONEY/epics/synApps/support/std/stdApp/op/adl/async_pid_control.adl"
-	version=030103
+	name="/home/epics/devel/std-3-4-1/stdApp/op/adl/async_pid_control.adl"
+	version=030109
 }
 display {
 	object {
-		x=903
-		y=580
+		x=497
+		y=160
 		width=330
-		height=220
+		height=245
 	}
 	clr=14
 	bclr=4
@@ -87,263 +87,288 @@ display {
 		1a7309,
 	}
 }
+composite {
+	object {
+		x=13
+		y=60
+		width=307
+		height=175
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=13
+				y=60
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="ReadTrig PV"
+		}
+		"text entry" {
+			object {
+				x=128
+				y=60
+				width=160
+				height=20
+			}
+			control {
+				chan="$(P)$(PID).TRIG"
+				clr=14
+				bclr=40
+			}
+			format="string"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=20
+				y=141
+				width=100
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Setpoint"
+			align="horiz. centered"
+		}
+		"text entry" {
+			object {
+				x=20
+				y=163
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)$(PID).VAL"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=20
+				y=194
+				width=100
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Feedback"
+			align="horiz. centered"
+		}
+		menu {
+			object {
+				x=20
+				y=215
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)$(PID).FBON"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=13
+				y=110
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Control PV"
+		}
+		"text entry" {
+			object {
+				x=128
+				y=110
+				width=160
+				height=20
+			}
+			control {
+				chan="$(P)$(PID).OUTL"
+				clr=14
+				bclr=40
+			}
+			format="string"
+			limits {
+			}
+		}
+		"related display" {
+			object {
+				x=280
+				y=215
+				width=40
+				height=20
+			}
+			display[0] {
+				label="Plot setpoint and readback"
+				name="pid_plot_readback.adl"
+				args="P=$(P), PID=$(PID)"
+			}
+			display[1] {
+				label="Plot control value"
+				name="pid_plot_control.adl"
+				args="P=$(P), PID=$(PID)"
+			}
+			display[2] {
+				label="PID parameters"
+				name="pid_parameters.adl"
+				args="P=$(P), PID=$(PID)"
+			}
+			display[3] {
+				label="PID limits"
+				name="yyTransform_full.adl"
+				args="P=$(P), T=$(PID)_limits"
+			}
+			display[4] {
+				label="PID input calc"
+				name="yyTransform_full.adl"
+				args="P=$(P), T=$(PID)_incalc"
+			}
+			display[5] {
+				label="PID output calc"
+				name="yyTransform_full.adl"
+				args="P=$(P), T=$(PID)_outcalc"
+			}
+			clr=0
+			bclr=63
+			label="-More"
+		}
+		text {
+			object {
+				x=13
+				y=85
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Readback PV"
+		}
+		"text entry" {
+			object {
+				x=128
+				y=85
+				width=160
+				height=20
+			}
+			control {
+				chan="$(P)$(PID).INP"
+				clr=14
+				bclr=40
+			}
+			format="string"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=295
+				y=60
+				width=25
+				height=20
+			}
+			control {
+				chan="$(P)$(PID).TVAL"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=150
+				y=141
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Readback"
+			align="horiz. centered"
+		}
+		"text update" {
+			object {
+				x=150
+				y=163
+				width=110
+				height=20
+			}
+			monitor {
+				chan="$(P)$(PID).CVAL"
+				clr=14
+				bclr=60
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=153
+				y=194
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Update rate"
+		}
+		menu {
+			object {
+				x=150
+				y=215
+				width=110
+				height=20
+			}
+			control {
+				chan="$(P)$(PID).SCAN"
+				clr=14
+				bclr=51
+			}
+		}
+	}
+}
 text {
 	object {
-		x=30
-		y=2
-		width=240
+		x=0
+		y=5
+		width=330
 		height=25
 	}
 	"basic attribute" {
 		clr=54
 	}
 	textix="$(TITLE)"
-}
-text {
-	object {
-		x=13
-		y=30
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="ReadTrig PV"
-}
-"text entry" {
-	object {
-		x=128
-		y=30
-		width=160
-		height=20
-	}
-	control {
-		chan="$(P)$(PID).TRIG"
-		clr=14
-		bclr=40
-	}
-	format="string"
-	limits {
-	}
-}
-text {
-	object {
-		x=20
-		y=111
-		width=100
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Setpoint"
 	align="horiz. centered"
 }
-"text entry" {
-	object {
-		x=20
-		y=133
-		width=100
-		height=20
-	}
-	control {
-		chan="$(P)$(PID).VAL"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
 text {
 	object {
-		x=20
-		y=164
-		width=100
+		x=0
+		y=35
+		width=330
 		height=20
 	}
 	"basic attribute" {
-		clr=14
+		clr=54
 	}
-	textix="Feedback"
+	textix="$(P)$(PID)"
 	align="horiz. centered"
-}
-menu {
-	object {
-		x=20
-		y=185
-		width=100
-		height=20
-	}
-	control {
-		chan="$(P)$(PID).FBON"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=13
-		y=80
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Control PV"
-}
-"text entry" {
-	object {
-		x=128
-		y=80
-		width=160
-		height=20
-	}
-	control {
-		chan="$(P)$(PID).OUTL"
-		clr=14
-		bclr=40
-	}
-	format="string"
-	limits {
-	}
-}
-"related display" {
-	object {
-		x=280
-		y=185
-		width=40
-		height=20
-	}
-	display[0] {
-		label="Plot setpoint and readback"
-		name="pid_plot_readback.adl"
-		args="P=$(P), PID=$(PID)"
-	}
-	display[1] {
-		label="Plot control value"
-		name="pid_plot_control.adl"
-		args="P=$(P), PID=$(PID)"
-	}
-	display[2] {
-		label="PID parameters"
-		name="pid_parameters.adl"
-		args="P=$(P), PID=$(PID)"
-	}
-	display[3] {
-		label="PID limits"
-		name="yyTransform_full.adl"
-		args="P=$(P), T=$(PID)_limits"
-	}
-	display[4] {
-		label="PID input calc"
-		name="yyTransform_full.adl"
-		args="P=$(P), T=$(PID)_incalc"
-	}
-	display[5] {
-		label="PID output calc"
-		name="yyTransform_full.adl"
-		args="P=$(P), T=$(PID)_outcalc"
-	}
-	clr=0
-	bclr=63
-	label="-More"
-}
-text {
-	object {
-		x=13
-		y=55
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Readback PV"
-}
-"text entry" {
-	object {
-		x=128
-		y=55
-		width=160
-		height=20
-	}
-	control {
-		chan="$(P)$(PID).INP"
-		clr=14
-		bclr=40
-	}
-	format="string"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=295
-		y=30
-		width=25
-		height=20
-	}
-	control {
-		chan="$(P)$(PID).TVAL"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=150
-		y=111
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Readback"
-	align="horiz. centered"
-}
-"text update" {
-	object {
-		x=150
-		y=133
-		width=110
-		height=20
-	}
-	monitor {
-		chan="$(P)$(PID).CVAL"
-		clr=14
-		bclr=60
-	}
-	align="horiz. right"
-	limits {
-	}
-}
-text {
-	object {
-		x=153
-		y=164
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Update rate"
-}
-menu {
-	object {
-		x=150
-		y=185
-		width=110
-		height=20
-	}
-	control {
-		chan="$(P)$(PID).SCAN"
-		clr=14
-		bclr=51
-	}
 }
