@@ -1,28 +1,28 @@
-4 0 0
+4 0 1
 beginScreenProperties
 major 4
 minor 0
-release 0
+release 1
 x 809
 y 252
 w 500
 h 560
 font "helvetica-medium-r-18.0"
-ctlFont "helvetica-medium-r-8.0"
+ctlFont "helvetica-bold-r-10.0"
 btnFont "helvetica-medium-r-18.0"
-fgColor index 14
-bgColor index 0
-textColor index 14
-ctlFgColor1 index 30
-ctlFgColor2 index 32
-ctlBgColor1 index 34
-ctlBgColor2 index 35
-topShadowColor index 37
-botShadowColor index 44
+fgColor rgb 0 0 0
+bgColor rgb 65280 65280 65280
+textColor rgb 0 0 0
+ctlFgColor1 rgb 64256 62208 18944
+ctlFgColor2 rgb 60928 46592 11008
+ctlBgColor1 rgb 52480 24832 0
+ctlBgColor2 rgb 65280 45056 65280
+topShadowColor rgb 44544 19968 48128
+botShadowColor rgb 13312 13056 34304
+showGrid
 snapToGrid
-gridSize 5
+gridSize 4
 endScreenProperties
-
 
 # (Rectangle)
 object activeRectangleClass
@@ -34,8 +34,8 @@ x 41
 y 32
 w 173
 h 22
-lineColor index 20
-fillColor index 20
+lineColor rgb 64768 0 0
+fillColor rgb 64768 0 0
 lineWidth 2
 endObjectProperties
 
@@ -49,9 +49,9 @@ x 42
 y 33
 w 170
 h 19
-lineColor index 40
+lineColor rgb 41984 43520 65280
 fill
-fillColor index 40
+fillColor rgb 41984 43520 65280
 lineWidth 0
 endObjectProperties
 
@@ -65,8 +65,8 @@ x 41
 y 425
 w 152
 h 22
-lineColor index 20
-fillColor index 20
+lineColor rgb 64768 0 0
+fillColor rgb 64768 0 0
 lineWidth 2
 endObjectProperties
 
@@ -80,9 +80,9 @@ x 42
 y 426
 w 149
 h 19
-lineColor index 35
+lineColor rgb 65280 45056 65280
 fill
-fillColor index 35
+fillColor rgb 65280 45056 65280
 lineWidth 0
 endObjectProperties
 
@@ -90,17 +90,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 37
-w 40
+w 41
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " This"
+  " This"
 }
 endObjectProperties
 
@@ -108,17 +109,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 220
 y 37
 w 300
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "is a standard EPICS link."
+  "is a standard EPICS link."
 }
 endObjectProperties
 
@@ -126,17 +128,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 60
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " It accepts a PV name followed by an process command (e.g., ' NPP'),"
+  " It accepts a PV name followed by an process command (e.g., ' NPP'),"
 }
 endObjectProperties
 
@@ -144,17 +147,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 75
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " followed by an alarm command (e.g., ' NMS'; ignore this.)"
+  " followed by an alarm command (e.g., ' NMS'; ignore this.)"
 }
 endObjectProperties
 
@@ -162,17 +166,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 95
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " Here are the possible process commands for an input link:"
+  " Here are the possible process commands for an input link:"
 }
 endObjectProperties
 
@@ -180,17 +185,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 220
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "    CA - Read a value without causing processing to occur."
+  "    CA - Read a value without causing processing to occur."
 }
 endObjectProperties
 
@@ -198,17 +204,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 155
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "    PP - Process the target record, and then read a value from it."
+  "    PP - Process the target record, and then read a value from it."
 }
 endObjectProperties
 
@@ -216,17 +223,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 135
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "         record named in the link).  This is the default command."
+  "         record named in the link).  This is the default command."
 }
 endObjectProperties
 
@@ -234,17 +242,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 120
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "   NPP - Just read a value; don't process the target record (the"
+  "   NPP - Just read a value; don't process the target record (the"
 }
 endObjectProperties
 
@@ -252,17 +261,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 42
 y 36
-w 170
+w 172
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "xxx:userCalc1.VAL PP NMS"
+  "xxx:userCalc1.VAL PP NMS"
 }
 endObjectProperties
 
@@ -270,17 +280,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 170
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "         If you want EPICS to trace the processing (e.g., if the sscan "
+  "         If you want EPICS to trace the processing (e.g., if the sscan "
 }
 endObjectProperties
 
@@ -288,17 +299,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 185
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "         record will drive this record, and wait for it to complete),"
+  "         record will drive this record, and wait for it to complete),"
 }
 endObjectProperties
 
@@ -306,17 +318,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 200
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "         then you must use 'PP'."
+  "         then you must use 'PP'."
 }
 endObjectProperties
 
@@ -324,17 +337,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 305
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "         value 'Passive'."
+  "         value 'Passive'."
 }
 endObjectProperties
 
@@ -342,17 +356,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 290
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "   CPP - Same as CP, but process me only if my SCAN field has the"
+  "   CPP - Same as CP, but process me only if my SCAN field has the"
 }
 endObjectProperties
 
@@ -360,17 +375,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 270
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "         (Be careful with this.  Infinite loops are possible.)"
+  "         (Be careful with this.  Infinite loops are possible.)"
 }
 endObjectProperties
 
@@ -378,17 +394,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 255
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "         give me the new value before I process."
+  "         give me the new value before I process."
 }
 endObjectProperties
 
@@ -396,17 +413,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 240
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "    CP - Process ME whenever the value of the named PV changes, and"
+  "    CP - Process ME whenever the value of the named PV changes, and"
 }
 endObjectProperties
 
@@ -414,18 +432,19 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 4
 w 500
 h 20
-font "helvetica-medium-r-8.0"
+font "helvetica-medium-r-14.0"
 fontAlign "center"
-fgColor index 14
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "INPUT-LINK HELP"
+  "INPUT-LINK HELP"
 }
 endObjectProperties
 
@@ -439,8 +458,8 @@ x 0
 y 24
 w 508
 h 3
-lineColor index 54
-fillColor index 54
+lineColor rgb 2560 0 47104
+fillColor rgb 2560 0 47104
 lineWidth 3
 numPoints 2 {
 xPoints  {
@@ -457,17 +476,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 330
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " NOTE: If the target record is in a different crate, the process"
+  " NOTE: If the target record is in a different crate, the process"
 }
 endObjectProperties
 
@@ -475,17 +495,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 345
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " commands 'NPP' and 'PP' will be treated as if 'CA' had been specified."
+  " commands 'NPP' and 'PP' will be treated as if 'CA' had been specified."
 }
 endObjectProperties
 
@@ -493,17 +514,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 360
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " (If you want to wait for completion in this case, you must use a"
+  " (If you want to wait for completion in this case, you must use a"
 }
 endObjectProperties
 
@@ -511,17 +533,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 375
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " 'dynamic' output link to trigger processing, and a separate input"
+  " 'dynamic' output link to trigger processing, and a separate input"
 }
 endObjectProperties
 
@@ -529,17 +552,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 465
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " accepts only a PV name.  The role of the process command is taken"
+  " accepts only a PV name.  The role of the process command is taken"
 }
 endObjectProperties
 
@@ -547,17 +571,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 450
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " of the CA/CP EPICS link commands described above.  This type of link"
+  " of the CA/CP EPICS link commands described above.  This type of link"
 }
 endObjectProperties
 
@@ -565,17 +590,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 430
-w 40
+w 41
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " This"
+  " This"
 }
 endObjectProperties
 
@@ -583,17 +609,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 200
 y 430
 w 300
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "is a 'dynamic' link, an early prototype"
+  "is a 'dynamic' link, an early prototype"
 }
 endObjectProperties
 
@@ -607,8 +634,8 @@ x -1
 y 414
 w 507
 h 2
-lineColor index 14
-fillColor index 14
+lineColor rgb 0 0 0
+fillColor rgb 0 0 0
 lineWidth 2
 numPoints 2 {
 xPoints  {
@@ -625,17 +652,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 43
 y 429
 w 150
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "xxx:userCalc1.VAL"
+  "xxx:userCalc1.VAL"
 }
 endObjectProperties
 
@@ -643,17 +671,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 505
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " For user calcs (i.e., swait records), input links can behave like"
+  " For user calcs (i.e., swait records), input links can behave like"
 }
 endObjectProperties
 
@@ -661,17 +690,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 520
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " 'CP' links if the record's SCAN field is set to 'I/O Intr' and the"
+  " 'CP' links if the record's SCAN field is set to 'I/O Intr' and the"
 }
 endObjectProperties
 
@@ -679,17 +709,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 480
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " by a separate field."
+  " by a separate field."
 }
 endObjectProperties
 
@@ -697,17 +728,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 535
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " link's 'trigger' field is set to 'Yes'."
+  " link's 'trigger' field is set to 'Yes'."
 }
 endObjectProperties
 
@@ -715,17 +747,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 0
 y 390
 w 500
 h 14
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-12.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- " link to read the resulting value.)"
+  " link to read the resulting value.)"
 }
 endObjectProperties
 
