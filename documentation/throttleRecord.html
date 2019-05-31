@@ -76,6 +76,12 @@ the <strong>DRVLS</strong> status will be set to either "Low Limit" or
 limit is hit, the limit value is used as the value in addition to the
 status changed.
 </p>
+<p>As a convenience, the record has a method of synchronizing
+the <strong>VAL</strong> value to a reference PV, without processing
+the record.  The reference PV is stored in <strong>SINP</strong>, and
+its validity can be checked with <strong>SIV</strong>.  To activate the
+synchronization, <strong>SYNC</strong> needs to be set to "Process".
+</p>
 <p>
 The <strong>PREC</strong> field defines the resolution
 of <strong>VAL</strong>, while the <strong>DPREC</strong> field
@@ -84,7 +90,7 @@ defines the resolution of <strong>DLY</strong>.
 <p>
 The status of the record is held in <strong>STS</strong>, mainly
 relating to the link fields.  The version of the record is kept
-in <strong>VER</strong> as a string, in the form of "0-9-1".
+in <strong>VER</strong> as a string, in the example form of "0-9-1".
 </p>
 
 
@@ -171,7 +177,7 @@ in <strong>VER</strong> as a string, in the form of "0-9-1".
 <td>Ext PV OK</td>
 <td>Yes</td>
 <td>No</td>
-<td>Yes</td>
+<td>No</td>
 <td>No</td>
 </tr>
 
@@ -183,7 +189,7 @@ in <strong>VER</strong> as a string, in the form of "0-9-1".
 <td>0.0</td>
 <td>Yes</td>
 <td>No</td>
-<td>Yes</td>
+<td>No</td>
 <td>No</td>
 </tr>
 
@@ -231,7 +237,7 @@ in <strong>VER</strong> as a string, in the form of "0-9-1".
 <td>Normal</td>
 <td>Yes</td>
 <td>No</td>
-<td>Yes</td>
+<td>No</td>
 <td>No</td>
 </tr>
 
@@ -247,6 +253,42 @@ in <strong>VER</strong> as a string, in the form of "0-9-1".
 <td>No</td>
 </tr>
 
+
+<tr>
+<td>SINP</td>
+<td>Sync Input</td>
+<td>Link</td>
+<td>Yes</td>
+<td>&nbsp;</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+
+<tr>
+<td>SIV</td>
+<td>Sync Input Validity</td>
+<td>Menu: Ext PV NC/Ext PV OK/Local PV/Constant</td>
+<td>No</td>
+<td>Ext PV OK</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+
+<tr>
+<td>SYNC</td>
+<td>Synchronize Values</td>
+<td>Menu: Idle/Process</td>
+<td>No</td>
+<td>Idle</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
 
 <tr>
 <td>PREC</td>
@@ -280,7 +322,7 @@ in <strong>VER</strong> as a string, in the form of "0-9-1".
 <td>Unknown</td>
 <td>Yes</td>
 <td>No</td>
-<td>Yes</td>
+<td>No</td>
 <td>No</td>
 </tr>
 
@@ -373,8 +415,7 @@ be clipped back into range.
 <hr>
 
 <address>
-    <a href="http://www.aps.anl.gov/About/People/Contact/?name=Dohn__Arms">
-    Dohn Arms</a><br>
+    Dohn Arms<br>
     Advanced Photon Source
 </address>
 
