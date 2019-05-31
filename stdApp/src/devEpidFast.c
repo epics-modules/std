@@ -438,9 +438,7 @@ static void do_PID(epidFastPvt *pPvt, double readBack)
         * 2) Don't decrease I if output <= lowLimit
         * 3) Don't change I if feedback is off
         * 4) Limit the integral term to be in the range betweem DRLV and DRVH
-        * 5) If KI is zero then set the sum to DRVL (if KI is positive), or
-        *    DRVH (if KP is negative) to allow easily turning off the
-        *    integral term for PID tuning.
+        * 5) If KI is zero then set the I term to 0.
     */
     dI = pPvt->KP*pPvt->KI*pPvt->error*dt;
     if (pPvt->feedbackOn) {
@@ -459,15 +457,14 @@ static void do_PID(epidFastPvt *pPvt, double readBack)
             }
         }
     }
-    if (pPvt->KI == 0.) {
-        if (pPvt->KP > 0.) pPvt->I = pPvt->lowLimit;
-        else pPvt->I = pPvt->highLimit;
-    }
+    if (pPvt->KI == 0.) pPvt->I = 0.;
     if (dt>0.0) pPvt->D = pPvt->KP*pPvt->KD*(derror/dt); else pPvt->D = 0.0;
     pPvt->output = (pPvt->P + pPvt->I + pPvt->D);
     /* Limit output to range from low to high limit */
     if (pPvt->output > pPvt->highLimit) pPvt->output = pPvt->highLimit;
     if (pPvt->output < pPvt->lowLimit) pPvt->output = pPvt->lowLimit;
+    
+    /* To be consistent with slow feedback we should be implementing a deadband with ODEL here */
 
     /* If feedback is on write output */
     if (pPvt->feedbackOn) {
