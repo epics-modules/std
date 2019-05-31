@@ -3,7 +3,7 @@
 <HEAD>
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
 	<TITLE>stdReleaseNotes</TITLE>
-	<META NAME="GENERATOR" CONTENT="StarOffice 7  (Solaris Sparc)">
+	<meta name="generator" content="Bluefish 2.2.10" >
 	<META NAME="CREATED" CONTENT="20060828;8453100">
 	<META NAME="CHANGED" CONTENT="20060828;8514200">
 </HEAD>
@@ -11,6 +11,19 @@
 <H1 ALIGN=CENTER>std Release Notes</H1>
 
 <cr>
+ <h2 align="CENTER">
+	Release 3-6 (XXX, 2019)</h2>
+	
+	<ul>
+	<li>Fixes to epid record device support
+	  <ul>
+	    <li>devEpidFast.c  Changed behavior when KI=0 to match slow feedback, i.e. set I=0 rather than DRVL or DRVH.</li>
+	    <li>devEpidSlow.c and devEpidSoftCallback.c
+	        Fixed comment 5) describing behavior when KI=0 to match actual code since 2003, i.e I term is set to 0, not DRVH or DRVL.
+	        Added deadband implementation using ODEL.</li>
+	  </ul>
+	</ul>
+
  <h2 align="CENTER">
 	Release 3-5-1 (Apr. 3, 2019)</h2>
 	
