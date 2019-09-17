@@ -207,7 +207,7 @@ static long do_pid(epidRecord *pepid)
     pepid->dt   = dt;
     pepid->err  = e;
     pepid->cval  = cval;
-    if ((pepid->odel == 0) || (fabs(pepid->oval - oval) > pepid->odel)) 
+    if ((pepid->odel == 0) || (fabs(pepid->oval - oval) > pepid->odel)) {
         pepid->oval  = oval;
     }
     pepid->p  = p;
