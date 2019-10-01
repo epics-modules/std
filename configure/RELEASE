@@ -5,7 +5,6 @@
 TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 
 SUPPORT=/home/oxygen/KLANG/Epics/synApps_7_0_2/support
--include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
 
 #If using the sequencer, point SNCSEQ at its top directory:
 SNCSEQ=$(SUPPORT)/seq-2-2-5
@@ -15,7 +14,6 @@ ASYN=$(SUPPORT)/asyn-R4-33
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=/home/oxygen/KLANG/Epics/base-7.0.2.1
--include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
 
 # NOTE: std contains databases that use records defined in the calc, sscan,
 # busy, and motor modules, but it does not have build-time dependencies on those
