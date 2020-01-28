@@ -1,0 +1,1683 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>autoShutter</name>
+  <x>600</x>
+  <y>457</y>
+  <width>530</width>
+  <height>445</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>180</x>
+    <y>207</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #10</name>
+    <x>180</x>
+    <y>207</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:srCurrentOk</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #14</name>
+    <x>2</x>
+    <y>178</y>
+    <width>200</width>
+    <height>98</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #17</name>
+    <x>2</x>
+    <y>274</y>
+    <width>200</width>
+    <height>63</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #20</name>
+    <x>275</x>
+    <y>192</y>
+    <width>64</width>
+    <height>19</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:Status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #24</name>
+    <x>275</x>
+    <y>192</y>
+    <width>64</width>
+    <height>19</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:Status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #28</name>
+    <x>347</x>
+    <y>53</y>
+    <width>175</width>
+    <height>91</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #31</name>
+    <x>180</x>
+    <y>303</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #35</name>
+    <x>180</x>
+    <y>303</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:BlepsShtrPermit</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #39</name>
+    <x>180</x>
+    <y>319</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #43</name>
+    <x>180</x>
+    <y>319</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:AcisShtrPermit</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #47</name>
+    <x>399</x>
+    <y>272</y>
+    <width>70</width>
+    <height>37</height>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #50</name>
+    <x>399</x>
+    <y>272</y>
+    <width>72</width>
+    <height>38</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #54</name>
+    <x>347</x>
+    <y>247</y>
+    <width>175</width>
+    <height>91</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #57</name>
+    <x>180</x>
+    <y>255</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #61</name>
+    <x>180</x>
+    <y>255</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:modeOk</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #65</name>
+    <x>399</x>
+    <y>272</y>
+    <width>72</width>
+    <height>38</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)cdt$(T2):trigger</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #69</name>
+    <x>2</x>
+    <y>2</y>
+    <width>200</width>
+    <height>120</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #72</name>
+    <x>2</x>
+    <y>120</y>
+    <width>200</width>
+    <height>60</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #75</name>
+    <x>180</x>
+    <y>158</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)AClock$(A):Trigger</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #79</name>
+    <x>180</x>
+    <y>158</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)AClock$(A):Trigger</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #83</name>
+    <x>180</x>
+    <y>369</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #87</name>
+    <x>180</x>
+    <y>369</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:UserArm</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #91</name>
+    <x>180</x>
+    <y>94</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:Enable</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #95</name>
+    <x>180</x>
+    <y>68</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:Enable</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #99</name>
+    <x>2</x>
+    <y>335</y>
+    <width>200</width>
+    <height>55</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #102</name>
+    <x>399</x>
+    <y>78</y>
+    <width>70</width>
+    <height>37</height>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #105</name>
+    <x>399</x>
+    <y>78</y>
+    <width>72</width>
+    <height>38</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #109</name>
+    <x>399</x>
+    <y>78</y>
+    <width>72</width>
+    <height>38</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)cdt$(T1):trigger</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #113</name>
+    <x>263</x>
+    <y>383</y>
+    <width>200</width>
+    <height>50</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #116</name>
+    <x>405</x>
+    <y>192</y>
+    <width>64</width>
+    <height>19</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:Active</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #120</name>
+    <x>405</x>
+    <y>192</y>
+    <width>64</width>
+    <height>19</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:Active</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #124</name>
+    <x>180</x>
+    <y>422</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #128</name>
+    <x>180</x>
+    <y>422</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)Shtr:TrigOutOK</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #132</name>
+    <x>2</x>
+    <y>388</y>
+    <width>200</width>
+    <height>55</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #135</name>
+    <pv_name>$(P)$(S)Shtr:Active</pv_name>
+    <x>407</x>
+    <y>193</y>
+    <width>60</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #139</name>
+    <text>Storage Ring</text>
+    <x>9</x>
+    <y>183</y>
+    <width>107</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #142</name>
+    <text>Threshold</text>
+    <x>42</x>
+    <y>237</y>
+    <width>50</width>
+    <height>12</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="12.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #145</name>
+    <pv_name>S:SRcurrentAI</pv_name>
+    <x>98</x>
+    <y>220</y>
+    <width>61</width>
+    <height>13</height>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #149</name>
+    <text>Current</text>
+    <x>44</x>
+    <y>223</y>
+    <width>50</width>
+    <height>12</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="12.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #152</name>
+    <text>Current &gt; Threshold</text>
+    <x>31</x>
+    <y>205</y>
+    <width>140</width>
+    <height>14</height>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #155</name>
+    <text>Open Command</text>
+    <x>386</x>
+    <y>166</y>
+    <width>107</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #158</name>
+    <x>224</x>
+    <y>86</y>
+    <width>3</width>
+    <height>343</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="1.0">
+      </point>
+      <point x="2.0" y="342.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #162</name>
+    <x>201</x>
+    <y>86</y>
+    <width>25</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="24.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #166</name>
+    <x>200</x>
+    <y>233</y>
+    <width>25</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="24.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #170</name>
+    <x>201</x>
+    <y>315</y>
+    <width>25</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="24.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #174</name>
+    <x>226</x>
+    <y>200</y>
+    <width>47</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="46.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #178</name>
+    <pv_name>$(P)$(S)Shtr:Status</pv_name>
+    <x>278</x>
+    <y>195</y>
+    <width>60</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #182</name>
+    <text>Shutter</text>
+    <x>254</x>
+    <y>166</y>
+    <width>107</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #185</name>
+    <text>Open Delay Timer</text>
+    <x>351</x>
+    <y>58</y>
+    <width>165</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #188</name>
+    <actions>
+      <action type="open_display">
+        <file>countDownTimer_more.opi</file>
+        <macros>
+          <N>$(T1)</N>
+        </macros>
+        <target>tab</target>
+        <description>CountDownTime Setup</description>
+      </action>
+    </actions>
+    <text>Edit</text>
+    <x>404</x>
+    <y>118</y>
+    <width>60</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #191</name>
+    <text>Shutter Permits</text>
+    <x>11</x>
+    <y>278</y>
+    <width>135</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #194</name>
+    <pv_name>$(P)$(S)Shtr:BlepsShtrPermit</pv_name>
+    <x>102</x>
+    <y>302</y>
+    <width>70</width>
+    <height>13</height>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #198</name>
+    <text>FE-EPS</text>
+    <x>56</x>
+    <y>302</y>
+    <width>45</width>
+    <height>13</height>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #201</name>
+    <pv_name>$(P)$(S)Shtr:AcisShtrPermit</pv_name>
+    <x>102</x>
+    <y>318</y>
+    <width>70</width>
+    <height>13</height>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #205</name>
+    <text>ACIS</text>
+    <x>56</x>
+    <y>318</y>
+    <width>45</width>
+    <height>13</height>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #208</name>
+    <pv_name>$(P)cdt$(T2):timeSec</pv_name>
+    <x>446</x>
+    <y>288</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #212</name>
+    <pv_name>$(P)cdt$(T2):timeMin</pv_name>
+    <x>402</x>
+    <y>275</y>
+    <width>40</width>
+    <height>35</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="30.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #216</name>
+    <text>.</text>
+    <x>440</x>
+    <y>283</y>
+    <width>11</width>
+    <height>21</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #219</name>
+    <text>Open Notify Timer</text>
+    <x>352</x>
+    <y>252</y>
+    <width>165</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #222</name>
+    <actions>
+      <action type="open_display">
+        <file>countDownTimer_more.opi</file>
+        <macros>
+          <N>$(T2)</N>
+        </macros>
+        <target>tab</target>
+        <description>CountDownTime Setup</description>
+      </action>
+    </actions>
+    <text>Edit</text>
+    <x>404</x>
+    <y>313</y>
+    <width>60</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #225</name>
+    <pv_name>S:DesiredMode</pv_name>
+    <x>72</x>
+    <y>254</y>
+    <height>13</height>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #229</name>
+    <text>Op Mode</text>
+    <x>21</x>
+    <y>254</y>
+    <width>45</width>
+    <height>13</height>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #232</name>
+    <x>201</x>
+    <y>165</y>
+    <width>25</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="24.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #236</name>
+    <text>ma</text>
+    <x>165</x>
+    <y>222</y>
+    <width>10</width>
+    <height>12</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="12.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #239</name>
+    <text>ma</text>
+    <x>165</x>
+    <y>240</y>
+    <width>10</width>
+    <height>12</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="12.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #242</name>
+    <pv_name>$(P)$(S)Shtr:ThresholdCurrent</pv_name>
+    <x>97</x>
+    <y>236</y>
+    <width>61</width>
+    <height>13</height>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #246</name>
+    <text>Auto Open</text>
+    <x>193</x>
+    <y>4</y>
+    <width>170</width>
+    <height>24</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #249</name>
+    <text>$(P)$(S)</text>
+    <x>194</x>
+    <y>32</y>
+    <width>170</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #252</name>
+    <text>Auto Open</text>
+    <x>14</x>
+    <y>7</y>
+    <width>170</width>
+    <height>24</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #255</name>
+    <text>Lease Date</text>
+    <x>11</x>
+    <y>126</y>
+    <width>135</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #258</name>
+    <pv_name>$(P)AClock$(A):Set.SVAL</pv_name>
+    <x>57</x>
+    <y>158</y>
+    <width>120</width>
+    <height>13</height>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #262</name>
+    <text>Expire</text>
+    <x>10</x>
+    <y>158</y>
+    <width>45</width>
+    <height>13</height>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #265</name>
+    <actions>
+      <action type="open_display">
+        <file>alarmClock.opi</file>
+        <target>tab</target>
+        <description>Alarm Clock</description>
+      </action>
+    </actions>
+    <text>Edit</text>
+    <x>125</x>
+    <y>126</y>
+    <width>60</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #268</name>
+    <text>$(P)$(S)</text>
+    <x>15</x>
+    <y>35</y>
+    <width>170</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #271</name>
+    <actions>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(S)Shtr:UserArm</C>
+        </macros>
+        <target>tab</target>
+        <description>User Arm Calc</description>
+      </action>
+    </actions>
+    <text>Edit</text>
+    <x>16</x>
+    <y>362</y>
+    <width>60</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #274</name>
+    <text>Custom Arm Calc</text>
+    <x>11</x>
+    <y>339</y>
+    <width>140</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #277</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(S)Shtr:Enable</pv_name>
+        <value>0</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(S)Shtr:Enable</pv_name>
+    <text>Disable</text>
+    <x>58</x>
+    <y>90</y>
+    <width>80</width>
+    <height>21</height>
+    <foreground_color>
+      <color red="255" green="176" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="130" green="4" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #280</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(S)Shtr:Enable</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(S)Shtr:Enable</pv_name>
+    <text>Enable</text>
+    <x>58</x>
+    <y>64</y>
+    <width>80</width>
+    <height>21</height>
+    <foreground_color>
+      <color red="115" green="255" blue="107">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="26" green="115" blue="9">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #283</name>
+    <pv_name>$(P)cdt$(T1):timeSec</pv_name>
+    <x>446</x>
+    <y>94</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #287</name>
+    <pv_name>$(P)cdt$(T1):timeMin</pv_name>
+    <x>402</x>
+    <y>81</y>
+    <width>40</width>
+    <height>35</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="30.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #291</name>
+    <text>.</text>
+    <x>440</x>
+    <y>89</y>
+    <width>11</width>
+    <height>21</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #294</name>
+    <x>201</x>
+    <y>374</y>
+    <width>25</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="24.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #298</name>
+    <actions>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(S)Shtr:Arm</C>
+        </macros>
+        <target>tab</target>
+        <description>Arm Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(S)Shtr:Trigger</C>
+        </macros>
+        <target>tab</target>
+        <description>Trigger</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(S)Shtr:PostTrig</C>
+        </macros>
+        <target>tab</target>
+        <description>PostTrigger</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(S)Shtr:EnableOff</C>
+        </macros>
+        <target>tab</target>
+        <description>Enable Off</description>
+      </action>
+      <action type="open_display">
+        <file>yySseq.opi</file>
+        <macros>
+          <S>$(S)Shtr:Open</S>
+        </macros>
+        <target>tab</target>
+        <description>Shutter Open</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(S)Shtr:UserArm</C>
+        </macros>
+        <target>tab</target>
+        <description>User Arm Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(S)Shtr:CalcTrigOut</C>
+        </macros>
+        <target>tab</target>
+        <description>Remote Link Calc</description>
+      </action>
+    </actions>
+    <text>Detail</text>
+    <x>476</x>
+    <y>390</y>
+    <width>42</width>
+    <height>16</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #307</name>
+    <actions>
+      <action type="open_display">
+        <file>autoShutter_less.opi</file>
+        <target>replace</target>
+        <description>AutoShutter Less</description>
+      </action>
+    </actions>
+    <text>Less</text>
+    <x>472</x>
+    <y>413</y>
+    <width>50</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="51" green="153" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #310</name>
+    <text>SR Current Threshold</text>
+    <x>269</x>
+    <y>386</y>
+    <width>140</width>
+    <height>14</height>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #313</name>
+    <pv_name>$(P)$(S)Shtr:ThresholdCurrent</pv_name>
+    <x>351</x>
+    <y>401</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #317</name>
+    <text>ma</text>
+    <x>436</x>
+    <y>401</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #320</name>
+    <text>Shutter Control</text>
+    <x>11</x>
+    <y>392</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #323</name>
+    <actions>
+      <action type="open_display">
+        <file>autoShutter_Remote.opi</file>
+        <target>tab</target>
+        <description>RemoteShutter Setting</description>
+      </action>
+    </actions>
+    <text>Edit</text>
+    <x>18</x>
+    <y>415</y>
+    <width>60</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #326</name>
+    <x>201</x>
+    <y>426</y>
+    <width>25</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="24.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #330</name>
+    <x>339</x>
+    <y>200</y>
+    <width>66</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="65.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #334</name>
+    <pv_name>$(P)$(S)Shtr:OpenTimeStamp</pv_name>
+    <x>360</x>
+    <y>222</y>
+    <width>120</width>
+    <height>13</height>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #338</name>
+    <text>Last Opened</text>
+    <x>277</x>
+    <y>222</y>
+    <width>80</width>
+    <height>13</height>
+    <auto_size>true</auto_size>
+  </widget>
+</display>

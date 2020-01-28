@@ -1,0 +1,1169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>EMW_Ramp</name>
+  <x>10</x>
+  <y>10</y>
+  <width>399</width>
+  <height>800</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>4</x>
+    <y>4</y>
+    <width>391</width>
+    <height>34</height>
+    <line_color>
+      <color red="145" green="145" blue="145">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="145" green="145" blue="145">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #9</name>
+    <x>113</x>
+    <y>74</y>
+    <width>25</width>
+    <height>10</height>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #12</name>
+    <x>115</x>
+    <y>76</y>
+    <width>21</width>
+    <height>6</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>ID11:0RT.NEWT</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #16</name>
+    <x>115</x>
+    <y>76</y>
+    <width>21</width>
+    <height>6</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>ID11:0RT.ERRC</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #20</name>
+    <x>114</x>
+    <y>222</y>
+    <width>25</width>
+    <height>10</height>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #23</name>
+    <x>116</x>
+    <y>224</y>
+    <width>21</width>
+    <height>6</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>ID11:1RT.NEWT</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #27</name>
+    <x>116</x>
+    <y>224</y>
+    <width>21</width>
+    <height>6</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>ID11:1RT.ERRC</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #31</name>
+    <x>4</x>
+    <y>352</y>
+    <width>280</width>
+    <height>28</height>
+    <line_color>
+      <color red="145" green="145" blue="145">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="145" green="145" blue="145">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #34</name>
+    <pv_name>ID11:0RT.MODE</pv_name>
+    <x>20</x>
+    <y>119</y>
+    <width>60</width>
+    <height>60</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #37</name>
+    <pv_name>ID11:0RT.ERRM</pv_name>
+    <x>78</x>
+    <y>98</y>
+    <width>315</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="158" green="158" blue="158">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #40</name>
+    <text>Mode</text>
+    <x>31</x>
+    <y>97</y>
+    <width>76</width>
+    <height>17</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #43</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>ID11:0RT.SWAP</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>ID11:0RT.SWAP</pv_name>
+    <text>SWAP</text>
+    <x>94</x>
+    <y>125</y>
+    <width>62</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #46</name>
+    <pv_name>ID11:0RT.MADJ</pv_name>
+    <x>171</x>
+    <y>151</y>
+    <width>130</width>
+    <height>23</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #49</name>
+    <text>Manual Adjust</text>
+    <x>171</x>
+    <y>129</y>
+    <width>110</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #52</name>
+    <pv_name>ID11:0RT.GAIN</pv_name>
+    <x>309</x>
+    <y>151</y>
+    <width>74</width>
+    <height>23</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #55</name>
+    <text>Gain</text>
+    <x>309</x>
+    <y>130</y>
+    <width>74</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #58</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>ID11:0RT.RARM</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>ID11:0RT.RARM</pv_name>
+    <text>RARM</text>
+    <x>94</x>
+    <y>148</y>
+    <width>62</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="bool_button" version="2.0.0">
+    <name>message button #61</name>
+    <pv_name>ID11:syncBO</pv_name>
+    <x>200</x>
+    <y>356</y>
+    <width>61</width>
+    <height>20</height>
+    <off_label>SYNC</off_label>
+    <off_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </off_color>
+    <on_label>SYNC</on_label>
+    <on_color>
+      <color red="92" green="178" blue="204">
+      </color>
+    </on_color>
+    <show_led>false</show_led>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <mode>1</mode>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #64</name>
+    <text>EMW Ramp Test</text>
+    <x>115</x>
+    <y>10</y>
+    <width>160</width>
+    <height>21</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #67</name>
+    <text>ID11:0RT</text>
+    <x>7</x>
+    <y>45</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #70</name>
+    <text>New Table</text>
+    <x>140</x>
+    <y>72</y>
+    <width>90</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #73</name>
+    <pv_name>ID11:1RT.MODE</pv_name>
+    <x>21</x>
+    <y>264</y>
+    <width>60</width>
+    <height>60</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #76</name>
+    <pv_name>ID11:1RT.ERRM</pv_name>
+    <x>78</x>
+    <y>245</y>
+    <width>315</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="158" green="158" blue="158">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #79</name>
+    <text>Mode</text>
+    <x>31</x>
+    <y>244</y>
+    <width>76</width>
+    <height>17</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #82</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>ID11:1RT.SWAP</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>ID11:1RT.SWAP</pv_name>
+    <text>SWAP</text>
+    <x>94</x>
+    <y>270</y>
+    <width>62</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #85</name>
+    <pv_name>ID11:1RT.MADJ</pv_name>
+    <x>171</x>
+    <y>292</y>
+    <width>130</width>
+    <height>23</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #88</name>
+    <text>Manual Adjust</text>
+    <x>171</x>
+    <y>270</y>
+    <width>110</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #91</name>
+    <pv_name>ID11:1RT.GAIN</pv_name>
+    <x>309</x>
+    <y>291</y>
+    <width>74</width>
+    <height>23</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #94</name>
+    <text>Gain</text>
+    <x>309</x>
+    <y>270</y>
+    <width>74</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #97</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>ID11:1RT.RARM</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>ID11:1RT.RARM</pv_name>
+    <text>RARM</text>
+    <x>94</x>
+    <y>293</y>
+    <width>62</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #100</name>
+    <text>ID11:1RT</text>
+    <x>10</x>
+    <y>194</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #103</name>
+    <text>New Table</text>
+    <x>141</x>
+    <y>220</y>
+    <width>90</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #106</name>
+    <text>Make desired changes above,</text>
+    <x>21</x>
+    <y>356</y>
+    <width>170</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #109</name>
+    <text>then press SYNC to activate.</text>
+    <x>21</x>
+    <y>366</y>
+    <width>170</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #112</name>
+    <pv_name>ID11:0RT.TIMF</pv_name>
+    <x>234</x>
+    <y>67</y>
+    <width>74</width>
+    <height>23</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #115</name>
+    <text>RampTime</text>
+    <x>309</x>
+    <y>70</y>
+    <width>74</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #118</name>
+    <text>RampTime</text>
+    <x>310</x>
+    <y>218</y>
+    <width>74</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #121</name>
+    <pv_name>ID11:1RT.TIMF</pv_name>
+    <x>234</x>
+    <y>216</y>
+    <width>74</width>
+    <height>23</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #124</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>ID11:0PD.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>ID11:0PD.PROC</pv_name>
+    <text>PROC</text>
+    <x>10</x>
+    <y>400</y>
+    <width>101</width>
+    <height>26</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #127</name>
+    <pv_name>ID11:0PD.WIDE</pv_name>
+    <x>125</x>
+    <y>471</y>
+    <width>122</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #130</name>
+    <pv_name>ID11:0PD.DLY</pv_name>
+    <x>125</x>
+    <y>451</y>
+    <width>122</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #133</name>
+    <pv_name>ID11:0PD.UNIT</pv_name>
+    <x>266</x>
+    <y>400</y>
+    <width>110</width>
+    <height>100</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #136</name>
+    <text>UNIT:</text>
+    <x>10</x>
+    <y>431</y>
+    <width>101</width>
+    <height>14</height>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #139</name>
+    <pv_name>ID11:0PD.UNIT</pv_name>
+    <x>125</x>
+    <y>431</y>
+    <width>119</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #142</name>
+    <text>DLY:</text>
+    <x>52</x>
+    <y>451</y>
+    <width>59</width>
+    <height>14</height>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #145</name>
+    <text>WIDE:</text>
+    <x>37</x>
+    <y>471</y>
+    <width>74</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #148</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>ID11:1PD.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>ID11:1PD.PROC</pv_name>
+    <text>PROC</text>
+    <x>10</x>
+    <y>500</y>
+    <width>101</width>
+    <height>26</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #151</name>
+    <pv_name>ID11:1PD.WIDE</pv_name>
+    <x>125</x>
+    <y>571</y>
+    <width>122</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #154</name>
+    <pv_name>ID11:1PD.DLY</pv_name>
+    <x>125</x>
+    <y>551</y>
+    <width>122</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #157</name>
+    <pv_name>ID11:1PD.UNIT</pv_name>
+    <x>266</x>
+    <y>499</y>
+    <width>110</width>
+    <height>100</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #160</name>
+    <text>UNIT:</text>
+    <x>10</x>
+    <y>531</y>
+    <width>101</width>
+    <height>14</height>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #163</name>
+    <pv_name>ID11:1PD.UNIT</pv_name>
+    <x>125</x>
+    <y>531</y>
+    <width>119</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #166</name>
+    <text>DLY:</text>
+    <x>52</x>
+    <y>551</y>
+    <width>59</width>
+    <height>14</height>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #169</name>
+    <text>WIDE:</text>
+    <x>37</x>
+    <y>571</y>
+    <width>74</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #172</name>
+    <text>UNIT:</text>
+    <x>11</x>
+    <y>622</y>
+    <height>16</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #175</name>
+    <text>PER:</text>
+    <x>11</x>
+    <y>646</y>
+    <height>16</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #178</name>
+    <text>DCY:</text>
+    <x>11</x>
+    <y>669</y>
+    <height>16</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #181</name>
+    <pv_name>ID11:0PT.UNIT</pv_name>
+    <x>266</x>
+    <y>598</y>
+    <width>110</width>
+    <height>100</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #184</name>
+    <pv_name>ID11:0PT.PER</pv_name>
+    <x>125</x>
+    <y>649</y>
+    <width>119</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #187</name>
+    <pv_name>ID11:0PT.DCY</pv_name>
+    <x>125</x>
+    <y>670</y>
+    <width>119</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #190</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>ID11:0PT.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>ID11:0PT.PROC</pv_name>
+    <text>PROC</text>
+    <x>11</x>
+    <y>592</y>
+    <height>26</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #193</name>
+    <pv_name>ID11:0PT.UNIT</pv_name>
+    <x>125</x>
+    <y>623</y>
+    <width>119</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #196</name>
+    <text>UNIT:</text>
+    <x>10</x>
+    <y>724</y>
+    <width>101</width>
+    <height>17</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #199</name>
+    <text>PER:</text>
+    <x>10</x>
+    <y>749</y>
+    <width>101</width>
+    <height>17</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #202</name>
+    <text>DCY:</text>
+    <x>10</x>
+    <y>773</y>
+    <width>101</width>
+    <height>17</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #205</name>
+    <pv_name>ID11:1PT.UNIT</pv_name>
+    <x>266</x>
+    <y>697</y>
+    <width>110</width>
+    <height>100</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #208</name>
+    <pv_name>ID11:1PT.PER</pv_name>
+    <x>125</x>
+    <y>752</y>
+    <width>121</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #211</name>
+    <pv_name>ID11:1PT.DCY</pv_name>
+    <x>125</x>
+    <y>775</y>
+    <width>121</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #214</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>ID11:1PT.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>ID11:1PT.PROC</pv_name>
+    <text>PROC</text>
+    <x>10</x>
+    <y>693</y>
+    <width>101</width>
+    <height>26</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #217</name>
+    <pv_name>ID11:1PT.UNIT</pv_name>
+    <x>125</x>
+    <y>728</y>
+    <width>121</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+</display>

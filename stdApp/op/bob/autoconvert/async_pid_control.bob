@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>async_pid_control</name>
+  <x>497</x>
+  <y>160</y>
+  <width>330</width>
+  <height>245</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="label" version="2.0.0">
+    <name>text #6</name>
+    <text>ReadTrig PV</text>
+    <x>13</x>
+    <y>60</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #9</name>
+    <pv_name>$(P)$(PID).TRIG</pv_name>
+    <x>128</x>
+    <y>60</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="164" green="170" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #13</name>
+    <text>Setpoint</text>
+    <x>20</x>
+    <y>141</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #16</name>
+    <pv_name>$(P)$(PID).VAL</pv_name>
+    <x>20</x>
+    <y>163</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #20</name>
+    <text>Feedback</text>
+    <x>20</x>
+    <y>194</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #23</name>
+    <pv_name>$(P)$(PID).FBON</pv_name>
+    <x>20</x>
+    <y>215</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #26</name>
+    <text>Control PV</text>
+    <x>13</x>
+    <y>110</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #29</name>
+    <pv_name>$(P)$(PID).OUTL</pv_name>
+    <x>128</x>
+    <y>110</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="164" green="170" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #33</name>
+    <actions>
+      <action type="open_display">
+        <file>pid_plot_readback.opi</file>
+        <target>tab</target>
+        <description>Plot setpoint and readback</description>
+      </action>
+      <action type="open_display">
+        <file>pid_plot_control.opi</file>
+        <target>tab</target>
+        <description>Plot control value</description>
+      </action>
+      <action type="open_display">
+        <file>pid_parameters.opi</file>
+        <target>tab</target>
+        <description>PID parameters</description>
+      </action>
+      <action type="open_display">
+        <file>yyTransform_full.opi</file>
+        <macros>
+          <T>$(PID)_limits</T>
+        </macros>
+        <target>tab</target>
+        <description>PID limits</description>
+      </action>
+      <action type="open_display">
+        <file>yyTransform_full.opi</file>
+        <macros>
+          <T>$(PID)_incalc</T>
+        </macros>
+        <target>tab</target>
+        <description>PID input calc</description>
+      </action>
+      <action type="open_display">
+        <file>yyTransform_full.opi</file>
+        <macros>
+          <T>$(PID)_outcalc</T>
+        </macros>
+        <target>tab</target>
+        <description>PID output calc</description>
+      </action>
+    </actions>
+    <text>More</text>
+    <x>280</x>
+    <y>215</y>
+    <width>40</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="40" green="147" blue="21">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #41</name>
+    <text>Readback PV</text>
+    <x>13</x>
+    <y>85</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #44</name>
+    <pv_name>$(P)$(PID).INP</pv_name>
+    <x>128</x>
+    <y>85</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="164" green="170" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #48</name>
+    <pv_name>$(P)$(PID).TVAL</pv_name>
+    <x>295</x>
+    <y>60</y>
+    <width>25</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #52</name>
+    <text>Readback</text>
+    <x>150</x>
+    <y>141</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #55</name>
+    <pv_name>$(P)$(PID).CVAL</pv_name>
+    <x>150</x>
+    <y>163</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="255" blue="107">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #59</name>
+    <text>Update rate</text>
+    <x>153</x>
+    <y>194</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #62</name>
+    <pv_name>$(P)$(PID).SCAN</pv_name>
+    <x>150</x>
+    <y>215</y>
+    <width>110</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #65</name>
+    <text>$(TITLE)</text>
+    <y>5</y>
+    <width>330</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #68</name>
+    <text>$(P)$(PID)</text>
+    <y>35</y>
+    <width>330</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+</display>

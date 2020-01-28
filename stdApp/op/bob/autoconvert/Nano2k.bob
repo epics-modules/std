@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>Nano2k</name>
+  <x>83</x>
+  <y>198</y>
+  <width>248</width>
+  <height>175</height>
+  <background_color>
+    <color red="200" green="200" blue="200">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <width>250</width>
+    <height>26</height>
+    <line_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="scaledslider" version="2.0.0">
+    <name>valuator #9</name>
+    <pv_name>$(P)$(S)$(p)_set_position.VAL</pv_name>
+    <x>3</x>
+    <y>136</y>
+    <width>243</width>
+    <height>35</height>
+    <background_color>
+      <color red="200" green="200" blue="200">
+      </color>
+    </background_color>
+    <increment>1.2000000476837158</increment>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #12</name>
+    <y>26</y>
+    <width>251</width>
+    <height>3</height>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="1.0">
+      </point>
+      <point x="249.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #16</name>
+    <text>Tweak</text>
+    <x>5</x>
+    <y>113</y>
+    <width>65</width>
+    <height>19</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #19</name>
+    <text>Lo limit</text>
+    <x>4</x>
+    <y>87</y>
+    <width>65</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #22</name>
+    <text>Drive</text>
+    <x>4</x>
+    <y>59</y>
+    <width>65</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #25</name>
+    <text>Hi limit</text>
+    <x>4</x>
+    <y>33</y>
+    <width>65</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="bool_button" version="2.0.0">
+    <name>message button #28</name>
+    <pv_name>$(P)$(S)$(p)_twF.VAL</pv_name>
+    <x>164</x>
+    <y>112</y>
+    <width>25</width>
+    <height>20</height>
+    <off_label>&gt;</off_label>
+    <off_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </off_color>
+    <on_label>&gt;</on_label>
+    <on_color>
+      <color red="92" green="178" blue="204">
+      </color>
+    </on_color>
+    <show_led>false</show_led>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <mode>1</mode>
+  </widget>
+  <widget type="bool_button" version="2.0.0">
+    <name>message button #31</name>
+    <pv_name>$(P)$(S)$(p)_twR.VAL</pv_name>
+    <x>63</x>
+    <y>112</y>
+    <width>25</width>
+    <height>20</height>
+    <off_label>&lt;</off_label>
+    <off_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </off_color>
+    <on_label>&lt;</on_label>
+    <on_color>
+      <color red="92" green="178" blue="204">
+      </color>
+    </on_color>
+    <show_led>false</show_led>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <mode>1</mode>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #34</name>
+    <pv_name>$(P)$(S)$(p)_tweak_set.VAL</pv_name>
+    <x>88</x>
+    <y>112</y>
+    <width>76</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #37</name>
+    <pv_name>$(P)$(S)$(p)_set_position.VAL</pv_name>
+    <x>74</x>
+    <y>54</y>
+    <height>27</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="28.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="222" green="19" blue="9">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="153" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #40</name>
+    <pv_name>$(P)$(S)$(p)_set_position.DRVL</pv_name>
+    <x>74</x>
+    <y>84</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #43</name>
+    <pv_name>$(P)$(S)$(p)_set_position.DRVH</pv_name>
+    <x>74</x>
+    <y>31</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #46</name>
+    <x>175</x>
+    <y>31</y>
+    <width>18</width>
+    <height>18</height>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)$(p)_HiLimit.VAL</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #50</name>
+    <x>175</x>
+    <y>85</y>
+    <width>18</width>
+    <height>18</height>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)$(p)_LoLimit.VAL</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #54</name>
+    <text>SoftLim</text>
+    <x>195</x>
+    <y>34</y>
+    <width>50</width>
+    <height>13</height>
+    <foreground_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)$(p)_HiLimit.VAL</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #58</name>
+    <pv_name>$(P)$(S)$(p)_set_position.EGU</pv_name>
+    <x>177</x>
+    <y>59</y>
+    <width>69</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="200" green="200" blue="200">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #61</name>
+    <text>SoftLim</text>
+    <x>195</x>
+    <y>89</y>
+    <width>50</width>
+    <height>13</height>
+    <foreground_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(S)$(p)_LoLimit.VAL</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #65</name>
+    <actions>
+      <action type="open_display">
+        <file>Nano2k_more.opi</file>
+        <target>tab</target>
+        <description>More</description>
+      </action>
+    </actions>
+    <text>More</text>
+    <x>202</x>
+    <y>112</y>
+    <width>40</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #68</name>
+    <pv_name>$(P)$(S)$(p)_set_position.DESC</pv_name>
+    <x>22</x>
+    <y>1</y>
+    <width>205</width>
+    <height>24</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+</display>

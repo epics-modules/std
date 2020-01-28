@@ -1,0 +1,1184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>softMotorConfig</name>
+  <x>95</x>
+  <y>439</y>
+  <width>540</width>
+  <height>200</height>
+  <background_color>
+    <color red="218" green="218" blue="218">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <width>540</width>
+    <height>30</height>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #9</name>
+    <x>11</x>
+    <y>158</y>
+    <width>110</width>
+    <height>34</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #12</name>
+    <x>373</x>
+    <y>63</y>
+    <width>164</width>
+    <height>24</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(SM)CalcRevs.INAV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #16</name>
+    <x>373</x>
+    <y>98</y>
+    <width>164</width>
+    <height>24</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(SM)CalcFrwd.OUTV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #20</name>
+    <x>373</x>
+    <y>133</y>
+    <width>164</width>
+    <height>24</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(SM)CalcMove.INAV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #24</name>
+    <x>373</x>
+    <y>168</y>
+    <width>164</width>
+    <height>24</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(SM)CalcStop.OUTV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #28</name>
+    <text>Moving</text>
+    <x>26</x>
+    <y>125</y>
+    <width>80</width>
+    <height>26</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(SM).DMOV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #32</name>
+    <text>Moving</text>
+    <x>27</x>
+    <y>126</y>
+    <width>80</width>
+    <height>26</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(SM).DMOV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #36</name>
+    <text>Moving</text>
+    <x>25</x>
+    <y>124</y>
+    <width>80</width>
+    <height>26</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="153" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(SM).DMOV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #40</name>
+    <text>Configuration for $(P)$(SM)</text>
+    <y>5</y>
+    <width>280</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #43</name>
+    <actions>
+      <action type="open_display">
+        <file>yyCalcoutRecord.opi</file>
+        <macros>
+          <C>$(SM)CalcFrwd</C>
+        </macros>
+        <target>tab</target>
+        <description>Calc</description>
+      </action>
+    </actions>
+    <text>Forward</text>
+    <x>172</x>
+    <y>91</y>
+    <height>20</height>
+    <background_color>
+      <color red="30" green="187" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #46</name>
+    <actions>
+      <action type="open_display">
+        <file>yyCalcoutRecord.opi</file>
+        <macros>
+          <C>$(SM)CalcRevs</C>
+        </macros>
+        <target>tab</target>
+        <description>Calc</description>
+      </action>
+    </actions>
+    <text>Reverse</text>
+    <x>172</x>
+    <y>57</y>
+    <height>20</height>
+    <background_color>
+      <color red="30" green="187" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #49</name>
+    <text>All Stop</text>
+    <x>21</x>
+    <y>163</y>
+    <width>90</width>
+    <height>22</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #52</name>
+    <pv_name>$(P)$(SM).DVAL</pv_name>
+    <x>5</x>
+    <y>78</y>
+    <width>120</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="153" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #56</name>
+    <pv_name>$(P)$(SM).DESC</pv_name>
+    <x>280</x>
+    <y>5</y>
+    <width>195</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="45" green="45" blue="45">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="153" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #60</name>
+    <pv_name>$(P)$(SM).DRBV</pv_name>
+    <x>15</x>
+    <y>56</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="polygon" version="2.0.0">
+    <name>polygon #64</name>
+    <x>338</x>
+    <y>164</y>
+    <width>16</width>
+    <height>8</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="174" green="78" blue="188">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="174" green="78" blue="188">
+      </color>
+    </background_color>
+    <points>
+      <point x="-6.0" y="3.0">
+      </point>
+      <point x="-6.0" y="13.0">
+      </point>
+      <point x="9.0" y="8.0">
+      </point>
+      <point x="-6.0" y="3.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #68</name>
+    <x>142</x>
+    <y>171</y>
+    <width>194</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="174" green="78" blue="188">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="1.0">
+      </point>
+      <point x="193.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #72</name>
+    <text>Soft Dial</text>
+    <x>3</x>
+    <y>33</y>
+    <width>80</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #75</name>
+    <text>optional link</text>
+    <x>193</x>
+    <y>160</y>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="174" green="78" blue="188">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #78</name>
+    <text>Hard Links</text>
+    <x>370</x>
+    <y>32</y>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #81</name>
+    <x>135</x>
+    <y>27</y>
+    <width>5</width>
+    <height>176</height>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <points>
+      <point x="2.0" y="2.0">
+      </point>
+      <point x="2.0" y="173.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #85</name>
+    <pv_name>$(P)$(SM)CalcFrwd.VAL</pv_name>
+    <x>318</x>
+    <y>98</y>
+    <width>40</width>
+    <height>16</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #89</name>
+    <pv_name>$(P)$(SM)CalcRevs.A</pv_name>
+    <x>318</x>
+    <y>65</y>
+    <width>40</width>
+    <height>16</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #93</name>
+    <x>272</x>
+    <y>102</y>
+    <width>26</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="1.0">
+      </point>
+      <point x="25.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polygon" version="2.0.0">
+    <name>polygon #97</name>
+    <x>302</x>
+    <y>95</y>
+    <width>16</width>
+    <height>8</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <points>
+      <point x="-6.0" y="3.0">
+      </point>
+      <point x="-6.0" y="13.0">
+      </point>
+      <point x="9.0" y="8.0">
+      </point>
+      <point x="-6.0" y="3.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polygon" version="2.0.0">
+    <name>polygon #101</name>
+    <x>163</x>
+    <y>93</y>
+    <width>16</width>
+    <height>8</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <points>
+      <point x="-6.0" y="3.0">
+      </point>
+      <point x="-6.0" y="13.0">
+      </point>
+      <point x="9.0" y="8.0">
+      </point>
+      <point x="-6.0" y="3.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #105</name>
+    <x>136</x>
+    <y>100</y>
+    <width>26</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="1.0">
+      </point>
+      <point x="25.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polygon" version="2.0.0">
+    <name>polygon #109</name>
+    <x>275</x>
+    <y>64</y>
+    <width>15</width>
+    <height>10</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <points>
+      <point x="15.0" y="0.0">
+      </point>
+      <point x="15.0" y="10.0">
+      </point>
+      <point x="0.0" y="5.0">
+      </point>
+      <point x="15.0" y="0.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #113</name>
+    <x>289</x>
+    <y>68</y>
+    <width>23</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="22.0" y="1.0">
+      </point>
+      <point x="1.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polygon" version="2.0.0">
+    <name>polygon #117</name>
+    <x>138</x>
+    <y>62</y>
+    <width>15</width>
+    <height>10</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <points>
+      <point x="15.0" y="0.0">
+      </point>
+      <point x="15.0" y="10.0">
+      </point>
+      <point x="0.0" y="5.0">
+      </point>
+      <point x="15.0" y="0.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #121</name>
+    <x>148</x>
+    <y>66</y>
+    <width>23</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="22.0" y="1.0">
+      </point>
+      <point x="1.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #125</name>
+    <x>365</x>
+    <y>27</y>
+    <width>5</width>
+    <height>176</height>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <points>
+      <point x="2.0" y="2.0">
+      </point>
+      <point x="2.0" y="173.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #129</name>
+    <y>50</y>
+    <width>559</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <points>
+      <point x="558.0" y="1.0">
+      </point>
+      <point x="1.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #133</name>
+    <text>Calcs (Default-&gt;  In=Out)</text>
+    <x>140</x>
+    <y>32</y>
+    <width>225</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #136</name>
+    <pv_name>$(P)$(SM)CalcRevsInput.AA</pv_name>
+    <x>375</x>
+    <y>65</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="164" green="170" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #140</name>
+    <pv_name>$(P)$(SM)CalcFrwdOutput.AA</pv_name>
+    <x>375</x>
+    <y>100</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="164" green="170" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #144</name>
+    <pv_name>$(P)$(SM)CalcMoveInput.AA</pv_name>
+    <x>375</x>
+    <y>135</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="164" green="170" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #148</name>
+    <pv_name>$(P)$(SM)CalcStopOutput.AA</pv_name>
+    <x>375</x>
+    <y>170</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="164" green="170" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="polygon" version="2.0.0">
+    <name>polygon #152</name>
+    <x>142</x>
+    <y>134</y>
+    <width>15</width>
+    <height>10</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <points>
+      <point x="15.0" y="0.0">
+      </point>
+      <point x="15.0" y="10.0">
+      </point>
+      <point x="0.0" y="5.0">
+      </point>
+      <point x="15.0" y="0.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #156</name>
+    <x>152</x>
+    <y>138</y>
+    <width>23</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="22.0" y="1.0">
+      </point>
+      <point x="1.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #160</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(SM).TWR</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(SM).TWR</pv_name>
+    <text>&lt;</text>
+    <x>5</x>
+    <y>98</y>
+    <width>25</width>
+    <height>22</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #163</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(SM).TWF</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(SM).TWF</pv_name>
+    <text>&gt;</text>
+    <x>105</x>
+    <y>98</y>
+    <width>25</width>
+    <height>22</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #166</name>
+    <pv_name>$(P)$(SM).TWV</pv_name>
+    <x>32</x>
+    <y>100</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="polygon" version="2.0.0">
+    <name>polygon #170</name>
+    <x>294</x>
+    <y>136</y>
+    <width>15</width>
+    <height>10</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <points>
+      <point x="15.0" y="0.0">
+      </point>
+      <point x="15.0" y="10.0">
+      </point>
+      <point x="0.0" y="5.0">
+      </point>
+      <point x="15.0" y="0.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #174</name>
+    <x>308</x>
+    <y>140</y>
+    <width>59</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="58.0" y="1.0">
+      </point>
+      <point x="1.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #178</name>
+    <actions>
+      <action type="open_display">
+        <file>softMotorHelp.opi</file>
+        <target>tab</target>
+        <description>SM Config help</description>
+      </action>
+    </actions>
+    <text>Help</text>
+    <x>485</x>
+    <y>5</y>
+    <width>50</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="45" green="45" blue="45">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="176" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #181</name>
+    <pv_name>$(P)$(SM)MoveLogic.VAL</pv_name>
+    <x>173</x>
+    <y>130</y>
+    <width>120</width>
+    <height>20</height>
+    <background_color>
+      <color red="30" green="187" blue="0">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #184</name>
+    <actions>
+      <action type="open_display">
+        <file>yysCalcoutRecord.opi</file>
+        <macros>
+          <C>$(SM)CalcRevsInput</C>
+        </macros>
+        <target>tab</target>
+        <description>Reverse String Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord.opi</file>
+        <macros>
+          <C>$(SM)CalcFrwdOutput</C>
+        </macros>
+        <target>tab</target>
+        <description>Forward String Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord.opi</file>
+        <macros>
+          <C>$(SM)CalcMoveInput</C>
+        </macros>
+        <target>tab</target>
+        <description>Moving String Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord.opi</file>
+        <macros>
+          <C>$(SM)CalcMove</C>
+        </macros>
+        <target>tab</target>
+        <description>Moving Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord.opi</file>
+        <macros>
+          <C>$(SM)CalcStopOutput</C>
+        </macros>
+        <target>tab</target>
+        <description>All Stop String Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord.opi</file>
+        <macros>
+          <C>$(SM)CalcStop</C>
+        </macros>
+        <target>tab</target>
+        <description>All Stop Calc</description>
+      </action>
+    </actions>
+    <text>Debug</text>
+    <x>190</x>
+    <y>177</y>
+    <width>70</width>
+    <height>18</height>
+    <background_color>
+      <color red="30" green="187" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #192</name>
+    <text>Moving Logic</text>
+    <x>183</x>
+    <y>114</y>
+    <width>120</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #195</name>
+    <text>Readback</text>
+    <x>390</x>
+    <y>53</y>
+    <width>120</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #198</name>
+    <text>Value</text>
+    <x>390</x>
+    <y>88</y>
+    <width>120</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #201</name>
+    <text>Moving Indicator</text>
+    <x>390</x>
+    <y>123</y>
+    <width>120</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #204</name>
+    <text>Emergency Stop</text>
+    <x>390</x>
+    <y>158</y>
+    <width>120</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #207</name>
+    <actions>
+      <action type="open_display">
+        <file>motorx.opi</file>
+        <macros>
+          <M>$(SM)</M>
+        </macros>
+        <target>tab</target>
+        <description>Small</description>
+      </action>
+      <action type="open_display">
+        <file>motorx_more.opi</file>
+        <macros>
+          <M>$(SM)</M>
+        </macros>
+        <target>tab</target>
+        <description>Medium</description>
+      </action>
+      <action type="open_display">
+        <file>motorx_setup.opi</file>
+        <macros>
+          <M>$(SM)</M>
+        </macros>
+        <target>tab</target>
+        <description>Setup</description>
+      </action>
+    </actions>
+    <text>More</text>
+    <x>85</x>
+    <y>32</y>
+    <width>48</width>
+    <height>16</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="51" green="153" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #212</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(SM)CalcRevsInput.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(SM)CalcRevsInput.PROC</pv_name>
+    <text>Load</text>
+    <x>480</x>
+    <y>30</y>
+    <width>60</width>
+    <height>20</height>
+    <background_color>
+      <color red="153" green="255" blue="255">
+      </color>
+    </background_color>
+  </widget>
+</display>

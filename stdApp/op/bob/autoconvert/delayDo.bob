@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>delayDo</name>
+  <x>293</x>
+  <y>593</y>
+  <width>704</width>
+  <height>30</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="label" version="2.0.0">
+    <name>text #6</name>
+    <text>$(P)$(R)</text>
+    <x>5</x>
+    <y>5</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #9</name>
+    <pv_name>$(P)$(R):delay</pv_name>
+    <x>160</x>
+    <y>5</y>
+    <width>60</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #13</name>
+    <pv_name>$(P)$(R):delay.EGU</pv_name>
+    <x>225</x>
+    <y>5</y>
+    <width>58</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #17</name>
+    <pv_name>$(P)$(R):enable</pv_name>
+    <x>288</x>
+    <y>5</y>
+    <width>125</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #20</name>
+    <pv_name>$(P)$(R):state</pv_name>
+    <x>418</x>
+    <y>5</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #24</name>
+    <pv_name>$(P)$(R):debug</pv_name>
+    <x>573</x>
+    <y>5</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #28</name>
+    <actions>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(R):activeCalc</C>
+        </macros>
+        <target>tab</target>
+        <description>Active Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(R):standbyCalc</C>
+        </macros>
+        <target>tab</target>
+        <description>Standby Calc</description>
+      </action>
+      <action type="open_display">
+        <file>yySseq_full.opi</file>
+        <macros>
+          <S>$(R):doSeq</S>
+        </macros>
+        <target>tab</target>
+        <description>Do Sequence</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>$(R):delayCalc</C>
+        </macros>
+        <target>tab</target>
+        <description>Delay Calc (optional)</description>
+      </action>
+    </actions>
+    <text>Calcs</text>
+    <x>618</x>
+    <y>5</y>
+    <width>81</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="45" green="127" blue="0">
+      </color>
+    </background_color>
+  </widget>
+</display>

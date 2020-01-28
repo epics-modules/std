@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>countDownTimer</name>
+  <x>701</x>
+  <y>245</y>
+  <width>215</width>
+  <height>113</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>7</x>
+    <y>41</y>
+    <width>138</width>
+    <height>45</height>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #9</name>
+    <x>7</x>
+    <y>41</y>
+    <width>139</width>
+    <height>45</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)cdt$(N):trigger</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #13</name>
+    <x>7</x>
+    <y>41</y>
+    <width>139</width>
+    <height>45</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)cdt$(N):trigger</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #17</name>
+    <x>7</x>
+    <y>5</y>
+    <width>200</width>
+    <height>29</height>
+    <line_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #20</name>
+    <pv_name>$(P)cdt$(N):start</pv_name>
+    <x>156</x>
+    <y>42</y>
+    <width>50</width>
+    <height>40</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #23</name>
+    <pv_name>$(P)cdt$(N):timeHrs</pv_name>
+    <x>17</x>
+    <y>45</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #27</name>
+    <pv_name>$(P)cdt$(N):timeSec</pv_name>
+    <x>109</x>
+    <y>45</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #31</name>
+    <pv_name>$(P)cdt$(N):timeMin</pv_name>
+    <x>63</x>
+    <y>45</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #35</name>
+    <text>:</text>
+    <x>47</x>
+    <y>37</y>
+    <width>11</width>
+    <height>29</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="30.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #38</name>
+    <text>:</text>
+    <x>93</x>
+    <y>37</y>
+    <width>11</width>
+    <height>29</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="30.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #41</name>
+    <text>hrs</text>
+    <x>19</x>
+    <y>69</y>
+    <width>21</width>
+    <height>13</height>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #44</name>
+    <text>min</text>
+    <x>65</x>
+    <y>69</y>
+    <width>21</width>
+    <height>13</height>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #47</name>
+    <text>sec</text>
+    <x>111</x>
+    <y>69</y>
+    <width>21</width>
+    <height>13</height>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #50</name>
+    <text>$(P)cdt$(N)</text>
+    <x>10</x>
+    <y>9</y>
+    <width>196</width>
+    <height>21</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #53</name>
+    <actions>
+      <action type="open_display">
+        <file>countDownTimer_more.opi</file>
+        <target>replace</target>
+        <description>CountDownTimer</description>
+      </action>
+    </actions>
+    <text>More</text>
+    <x>159</x>
+    <y>88</y>
+    <width>50</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="51" green="153" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #56</name>
+    <actions>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>cdt$(N):count</C>
+        </macros>
+        <target>tab</target>
+        <description>Count Details</description>
+      </action>
+      <action type="open_display">
+        <file>yyTransform_full.opi</file>
+        <macros>
+          <T>cdt$(N):parse</T>
+        </macros>
+        <target>tab</target>
+        <description>Parse Details</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>cdt$(N):reset</C>
+        </macros>
+        <target>tab</target>
+        <description>Reset Details</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>cdt$(N):trigger</C>
+        </macros>
+        <target>tab</target>
+        <description>Trigger Details</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>cdt$(N):startReset</C>
+        </macros>
+        <target>tab</target>
+        <description>StartReset Details</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>cdt$(N):countReset</C>
+        </macros>
+        <target>tab</target>
+        <description>CountReset Details</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>cdt$(N):stopStart</C>
+        </macros>
+        <target>tab</target>
+        <description>Stop/Start Details</description>
+      </action>
+    </actions>
+    <text>Detail</text>
+    <x>9</x>
+    <y>93</y>
+    <width>45</width>
+    <height>18</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+</display>

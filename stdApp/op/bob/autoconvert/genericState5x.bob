@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>genericState5x</name>
+  <x>552</x>
+  <y>43</y>
+  <width>769</width>
+  <height>275</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>540</x>
+    <y>4</y>
+    <width>206</width>
+    <height>25</height>
+    <line_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #9</name>
+    <text>Mode</text>
+    <x>131</x>
+    <y>40</y>
+    <width>147</width>
+    <height>27</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="28.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #12</name>
+    <text>Value</text>
+    <x>315</x>
+    <y>40</y>
+    <width>90</width>
+    <height>27</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="28.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #15</name>
+    <text>PV to Save/Apply</text>
+    <x>430</x>
+    <y>40</y>
+    <width>220</width>
+    <height>27</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="28.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="embedded" version="2.0.0">
+    <name>composite #18</name>
+    <file>genericState.bob</file>
+    <macros>
+      <N>$(N1)</N>
+    </macros>
+    <x>20</x>
+    <y>75</y>
+    <width>729</width>
+    <height>26</height>
+  </widget>
+  <widget type="embedded" version="2.0.0">
+    <name>composite #20</name>
+    <file>genericState.bob</file>
+    <macros>
+      <N>$(N2)</N>
+    </macros>
+    <x>20</x>
+    <y>106</y>
+    <width>729</width>
+    <height>26</height>
+  </widget>
+  <widget type="embedded" version="2.0.0">
+    <name>composite #22</name>
+    <file>genericState.bob</file>
+    <macros>
+      <N>$(N3)</N>
+    </macros>
+    <x>20</x>
+    <y>137</y>
+    <width>729</width>
+    <height>26</height>
+  </widget>
+  <widget type="embedded" version="2.0.0">
+    <name>composite #24</name>
+    <file>genericState.bob</file>
+    <macros>
+      <N>$(N4)</N>
+    </macros>
+    <x>20</x>
+    <y>168</y>
+    <width>729</width>
+    <height>26</height>
+  </widget>
+  <widget type="embedded" version="2.0.0">
+    <name>composite #26</name>
+    <file>genericState.bob</file>
+    <macros>
+      <N>$(N5)</N>
+    </macros>
+    <x>20</x>
+    <y>199</y>
+    <width>729</width>
+    <height>26</height>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #28</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(S)$(G)apply</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(S)$(G)apply</pv_name>
+    <text>Apply All</text>
+    <x>595</x>
+    <y>235</y>
+    <width>154</width>
+    <height>28</height>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #31</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(S)$(G)save</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(S)$(G)save</pv_name>
+    <text>Save All</text>
+    <x>20</x>
+    <y>235</y>
+    <width>154</width>
+    <height>28</height>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #34</name>
+    <pv_name>$(P)$(S)$(G)mode</pv_name>
+    <x>350</x>
+    <y>235</y>
+    <width>219</width>
+    <height>28</height>
+    <background_color>
+      <color red="200" green="200" blue="200">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #37</name>
+    <text>Master Mode:</text>
+    <x>199</x>
+    <y>235</y>
+    <width>145</width>
+    <height>28</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="28.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #40</name>
+    <text>Prefix:</text>
+    <x>450</x>
+    <y>4</y>
+    <width>85</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #43</name>
+    <pv_name>$(P)$(S)$(G)desc</pv_name>
+    <x>85</x>
+    <y>4</y>
+    <width>265</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #47</name>
+    <text>Desc:</text>
+    <x>20</x>
+    <y>4</y>
+    <width>60</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #50</name>
+    <text>$(P)$(S)$(G)</text>
+    <x>540</x>
+    <y>4</y>
+    <width>206</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+</display>

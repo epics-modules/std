@@ -1,0 +1,975 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>alarmClock_more</name>
+  <x>788</x>
+  <y>126</y>
+  <width>320</width>
+  <height>300</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>11</x>
+    <y>50</y>
+    <width>290</width>
+    <height>45</height>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #9</name>
+    <x>10</x>
+    <y>9</y>
+    <width>300</width>
+    <height>31</height>
+    <line_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #12</name>
+    <x>295</x>
+    <y>12</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)AClock$(A):Enable</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #16</name>
+    <x>295</x>
+    <y>26</y>
+    <width>12</width>
+    <height>12</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)AClock$(A):Enable</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #20</name>
+    <x>126</x>
+    <y>248</y>
+    <width>190</width>
+    <height>24</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)AClock$(A):Trigger.OUTV</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #24</name>
+    <x>11</x>
+    <y>50</y>
+    <width>290</width>
+    <height>45</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)AClock$(A):Trigger</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #28</name>
+    <x>11</x>
+    <y>50</y>
+    <width>290</width>
+    <height>45</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)AClock$(A):Trigger</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #32</name>
+    <pv_name>$(P)AClock$(A):Enable</pv_name>
+    <x>242</x>
+    <y>10</y>
+    <width>50</width>
+    <height>30</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #35</name>
+    <pv_name>$(P)AClock$(A):Set:mm</pv_name>
+    <x>16</x>
+    <y>119</y>
+    <width>25</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #39</name>
+    <pv_name>$(P)AClock$(A):Set:dd</pv_name>
+    <x>63</x>
+    <y>119</y>
+    <width>25</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #43</name>
+    <pv_name>$(P)AClock$(A):Set:yy</pv_name>
+    <x>111</x>
+    <y>119</y>
+    <width>25</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #47</name>
+    <pv_name>$(P)AClock$(A):Set:HH</pv_name>
+    <x>181</x>
+    <y>120</y>
+    <width>25</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #51</name>
+    <pv_name>$(P)AClock$(A):Set:MM</pv_name>
+    <x>228</x>
+    <y>120</y>
+    <width>25</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #55</name>
+    <pv_name>$(P)AClock$(A):Set:SS</pv_name>
+    <x>274</x>
+    <y>120</y>
+    <width>25</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #59</name>
+    <text>/</text>
+    <x>49</x>
+    <y>119</y>
+    <width>5</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #62</name>
+    <text>/</text>
+    <x>97</x>
+    <y>120</y>
+    <width>5</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #65</name>
+    <text>:</text>
+    <x>214</x>
+    <y>120</y>
+    <width>5</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #68</name>
+    <text>:</text>
+    <x>262</x>
+    <y>120</y>
+    <width>5</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #71</name>
+    <text>Month</text>
+    <x>22</x>
+    <y>101</y>
+    <width>15</width>
+    <height>13</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #74</name>
+    <text>Day</text>
+    <x>69</x>
+    <y>101</y>
+    <width>15</width>
+    <height>13</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #77</name>
+    <text>Year</text>
+    <x>117</x>
+    <y>101</y>
+    <width>15</width>
+    <height>13</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #80</name>
+    <text>Hour</text>
+    <x>187</x>
+    <y>101</y>
+    <width>15</width>
+    <height>13</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #83</name>
+    <text>Min</text>
+    <x>234</x>
+    <y>100</y>
+    <width>15</width>
+    <height>13</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #86</name>
+    <text>Sec</text>
+    <x>280</x>
+    <y>101</y>
+    <width>15</width>
+    <height>13</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #89</name>
+    <pv_name>$(P)AClock$(A):UD:mm</pv_name>
+    <x>14</x>
+    <y>144</y>
+    <width>30</width>
+    <height>30</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #92</name>
+    <pv_name>$(P)AClock$(A):UD:dd</pv_name>
+    <x>61</x>
+    <y>144</y>
+    <width>30</width>
+    <height>30</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #95</name>
+    <pv_name>$(P)AClock$(A):UD:yy</pv_name>
+    <x>109</x>
+    <y>144</y>
+    <width>30</width>
+    <height>30</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #98</name>
+    <pv_name>$(P)AClock$(A):UD:HH</pv_name>
+    <x>179</x>
+    <y>144</y>
+    <width>30</width>
+    <height>30</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #101</name>
+    <pv_name>$(P)AClock$(A):UD:MM</pv_name>
+    <x>226</x>
+    <y>143</y>
+    <width>30</width>
+    <height>30</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #104</name>
+    <pv_name>$(P)AClock$(A):UD:SS</pv_name>
+    <x>272</x>
+    <y>144</y>
+    <width>30</width>
+    <height>30</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <horizontal>false</horizontal>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #107</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)AClock$(A):SetNow.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)AClock$(A):SetNow.PROC</pv_name>
+    <text>Reset</text>
+    <x>141</x>
+    <y>122</y>
+    <width>35</width>
+    <height>16</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #110</name>
+    <pv_name>$(P)AClock$(A):TOD</pv_name>
+    <x>61</x>
+    <y>194</y>
+    <width>200</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #114</name>
+    <pv_name>$(P)AClock$(A):TOD:mm</pv_name>
+    <x>26</x>
+    <y>62</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #118</name>
+    <pv_name>$(P)AClock$(A):TOD:dd</pv_name>
+    <x>70</x>
+    <y>62</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #122</name>
+    <pv_name>$(P)AClock$(A):TOD:yy</pv_name>
+    <x>117</x>
+    <y>62</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #126</name>
+    <pv_name>$(P)AClock$(A):TOD:HH</pv_name>
+    <x>170</x>
+    <y>62</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #130</name>
+    <pv_name>$(P)AClock$(A):TOD:MM</pv_name>
+    <x>218</x>
+    <y>62</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #134</name>
+    <pv_name>$(P)AClock$(A):TOD:SS</pv_name>
+    <x>264</x>
+    <y>62</y>
+    <width>20</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #138</name>
+    <actions>
+      <action type="open_display">
+        <file>yyTransform_full.opi</file>
+        <macros>
+          <T>AClock$(A):Chk:mm</T>
+        </macros>
+        <target>tab</target>
+        <description>Mon. Check</description>
+      </action>
+      <action type="open_display">
+        <file>yyTransform_full.opi</file>
+        <macros>
+          <T>AClock$(A):Chk:dd</T>
+        </macros>
+        <target>tab</target>
+        <description>Day Check</description>
+      </action>
+      <action type="open_display">
+        <file>yyTransform_full.opi</file>
+        <macros>
+          <T>AClock$(A):Chk:yy</T>
+        </macros>
+        <target>tab</target>
+        <description>Year Check</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):Set</C>
+        </macros>
+        <target>tab</target>
+        <description>Set Trigger</description>
+      </action>
+      <action type="open_display">
+        <file>yyCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):Trigger</C>
+        </macros>
+        <target>tab</target>
+        <description>Trigger</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):TOD:yy</C>
+        </macros>
+        <target>tab</target>
+        <description>TOD yy</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):TOD:mm</C>
+        </macros>
+        <target>tab</target>
+        <description>TOD mm</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):TOD:dd</C>
+        </macros>
+        <target>tab</target>
+        <description>TOD dd</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):TOD:HH</C>
+        </macros>
+        <target>tab</target>
+        <description>TOD HH</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):TOD:MM</C>
+        </macros>
+        <target>tab</target>
+        <description>TOD MM</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):TOD:SS</C>
+        </macros>
+        <target>tab</target>
+        <description>TOD SS</description>
+      </action>
+    </actions>
+    <text>Diag1</text>
+    <x>3</x>
+    <y>276</y>
+    <width>50</width>
+    <height>19</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #151</name>
+    <text>TRIGGER OUTPUT PV</text>
+    <x>128</x>
+    <y>238</y>
+    <width>186</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #154</name>
+    <pv_name>$(P)AClock$(A):Trigger.OUT</pv_name>
+    <x>128</x>
+    <y>250</y>
+    <width>186</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="164" green="170" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #158</name>
+    <text>$(P)AClock$(A)</text>
+    <x>53</x>
+    <y>12</y>
+    <width>195</width>
+    <height>21</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #161</name>
+    <text>/</text>
+    <x>54</x>
+    <y>62</y>
+    <width>5</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #164</name>
+    <text>/</text>
+    <x>102</x>
+    <y>62</y>
+    <width>5</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #167</name>
+    <text>:</text>
+    <x>250</x>
+    <y>62</y>
+    <width>5</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #170</name>
+    <text>:</text>
+    <x>202</x>
+    <y>62</y>
+    <width>5</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #173</name>
+    <y>184</y>
+    <width>339</width>
+    <height>3</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="2.0">
+      </point>
+      <point x="338.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #177</name>
+    <actions>
+      <action type="open_display">
+        <file>alarmClock.opi</file>
+        <target>replace</target>
+        <description>Alarm Clock</description>
+      </action>
+    </actions>
+    <text>Less</text>
+    <x>262</x>
+    <y>275</y>
+    <width>50</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="51" green="153" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #180</name>
+    <pv_name>$(P)AClock$(A):Set.SVAL</pv_name>
+    <x>61</x>
+    <y>216</y>
+    <width>200</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #184</name>
+    <text>TOD:</text>
+    <x>8</x>
+    <y>196</y>
+    <width>45</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #187</name>
+    <text>Alarm:</text>
+    <x>9</x>
+    <y>215</y>
+    <width>45</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #190</name>
+    <actions>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):TOD:MM</C>
+        </macros>
+        <target>tab</target>
+        <description>TOD MM</description>
+      </action>
+      <action type="open_display">
+        <file>yysCalcoutRecord_full.opi</file>
+        <macros>
+          <C>AClock$(A):TOD:SS</C>
+        </macros>
+        <target>tab</target>
+        <description>TOD SS</description>
+      </action>
+      <action type="open_display">
+        <file>yySseq_full.opi</file>
+        <macros>
+          <S>AClock$(A):SetNow</S>
+        </macros>
+        <target>tab</target>
+        <description>Reset Alarm</description>
+      </action>
+    </actions>
+    <text>Diag2</text>
+    <x>56</x>
+    <y>276</y>
+    <width>50</width>
+    <height>19</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="42" green="99" blue="228">
+      </color>
+    </background_color>
+  </widget>
+</display>

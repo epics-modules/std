@@ -1,0 +1,3818 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>sampleWheel</name>
+  <x>144</x>
+  <y>33</y>
+  <width>500</width>
+  <height>540</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <width>500</width>
+    <line_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="picture" version="2.0.0">
+    <name>image #9</name>
+    <file>sampleWheel.gif</file>
+    <y>20</y>
+    <width>500</width>
+    <height>500</height>
+    <stretch_image>true</stretch_image>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #11</name>
+    <x>436</x>
+    <y>158</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==3)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #15</name>
+    <x>450</x>
+    <y>203</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==2)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #19</name>
+    <x>455</x>
+    <y>250</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==1)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #23</name>
+    <actions>
+      <action type="open_display">
+        <file>yyTransform.opi</file>
+        <macros>
+          <T>sampleWheelCalc</T>
+        </macros>
+        <target>tab</target>
+        <description>calc</description>
+      </action>
+      <action type="open_display">
+        <file>yyTransform.opi</file>
+        <macros>
+          <T>sampleWheelMove</T>
+        </macros>
+        <target>tab</target>
+        <description>move</description>
+      </action>
+      <action type="open_display">
+        <file>yyTransform.opi</file>
+        <macros>
+          <T>sampleSweepSet</T>
+        </macros>
+        <target>tab</target>
+        <description>sweep</description>
+      </action>
+      <action type="open_display">
+        <file>sampleWheelScanSetup.opi</file>
+        <macros>
+          <T>sampleSweepSet</T>
+        </macros>
+        <target>tab</target>
+        <description>scan setup</description>
+      </action>
+    </actions>
+    <text>MORE</text>
+    <x>460</x>
+    <y>520</y>
+    <width>40</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="51" green="153" blue="0">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #29</name>
+    <x>412</x>
+    <y>118</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==4)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #33</name>
+    <x>380</x>
+    <y>83</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==5)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #37</name>
+    <text>1</text>
+    <x>463</x>
+    <y>257</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #40</name>
+    <x>342</x>
+    <y>55</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==6)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #44</name>
+    <x>299</x>
+    <y>35</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==7)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #48</name>
+    <x>252</x>
+    <y>26</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==8)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #52</name>
+    <x>205</x>
+    <y>26</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==9)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #56</name>
+    <x>159</x>
+    <y>36</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==10)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #60</name>
+    <text>2</text>
+    <x>458</x>
+    <y>210</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #63</name>
+    <text>3</text>
+    <x>444</x>
+    <y>166</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #66</name>
+    <text>4</text>
+    <x>420</x>
+    <y>125</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #69</name>
+    <text>5</text>
+    <x>388</x>
+    <y>91</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #72</name>
+    <text>6</text>
+    <x>350</x>
+    <y>63</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #75</name>
+    <text>7</text>
+    <x>308</x>
+    <y>43</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #78</name>
+    <text>8</text>
+    <x>260</x>
+    <y>34</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #81</name>
+    <text>9</text>
+    <x>213</x>
+    <y>34</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #84</name>
+    <text>10</text>
+    <x>167</x>
+    <y>44</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #87</name>
+    <text>11</text>
+    <x>124</x>
+    <y>63</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #90</name>
+    <x>115</x>
+    <y>55</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==11)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #94</name>
+    <text>12</text>
+    <x>84</x>
+    <y>90</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #97</name>
+    <text>13</text>
+    <x>54</x>
+    <y>125</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #100</name>
+    <text>14</text>
+    <x>30</x>
+    <y>166</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #103</name>
+    <text>15</text>
+    <x>14</x>
+    <y>211</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #106</name>
+    <text>16</text>
+    <x>9</x>
+    <y>258</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #109</name>
+    <text>17</text>
+    <x>14</x>
+    <y>305</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #112</name>
+    <text>18</text>
+    <x>29</x>
+    <y>349</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #115</name>
+    <text>19</text>
+    <x>54</x>
+    <y>390</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #118</name>
+    <text>20</text>
+    <x>86</x>
+    <y>425</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #121</name>
+    <text>21</text>
+    <x>125</x>
+    <y>453</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #124</name>
+    <text>22</text>
+    <x>168</x>
+    <y>472</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #127</name>
+    <text>23</text>
+    <x>214</x>
+    <y>482</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #130</name>
+    <text>24</text>
+    <x>261</x>
+    <y>482</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #133</name>
+    <text>25</text>
+    <x>307</x>
+    <y>473</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #136</name>
+    <text>26</text>
+    <x>350</x>
+    <y>453</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #139</name>
+    <text>27</text>
+    <x>389</x>
+    <y>426</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #142</name>
+    <text>28</text>
+    <x>420</x>
+    <y>390</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #145</name>
+    <text>29</text>
+    <x>444</x>
+    <y>349</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #148</name>
+    <text>30</text>
+    <x>459</x>
+    <y>305</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #151</name>
+    <text>31</text>
+    <x>418</x>
+    <y>258</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #154</name>
+    <text>32</text>
+    <x>411</x>
+    <y>212</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #157</name>
+    <text>33</text>
+    <x>393</x>
+    <y>168</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #160</name>
+    <text>34</text>
+    <x>365</x>
+    <y>131</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #163</name>
+    <text>35</text>
+    <x>326</x>
+    <y>103</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #166</name>
+    <text>36</text>
+    <x>284</x>
+    <y>86</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #169</name>
+    <text>37</text>
+    <x>238</x>
+    <y>80</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #172</name>
+    <text>38</text>
+    <x>191</x>
+    <y>85</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #175</name>
+    <text>39</text>
+    <x>148</x>
+    <y>103</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #178</name>
+    <text>40</text>
+    <x>109</x>
+    <y>131</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #181</name>
+    <text>41</text>
+    <x>81</x>
+    <y>168</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #184</name>
+    <text>42</text>
+    <x>63</x>
+    <y>211</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #187</name>
+    <text>43</text>
+    <x>56</x>
+    <y>258</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #190</name>
+    <text>44</text>
+    <x>63</x>
+    <y>304</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #193</name>
+    <text>45</text>
+    <x>81</x>
+    <y>347</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #196</name>
+    <text>46</text>
+    <x>109</x>
+    <y>384</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #199</name>
+    <text>47</text>
+    <x>146</x>
+    <y>412</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #202</name>
+    <text>48</text>
+    <x>190</x>
+    <y>430</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #205</name>
+    <text>49</text>
+    <x>237</x>
+    <y>437</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #208</name>
+    <text>50</text>
+    <x>284</x>
+    <y>430</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #211</name>
+    <text>51</text>
+    <x>328</x>
+    <y>413</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #214</name>
+    <text>52</text>
+    <x>365</x>
+    <y>384</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #217</name>
+    <text>53</text>
+    <x>393</x>
+    <y>347</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #220</name>
+    <text>54</text>
+    <x>411</x>
+    <y>304</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #223</name>
+    <text>55</text>
+    <x>369</x>
+    <y>259</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #226</name>
+    <text>56</text>
+    <x>362</x>
+    <y>213</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #229</name>
+    <text>57</text>
+    <x>339</x>
+    <y>174</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #232</name>
+    <text>58</text>
+    <x>304</x>
+    <y>143</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #235</name>
+    <text>59</text>
+    <x>261</x>
+    <y>129</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #238</name>
+    <text>60</text>
+    <x>214</x>
+    <y>128</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #241</name>
+    <text>61</text>
+    <x>172</x>
+    <y>143</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #244</name>
+    <text>62</text>
+    <x>135</x>
+    <y>173</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #247</name>
+    <text>63</text>
+    <x>113</x>
+    <y>213</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #250</name>
+    <text>64</text>
+    <x>104</x>
+    <y>258</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #253</name>
+    <text>65</text>
+    <x>112</x>
+    <y>303</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #256</name>
+    <text>66</text>
+    <x>135</x>
+    <y>343</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #259</name>
+    <text>67</text>
+    <x>171</x>
+    <y>373</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #262</name>
+    <text>68</text>
+    <x>215</x>
+    <y>388</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #265</name>
+    <text>69</text>
+    <x>259</x>
+    <y>388</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #268</name>
+    <text>70</text>
+    <x>304</x>
+    <y>373</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #271</name>
+    <text>71</text>
+    <x>340</x>
+    <y>344</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #274</name>
+    <text>72</text>
+    <x>361</x>
+    <y>303</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #277</name>
+    <text>73</text>
+    <x>324</x>
+    <y>259</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #280</name>
+    <text>74</text>
+    <x>313</x>
+    <y>216</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #283</name>
+    <text>75</text>
+    <x>280</x>
+    <y>185</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #286</name>
+    <text>76</text>
+    <x>238</x>
+    <y>172</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #289</name>
+    <text>77</text>
+    <x>194</x>
+    <y>185</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #292</name>
+    <text>78</text>
+    <x>163</x>
+    <y>215</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #295</name>
+    <text>79</text>
+    <x>152</x>
+    <y>259</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #298</name>
+    <text>80</text>
+    <x>163</x>
+    <y>301</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #301</name>
+    <text>81</text>
+    <x>196</x>
+    <y>333</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #304</name>
+    <text>82</text>
+    <x>237</x>
+    <y>344</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #307</name>
+    <text>83</text>
+    <x>280</x>
+    <y>333</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #310</name>
+    <text>84</text>
+    <x>312</x>
+    <y>300</y>
+    <width>25</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #313</name>
+    <x>77</x>
+    <y>83</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==12)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #317</name>
+    <x>46</x>
+    <y>117</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==13)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #321</name>
+    <x>22</x>
+    <y>158</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==14)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #325</name>
+    <x>8</x>
+    <y>203</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==15)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #329</name>
+    <x>2</x>
+    <y>250</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==16)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #333</name>
+    <x>7</x>
+    <y>297</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==17)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #337</name>
+    <x>22</x>
+    <y>341</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==18)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #341</name>
+    <x>46</x>
+    <y>382</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==19)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #345</name>
+    <x>77</x>
+    <y>417</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==20)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #349</name>
+    <x>115</x>
+    <y>445</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==21)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #353</name>
+    <x>159</x>
+    <y>464</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==22)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #357</name>
+    <x>205</x>
+    <y>474</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==23)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #361</name>
+    <x>252</x>
+    <y>474</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==24)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #365</name>
+    <x>298</x>
+    <y>464</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==25)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #369</name>
+    <x>341</x>
+    <y>445</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==26)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #373</name>
+    <x>380</x>
+    <y>417</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==27)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #377</name>
+    <x>411</x>
+    <y>382</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==28)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #381</name>
+    <x>435</x>
+    <y>341</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==29)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #385</name>
+    <x>450</x>
+    <y>297</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==30)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #389</name>
+    <x>408</x>
+    <y>250</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==31)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #393</name>
+    <x>402</x>
+    <y>204</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==32)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #397</name>
+    <x>384</x>
+    <y>160</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==33)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #401</name>
+    <x>356</x>
+    <y>123</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==34)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #405</name>
+    <x>318</x>
+    <y>95</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==35)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #409</name>
+    <x>275</x>
+    <y>77</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==36)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #413</name>
+    <x>229</x>
+    <y>71</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==37)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #417</name>
+    <x>182</x>
+    <y>77</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==38)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #421</name>
+    <x>139</x>
+    <y>95</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==39)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #425</name>
+    <x>102</x>
+    <y>123</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==40)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #429</name>
+    <x>73</x>
+    <y>161</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==41)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #433</name>
+    <x>55</x>
+    <y>203</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==42)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #437</name>
+    <x>49</x>
+    <y>250</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==43)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #441</name>
+    <x>55</x>
+    <y>296</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==44)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #445</name>
+    <x>74</x>
+    <y>339</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==45)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #449</name>
+    <x>102</x>
+    <y>376</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==46)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #453</name>
+    <x>139</x>
+    <y>404</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==47)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #457</name>
+    <x>182</x>
+    <y>422</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==48)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #461</name>
+    <x>229</x>
+    <y>429</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==49)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #465</name>
+    <x>275</x>
+    <y>422</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==50)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #469</name>
+    <x>319</x>
+    <y>405</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==51)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #473</name>
+    <x>356</x>
+    <y>376</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==52)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #477</name>
+    <x>384</x>
+    <y>339</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==53)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #481</name>
+    <x>402</x>
+    <y>296</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==54)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #485</name>
+    <x>361</x>
+    <y>250</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==55)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #489</name>
+    <x>353</x>
+    <y>204</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==56)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #493</name>
+    <x>330</x>
+    <y>165</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==57)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #497</name>
+    <x>295</x>
+    <y>135</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==58)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #501</name>
+    <x>252</x>
+    <y>120</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==59)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #505</name>
+    <x>206</x>
+    <y>120</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==60)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #509</name>
+    <x>163</x>
+    <y>135</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==61)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #513</name>
+    <x>127</x>
+    <y>165</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==62)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #517</name>
+    <x>104</x>
+    <y>205</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==63)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #521</name>
+    <x>96</x>
+    <y>250</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==64)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #525</name>
+    <x>104</x>
+    <y>295</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==65)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #529</name>
+    <x>127</x>
+    <y>335</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==66)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #533</name>
+    <x>163</x>
+    <y>364</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==67)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #537</name>
+    <x>206</x>
+    <y>380</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==68)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #541</name>
+    <x>251</x>
+    <y>380</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==69)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #545</name>
+    <x>295</x>
+    <y>364</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==70)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #549</name>
+    <x>330</x>
+    <y>335</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==71)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #553</name>
+    <x>353</x>
+    <y>295</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==72)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #557</name>
+    <x>314</x>
+    <y>250</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==73)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #561</name>
+    <x>303</x>
+    <y>207</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==74)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #565</name>
+    <x>271</x>
+    <y>176</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==75)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #569</name>
+    <x>229</x>
+    <y>164</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==76)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #573</name>
+    <x>186</x>
+    <y>176</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==77)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #577</name>
+    <x>154</x>
+    <y>207</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==78)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #581</name>
+    <x>143</x>
+    <y>250</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==79)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #585</name>
+    <x>154</x>
+    <y>293</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==80)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #589</name>
+    <x>186</x>
+    <y>324</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==81)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #593</name>
+    <x>229</x>
+    <y>335</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==82)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #597</name>
+    <x>271</x>
+    <y>324</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==83)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="arc" version="2.0.0">
+    <name>arc #601</name>
+    <x>303</x>
+    <y>292</y>
+    <width>40</width>
+    <height>40</height>
+    <total_angle>360.0</total_angle>
+    <line_width>5</line_width>
+    <line_color>
+      <color red="30" green="144" blue="255">
+      </color>
+    </line_color>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==84)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)sample</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #605</name>
+    <text>Sample Wheel (beam's eye view)</text>
+    <width>500</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #608</name>
+    <pv_name>$(P)sample</pv_name>
+    <x>230</x>
+    <y>520</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #612</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)sampleTweak.A</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)sampleTweak.A</pv_name>
+    <text>+</text>
+    <x>270</x>
+    <y>520</y>
+    <width>20</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #615</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)sampleTweak.B</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)sampleTweak.B</pv_name>
+    <text>-</text>
+    <x>210</x>
+    <y>520</y>
+    <width>20</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #618</name>
+    <text>ROW MOTOR POS.</text>
+    <x>400</x>
+    <y>475</y>
+    <width>90</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="26" green="115" blue="9">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #621</name>
+    <text>ANGLE MOTOR POS.</text>
+    <x>10</x>
+    <y>475</y>
+    <width>90</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="26" green="115" blue="9">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #624</name>
+    <pv_name>$(P)sampleWheelCalc.A</pv_name>
+    <x>440</x>
+    <y>490</y>
+    <width>50</width>
+    <height>14</height>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #628</name>
+    <pv_name>$(P)sampleWheelMove.D</pv_name>
+    <x>440</x>
+    <y>505</y>
+    <width>50</width>
+    <height>14</height>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #632</name>
+    <pv_name>$(P)sampleWheelCalc.B</pv_name>
+    <x>50</x>
+    <y>490</y>
+    <width>50</width>
+    <height>14</height>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #636</name>
+    <pv_name>$(P)sampleWheelMove.K</pv_name>
+    <x>50</x>
+    <y>505</y>
+    <width>50</width>
+    <height>14</height>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #640</name>
+    <text>ACTUAL</text>
+    <x>400</x>
+    <y>494</y>
+    <width>40</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="26" green="115" blue="9">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #643</name>
+    <text>TARGET</text>
+    <x>400</x>
+    <y>509</y>
+    <width>40</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="26" green="115" blue="9">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #646</name>
+    <text>ACTUAL</text>
+    <x>10</x>
+    <y>494</y>
+    <width>40</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="26" green="115" blue="9">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #649</name>
+    <text>TARGET</text>
+    <x>10</x>
+    <y>509</y>
+    <width>40</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="26" green="115" blue="9">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #652</name>
+    <pv_name>$(P)sampleHorizOffset</pv_name>
+    <x>225</x>
+    <y>300</y>
+    <width>50</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #656</name>
+    <text>H OFFSET</text>
+    <x>225</x>
+    <y>290</y>
+    <width>50</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #659</name>
+    <x>248</x>
+    <y>257</y>
+    <width>3</width>
+    <height>17</height>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="15.0">
+      </point>
+      <point x="1.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #663</name>
+    <x>244</x>
+    <y>255</y>
+    <width>11</width>
+    <height>11</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="10.0">
+      </point>
+      <point x="5.0" y="1.0">
+      </point>
+      <point x="10.0" y="10.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #667</name>
+    <x>236</x>
+    <y>270</y>
+    <width>17</width>
+    <height>3</height>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <points>
+      <point x="15.0" y="1.0">
+      </point>
+      <point x="1.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #671</name>
+    <x>234</x>
+    <y>265</y>
+    <width>11</width>
+    <height>11</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="251" green="243" blue="74">
+      </color>
+    </line_color>
+    <points>
+      <point x="10.0" y="10.0">
+      </point>
+      <point x="1.0" y="6.0">
+      </point>
+      <point x="10.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #675</name>
+    <text>V</text>
+    <x>251</x>
+    <y>250</y>
+    <width>5</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #678</name>
+    <text>H</text>
+    <x>228</x>
+    <y>272</y>
+    <width>5</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #681</name>
+    <pv_name>$(P)sampleVertOffset</pv_name>
+    <x>225</x>
+    <y>225</y>
+    <width>50</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #685</name>
+    <text>V OFFSET</text>
+    <x>225</x>
+    <y>215</y>
+    <width>50</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #688</name>
+    <text>mm</text>
+    <x>277</x>
+    <y>230</y>
+    <width>15</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #691</name>
+    <text>mm</text>
+    <x>277</x>
+    <y>305</y>
+    <width>15</width>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+</display>

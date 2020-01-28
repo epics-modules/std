@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>sectorStatus</name>
+  <x>559</x>
+  <y>36</y>
+  <width>375</width>
+  <height>190</height>
+  <background_color>
+    <color red="235" green="241" blue="181">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="label" version="2.0.0">
+    <name>text #6</name>
+    <text>100</text>
+    <x>131</x>
+    <y>61</y>
+    <width>16</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #9</name>
+    <pv_name>$(S)ide:memory</pv_name>
+    <x>78</x>
+    <y>111</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #12</name>
+    <pv_name>$(S)idd:memory</pv_name>
+    <x>78</x>
+    <y>101</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #15</name>
+    <pv_name>$(S)idc:memory</pv_name>
+    <x>78</x>
+    <y>91</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #18</name>
+    <pv_name>$(S)idb:memory</pv_name>
+    <x>78</x>
+    <y>81</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #21</name>
+    <pv_name>$(S)ida:memory</pv_name>
+    <x>78</x>
+    <y>71</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #24</name>
+    <text>IOC$(S)IDE</text>
+    <x>23</x>
+    <y>110</y>
+    <width>50</width>
+    <height>7</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="8.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #27</name>
+    <pv_name>$(S)ida:cpu</pv_name>
+    <x>241</x>
+    <y>71</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #30</name>
+    <pv_name>$(S)idb:cpu</pv_name>
+    <x>241</x>
+    <y>81</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #33</name>
+    <pv_name>$(S)idc:cpu</pv_name>
+    <x>241</x>
+    <y>91</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #36</name>
+    <pv_name>$(S)idd:cpu</pv_name>
+    <x>241</x>
+    <y>101</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #39</name>
+    <pv_name>$(S)ide:cpu</pv_name>
+    <x>241</x>
+    <y>111</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #42</name>
+    <text>100</text>
+    <x>293</x>
+    <y>61</y>
+    <width>16</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #45</name>
+    <text>0</text>
+    <x>241</x>
+    <y>61</y>
+    <width>7</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #48</name>
+    <x>247</x>
+    <y>32</y>
+    <width>50</width>
+    <height>26</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="label" version="2.0.0">
+      <name>text #60</name>
+      <text>IOC CPU</text>
+      <x>8</x>
+      <width>35</width>
+      <height>7</height>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="8.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #63</name>
+      <text>IN PERCENT</text>
+      <y>19</y>
+      <width>50</width>
+      <height>7</height>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="8.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #66</name>
+      <text>LOAD</text>
+      <x>15</x>
+      <y>9</y>
+      <width>20</width>
+      <height>7</height>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="8.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #69</name>
+    <x>327</x>
+    <y>72</y>
+    <width>25</width>
+    <height>7</height>
+    <style>3</style>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #84</name>
+    <x>327</x>
+    <y>72</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(S)ida:status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #88</name>
+    <x>327</x>
+    <y>82</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #91</name>
+    <x>327</x>
+    <y>82</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(S)idb:status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #95</name>
+    <x>327</x>
+    <y>92</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #98</name>
+    <x>327</x>
+    <y>92</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(S)idc:status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #102</name>
+    <x>327</x>
+    <y>102</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #105</name>
+    <x>327</x>
+    <y>102</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(S)idd:status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #109</name>
+    <x>327</x>
+    <y>112</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #112</name>
+    <x>327</x>
+    <y>112</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(S)ide:status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #116</name>
+    <x>149</x>
+    <y>70</y>
+    <width>0</width>
+    <height>96</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <line_style>1</line_style>
+    <points>
+      <point x="0.0" y="0.0">
+      </point>
+      <point x="0.0" y="96.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #120</name>
+    <x>232</x>
+    <y>70</y>
+    <width>0</width>
+    <height>96</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <line_style>1</line_style>
+    <points>
+      <point x="0.0" y="0.0">
+      </point>
+      <point x="0.0" y="96.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #124</name>
+    <x>316</x>
+    <y>70</y>
+    <width>0</width>
+    <height>96</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <line_style>1</line_style>
+    <points>
+      <point x="0.0" y="0.0">
+      </point>
+      <point x="0.0" y="96.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #128</name>
+    <text>SECTOR $(S) IOC STATUS</text>
+    <x>52</x>
+    <y>7</y>
+    <width>277</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #131</name>
+    <text>100</text>
+    <x>127</x>
+    <y>132</y>
+    <width>16</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #134</name>
+    <text>0</text>
+    <x>75</x>
+    <y>132</y>
+    <width>7</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #137</name>
+    <pv_name>$(S)bmc:memory</pv_name>
+    <x>77</x>
+    <y>154</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #140</name>
+    <pv_name>$(S)bma:memory</pv_name>
+    <x>77</x>
+    <y>144</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #143</name>
+    <text>100</text>
+    <x>293</x>
+    <y>132</y>
+    <width>16</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #146</name>
+    <text>0</text>
+    <x>242</x>
+    <y>132</y>
+    <width>7</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #149</name>
+    <pv_name>$(S)bmc:cpu</pv_name>
+    <x>240</x>
+    <y>154</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #152</name>
+    <pv_name>$(S)bma:cpu</pv_name>
+    <x>240</x>
+    <y>144</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #155</name>
+    <x>326</x>
+    <y>143</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #158</name>
+    <x>326</x>
+    <y>143</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(S)bma:status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #162</name>
+    <x>326</x>
+    <y>153</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="82" green="218" blue="59">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #165</name>
+    <x>326</x>
+    <y>153</y>
+    <width>25</width>
+    <height>7</height>
+    <line_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="253" green="0" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(S)bmc:status</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #169</name>
+    <text>IOC$(S)BMB</text>
+    <x>31</x>
+    <y>154</y>
+    <width>40</width>
+    <height>7</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="8.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #172</name>
+    <text>IOC$(S)BMA</text>
+    <x>31</x>
+    <y>144</y>
+    <width>40</width>
+    <height>7</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="8.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #175</name>
+    <text>9/22/1998 GRG</text>
+    <x>262</x>
+    <y>888</y>
+    <width>80</width>
+    <height>9</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="9.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #178</name>
+    <text>0</text>
+    <x>157</x>
+    <y>61</y>
+    <width>7</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #181</name>
+    <pv_name>$(S)ide:fd</pv_name>
+    <x>158</x>
+    <y>111</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #184</name>
+    <pv_name>$(S)idd:fd</pv_name>
+    <x>158</x>
+    <y>101</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #187</name>
+    <pv_name>$(S)idc:fd</pv_name>
+    <x>158</x>
+    <y>91</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #190</name>
+    <pv_name>$(S)idb:fd</pv_name>
+    <x>158</x>
+    <y>81</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #193</name>
+    <pv_name>$(S)ida:fd</pv_name>
+    <x>158</x>
+    <y>71</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #196</name>
+    <text>$(S)ID</text>
+    <x>177</x>
+    <y>56</y>
+    <width>30</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #199</name>
+    <text>150</text>
+    <x>209</x>
+    <y>61</y>
+    <width>18</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #202</name>
+    <text>$(S)BM</text>
+    <x>177</x>
+    <y>129</y>
+    <width>22</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #205</name>
+    <text>0</text>
+    <x>156</x>
+    <y>133</y>
+    <width>7</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #208</name>
+    <pv_name>$(S)bmc:fd</pv_name>
+    <x>156</x>
+    <y>154</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #211</name>
+    <pv_name>$(S)bma:fd</pv_name>
+    <x>156</x>
+    <y>144</y>
+    <width>64</width>
+    <height>7</height>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #214</name>
+    <text>150</text>
+    <x>208</x>
+    <y>133</y>
+    <width>18</width>
+    <height>11</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="11.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #217</name>
+    <x>75</x>
+    <y>61</y>
+    <width>8</width>
+    <height>11</height>
+    <style>3</style>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #226</name>
+    <text>IOC$(S)IDA</text>
+    <x>23</x>
+    <y>70</y>
+    <width>50</width>
+    <height>7</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="8.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #229</name>
+    <text>IOC$(S)IDB</text>
+    <x>23</x>
+    <y>80</y>
+    <width>50</width>
+    <height>7</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="8.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #232</name>
+    <text>IOC$(S)IDC</text>
+    <x>23</x>
+    <y>90</y>
+    <width>50</width>
+    <height>7</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="8.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #235</name>
+    <text>IOC$(S)IDD</text>
+    <x>23</x>
+    <y>100</y>
+    <width>50</width>
+    <height>7</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="8.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+</display>
