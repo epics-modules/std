@@ -126,12 +126,8 @@ Modification Log:
 #define USER_STATE_REQSTART 2
 #define USER_STATE_COUNTING 3
 
-#ifdef NODEBUG
-#define Debug(l,FMT,V) ;
-#else
 #define Debug(level)  if(level<=scalerRecordDebug) \
 		{printf("%s(%d):",__FILE__,__LINE__); printf(
-#endif
 
 volatile int scalerRecordDebug = 0;
 volatile int scaler_wait_time = 10;
