@@ -164,7 +164,7 @@ asynStatus Scaler974::writeInt32(asynUser *pasynUser, epicsInt32 value)
     else if(function==this->scalerPreset)
     {
         int m,n;
-        char newstr[20];
+        char newstr[25];
 
         n=(int)log10(double(value));
         m=(int)(value/pow(10.0,n));
