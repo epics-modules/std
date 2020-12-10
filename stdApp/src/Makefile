@@ -5,11 +5,6 @@ include $(TOP)/configure/CONFIG
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
 
-# For Kate Feng's implementation of devScaler.c, which uses Till
-# Straumann's basicIoOps.h to bridge any mismatch between endianness
-# of Joerger scaler hardware and endianness of processor.
-#USR_CFLAGS += -DHAS_IOOPS_H
-
 # For base-7
 USR_CPPFLAGS += -DUSE_TYPED_RSET
 
@@ -25,7 +20,6 @@ USR_CPPFLAGS += -DUSE_TYPED_RSET
 #=============================
 # xxxRecord.h will be created from xxxRecord.dbd
 
-DBDINC += scalerRecord
 DBDINC += epidRecord
 DBDINC += timestampRecord
 DBDINC += throttleRecord
@@ -41,12 +35,6 @@ DBD += delayDo.dbd
 
 LIBRARY_IOC += std
 
-std_SRCS_vxWorks += aiCvtDouble.c
-
-std_SRCS += scalerRecord.c
-std_SRCS += devScalerAsyn.c
-std_SRCS += drvScalerSoft.c
-std_SRCS += drvScaler974.cpp
 std_SRCS += epidRecord.c
 std_SRCS += devEpidSoft.c
 std_SRCS += devEpidSoftCallback.c
@@ -73,12 +61,6 @@ std_SRCS += delayCmd.cpp
 
 # vxCall command
 std_SRCS_vxWorks += vxcall.cpp
-
-# publish this file so it can be included by device support for scaler
-# built in the MCA module
-INC += devScaler.h
-INC += devScalerAsyn.h
-INC += aiCvtDouble.h
 
 SCRIPTS += showBurtDiff wrapCmd wrapper
 
@@ -113,7 +95,5 @@ epidRecord$(OBJ):          $(COMMON_DIR)/epidRecord.h
 devEpidSoft$(OBJ):         $(COMMON_DIR)/epidRecord.h
 devEpidSoftCallback$(OBJ): $(COMMON_DIR)/epidRecord.h
 devEpidFast$(OBJ):         $(COMMON_DIR)/epidRecord.h
-scalerRecord$(OBJ):        $(COMMON_DIR)/scalerRecord.h
-devScalerAsyn$(OBJ):       $(COMMON_DIR)/scalerRecord.h
 timestampRecord$(OBJ):     $(COMMON_DIR)/timestampRecord.h
 throttleRecord$(OBJ):      $(COMMON_DIR)/throttleRecord.h

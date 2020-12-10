@@ -55,9 +55,6 @@ dbLoadRecords("../../../std/stdApp/Db/misc.db", "P=stdTest:")
 # General purpose selector
 dbLoadTemplate("selector.substitutions")
 
-# soft scaler
-< softScaler.cmd
-
 iocInit
 
 ### Start Femto amplifier sequence programs
