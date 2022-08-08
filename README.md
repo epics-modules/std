@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/epics-modules/std.svg?branch=master)](https://travis-ci.org/epics-modules/std)
+[![STD](https://github.com/epics-modules/std/actions/workflows/ci-scripts-build.yml/badge.svg)](https://github.com/epics-modules/std/actions/workflows/ci-scripts-build.yml)
 
 # std
 APS BCDA synApps module: std
