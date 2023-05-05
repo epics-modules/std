@@ -1,254 +1,178 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<meta http-equiv="content-type" content=
-"text/html; charset=us-ascii">
-<title>std</title>
-<meta name="author" content="Tim Mooney">
-</head>
-<body>
-<img src="http://www.aps.anl.gov/bcda/Images/logo101.gif" alt=
-"EPICS" hspace="5" height="101" width="101" align="right">
+The synApps std module
+======================
 
-<h1>The synApps std module</h1>
-The std module publishes the following software items for use by ioc applications
-:
+The std module publishes the following software items for use by ioc applications : 
 
-<h2>Records<hr></h2>
-<dl>
-<dt><a href="epidRecord.html">epidRecord.html</a><dd>Extended PID feedback record
-<dt><a href="scalerRecord.html">scalerRecord.html</a><dd>Scaler record
-<dt><a href="throttleRecord.html">throttleRecord.html</a><dd>Throttle record
-</dl>
+Records
+-------
 
-<h2>Databases and GUI display files<hr></h2>
+[epidRecord.html](epidRecord.md) Extended PID feedback record 
 
+[throttleRecord.html](throttleRecord.md) Throttle record Databases and GUI display files
 
-<h3>4step.db, 4step.adl</h3>
 
-<P>Implements a multistep measurement that may involve up to four sets of the
-following operations:
- <ol>
- <li>set conditions and wait for completion (execute a string-sequence record)
- <li>trigger up to two detectors and wait for completion 
- <li>acquire scalar data from up to four PVs, for each measurement step,
- and cache in local PVs.
- </ol>
- 
-<P>When all measurement steps have completed, performs up to four calculations on
-cached scalar data.
+--------------------------------------------
 
-<P>The original purpose of this database was to allow the sscan record to
-perform a preprogrammed dichroism measurement, in which a measurement is made
-under two conditions (say, 'a' and 'b'), and the result (Ma-Mb)/(Ma+Mb) is
-recorded.
+### 4step.db, 4step.adl
 
+Implements a multistep measurement that may involve up to four sets of the following operations:
 
-<h3>IDctrl.db, xxIDCtrl.adl</h3>
+1. set conditions and wait for completion (execute a string-sequence record)
+2. trigger up to two detectors and wait for completion
+3. acquire scalar data from up to four PVs, for each measurement step, and cache in local PVs.
 
-<P>A front end for the APS insertion-device control system.  This database
-allows an ID to be driven by a ca_put_callback() command.
+When all measurement steps have completed, performs up to four calculations on cached scalar data.
 
+The original purpose of this database was to allow the sscan record to perform a preprogrammed dichroism measurement, in which a measurement is made under two conditions (say, 'a' and 'b'), and the result (Ma-Mb)/(Ma+Mb) is recorded.
 
-<h3>Nano2k.db, Nano2k.adl</h3>
+### IDctrl.db, xxIDCtrl.adl
 
-<P>Support for the Queensgate Nano2k piezo controller.
+A front end for the APS insertion-device control system. This database allows an ID to be driven by a ca\_put\_callback() command.
 
-<h3>all_com_*.db</h3>
+### Nano2k.db, Nano2k.adl
 
-<P>Deprecated collection of databases for fanning out a "stop" command to all
-motor records in an ioc, and for rolling up all motor-moving states into a
-single PV.  The motor module has a better way of doing this (motorUtil.db, and
-the motorUtilInit() command invoked from the ioc startup file).
+Support for the Queensgate Nano2k piezo controller.
 
-<h3>pid_control.db, pid_*.adl</h3>
+### all\_com\_\*.db
 
-<P>Implements a PID (proportional/integral/differential) feedback loop, reading
-values from a readback PV, comparing with a desired value, and writing
-corrections to a control PV.  This record-based feedback loop is for low-speed 
-applications, and is very general because it can use any EPICS PVs for readback
-and control.
+Deprecated collection of databases for fanning out a "stop" command to all motor records in an ioc, and for rolling up all motor-moving states into a single PV. The motor module has a better way of doing this (motorUtil.db, and the motorUtilInit() command invoked from the ioc startup file).
 
-<P ALIGN=CENTER><IMG SRC="pid_control.adl.jpg" ><IMG SRC="pid_parameters.adl.jpg" ><BR>pid_control.adl, pid_parameters.adl
-</P>
+### pid\_control.db, pid\_\*.adl
 
-<h3>async_pid_control.db, async_pid_control.adl</h3>
+Implements a PID (proportional/integral/differential) feedback loop, reading values from a readback PV, comparing with a desired value, and writing corrections to a control PV. This record-based feedback loop is for low-speed applications, and is very general because it can use any EPICS PVs for readback and control.
 
-<P>A version of pid_control with two improvements:
+![](pid_control.adl.jpg)![](pid_parameters.adl.jpg)  
+pid\_control.adl, pid\_parameters.adl
 
-<ol>
-<li>The readback PV can be an asynchronous record.  The std module implements
-the "Async Soft Channel" device type for the epid record, which executes the
-record's readback-trigger link, and waits for completion before reading the
-result.
-<li>The database provides a transform record to process the output value before
-using it to drive the target PV.
-</ol>
+### async\_pid\_control.db, async\_pid\_control.adl
 
-The original purpose of async_pid_control was to support feedback control with a
-noisy readback device, by using the calc module's userAve10.db database to
-average over a number of measurements.
+A version of pid\_control with two improvements:
 
-<h3>fast_pid_control.db</h3>
+1. The readback PV can be an asynchronous record. The std module implements the "Async Soft Channel" device type for the epid record, which executes the record's readback-trigger link, and waits for completion before reading the result.
+2. The database provides a transform record to process the output value before using it to drive the target PV.
 
-<P>Implements a PID (proportional/integral/differential) feedback loop, reading
-values from a readback PV, comparing with a desired value, and writing
-corrections to a control PV.  This inerrupt-service-routine based loop can run
-very fast (up to around 10 kHz) but is restricted in readback and control PVs.
-The readback must be an appropriately supported analog input device, such as the
-IP330 ADC, and the control must be an appropriately supported analog output
-device, such as the DAV128V.
+The original purpose of async\_pid\_control was to support feedback control with a noisy readback device, by using the calc module's userAve10.db database to average over a number of measurements. ### fast\_pid\_control.db
 
-<h3>femto*.db, femto*.adl</h3>
+Implements a PID (proportional/integral/differential) feedback loop, reading values from a readback PV, comparing with a desired value, and writing corrections to a control PV. This inerrupt-service-routine based loop can run very fast (up to around 10 kHz) but is restricted in readback and control PVs. The readback must be an appropriately supported analog input device, such as the IP330 ADC, and the control must be an appropriately supported analog output device, such as the DAV128V.
 
-<P>Support for Femto (brand name) low-noise current amplifier.
+### femto\*.db, femto\*.adl
 
-<h3>delayDo.db</h3>
+Support for Femto (brand name) low-noise current amplifier.
 
-<P>See <a href="delayDo.html">delayDo documentation</a>
+### delayDo.db
 
-<h3>genTweak.db</h3>
+See [delayDo documentation](delayDo.md)
 
-<P>Adds tweak functionality to any floating point PV 
+### genTweak.db
 
-<h3>ramp_tweak.db, ramp_tweak*.adl</h3>
+Adds tweak functionality to any floating point PV
 
-<P>Adds ramp and tweak functionality to any numeric PV.  To use, type the name
-of the PV into the "targetPV:" text-entry field (or use Drag-And-Drop), and set
-the step period and size.  If you don't want ramping, set the step size to zero.
+### ramp\_tweak.db, ramp\_tweak\*.adl
 
-<P>This database supports ca_put_callback.  When the desired-value or tweak
-fields are written to by a ca_put_callback, the callback will not be sent until
-the target has reached the new desired value.  The database also supports
-autosave, and will correctly initialize itself after a reboot.
+Adds ramp and tweak functionality to any numeric PV. To use, type the name of the PV into the "targetPV:" text-entry field (or use Drag-And-Drop), and set the step period and size. If you don't want ramping, set the step size to zero.
 
+This database supports ca\_put\_callback. When the desired-value or tweak fields are written to by a ca\_put\_callback, the callback will not be sent until the target has reached the new desired value. The database also supports autosave, and will correctly initialize itself after a reboot.
 
-<P ALIGN=CENTER><IMG SRC="ramp_tweak.adl.jpg" ><IMG SRC="ramp_tweakSetup.adl.jpg" ><BR>ramp_tweak.adl, ramp_tweakSetup.adl
-</P>
+![](ramp_tweak.adl.jpg)![](ramp_tweakSetup.adl.jpg)  
+ramp\_tweak.adl, ramp\_tweakSetup.adl
 
-<h3>genericState.db, genericState.adl
-genericStateAux.db
-genericStrState.db</h3>
+### genericState.db, genericState.adl genericStateAux.db genericStrState.db
 
-<P>I don't know what this is.
+I don't know what this is.
 
-<h3>misc.db</h3>
+### misc.db
 
-<P>Miscellaneous PVs: burtResult, ISO8601 time-stamp string
+Miscellaneous PVs: burtResult, ISO8601 time-stamp string
 
+### pvHistory.db, pvHistory\*.adl
 
-<h3>pvHistory.db, pvHistory*.adl</h3>
+Collects values of up to three PVs in arrays for plotting as functions of time.
 
-<P>Collects values of up to three PVs in arrays for plotting as functions of
-time.
+### autoShutter.vdb
 
+See [README\_autoShutter](README_autoShutter)
 
-<h3>autoShutter.vdb</h3>
+### remoteShutter.db
 
-<P>See <a href="README_autoShutter">README_autoShutter</a>
+See [README\_remoteShutter](README_remoteShutter)
 
-<h3>remoteShutter.db</h3>
+### sampleWheel.db, sampleWheel\*.adl
 
-<P>See <a href="README_remoteShutter">README_remoteShutter</a>
+Support for one particular sample holder.
 
-<h3>sampleWheel.db, sampleWheel*.adl</h3>
-<P>Support for one particular sample holder.
+### scaler\*.db, scaler\*.adl
 
-<h3>scaler*.db, scaler*.adl</h3>
+Support for the scaler record.
 
-<P>Support for the scaler record.
+### softMotor.db, softMotor\*.adl
 
-<h3>softMotor.db, softMotor*.adl</h3>
+Support for a soft motor record that can be attached at run time to a real motor or other motorlike collection of PVs.
 
-<P>Support for a soft motor record that can be attached at run time to a real
-motor or other motorlike collection of PVs.
+### timeString.db
 
-<h3>timeString.db</h3>
+A stringin record with "Soft Timestamp" device support
 
-<P>A stringin record with "Soft Timestamp" device support
+### alarmClock.vdb, alarmClock\*.adl
 
-<h3>alarmClock.vdb, alarmClock*.adl</h3>
+Cause a specified action to occur at a specified date and time.
 
-<P>Cause a specified action to occur at a specified date and time.
+### countDownTimer.vdb, countDownTimer\*.adl
 
-<h3>countDownTimer.vdb, countDownTimer*.adl</h3>
+Cause a specified action to occur after a specified time interval.
 
-<P>Cause a specified action to occur after a specified time interval.
+### timer.db, timer\*.adl
 
-<h3>timer.db, timer*.adl</h3>
+Cause a specified action to occur after a specified time interval
 
-<P>Cause a specified action to occur after a specified time interval
+### trend.db
 
-<h3>trend.db</h3>
-<P>I don't know what this is.
+I don't know what this is.
 
-<h3>userMbbos10.db, userMbbo*.adl</h3>
-<P>Ten MBBO records.
+### userMbbos10.db, userMbbo\*.adl
 
-<h3>zero.db, zero2.db</h3>
+Ten MBBO records.
 
-<P>A string-sequence record configured to zero a motor by putting it into "Set"
-mode, writing zero to its VAL field, and putting it into "Use" mode.  zero2 does
-the same thing for two motors.
+### zero.db, zero2.db
 
-<h3>selector.db</h3>
+A string-sequence record configured to zero a motor by putting it into "Set" mode, writing zero to its VAL field, and putting it into "Use" mode. zero2 does the same thing for two motors.
 
-<P>A general purpose selector, which allows the deployer to attach a menu to a
-list of actions.  For example, to implement control of a motor for which
-discrete positions have special significance (mirror stripe, sample-wheel
-angle), one edits selector.substitutions (see iocBoot/iocStdTest) with the names
-and motor positions, and the target PV (or PVs) to which those positions should be
-written.  The menu selection can be made by a client using ca_put_callback().
+### selector.db
 
-<P>It's possible to configure the target PV at run time.  If this is done, it's
-important to note that the links shown below in selector_more.adl must have the
-attribute "CA", because the record is configured to wait for completion, which
-can't be done with a PP link.
+A general purpose selector, which allows the deployer to attach a menu to a list of actions. For example, to implement control of a motor for which discrete positions have special significance (mirror stripe, sample-wheel angle), one edits selector.substitutions (see iocBoot/iocStdTest) with the names and motor positions, and the target PV (or PVs) to which those positions should be written. The menu selection can be made by a client using ca\_put\_callback().
 
-<P ALIGN=CENTER><IMG SRC="selector.adl.jpg" ><IMG SRC="selector_choice.adl.jpg" ><IMG SRC="selector_more.adl.jpg" ><BR>selector.adl, selector_choice.adl,selector_more.adl
+It's possible to configure the target PV at run time. If this is done, it's important to note that the links shown below in selector\_more.adl must have the attribute "CA", because the record is configured to wait for completion, which can't be done with a PP link.
 
-<p>
-<h2>Other code<hr></h2>
-<h3>doAfterIocInit(char *cmd)</h3>
+![](selector.adl.jpg)![](selector_choice.adl.jpg)![](selector_more.adl.jpg)  
+selector.adl, selector\_choice.adl,selector\_more.adl
 
-<P>Stores the string <tt>cmd</tt> and executes it with <tt>iocshCmd()</tt> after
-iocInit.  This is useful to simplify maintenance of command files that specify
-databases which must be paired with code (such as State Notation Language
-programs) that must be invoked after iocInit. It's tedious and error prone to
-have the commands separated.  doAfterIocInit() allows this:
+Other code
+----------
 
-<blockquote><pre>
-# editSseq - edit any sseq or seq record
-dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
-# Don't forget to run the sequence program, editSseq, below
+### doAfterIocInit(char \*cmd)
 
-...
-unrelated commands
-...
+Stores the string cmd and executes it with iocshCmd() after iocInit. This is useful to simplify maintenance of command files that specify databases which must be paired with code (such as State Notation Language programs) that must be invoked after iocInit. It's tedious and error prone to have the commands separated. doAfterIocInit() allows this:
 
-iocInit
+> ```
+> # editSseq - edit any sseq or seq record
+> dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
+> # Don't forget to run the sequence program, editSseq, below
+> ...
+> unrelated commands
+> ...
+> iocInit
+> ...
+> more unrelated commands
+> ...
+> seq &editSseq, 'P=xxxL:,Q=ES:'
+> ```
 
-...
-more unrelated commands
-...
+to be replaced by this: 
+> ```
+> # editSseq - edit any sseq or seq record
+> dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
+> doAfterIocInit("seq &editSseq, 'P=xxxL:,Q=ES:'")
+> ```
 
-seq &editSseq, 'P=xxxL:,Q=ES:'
-</pre></blockquote>
+### vxCall(char \*funcName \[, char \*arg1, char \*arg2, ...\])
 
-to be replaced by this:
-
-<blockquote><pre>
-# editSseq - edit any sseq or seq record
-dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
-doAfterIocInit("seq &editSseq, 'P=xxxL:,Q=ES:'")
-</pre></blockquote>
-
-<h3>vxCall(char *funcName [, char *arg1, char *arg2, ...])</h3>
-
-<P>Searches the vxWorks symbol table for a function that matches the string
-<tt>funcName</tt>, then executes the function with the given arguments.
-<tt>vxCall</tt> will parse each argument to determine if it represents a 
-number or a string and pass the correct values to the vxWorks function.
-
-</body>
-</html>
+Searches the vxWorks symbol table for a function that matches the string funcName, then executes the function with the given arguments. vxCall will parse each argument to determine if it represents a number or a string and pass the correct values to the vxWorks function.
