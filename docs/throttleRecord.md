@@ -1,3 +1,10 @@
+---
+layout: default
+title: Throttle Record
+nav_order: 5
+---
+
+
 throttle - Record for Throttling Value Changes
 ==============================================
 
