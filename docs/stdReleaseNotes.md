@@ -47,7 +47,7 @@ std Release Notes
  Release 3-5 (Jul. 10, 2018)
 ----------------------------
 
-- When counting is finished, post scaler values with DBE\_VALUE|DBE\_LOG, after updating the time stamp.
+- When counting is finished, post scaler values with DBE\_VALUE\|DBE\_LOG, after updating the time stamp.
 - New iocsh top-level directory, contains scripts with the correct shell commands to add an individual device support to an IOC. For use with the iocshLoad command from EPICS base 3.15, further information can be found at [https://github.com/epics-modules/xxx/wiki/IOC-Shell-Scripts](https://github.com/epics-modules/xxx/wiki/IOC-Shell-Scripts)
 
   Release 3-4-1 (Nov. 4, 2015)
@@ -141,86 +141,88 @@ Release 2-6 (Sept 10, 2008)
 - The sseqRecord (string Sequence, a variant of the seq record in EPICS base) can now be told to abort the sequence it's executing.
 - The scaler record has a new field, COUTP, which is like the COUT field, but is not delayed by a nonzero setting of the DLY field.
 - If the scaler-record DLY field was less that 1, it was not honored. (Thanks to Xuesong Jiao for the fix.)
-- New link-help displays do a better job of describing the effects on link attributes, particularly as they bear on completion detection (i.e., the behavior of a data when written to by ca\_put\_callback). Release 2-5-5 (April, 2007)
-    ---------------------------
+- New link-help displays do a better job of describing the effects on link attributes, particularly as they bear on completion detection (i.e., the behavior of a data when written to by ca\_put\_callback). 
+
+Release 2-5-5 (April, 2007)
+---------------------------
+
+
+- Added scaler16m.db database, and corresponding MEDM displays. These differ from scaler16.db and its display files only in the implementation of end calculations. The new support provides end calcs for all 16 signals.
+- New link-help displays.
+- Added pvHistoryRegister to stdSupport.dbd
+- Added field COUTP, an output link, to the caler record. This is similar to the COUT link, which sends the value of the CNT field to its target whenever CNT changes. COUTP differs from COUT in that it doesn't wait for the delay specified in the DLY field, but sends promptly after CNT changes.
+- Minor change to devScalerAsyn to support change in API for asyn callbacks.
+- Minor change to devEpidFast to support change in API for asyn callbacks.
+- Added ramp\_tweak database and assoc. support
+- Minor change to devScalerAsyn to support change in API for asyn callbacks.
+- Minor change to devEpidFast to support change in API for asyn callbacks.
+- Added ramp\_tweak database and assoc. support
+
+Release 2-5-4 (Dec. 6, 2006)
+----------------------------
+
+
+- Changes to scaler record:
     
     
-    - Added scaler16m.db database, and corresponding MEDM displays. These differ from scaler16.db and its display files only in the implementation of end calculations. The new support provides end calcs for all 16 signals.
-    - New link-help displays.
-    - Added pvHistoryRegister to stdSupport.dbd
-    - Added field COUTP, an output link, to the caler record. This is similar to the COUT link, which sends the value of the CNT field to its target whenever CNT changes. COUTP differs from COUT in that it doesn't wait for the delay specified in the DLY field, but sends promptly after CNT changes.
-    - Minor change to devScalerAsyn to support change in API for asyn callbacks.
-    - Minor change to devEpidFast to support change in API for asyn callbacks.
-    - Added ramp\_tweak database and assoc. support
-    - Minor change to devScalerAsyn to support change in API for asyn callbacks.
-    - Minor change to devEpidFast to support change in API for asyn callbacks.
-    - Added ramp\_tweak database and assoc. support
-    
-    Release 2-5-4 (Dec. 6, 2006)
-    ----------------------------
-    
-    
-    - Changes to scaler record:
-        
-        
-        - PRn and Sn fields are now DBF\_ULONG rather than DBF\_LONG.
-        - No longer hardcode VME\_IO device type in the record logic.
-        - Removed .CARD record field.
-        - Changed interface to device support so that all functions pass precord rather than card, and init\_record passes pointer to device callback structure.
-        - Move callback structures from dpvt to rpvt so record does not access dpvt.
-    - Added asyn device support for scaler record. This is currently used by the SIS3820 device support in mcaApp/SISSrc, but all scaler device support will eventually be changed to use asyn.
-    - Changed stdApp/Db/scaler\*.db so that $(OUT) is a macro parameter, rather than assuming VME\_IO link type.
-    - Deleted CARD field from stdApp/op/adl/scaler\*.adl.
-    - Deleted stdApp/src/femto.dbd, not needed.
-    - Added timer.db (resettable software timer) and related software: timer.req, timer\*.adl
-    
-    Release 2-5-3
-    -------------
-    
-    
-    - epid record still had some FLOAT stuff to convert to DOUBLE. Fixed record and docs.
-    - added userStringSeq10 database, autosave request, and medm display files.
-    - Added support for the Femto current amplifier ([www.femto.de](http://www.femto.de/)).
-    
-    Release 2-5-2
-    -------------
-    
-    
-    - sseqRecord.html rewritten. The old version was a minimal modification of seqRecord.html, from the EPICS Record Reference Manual, and was not very clear.
-    - scaler record: v3.18: Don't post CNT field unless record-support changed its value. Modified debug macro.
-    - devEpidFast.c: changed strtok\_r to epicsStrtok\_r
-    - pvHistory: new software to maintain short-term history of a few PV's in the ioc. Software comprises pvHistory.c (genSub routines), devTimeOfDay.c, pvHistory.db, pvHistory.req (autosave-request file), and pvHistory\*.adl, and relies on autosave to save/restore the value arrays.
-    - softMotor.db: shortened some .DESC field values so they fit.
-    - all\_com\_4.db: new file
-    - softMotorConfig.adl: related-display callups were using sCalcout files for calcout records, because synApps did not contain calcout medm displays. Now the calc module does contain calcout displays, so we use them.
-    
-    Release 2-4
-    -----------
-    
-    
-    - mpf-related stuff replaced by asyn-related stuff
-    - minor scaler-record changes to accommodate Joerger VS series. Existing support for other scaler devices should not require any modifications.
-    - BitBus is no longer supported
-    - ioc-status info now provided by vxStats module
-    - PID support rearranged around the asyn module
-    - SSEQ-record delays now snap to nearest clock period, and show user the delay that will actually be used. Fixed bug that was crashing on Linux and Windows.
-    - [cvs log](cvsLog_R2-4.txt)
-    
-    Release 2-3
-    -----------
-    
-    This is what's left of the synApps std module after the modules autosave, calc, optics, sscan, and vme were split out.
-    
-    This version is intended to build with EPICS base 3.14.5. Differences from std 2.2:
-    
-    
-    - scaler record - device support that used "struct callback" defined in devScaler.h must now replace that with "CALLBACK", and must include epics/base/include/callback.h
-    - sseq record - Now allows user to specify whether or not the record should wait, after putting a link value, for the resulting processing to complete before processing the next link. Some code cleanup. Added seqRecDebug.
-    - topDAC8.adl - Deleted to avoid conflict with dac128V module.
-    - VXstats\_full.adl
-    - pid\_control\_settings.req - added delta time
-    - Added device-independent scaler database and save-restore settings files.
-    - timeString.db - new capability in 3.14.5: stringin record can get time date.
-    
-    Suggestions and Comments to:   
-    [Tim Mooney ](mailto:mooney@aps.anl.gov): (mooney@aps.anl.gov)
+    - PRn and Sn fields are now DBF\_ULONG rather than DBF\_LONG.
+    - No longer hardcode VME\_IO device type in the record logic.
+    - Removed .CARD record field.
+    - Changed interface to device support so that all functions pass precord rather than card, and init\_record passes pointer to device callback structure.
+    - Move callback structures from dpvt to rpvt so record does not access dpvt.
+- Added asyn device support for scaler record. This is currently used by the SIS3820 device support in mcaApp/SISSrc, but all scaler device support will eventually be changed to use asyn.
+- Changed stdApp/Db/scaler\*.db so that $(OUT) is a macro parameter, rather than assuming VME\_IO link type.
+- Deleted CARD field from stdApp/op/adl/scaler\*.adl.
+- Deleted stdApp/src/femto.dbd, not needed.
+- Added timer.db (resettable software timer) and related software: timer.req, timer\*.adl
+
+Release 2-5-3
+-------------
+
+
+- epid record still had some FLOAT stuff to convert to DOUBLE. Fixed record and docs.
+- added userStringSeq10 database, autosave request, and medm display files.
+- Added support for the Femto current amplifier ([www.femto.de](http://www.femto.de/)).
+
+Release 2-5-2
+-------------
+
+
+- sseqRecord.html rewritten. The old version was a minimal modification of seqRecord.html, from the EPICS Record Reference Manual, and was not very clear.
+- scaler record: v3.18: Don't post CNT field unless record-support changed its value. Modified debug macro.
+- devEpidFast.c: changed strtok\_r to epicsStrtok\_r
+- pvHistory: new software to maintain short-term history of a few PV's in the ioc. Software comprises pvHistory.c (genSub routines), devTimeOfDay.c, pvHistory.db, pvHistory.req (autosave-request file), and pvHistory\*.adl, and relies on autosave to save/restore the value arrays.
+- softMotor.db: shortened some .DESC field values so they fit.
+- all\_com\_4.db: new file
+- softMotorConfig.adl: related-display callups were using sCalcout files for calcout records, because synApps did not contain calcout medm displays. Now the calc module does contain calcout displays, so we use them.
+
+Release 2-4
+-----------
+
+
+- mpf-related stuff replaced by asyn-related stuff
+- minor scaler-record changes to accommodate Joerger VS series. Existing support for other scaler devices should not require any modifications.
+- BitBus is no longer supported
+- ioc-status info now provided by vxStats module
+- PID support rearranged around the asyn module
+- SSEQ-record delays now snap to nearest clock period, and show user the delay that will actually be used. Fixed bug that was crashing on Linux and Windows.
+- [cvs log](cvsLog_R2-4.txt)
+
+Release 2-3
+-----------
+
+This is what's left of the synApps std module after the modules autosave, calc, optics, sscan, and vme were split out.
+
+This version is intended to build with EPICS base 3.14.5. Differences from std 2.2:
+
+
+- scaler record - device support that used "struct callback" defined in devScaler.h must now replace that with "CALLBACK", and must include epics/base/include/callback.h
+- sseq record - Now allows user to specify whether or not the record should wait, after putting a link value, for the resulting processing to complete before processing the next link. Some code cleanup. Added seqRecDebug.
+- topDAC8.adl - Deleted to avoid conflict with dac128V module.
+- VXstats\_full.adl
+- pid\_control\_settings.req - added delta time
+- Added device-independent scaler database and save-restore settings files.
+- timeString.db - new capability in 3.14.5: stringin record can get time date.
+
+Suggestions and Comments to:   
+[Tim Mooney ](mailto:mooney@aps.anl.gov): (mooney@aps.anl.gov)
