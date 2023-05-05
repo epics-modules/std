@@ -71,12 +71,15 @@ The meaning of the INP field depends upon what device support is used:
 
 1. "Soft Channel" device support. The input link field (INP) is used to obtain the value of the controlled process variable, i.e., the value read into the CVAL field. The link must be a database link. If it is not a database link a MAJOR alarm is triggered when the record is processed. The INP field *can* be modified at run-time.
 1. "Fast Epid" device support. The input link field (INP) is used to specify the location of the "Fast Epid" server which actually performs the feedback. The fastPIDServer server is configured in a startup-script file to specify which Ip330 ADC channel is used as the input from which the value is read into the CVAL field. The link must be a VME link, and *cannot* be modified at run-time.
+
 | Field | Summary | Type | DCT | Initial | Access | Modify | Rec Proc Monitor | PP |
 |---|---|---|---|---|---|---|---|---|
 | INP | Controlled Value Location (an input link) | INLINK | Yes | 0 | Yes | Yes | N/A | No |
 | CVAL | Value of controlled variable | DOUBLE | No | 0 | Yes | No | Yes | No |
 
-If "Async Soft Channel" device support is selected, the following two fields are used to support an asynchronous readback device. The device support is expected to accomplish this by writing the value of the TVAL field to the PV specified by the TRIG link field, using dbCaPutLinkCallback(). This is expected to cause the readback device to process. EPICS will send a callback when that processing completes, at which time device support will read the readback value just as normal "Soft Channel" support would. | Field | Summary | Type | DCT | Initial | Access | Modify | Rec Proc Monitor | PP |
+If "Async Soft Channel" device support is selected, the following two fields are used to support an asynchronous readback device. The device support is expected to accomplish this by writing the value of the TVAL field to the PV specified by the TRIG link field, using dbCaPutLinkCallback(). This is expected to cause the readback device to process. EPICS will send a callback when that processing completes, at which time device support will read the readback value just as normal "Soft Channel" support would. 
+
+| Field | Summary | Type | DCT | Initial | Access | Modify | Rec Proc Monitor | PP |
 |---|---|---|---|---|---|---|---|---|
 | TRIG | Readback Trigger (an output link) | OUTLINK | Yes | 0 | Yes | Yes | N/A | No |
 | TVAL | Value written to TRIG link | DOUBLE | Yes | 0 | Yes | Yes | N/A | No |
