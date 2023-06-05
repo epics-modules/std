@@ -8,10 +8,12 @@ nav_order: 3
 std Release Notes
 =================
 
- Release 3-6-4 (Sept. XXX, 2021)
+ Release 3-6-4 (Jun. 5, 2023)
 --------------------------------
 
 - Fix ODEL logic in devEpidSoftCallback.c. Same fix make for devEpidSoft.c in R3-6-1.
+- Fix the display of hours and minutes in countDownTimer
+- Documentation updated to github pages
  
  Release 3-6-3 (Jun. 10, 2021)
 ------------------------------
