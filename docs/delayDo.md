@@ -21,14 +21,14 @@ In the simplest mode of operating, delayDo behaves identically to a similar data
 
 | __Record Name__ | __Record Type__ | __Purpose__ |
 |---|---|---|
-| \$(P)\$(R):activeCalc | [calcout](https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_Calcout) | delayDo.st monitors activeCalc and starts the delay timer when activeCalc's output transitions to zero. |
-| \$(P)\$(R):doSeq | [sseq](https://htmlpreview.github.io/?https://raw.githubusercontent.com/epics-modules/calc/master/documentation/sseqRecord.html) | doSeq is the output of the delayDo support. It is processed by delayDo.st when the delay timer expires. |
-| \$(P)\$(R):standbyCalc | [calcout](https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_Calcout) | delayDo.st monitors standbyCalc and enters the standby state when standbyCalc's output transitions to a non-zero value. |
-| \$(P)\$(R):enable | bo | Allows delayDo.st to be put into a disabled state. |
-| \$(P)\$(R):delay | ao | The amount of time in seconds to wait from transition out of the active state until the doSeq is processed. |
-| \$(P)\$(R):delayCalc | [calcout](https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_Calcout) | (OPTIONAL) Allows the calculation of the delay period if the delay depends on other PVs |
-| \$(P)\$(R):state | stringout | Contains the current state of delayDo.st |
-| \$(P)\$(R):debug | longout | Allows enabling debug messages on the IOC console by setting to a non-zero value (higher numbers generate more messages) |
+| `$(P)$(R):activeCalc` | [calcout](https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_Calcout) | delayDo.st monitors activeCalc and starts the delay timer when activeCalc's output transitions to zero. |
+| `$(P)$(R):doSeq` | [sseq](https://htmlpreview.github.io/?https://raw.githubusercontent.com/epics-modules/calc/master/documentation/sseqRecord.html) | doSeq is the output of the delayDo support. It is processed by delayDo.st when the delay timer expires. |
+| `$(P)$(R):standbyCalc` | [calcout](https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_Calcout) | delayDo.st monitors standbyCalc and enters the standby state when standbyCalc's output transitions to a non-zero value. |
+| `$(P)$(R):enable` | bo | Allows delayDo.st to be put into a disabled state. |
+| `$(P)$(R):delay` | ao | The amount of time in seconds to wait from transition out of the active state until the doSeq is processed. |
+| `$(P)$(R):delayCalc` | [calcout](https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_Calcout) | (OPTIONAL) Allows the calculation of the delay period if the delay depends on other PVs |
+| `$(P)$(R):state` | stringout | Contains the current state of delayDo.st |
+| `$(P)$(R):debug` | longout | Allows enabling debug messages on the IOC console by setting to a non-zero value (higher numbers generate more messages) |
 
 ### Notes about behavior of delayDo.st:
 
