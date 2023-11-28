@@ -5,21 +5,18 @@ nav_order: 6
 ---
 
 
-delayDo
-=======
+# delayDo
 
 For situations when something needs to be done after an intelligent delay. Please email any comments and bug reports to [Kevin Peterson](mailto:kmpeters_at_anl.gov)
 
-Motivation
+## Motivation
 
------------------------
+Many records can add a delay before writing to their output, but that is often not sophisticated enough for real applications. There are times when the delay timer needs to be reset or temporarily disabled. The delayDo support was written to provide this functionality. 
 
-Many records can add a delay before writing to their output, but that is often not sophisticated enough for real applications. There are times when the delay timer needs to be reset or temporarily disabled. The delayDo support was written to provide this functionality. Overview
-
-
----------------------
+## Overview
 
 In the simplest mode of operating, delayDo behaves identically to a similar database with a fixed delay. The delayDo support, however, is highly customizable.  
+
 ### Records provided by delayDo.db:
 
 | __Record Name__ | __Record Type__ | __Purpose__ |
@@ -44,10 +41,8 @@ In the simplest mode of operating, delayDo behaves identically to a similar data
 This is the MEDM screen for delayDo:  
   
 ![delayDo MEDM screen](delayDo.png)  
-Use cases
 
-
-----------------------
+## Use cases
 
 ### 1. Disabling in-vacuum motors to prevent overheating
 
