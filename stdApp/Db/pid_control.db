@@ -6,15 +6,15 @@
 record(epid, "$(P)$(PID)") {
   field(INP, "$(INP)")
   field(OUTL, "$(OUT) PP NMS")
-  field(SCAN, "$(SCAN)")
-  field(KP, "$(KP)")
-  field(KI, "$(KI)")
-  field(KD, "$(KD)")
-  field(LOPR, "$(LOPR)")
-  field(HOPR, "$(HOPR)")
-  field(DRVL, "$(DRVL)")
-  field(DRVH, "$(DRVH)")
-  field(PREC, "$(PREC)")
+  field(SCAN, "$(SCAN=.1 second)")
+  field(KP, "$(KP=.1)")
+  field(KI, "$(KI=1)")
+  field(KD, "$(KD=0)")
+  field(LOPR, "$(LOPR=0)")
+  field(HOPR, "$(HOPR=10)")
+  field(DRVL, "$(DRVL=0)")
+  field(DRVH, "$(DRVH=10)")
+  field(PREC, "$(PREC=3)")
   field(STPL, "0")
   field(FLNK, "$(P)$(PID)_limits.VAL PP NMS")
 }
@@ -22,21 +22,21 @@ record(epid, "$(P)$(PID)") {
 record(transform, "$(P)$(PID)_limits") {
   field(DESC, "PID limits")
   field(CMTA, "Low input")
-  field(INPA, "$(DRVL)")
+  field(INPA, "$(DRVL=0)")
   field(CMTB, "High limit")
-  field(INPB, "$(DRVH)")
+  field(INPB, "$(DRVH=10)")
   field(CMTO, "Low output")
   field(CLCO, "a")
   field(OUTO, "$(P)$(PID).DRVL NPP NMS")
   field(CMTP, "High output")
   field(CLCP, "b")
   field(OUTP, "$(P)$(PID).DRVH NPP NMS")
-  field(PREC, "$(PREC)")
+  field(PREC, "$(PREC=3)")
 }
 
 record(transform, "$(P)$(PID)_incalc") {
   field(DESC, "PID input calc")
-  field(PREC, "$(PREC)")
+  field(PREC, "$(PREC=3)")
 }
 
 # These records are for tweaking the output (if the feedback is off)
