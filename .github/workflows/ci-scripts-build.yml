@@ -20,8 +20,8 @@ on:
 
 env:
   SETUP_PATH: .github/workflows:.ci
-  # For the sequencer on Linux/Windows/MacOS
-  APT: re2c
+  # For sequencer and asyn
+  APT: re2c libtirpc-dev libreadline-dev
   CHOCO: re2c
   BREW: re2c
 
@@ -44,44 +44,48 @@ jobs:
       matrix:
         # Job names also name artifacts, character limitations apply
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             cmp: gcc
             configuration: default
-            set: stable_7_0
+            set: linux-stable
+            base: "7.0"
             name: "Linux stable 7.0"
-            
-          - os: ubuntu-20.04
+
+          - os: ubuntu-24.04
             cmp: gcc
             configuration: default
-            set: stable_3_15
+            set: linux-stable
+            base: "3.15"
             name: "Linux stable 3.15"
             
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             cmp: gcc
             configuration: default
-            set: master_7_0
+            set: linux-master
+            base: "7.0"
             name: "Linux master 7.0"
-            
-          - os: ubuntu-20.04
+
+          - os: ubuntu-24.04
             cmp: gcc
             configuration: default
-            set: master_3_15
+            set: linux-master
+            base: "3.15"
             name: "Linux master 3.15"
             
           - os: macos-latest
             cmp: clang
             configuration: default
-            set: master_7_0
+            set: macos
             name: "MacOS master 7.0"
 
           - os: windows-2022
             cmp: vs2022
             configuration: static
-            set: master_7_0
+            set: windows
             name: "Windows master 7.0"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Automatic core dumper analysis
@@ -105,7 +109,7 @@ jobs:
     - name: Run main module tests
       run: python .ci/cue.py -T 15M test
     - name: Upload tapfiles Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: tapfiles ${{ matrix.name }}
         path: '**/O.*/*.tap'
