@@ -126,7 +126,7 @@ record(bi, "$(P)$(S)Shtr:BlepsShtrPermit") {
   field(DESC, "BLEPS shutter permit")
   field(SCAN, "Passive")
   field(DTYP, "Soft Channel")
-  field(INP, "PA:$(BL):IFEEPS_FEPERM CP")
+  field(INP, "S$(BL)-FEEPS:FES_PermitM CP")
   field(ZNAM, "NO Permit")
   field(ONAM, "Permit OK")
 }
@@ -136,7 +136,7 @@ record(bi, "$(P)$(S)Shtr:AcisShtrPermit") {
   field(DESC, "BLEPS shutter permit")
   field(SCAN, "Passive")
   field(DTYP, "Soft Channel")
-  field(INP, "PA:$(BL):IACIS_FEPERM CP")
+  field(INP, "S$(BL)-PSS:FES:ACISPermitM CP")
   field(ZNAM, "NO Permit")
   field(ONAM, "Permit OK")
 }
@@ -145,7 +145,7 @@ record(bi, "$(P)$(S)Shtr:Status") {
   field(DESC, "Shutter status from PSS")
   field(SCAN, "Passive")
   field(DTYP, "Soft Channel")
-  field(INP, "PA:$(BL):$(S)_SHTRS_CLOSED CP")
+  field(INP, "S$(BL)-PSS:FES:ClosedM CP")
   field(ZNAM, "Open")
   field(ONAM, "Closed")
 }
