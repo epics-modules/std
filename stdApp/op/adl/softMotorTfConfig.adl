@@ -1,0 +1,622 @@
+
+file {
+	name="softMotorTfConfig.adl"
+	version=030111
+}
+display {
+	object {
+		x=787
+		y=522
+		width=325
+		height=181
+	}
+	clr=5
+	bclr=2
+	cmap=""
+	gridSpacing=5
+	gridOn=1
+	snapToGrid=1
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=0
+		y=0
+		width=539
+		height=30
+	}
+	"basic attribute" {
+		clr=54
+	}
+}
+text {
+	object {
+		x=26
+		y=114
+		width=80
+		height=26
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(SM).DMOV"
+	}
+	textix="Moving"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=27
+		y=115
+		width=80
+		height=26
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(SM).DMOV"
+	}
+	textix="Moving"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=25
+		y=113
+		width=80
+		height=26
+	}
+	"basic attribute" {
+		clr=50
+		fill="outline"
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)$(SM).DMOV"
+	}
+	textix="Moving"
+	align="horiz. centered"
+}
+"related display" {
+	object {
+		x=175
+		y=70
+		width=100
+		height=20
+	}
+	display[0] {
+		label="Transform"
+		name="yyTransform.adl"
+		args="P=$(P),T=$(SM)DriveTf"
+	}
+	clr=0
+	bclr=16
+	label="-Drive"
+}
+"related display" {
+	object {
+		x=175
+		y=40
+		width=100
+		height=20
+	}
+	display[0] {
+		label="Calc"
+		name="yyCalcoutRecord.adl"
+		args="P=$(P), C=$(SM)CalcRdbk"
+	}
+	clr=0
+	bclr=16
+	label="-Readback"
+}
+"text entry" {
+	object {
+		x=5
+		y=69
+		width=120
+		height=20
+	}
+	control {
+		chan="$(P)$(SM).DVAL"
+		clr=14
+		bclr=50
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=5
+		y=5
+		width=200
+		height=20
+	}
+	monitor {
+		chan="$(P)$(SM).DESC"
+		clr=0
+		bclr=54
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=15
+		y=45
+		width=100
+		height=20
+	}
+	monitor {
+		chan="$(P)$(SM).DRBV"
+		clr=54
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+polyline {
+	object {
+		x=276
+		y=81
+		width=26
+		height=2
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(277,82)
+		(301,82)
+	}
+}
+polygon {
+	object {
+		x=300
+		y=77
+		width=15
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(300,77)
+		(300,87)
+		(315,82)
+		(300,77)
+	}
+}
+polygon {
+	object {
+		x=277
+		y=47
+		width=15
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(292,47)
+		(292,57)
+		(277,52)
+		(292,47)
+	}
+}
+polyline {
+	object {
+		x=291
+		y=51
+		width=23
+		height=2
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(313,52)
+		(292,52)
+	}
+}
+polygon {
+	object {
+		x=136
+		y=45
+		width=15
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(151,45)
+		(151,55)
+		(136,50)
+		(151,45)
+	}
+}
+polyline {
+	object {
+		x=150
+		y=49
+		width=23
+		height=2
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(172,50)
+		(151,50)
+	}
+}
+polygon {
+	object {
+		x=136
+		y=119
+		width=15
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(151,119)
+		(151,129)
+		(136,124)
+		(151,119)
+	}
+}
+polyline {
+	object {
+		x=146
+		y=123
+		width=23
+		height=2
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(168,124)
+		(147,124)
+	}
+}
+"message button" {
+	object {
+		x=5
+		y=89
+		width=25
+		height=22
+	}
+	control {
+		chan="$(P)$(SM).TWR"
+		clr=0
+		bclr=53
+	}
+	label="<"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=100
+		y=89
+		width=25
+		height=22
+	}
+	control {
+		chan="$(P)$(SM).TWF"
+		clr=0
+		bclr=53
+	}
+	label=">"
+	press_msg="1"
+}
+"text entry" {
+	object {
+		x=30
+		y=89
+		width=70
+		height=20
+	}
+	control {
+		chan="$(P)$(SM).TWV"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+polygon {
+	object {
+		x=277
+		y=120
+		width=15
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(292,120)
+		(292,130)
+		(277,125)
+		(292,120)
+	}
+}
+polyline {
+	object {
+		x=291
+		y=124
+		width=24
+		height=2
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(314,125)
+		(292,125)
+	}
+}
+"related display" {
+	object {
+		x=10
+		y=150
+		width=40
+		height=20
+	}
+	display[0] {
+		label="Small"
+		name="motorx.adl"
+		args="P=$(P),M=$(SM)"
+	}
+	display[1] {
+		label="Medium"
+		name="motorx_more.adl"
+		args="P=$(P),M=$(SM)"
+	}
+	display[2] {
+		label="All"
+		name="motorx_all.adl"
+		args="P=$(P),M=$(SM)"
+	}
+	clr=0
+	bclr=17
+	label="-More"
+}
+"related display" {
+	object {
+		x=175
+		y=115
+		width=100
+		height=20
+	}
+	display[0] {
+		label="CalcMove"
+		name="yyCalcoutRecord.adl"
+		args="P=$(P),C=$(SM)CalcMove"
+	}
+	clr=0
+	bclr=16
+	label="-Moving"
+}
+"message button" {
+	object {
+		x=75
+		y=150
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)$(SM)StopTf.PROC"
+		clr=30
+		bclr=20
+	}
+	label="Stop"
+	press_msg="1"
+}
+"related display" {
+	object {
+		x=175
+		y=150
+		width=100
+		height=20
+	}
+	display[0] {
+		label="Stop tf"
+		name="yyTransform.adl"
+		args="P=$(P),T=$(SM)StopTf"
+	}
+	clr=0
+	bclr=16
+	label="-Stop"
+}
+polyline {
+	object {
+		x=135
+		y=80
+		width=26
+		height=2
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(136,81)
+		(160,81)
+	}
+}
+polygon {
+	object {
+		x=156
+		y=76
+		width=15
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(156,76)
+		(156,86)
+		(171,81)
+		(156,76)
+	}
+}
+polyline {
+	object {
+		x=135
+		y=159
+		width=26
+		height=2
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(136,160)
+		(160,160)
+	}
+}
+polygon {
+	object {
+		x=156
+		y=155
+		width=15
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(156,155)
+		(156,165)
+		(171,160)
+		(156,155)
+	}
+}
+polyline {
+	object {
+		x=276
+		y=160
+		width=26
+		height=2
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(277,161)
+		(301,161)
+	}
+}
+polygon {
+	object {
+		x=300
+		y=156
+		width=15
+		height=10
+	}
+	"basic attribute" {
+		clr=20
+		width=2
+	}
+	points {
+		(300,156)
+		(300,166)
+		(315,161)
+		(300,156)
+	}
+}
