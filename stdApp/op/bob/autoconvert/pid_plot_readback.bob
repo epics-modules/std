@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--Saved on 2026-02-20 16:08:18 by mwyman-->
 <display version="2.0.0">
   <name>pid_plot_readback</name>
-  <x>476</x>
-  <y>530</y>
+  <x>596</x>
+  <y>273</y>
   <width>600</width>
   <height>480</height>
   <background_color>
@@ -11,7 +12,7 @@
   </background_color>
   <grid_visible>false</grid_visible>
   <grid_step_x>5</grid_step_x>
-  <widget type="stripchart" version="2.0.0">
+  <widget type="stripchart" version="2.1.0">
     <name>strip chart #6</name>
     <x>1</x>
     <y>1</y>
@@ -23,7 +24,7 @@
     </background_color>
     <title>$(P)$(PID) setpoint and readback</title>
     <show_toolbar>false</show_toolbar>
-    <time_range>30 second</time_range>
+    <start>30 second</start>
     <y_axes>
       <y_axis>
         <title></title>
@@ -33,6 +34,10 @@
         <maximum>100.0</maximum>
         <show_grid>false</show_grid>
         <visible>true</visible>
+        <color>
+          <color name="Text" red="0" green="0" blue="0">
+          </color>
+        </color>
       </y_axis>
     </y_axes>
     <traces>
@@ -67,7 +72,7 @@
     </traces>
   </widget>
   <widget type="textentry" version="3.0.0">
-    <name>text entry #11</name>
+    <name>text entry #13</name>
     <pv_name>$(P)$(PID).HOPR</pv_name>
     <x>191</x>
     <y>418</y>
@@ -84,7 +89,7 @@
     <border_alarm_sensitive>false</border_alarm_sensitive>
   </widget>
   <widget type="textentry" version="3.0.0">
-    <name>text entry #15</name>
+    <name>text entry #17</name>
     <pv_name>$(P)$(PID).LOPR</pv_name>
     <x>191</x>
     <y>443</y>
@@ -101,7 +106,7 @@
     <border_alarm_sensitive>false</border_alarm_sensitive>
   </widget>
   <widget type="label" version="2.0.0">
-    <name>text #19</name>
+    <name>text #21</name>
     <text>Display miniumum</text>
     <x>21</x>
     <y>443</y>
@@ -113,42 +118,11 @@
     <auto_size>true</auto_size>
   </widget>
   <widget type="label" version="2.0.0">
-    <name>text #22</name>
+    <name>text #24</name>
     <text>Display maxiumum</text>
     <x>21</x>
     <y>418</y>
     <width>160</width>
-    <font>
-      <font family="Liberation Sans" style="REGULAR" size="16.0">
-      </font>
-    </font>
-    <auto_size>true</auto_size>
-  </widget>
-  <widget type="action_button" version="3.0.0">
-    <name>related display #25</name>
-    <actions>
-      <action type="open_display">
-        <file>pid_plot_readback.opi</file>
-        <target>replace</target>
-        <description>Plot</description>
-      </action>
-    </actions>
-    <text></text>
-    <x>313</x>
-    <y>443</y>
-    <width>103</width>
-    <height>20</height>
-    <background_color>
-      <color red="187" green="187" blue="187">
-      </color>
-    </background_color>
-  </widget>
-  <widget type="label" version="2.0.0">
-    <name>text #28</name>
-    <text>Replot</text>
-    <x>334</x>
-    <y>417</y>
-    <width>60</width>
     <font>
       <font family="Liberation Sans" style="REGULAR" size="16.0">
       </font>
