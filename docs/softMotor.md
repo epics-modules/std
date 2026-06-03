@@ -17,20 +17,25 @@ retries, tweaking, and integration with the scan system.
 
 | | `softMotor.db` | `softMotorTf.db` |
 |---|---|---|
-| **Link configuration** | Dynamic at runtime | Static at load time (or via autosave) |
+| **Link setup** | Automated (link parsers assemble full link strings from bare PV names) | Manual (user writes full link strings including attributes) |
+| **Post-iocInit init** | Self-initializing (dfanout fires once after iocInit) | None (relies on autosave or manual `caput`) |
 | **Drive/stop mechanism** | `calcout` with 1 channel | `transform` with 16 channels (A-P) |
 | **Readback mechanism** | `calcout` with 12 channels | `calcout` with 12 channels |
 | **Coordinate transforms** | Simple (single `CALC` expression) | Complex (16-channel transform) |
 | **Multi-actuator fan-out** | No (single output link) | Yes (up to 16 output links) |
-| **Self-initializing** | Yes (dfanout fires after iocInit) | No (links set via autosave or load-time) |
-| **Record count** | 14 | 7 |
+
+Both variants configure their target PVs at runtime (not at `dbLoadRecords`
+time). The difference is how: `softMotor.db` has a convenience layer that
+assembles the link strings for you, while `softMotorTf.db` requires you to
+write complete link strings (including `PP`, `CP`, `MS` attributes) directly
+into the transform/calcout fields.
 
 ### When to use each
 
 - **`softMotor.db`** -- Use when you need a simple 1:1 mapping between the soft
-  motor and a single real PV, and you want to configure the target PV names at
-  runtime by typing them into PV fields. Good for ad-hoc setups where the
-  target may change.
+  motor and a single real PV, and you want the convenience of writing just the
+  PV name (without link attributes) into a single field. Good for ad-hoc setups
+  where the target may change frequently.
 
 - **`softMotorTf.db`** -- Use when you need coordinate transformations (unit
   conversion, linear scaling, coupled axes) or need to fan out a single soft
@@ -102,25 +107,22 @@ transforms (default is `A` -- identity/passthrough).
 
 ### Example
 
+Load the database:
+
 ```
 dbLoadRecords("$(STD)/stdApp/Db/softMotor.db", "P=xxx:,SM=SM1")
 ```
 
-Then at runtime (or via autosave):
+Then configure the target PVs at runtime (via the display screen, or autosave
+will restore them on reboot). To connect soft motor `xxx:SM1` to real motor
+`xxx:m1`:
 
-```
-caput xxx:SM1CalcFrwdOutput.AA "xxx:m1.VAL"
-caput xxx:SM1CalcRevsInput.AA  "xxx:m1.RBV"
-caput xxx:SM1CalcMoveInput.AA  "xxx:m1.DMOV"
-caput xxx:SM1CalcStopOutput.AA "xxx:m1.STOP"
-```
-
-### Autosave
-
-Use `softMotor_settings.req` with macros `P=$(P)`, `SM=$(SM)`. Saves all motor
-fields, all calcout link/expression fields, the link-parser `AA` values, and
-the `MoveLogic` setting.
-
+| Field | Value |
+|-------|-------|
+| `xxx:SM1CalcFrwdOutput.AA` | `xxx:m1.VAL` |
+| `xxx:SM1CalcRevsInput.AA` | `xxx:m1.RBV` |
+| `xxx:SM1CalcMoveInput.AA` | `xxx:m1.DMOV` |
+| `xxx:SM1CalcStopOutput.AA` | `xxx:m1.STOP` |
 
 ## softMotorTf.db -- Transform Soft Motor
 
@@ -156,64 +158,51 @@ User command --> motor $(P)$(SM)
 
 ### Configuration
 
-Configure the transform and calcout records' expressions and links directly.
-The motor's commanded position arrives in `DriveTf` channel A.
+Configure the transform and calcout records' expressions and links directly
+(via the display screen or autosave). The motor's commanded position arrives in
+`DriveTf` channel A.
 
-**Example: Simple 1:1 mapping**
+**Example: Simple 1:1 mapping** -- connect soft motor `xxx:SM1` to real motor
+`xxx:m1`:
 
-```
-# Drive: pass position to real motor
-caput xxx:SM1DriveTf.CLCA  "a"
-caput xxx:SM1DriveTf.OUTA  "xxx:m1.VAL PP MS"
+| Record | Field | Value |
+|--------|-------|-------|
+| `xxx:SM1DriveTf` | CLCA | `a` |
+| | OUTA | `xxx:m1.VAL PP MS` |
+| `xxx:SM1CalcRdbk` | INPA | `xxx:m1.RBV CP MS` |
+| | CALC | `A` |
+| `xxx:SM1CalcMove` | INPA | `xxx:m1.DMOV CP MS` |
+| | CALC | `!A` |
+| `xxx:SM1StopTf` | CLCA | `1` |
+| | OUTA | `xxx:m1.STOP PP MS` |
 
-# Readback: read from real motor
-caput xxx:SM1CalcRdbk.INPA "xxx:m1.RBV CP MS"
-caput xxx:SM1CalcRdbk.CALC "A"
+**Example: Unit conversion (mm to microns)** -- soft motor in mm driving a
+piezo controller in microns:
 
-# Done-moving: invert DMOV
-caput xxx:SM1CalcMove.INPA "xxx:m1.DMOV CP MS"
-caput xxx:SM1CalcMove.CALC "!A"
+| Record | Field | Value |
+|--------|-------|-------|
+| `xxx:SM1DriveTf` | CLCA | `a*1000` |
+| | OUTA | `xxx:piezo.VAL PP MS` |
+| `xxx:SM1CalcRdbk` | INPA | `xxx:piezo.RBV CP MS` |
+| | CALC | `A/1000` |
 
-# Stop: send stop to real motor
-caput xxx:SM1StopTf.CLCA   "1"
-caput xxx:SM1StopTf.OUTA   "xxx:m1.STOP PP MS"
-```
+**Example: Coupled two-motor drive** -- a single soft motor driving two real
+motors using a gap/center transform with an offset read from another PV:
 
-**Example: Unit conversion (mm to microns)**
+| Record | Field | Value |
+|--------|-------|-------|
+| `xxx:SM1DriveTf` | INPB | `xxx:gapOffset PP MS` |
+| | CLCA | `a+b` |
+| | OUTA | `xxx:m1.VAL PP MS` |
+| | CLCB | `b` |
+| | CLCC | `a-b` |
+| | OUTC | `xxx:m2.VAL PP MS` |
 
-```
-caput xxx:SM1DriveTf.CLCA  "a*1000"
-caput xxx:SM1DriveTf.OUTA  "xxx:piezo.VAL PP MS"
-caput xxx:SM1CalcRdbk.INPA "xxx:piezo.RBV CP MS"
-caput xxx:SM1CalcRdbk.CALC "A/1000"
-```
-
-**Example: Coupled two-motor drive**
-
-```
-# Drive both motors with a gap/center transform
-caput xxx:SM1DriveTf.CLCA  "a+b"
-caput xxx:SM1DriveTf.OUTA  "xxx:m1.VAL PP MS"
-caput xxx:SM1DriveTf.INPB  "xxx:gapOffset PP MS"
-caput xxx:SM1DriveTf.CLCB  "b"
-caput xxx:SM1DriveTf.CLCC  "a-b"
-caput xxx:SM1DriveTf.OUTC  "xxx:m2.VAL PP MS"
-```
-
-### Example
+### Loading
 
 ```
 dbLoadRecords("$(STD)/stdApp/Db/softMotorTf.db", "P=xxx:,SM=SM1,DESC=Soft Axis 1")
 ```
-
-### Autosave
-
-Use `softMotorTf_settings.req` with macros `P=$(P)`, `SM=$(SM)`. Saves all
-motor fields plus the complete state of both transform records (all 16 channels
-of expressions, links, and comments) and both calcout records. References the
-shared `basic_motor_settings.req` file which must be in the autosave search
-path.
-
 
 ## Motor Record Defaults
 

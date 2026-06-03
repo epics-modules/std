@@ -60,36 +60,10 @@ autoShutter.adl P=xxx:,S=A,T1=1,T2=2,A=1
 | `A` | AlarmClock number used for the lease function |
 
 
-## Release Notes
+## Notes
 
-### Version 1.1
-
-Initial release, installed in synApps v5.2.
-
-### Version 1.2 (synApps v5.2.1)
-
-- Redefined `autoShutter.vdb` `BL` macro argument to include the `ID` or `BM`
-  identifier. `BL` is now defined as a four-character beamline ID:
-  `<Sector#><ID/BM>` (example: `08ID`). See comments in
-  `xxx/iocBoot/iocvxWorks/autoShutter.substitutions`.
-
-- Removed `Shtr:Trigger` OUT link to the remoteShutter Open PV. The OUT link
-  should be programmed at run time to allow for more flexibility in how the
-  shutter is opened. The OUT field is now in the backup/restore request file.
-  The OUT link is calculated by `shtr:CalcTrigOutput` to ensure that the PP
-  attribute is on the PV link to the shutter Open record. The Trigger OUT link
-  is checked by `Shtr:TrigOutOK` for a valid PV. The `Shtr:Arm` calc now
-  includes the TrigOutOK check.
-
-- Renamed old `Shtr:Open` PV to `Shtr:Active` and changed the ZNAM and ONAM to
-  "NO" and "YES".
-
-- Changed `autoShutter.vdb` `ALM` macro argument to `A` to be consistent with
-  MEDM argument list.
-
-- MEDM `autoShutter.adl`:
-    - Shutter Control "Edit" and status fields added to reflect the changes to
-      `Shtr:Trigger.OUT` and `Shtr:Arm`.
-    - Changed "Last Open Timer" label to "Open Notify Timer".
-    - Added "Shutter Control" section to allow programming of "Remote Shutter
-      Control" PV. Red/Green status indicates if PV has been programmed or not.
+- The `BL` macro is a four-character beamline ID in the format
+  `<Sector#><ID/BM>` (e.g., `08ID`).
+- The `Shtr:Trigger` OUT link is configured at run time (not hardcoded in the
+  database) to allow flexibility in how the shutter is opened. The OUT field is
+  saved/restored via autosave.

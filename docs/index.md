@@ -105,8 +105,8 @@ Two soft motor databases plus motor zeroing utilities. See the
 
 | Database | Description |
 |----------|-------------|
-| `softMotor.db` | Soft motor with dynamic runtime link configuration |
-| `softMotorTf.db` | Soft motor with transform records for coordinate transforms |
+| `softMotor.db` | Soft motor with automated link assembly from PV names |
+| `softMotorTf.db` | Soft motor with transform records for coordinate transforms and multi-actuator fan-out |
 | `zero.db` | Zeros a motor (Set mode, write 0, Use mode) |
 | `zero2.db` | Zeros two motors |
 | `all_com_*.db` | *Deprecated.* Use `motorUtil.db` from the motor module instead |
