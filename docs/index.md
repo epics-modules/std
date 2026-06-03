@@ -16,7 +16,7 @@ and utility code for EPICS IOC applications.
 
 ### Quick Links
 
-| Record Reference | Guides | Database Reference |
+| [Record Support](records.md) | Guides | Database Reference |
 |---|---|---|
 | [EPID Record](epidRecord.md) | [PID Feedback](pidFeedback.md) | [delayDo](delayDo.md) |
 | [Throttle Record](throttleRecord.md) | [Soft Motor](softMotor.md) | [Femto Amplifier](femto.md) |
@@ -50,18 +50,12 @@ in std use record types from these modules:
 
 ## Records
 
-The std module provides three custom record types:
+The std module provides three custom record types. See the
+**[Record Support](records.md)** page for an overview, or jump directly to:
 
-- **[EPID Record](epidRecord.md)** -- Enhanced PID feedback record with
-  separation of record and device support, absolute output, integral term
-  limiting, and drive limits.
-
-- **[Throttle Record](throttleRecord.md)** -- Throttles the rate of change of a
-  value before forwarding it to a target PV, with optional drive limits and
-  synchronization.
-
-- **[Timestamp Record](timestampRecord.md)** -- Captures the current time and
-  formats it as a string in one of eleven selectable formats.
+- **[EPID Record](epidRecord.md)** -- Enhanced PID feedback record
+- **[Throttle Record](throttleRecord.md)** -- Rate-of-change throttling record
+- **[Timestamp Record](timestampRecord.md)** -- Formatted time string record
 
 
 ## Databases

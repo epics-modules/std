@@ -1,7 +1,8 @@
 ---
 layout: default
 title: EPID Record
-nav_order: 3
+parent: Record Support
+nav_order: 1
 ---
 
 

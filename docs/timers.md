@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Timers & Scheduling
-nav_order: 9
+nav_order: 7
 ---
 
 

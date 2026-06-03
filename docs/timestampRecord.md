@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Timestamp Record
-nav_order: 6
+parent: Record Support
+nav_order: 3
 ---
 
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Auto Shutter
-nav_order: 10
+nav_order: 8
 ---
 
 

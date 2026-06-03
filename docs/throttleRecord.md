@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Throttle Record
-nav_order: 4
+parent: Record Support
+nav_order: 2
 ---
 
 
