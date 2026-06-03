@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Throttle Record
-nav_order: 5
+nav_order: 4
 ---
 
 

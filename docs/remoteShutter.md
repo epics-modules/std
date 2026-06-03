@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Remote Shutter
-nav_order: 12
+nav_order: 11
 ---
 
 
