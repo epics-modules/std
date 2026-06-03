@@ -5,181 +5,246 @@ nav_order: 2
 ---
 
 
-The synApps std module
-======================
+# The synApps std Module
 
-The std module publishes the following software items for use by ioc applications : 
+The std module is part of the [synApps](https://epics.anl.gov/bcda/synApps) suite
+and provides a collection of records, databases, SNL programs, device support,
+and utility code for EPICS IOC applications.
 
-Records
--------
+- **Contact:** Keenan Lang
+- **Repository:** [epics-modules/std](https://github.com/epics-modules/std)
 
-[epidRecord.html](epidRecord.md) Extended PID feedback record 
 
-[throttleRecord.html](throttleRecord.md) Throttle record Databases and GUI display files
+## Dependencies
 
+### Build-time Dependencies
 
---------------------------------------------
+| Module | Minimum Version |
+|--------|----------------|
+| [EPICS Base](https://epics-controls.org/) | 3.15+ (7.0+ recommended) |
+| [asyn](https://github.com/epics-modules/asyn) | 4.41+ |
+| [SNCSEQ](https://www-csr.bessy.de/control/SoftDist/sequencer/) | 2.2.5+ |
 
-### 4step.db, 4step.adl
+### Runtime Dependencies
 
-Implements a multistep measurement that may involve up to four sets of the following operations:
+The following modules are not required to build std, but many of the databases
+in std use record types from these modules:
 
-1. set conditions and wait for completion (execute a string-sequence record)
-2. trigger up to two detectors and wait for completion
-3. acquire scalar data from up to four PVs, for each measurement step, and cache in local PVs.
+| Module | Used By |
+|--------|---------|
+| [calc](https://github.com/epics-modules/calc) | Most databases (provides `transform`, `sseq`, `scalcout`, `swait`) |
+| [sscan](https://github.com/epics-modules/sscan) | `trend.db`, `4step.db` |
+| [busy](https://github.com/epics-modules/busy) | `ramp_tweak.db`, `selector.db`, `timer.db`, `IDctrl.db` |
+| [motor](https://github.com/epics-modules/motor) | `softMotor.db`, `softMotorTf.db`, `zero.db`, `zero2.db` |
 
-When all measurement steps have completed, performs up to four calculations on cached scalar data.
 
-The original purpose of this database was to allow the sscan record to perform a preprogrammed dichroism measurement, in which a measurement is made under two conditions (say, 'a' and 'b'), and the result (Ma-Mb)/(Ma+Mb) is recorded.
+## Records
 
-### IDctrl.db, xxIDCtrl.adl
+The std module provides three custom record types:
 
-A front end for the APS insertion-device control system. This database allows an ID to be driven by a ca\_put\_callback() command.
+- **[EPID Record](epidRecord.md)** -- Enhanced PID feedback record with
+  separation of record and device support, absolute output, integral term
+  limiting, and drive limits.
 
-### Nano2k.db, Nano2k.adl
+- **[Throttle Record](throttleRecord.md)** -- Throttles the rate of change of a
+  value before forwarding it to a target PV, with optional drive limits and
+  synchronization.
 
-Support for the Queensgate Nano2k piezo controller.
+- **[Timestamp Record](timestampRecord.md)** -- Captures the current time and
+  formats it as a string in one of eleven selectable formats.
 
-### all\_com\_\*.db
 
-Deprecated collection of databases for fanning out a "stop" command to all motor records in an ioc, and for rolling up all motor-moving states into a single PV. The motor module has a better way of doing this (motorUtil.db, and the motorUtilInit() command invoked from the ioc startup file).
+## Databases
 
-### pid\_control.db, pid\_\*.adl
+### PID / Feedback Control
 
-Implements a PID (proportional/integral/differential) feedback loop, reading values from a readback PV, comparing with a desired value, and writing corrections to a control PV. This record-based feedback loop is for low-speed applications, and is very general because it can use any EPICS PVs for readback and control.
+Three databases for PID feedback at different speeds and with different hardware
+requirements. See the **[PID Feedback](pidFeedback.md)** page for detailed
+documentation, comparison, and configuration examples.
 
-![](pid_control.adl.jpg)![](pid_parameters.adl.jpg)  
-pid\_control.adl, pid\_parameters.adl
+| Database | Description |
+|----------|-------------|
+| `pid_control.db` | Standard soft-channel PID for same-IOC feedback (up to ~10 Hz) |
+| `async_pid_control.db` | PID with async trigger-read for cross-IOC or averaging readbacks |
+| `fast_pid_control.db` | Hardware-speed PID via asyn drivers (up to ~10 kHz) |
 
-### async\_pid\_control.db, async\_pid\_control.adl
+**Autosave:** `pid_control_settings.req`, `async_pid_control_settings.req`,
+`fast_pid_control_settings.req`, `epid.req`
 
-A version of pid\_control with two improvements:
+### Timers & Scheduling
 
-1. The readback PV can be an asynchronous record. The std module implements the "Async Soft Channel" device type for the epid record, which executes the record's readback-trigger link, and waits for completion before reading the result.
-2. The database provides a transform record to process the output value before using it to drive the target PV.
+Three databases for time-based triggering. See the
+**[Timers & Scheduling](timers.md)** page for detailed documentation and
+comparison.
 
-The original purpose of async\_pid\_control was to support feedback control with a noisy readback device, by using the calc module's userAve10.db database to average over a number of measurements. ### fast\_pid\_control.db
+| Database | Description |
+|----------|-------------|
+| `timer.db` | General-purpose timer with busy record and scan integration |
+| `countDownTimer.vdb` | Count-based up/down timer with H:M:S display |
+| `alarmClock.vdb` | Date/time alarm clock with range validation |
 
-Implements a PID (proportional/integral/differential) feedback loop, reading values from a readback PV, comparing with a desired value, and writing corrections to a control PV. This inerrupt-service-routine based loop can run very fast (up to around 10 kHz) but is restricted in readback and control PVs. The readback must be an appropriately supported analog input device, such as the IP330 ADC, and the control must be an appropriately supported analog output device, such as the DAV128V.
+Related: `timeString.db` provides a `stringin` record with `Soft Timestamp`
+device support for formatted date/time strings.
 
-### femto\*.db, femto\*.adl
+**Autosave:** `timer.req`, `timer_settings.req`
 
-Support for Femto (brand name) low-noise current amplifier.
+### Motor Utilities
 
-### delayDo.db
+Two soft motor databases plus motor zeroing utilities. See the
+**[Soft Motor](softMotor.md)** page for detailed documentation and comparison.
 
-See [delayDo documentation](delayDo.md)
+| Database | Description |
+|----------|-------------|
+| `softMotor.db` | Soft motor with dynamic runtime link configuration |
+| `softMotorTf.db` | Soft motor with transform records for coordinate transforms |
+| `zero.db` | Zeros a motor (Set mode, write 0, Use mode) |
+| `zero2.db` | Zeros two motors |
+| `all_com_*.db` | *Deprecated.* Use `motorUtil.db` from the motor module instead |
 
-### genTweak.db
+**Autosave:** `softMotor_settings.req`, `softMotorTf_settings.req`
 
-Adds tweak functionality to any floating point PV
+### Shutter Control
 
-### ramp\_tweak.db, ramp\_tweak\*.adl
+| Database | Description |
+|----------|-------------|
+| `autoShutter.vdb` | Automatic shutter control based on storage ring current. See [Auto Shutter](autoShutter.md) |
+| `remoteShutter.db` | Remote shutter open/close via digital output. See [Remote Shutter](remoteShutter.md) |
 
-Adds ramp and tweak functionality to any numeric PV. To use, type the name of the PV into the "targetPV:" text-entry field (or use Drag-And-Drop), and set the step period and size. If you don't want ramping, set the step size to zero.
+**Autosave:** `autoShutter.req`, `autoShutter_settings.req`
 
-This database supports ca\_put\_callback. When the desired-value or tweak fields are written to by a ca\_put\_callback, the callback will not be sent until the target has reached the new desired value. The database also supports autosave, and will correctly initialize itself after a reboot.
+### Value Manipulation
 
-![](ramp_tweak.adl.jpg)![](ramp_tweakSetup.adl.jpg)  
-ramp\_tweak.adl, ramp\_tweakSetup.adl
+| Database | Description |
+|----------|-------------|
+| `ramp_tweak.db` | Ramp and tweak any numeric PV with configurable step size and period. Supports `ca_put_callback` and autosave. |
+| `genTweak.db` | Simple tweak (increment/decrement) for any floating-point PV |
+| `throttle.db` | Instantiates a [throttle record](throttleRecord.md) |
+| `selector.db` | General-purpose menu selector that writes named positions to target PVs. Supports `ca_put_callback` |
 
-### genericState.db, genericState.adl genericStateAux.db genericStrState.db
+![ramp_tweak.adl](ramp_tweak.adl.jpg) ![ramp_tweakSetup.adl](ramp_tweakSetup.adl.jpg)
 
-I don't know what this is.
+`ramp_tweak.adl`, `ramp_tweakSetup.adl`
 
-### misc.db
+![selector.adl](selector.adl.jpg) ![selector_choice.adl](selector_choice.adl.jpg) ![selector_more.adl](selector_more.adl.jpg)
 
-Miscellaneous PVs: burtResult, ISO8601 time-stamp string
+`selector.adl`, `selector_choice.adl`, `selector_more.adl`
 
-### pvHistory.db, pvHistory\*.adl
+**Autosave:** `ramp_tweak_settings.req`, `throttle.req`, `selector_settings.req`
 
-Collects values of up to three PVs in arrays for plotting as functions of time.
+### Data Collection
 
-### autoShutter.vdb
+| Database | Description |
+|----------|-------------|
+| `pvHistory.db` | Collects values of up to 3 PVs in waveform arrays for time-based plotting. Samples every 60 seconds using an `aSub` record with circular buffer |
+| `recordPV.db` | Circular-buffer data recorder for a single PV using a `compress` record |
+| `trend.db` | Periodic data trending using `sscan` and `swait` records with configurable interval |
+| `4step.db` | Multi-step measurement: set conditions, trigger detectors, acquire data, calculate results. Originally for dichroism measurements |
 
-See [README\_autoShutter](README_autoShutter)
+**Autosave:** `pvHistory.req`, `pvHistory_settings.req`,
+`4step_settings.req`, `auto_4step_settings.req`
 
-### remoteShutter.db
+### State Management
 
-See [README\_remoteShutter](README_remoteShutter)
+| Database | Description |
+|----------|-------------|
+| `genericState.db` | Save/restore a numeric value to/from any PV via dynamically-constructed CA links |
+| `genericStrState.db` | Same as `genericState.db` but for string values |
+| `genericStateAux.db` | Groups up to 5-6 `genericState.db` instances for batch save/apply |
 
-### sampleWheel.db, sampleWheel\*.adl
+**Autosave:** `genericState_settings.req`
 
-Support for one particular sample holder.
+### Amplifier Support
 
-### scaler\*.db, scaler\*.adl
+Femto brand low-noise current amplifier control with two independent driver
+approaches (SNL-based and transform-based). See the
+**[Femto Amplifier](femto.md)** page for models, gain tables, and substitution
+file examples.
 
-Support for the scaler record.
+**Autosave:** `femto.req`, `femto_settings.req`, plus model-specific `.req`
+files
 
-### softMotor.db, softMotor\*.adl
+### Delayed Actions
 
-Support for a soft motor record that can be attached at run time to a real motor or other motorlike collection of PVs.
+The `delayDo.db` database and `delayDo.st` SNL program provide intelligent
+delayed-action triggering with standby, active, and waiting states. See the
+**[delayDo](delayDo.md)** page for documentation and use cases.
 
-### timeString.db
+**Autosave:** `delayDo_settings.req`
 
-A stringin record with "Soft Timestamp" device support
+### Miscellaneous
 
-### alarmClock.vdb, alarmClock\*.adl
+| Database | Description |
+|----------|-------------|
+| `misc.db` | Utility PVs: `$(P)burtResult` (BURT status), `$(P)iso8601` and `$(P)datetime` (current time strings) |
+| `IDctrl.db` | APS insertion-device control front end with energy/gap setpoints, tweaking, and `busy` record |
+| `Nano2k.db` | Queensgate Nano2k dual-axis piezo controller via XYCOM-240 digital I/O |
+| `sampleWheel.db` | 4-row, 84-position sample wheel with angle/row motor control |
+| `userMbbos10.db` | Ten user-configurable MBBO records |
 
-Cause a specified action to occur at a specified date and time.
+**Autosave:** `mbbo_settings.req`
 
-### countDownTimer.vdb, countDownTimer\*.adl
 
-Cause a specified action to occur after a specified time interval.
+## Autosave Request Files
 
-### timer.db, timer\*.adl
+The std module includes `.req` files for use with the
+[autosave](https://github.com/epics-modules/autosave) module. Each database
+listed above that supports autosave has a corresponding `_settings.req` file
+(and sometimes a base `.req` file) in `stdApp/Db/`. Load these in your IOC's
+`auto_settings.req` file using the same macro substitutions as the database.
 
-Cause a specified action to occur after a specified time interval
 
-### trend.db
+## IOC Configuration
 
-I don't know what this is.
+### IOC Shell Commands
 
-### userMbbos10.db, userMbbo\*.adl
+**`doAfterIocInit(cmd)`** -- Stores the string `cmd` and executes it with
+`iocshCmd()` after `iocInit` completes (at `initHookAfterIocRunning`). This
+keeps database loads and their associated SNL program launches together in the
+startup script:
 
-Ten MBBO records.
+```
+dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
+doAfterIocInit("seq &editSseq, 'P=xxxL:,Q=ES:'")
+```
 
-### zero.db, zero2.db
+**`vxCall(funcName [, arg1, arg2, ...])`** -- *vxWorks only.* Searches the
+vxWorks symbol table for a function and calls it with up to 10 arguments,
+auto-detecting integers vs strings. Emulates the vxWorks shell from iocsh.
 
-A string-sequence record configured to zero a motor by putting it into "Set" mode, writing zero to its VAL field, and putting it into "Use" mode. zero2 does the same thing for two motors.
+### IOC Shell Scripts
 
-### selector.db
+The `stdApp/iocsh/` directory contains scripts for use with `iocshLoad` (EPICS
+base 3.15+):
 
-A general purpose selector, which allows the deployer to attach a menu to a list of actions. For example, to implement control of a motor for which discrete positions have special significance (mirror stripe, sample-wheel angle), one edits selector.substitutions (see iocBoot/iocStdTest) with the names and motor positions, and the target PV (or PVs) to which those positions should be written. The menu selection can be made by a client using ca\_put\_callback().
+- **`femto.iocsh`** -- Loads `femto.db` and starts the `femto` SNL sequencer.
+  See the [Femto Amplifier](femto.md) page for macros.
 
-It's possible to configure the target PV at run time. If this is done, it's important to note that the links shown below in selector\_more.adl must have the attribute "CA", because the record is configured to wait for completion, which can't be done with a PP link.
+### Utility Scripts
 
-![](selector.adl.jpg)![](selector_choice.adl.jpg)![](selector_more.adl.jpg)  
-selector.adl, selector\_choice.adl,selector\_more.adl
+- **`showBurtDiff`** -- csh script that diffs two BURT snapshot files, showing
+  sorted differences.
+- **`wrapCmd` / `wrapper`** -- Shell scripts that launch an xterm to run a
+  command, keeping the window open for inspection.
 
-Other code
-----------
 
-### doAfterIocInit(char \*cmd)
+## C/C++ Source Code
 
-Stores the string cmd and executes it with iocshCmd() after iocInit. This is useful to simplify maintenance of command files that specify databases which must be paired with code (such as State Notation Language programs) that must be invoked after iocInit. It's tedious and error prone to have the commands separated. doAfterIocInit() allows this:
+### Device Support
 
-> ```
-> # editSseq - edit any sseq or seq record
-> dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
-> # Don't forget to run the sequence program, editSseq, below
-> ...
-> unrelated commands
-> ...
-> iocInit
-> ...
-> more unrelated commands
-> ...
-> seq &editSseq, 'P=xxxL:,Q=ES:'
-> ```
+- **`devTimeOfDay.c`** -- Provides `"Time of Day"` (stringin) and
+  `"Sec Past Epoch"` (ai) device support for current time access.
+- **`devVXStats.c`** -- *vxWorks only.* Provides `ai`/`ao`/`longin` device
+  support for vxWorks system statistics (memory, CPU, file descriptors).
 
-to be replaced by this: 
-> ```
-> # editSseq - edit any sseq or seq record
-> dbLoadRecords("$(CALC)/calcApp/Db/editSseq.db", "P=xxxL:,Q=ES:")
-> doAfterIocInit("seq &editSseq, 'P=xxxL:,Q=ES:'")
-> ```
+### Header Files
 
-### vxCall(char \*funcName \[, char \*arg1, char \*arg2, ...\])
+- **`seqPVmacros.h`** -- Convenience macros for SNL programs: `PV()`, `PVA()`,
+  `PVAA()` (declare + assign + monitor), `PVPUT()`, `PVPUTSTR()` (put with
+  sync), `DEBUG_PRINT()`. Widely used across synApps SNL code.
 
-Searches the vxWorks symbol table for a function that matches the string funcName, then executes the function with the given arguments. vxCall will parse each argument to determine if it represents a number or a string and pass the correct values to the vxWorks function.
+### SNL Programs
+
+- **`femto.st`** -- Controls Femto current amplifiers via digital output bits.
+  See [Femto Amplifier](femto.md).
+- **`delayDo.st`** -- Intelligent delayed-action state machine.
+  See [delayDo](delayDo.md).
