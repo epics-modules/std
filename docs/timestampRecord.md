@@ -82,8 +82,3 @@ record(timestamp, "$(P)myTimestamp") {
 
 In this example, TST=8 selects the VMS-style format `DD-Mon-YYYY HH:MM:SS`.
 
-
-## Autosave
-
-The timestamp record has no associated autosave request file, as the only
-configurable field (`TST`) is typically set at load time.

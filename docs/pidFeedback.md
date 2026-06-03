@@ -263,12 +263,3 @@ For a detailed discussion of why the EPID record uses absolute output values
 (rather than the differential output of the standard EPICS PID record), see
 [Problems with the Standard EPICS PID Record](epidRecord.md#problems-with-the-standard-epics-pid-record).
 
-
-## Autosave Request Files
-
-| Database | Request File |
-|----------|-------------|
-| `pid_control.db` | `pid_control_settings.req` |
-| `async_pid_control.db` | `async_pid_control_settings.req` |
-| `fast_pid_control.db` | `fast_pid_control_settings.req` |
-| Bare epid record | `epid.req` |

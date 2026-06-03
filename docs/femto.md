@@ -62,12 +62,6 @@ dbLoadRecords("$(STD)/stdApp/Db/femto.db", "P=xxx:,H=A1,F=femto,G1=xxx:Unidig1Bo
 doAfterIocInit("seq &femto, 'P=xxx:,H=A1,F=femto,G1=xxx:Unidig1Bo0,G2=xxx:Unidig1Bo1,G3=xxx:Unidig1Bo2,NO=xxx:Unidig1Bo3'")
 ```
 
-### Autosave
-
-- `femto.req` -- basic request file
-- `femto_settings.req` -- settings request file
-
-
 ## Transform-Based Drivers (`femto_DxPCA_x00`)
 
 An alternative set of drivers uses `transform` records for gain control instead
@@ -128,9 +122,3 @@ appropriate database for your amplifier model:
 #{crate:  femto3  Unidig1Bo9  Unidig1Bo10  Unidig1Bo11  Unidig1Bo12  Unidig1Bo13  Unidig1Bo14  Unidig1Bo15 }
 #}
 ```
-
-### Autosave
-
-- `femto_DDPCA_300.req`
-- `femto_DHPCA_100.req`
-- `femto_DLPCA_200.req`

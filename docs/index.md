@@ -33,7 +33,7 @@ and utility code for EPICS IOC applications.
 |--------|----------------|
 | [EPICS Base](https://epics-controls.org/) | 3.15+ (7.0+ recommended) |
 | [asyn](https://github.com/epics-modules/asyn) | 4.41+ |
-| [SNCSEQ](https://www-csr.bessy.de/control/SoftDist/sequencer/) | 2.2.5+ |
+| [sequencer](https://www-csr.bessy.de/control/SoftDist/sequencer/) | 2.2.5+ |
 
 ### Runtime Dependencies
 
@@ -192,15 +192,6 @@ delayed-action triggering with standby, active, and waiting states. See the
 | `userMbbos10.db` | Ten user-configurable MBBO records |
 
 **Autosave:** `mbbo_settings.req`
-
-
-## Autosave Request Files
-
-The std module includes `.req` files for use with the
-[autosave](https://github.com/epics-modules/autosave) module. Each database
-listed above that supports autosave has a corresponding `_settings.req` file
-(and sometimes a base `.req` file) in `stdApp/Db/`. Load these in your IOC's
-`auto_settings.req` file using the same macro substitutions as the database.
 
 
 ## IOC Configuration
