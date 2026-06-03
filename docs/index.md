@@ -120,7 +120,7 @@ Two soft motor databases plus motor zeroing utilities. See the
 
 | Database | Description |
 |----------|-------------|
-| `ramp_tweak.db` | Ramp and tweak any numeric PV with configurable step size and period. Supports `ca_put_callback` and autosave. |
+| `ramp_tweak.db` | Ramp and tweak any numeric PV with configurable step size and period. Can ramp continuously or tweak in single steps. The setup display (`ramp_tweakSetup.adl`) configures the target PV, step size, and dwell time. Supports `ca_put_callback` and autosave. |
 | `genTweak.db` | Simple tweak (increment/decrement) for any floating-point PV |
 | `throttle.db` | Instantiates a [throttle record](throttleRecord.md) |
 | `selector.db` | General-purpose menu selector that writes named positions to target PVs. Supports `ca_put_callback` |
@@ -142,7 +142,7 @@ Two soft motor databases plus motor zeroing utilities. See the
 | `pvHistory.db` | Collects values of up to 3 PVs in waveform arrays for time-based plotting. Samples every 60 seconds using an `aSub` record with circular buffer |
 | `recordPV.db` | Circular-buffer data recorder for a single PV using a `compress` record |
 | `trend.db` | Periodic data trending using `sscan` and `swait` records with configurable interval |
-| `4step.db` | Multi-step measurement: set conditions, trigger detectors, acquire data, calculate results. Originally for dichroism measurements |
+| `4step.db` | Multi-step measurement: up to 4 steps, each of which can set positioner conditions, trigger detectors, acquire data, and calculate results. The entire 4step sequence can participate in an sscan as a detector. Originally designed for dichroism measurements. |
 
 **Autosave:** `pvHistory.req`, `pvHistory_settings.req`,
 `4step_settings.req`, `auto_4step_settings.req`
