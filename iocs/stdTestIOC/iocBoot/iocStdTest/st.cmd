@@ -1,9 +1,11 @@
-# This is a demonstration startup for for stdApp on non-vxWorks systems
+# This is a demonstration startup for stdTestApp on non-vxWorks systems
+
+< envPaths
 
 # Tell EPICS all about the record types, device-support modules, drivers,
-# etc. in this build from stdApp
-dbLoadDatabase("../../dbd/std.dbd")
-std_registerRecordDeviceDriver(pdbbase)
+# etc. in this build
+dbLoadDatabase("../../dbd/stdTestApp.dbd")
+stdTestApp_registerRecordDeviceDriver(pdbbase)
 
 # Set up 2 serial ports
 drvAsynSerialPortConfigure("serial1", "/dev/ttyS0", 0, 0, 0)
@@ -24,7 +26,7 @@ dbLoadTemplate "pid_slow.template"
 # A set of scan parameters for each positioner.  This is a convenience
 # for the user.  It can contain an entry for each scannable thing in the
 # crate.
-dbLoadTemplate "scanParms.template"
+#dbLoadTemplate "scanParms.template"
 
 ### Scan-support software
 # crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
@@ -32,25 +34,19 @@ dbLoadTemplate "scanParms.template"
 # or the equivalent for that.)  This database is configured to use the
 # "alldone" database (above) to figure out when motors have stopped moving
 # and it's time to trigger detectors.
-dbLoadRecords("../../../std/stdApp/Db/scan.db", "P=stdTest:,MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
-
-# Free-standing user string/number calculations (sCalcout records)
-dbLoadRecords("../../../std/stdApp/Db/userStringCalcs10.db", "P=stdTest:")
-
-# Free-standing user transforms (transform records)
-dbLoadRecords("../../../std/stdApp/Db/userTransforms10.db", "P=stdTest:")
+#dbLoadRecords("$(SSCAN)/db/scan.db", "P=stdTest:,MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
 
 # Free-standing user menu choices (mbbo records)
-#dbLoadRecords("../../../std/stdApp/Db/userMbbos10.db", "P=stdTest:")
+#dbLoadRecords("$(STD)/db/userMbbos10.db", "P=stdTest:")
 
 # Miscellaneous PV's, such as burtResult
-dbLoadRecords("../../../std/stdApp/Db/misc.db", "P=stdTest:")
+dbLoadRecords("$(STD)/db/misc.db", "P=stdTest:")
 
 # Femto amplifier
-#dbLoadRecords("../../../std/femto.db","P=stdTest:,H=fem01:,F=seq01:")
+#dbLoadRecords("$(STD)/db/femto.db","P=stdTest:,H=fem01:,F=seq01:")
 
 # Throttle record
-#dbLoadRecords "../../../std/stdApp/Db/throttle.db", "P=stdTest:,THR=thr1"
+#dbLoadRecords("$(STD)/db/throttle.db", "P=stdTest:,THR=thr1")
 
 # General purpose selector
 dbLoadTemplate("selector.substitutions")
@@ -71,18 +67,10 @@ iocInit
 
 ### Start up the autosave task and tell it what to do.
 # The task is actually named "save_restore".
-# (See also, 'initHooks' above, which is the means by which the values that
-# will be saved by the task we're starting here are going to be restored.
-#
 # Load the list of search directories for request files
-< ../requestFileCommands
+#< ../requestFileCommands
 
 # save positions every five seconds
-create_monitor_set("auto_positions.req", 5)
+#create_monitor_set("auto_positions.req", 5)
 # save other things every thirty seconds
-create_monitor_set("auto_settings.req", 30)
-
-# Enable user string calcs and user transforms
-dbpf "stdTest:EnableUserTrans.PROC","1"
-dbpf "stdTest:EnableUserSCalcs.PROC","1"
-
+#create_monitor_set("auto_settings.req", 30)

@@ -69,22 +69,6 @@ SCRIPTS += showBurtDiff wrapCmd wrapper
 std_LIBS += asyn seq pv
 std_LIBS += $(EPICS_BASE_IOC_LIBS)
 
-#=============================
-# build an ioc application for testing
-
-PROD_IOC = stdApp
-
-# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-stdApp_SRCS_DEFAULT += std_registerRecordDeviceDriver.cpp
-stdApp_SRCS_vxWorks += stdVX_registerRecordDeviceDriver.cpp
-stdApp_SRCS_DEFAULT += stdMain.cpp
-stdApp_SRCS_vxWorks += -nil-
-#The following adds support from base/src/vxWorks
-stdApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
-
-stdApp_LIBS += std seq pv asyn $(EPICS_BASE_IOC_LIBS)
-stdApp_SYS_LIBS_solaris += socket
-
 #===========================
 
 include $(TOP)/configure/RULES
