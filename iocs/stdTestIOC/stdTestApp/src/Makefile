@@ -15,6 +15,11 @@ $(PROD_NAME)_SRCS_vxWorks += -nil-
 $(PROD_NAME)_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 $(PROD_NAME)_LIBS += $(STD_IOC_LIBS)
+
+# Transitive dependencies of std.
+# Replace with $(MODULE_IOC_LIBS) as each module adopts cfg-deps.
+$(PROD_NAME)_LIBS += seq pv asyn
+
 $(PROD_NAME)_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 include $(TOP)/configure/RULES
