@@ -105,9 +105,9 @@ jobs:
       if: matrix.utoolchain
     - name: Prepare and compile dependencies
       run: python .ci/cue.py prepare
-    - name: Disable IOC builds for stable
-      run: echo "BUILD_IOCS = NO" >> configure/CONFIG_SITE.local
-      if: contains(matrix.set, 'stable')
+    - name: Enable IOC builds for master
+      run: echo "BUILD_IOCS = YES" >> configure/CONFIG_SITE.local
+      if: ${{ !contains(matrix.set, 'stable') }}
     - name: Build main module
       run: python .ci/cue.py build
     - name: Run main module tests
