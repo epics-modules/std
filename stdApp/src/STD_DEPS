@@ -1,0 +1,7 @@
+STD_IOC_DBDS = stdSupport.dbd
+
+ifeq ($(OS_CLASS),vxWorks)
+STD_IOC_DBDS = stdVXSupport.dbd
+endif
+
+STD_IOC_LIBS = std

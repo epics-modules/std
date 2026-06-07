@@ -1,0 +1,16 @@
+# ### femto.iocsh ###
+
+#- ###################################################
+#- PREFIX         - IOC Prefix
+#- HARDWARE       - Hardware Prefix
+#- FUNC           - Functionality Prefix
+#- G1_PV          - Gain bit 1 PV
+#- G2_PV          - Gain bit 2 PV
+#- G3_PV          - Gain bit 3 PV
+#- NO_PV          - Noise control PV
+#- STD            - Location of std module
+#- ###################################################
+
+### Load database records for Femto amplifiers
+dbLoadRecords("$(STD)/stdApp/Db/femto.db","P=$(PREFIX),H=$(HARDWARE),F=$(FUNC)")
+doAfterIocInit("seq &femto,'name=$(HARDWARE)$(FUNC),P=$(PREFIX),H=$(HARDWARE),F=$(FUNC),G1=$(G1_PV),G2=$(G2_PV),G3=$(G3_PV),NO=$(NO_PV)'")

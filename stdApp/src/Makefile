@@ -31,6 +31,8 @@ DBD += stdSupport.dbd
 DBD += stdVXSupport.dbd
 DBD += delayDo.dbd
 
+CFG += STD_DEPS
+
 #=============================
 
 LIBRARY_IOC += std
