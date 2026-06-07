@@ -7,27 +7,15 @@ nav_order: 1
 
 
 # EPID Record
+{: .no_toc}
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 Author: Mark Rivers
-
-## Contents
-
-- [Introduction](#introduction)
-- [Scan Parameters](#scan-parameters)
-- [Controlled Variable Parameters](#controlled-variable-parameters)
-- [Setpoint Parameters](#setpoint-parameters)
-- [Output Parameters](#output-parameters)
-- [Feedback Parameters](#feedback-parameters)
-- [Feedback Tuning](#feedback-tuning)
-- [Operator Display Parameters](#operator-display-parameters)
-- [Alarm Parameters](#alarm-parameters)
-- [Monitor Parameters](#monitor-parameters)
-- [Run-Time Parameters](#run-time-parameters)
-- [Record Support Routines](#record-support-routines)
-- [Record Processing](#record-processing)
-- [Device Support](#device-support)
-- [Problems with the Standard EPICS PID Record](#problems-with-the-standard-epics-pid-record)
-
 
 ## Introduction
 
@@ -71,7 +59,10 @@ can weight each contribution according to the characteristics of the controlled
 variable.
 
 
-## Scan Parameters
+Parameter Fields
+----------------
+
+### Scan Parameters
 
 The PID record has the standard fields (`SCAN`, etc.) for specifying under what
 circumstances it will be processed. The minimum delta time field (`MDT`) is a
@@ -104,7 +95,7 @@ minimum amount of time between record processing. The actual meaning of the
 | MDT | Minimum Delta Time | DOUBLE | Yes | 0 | Yes | Yes | No | No |
 
 
-## Controlled Variable Parameters
+### Controlled Variable Parameters
 
 The meaning of the `INP` field depends upon what device support is used:
 
@@ -139,7 +130,7 @@ Channel" support would.
 | TVAL | Value written to TRIG link | DOUBLE | Yes | 0 | Yes | Yes | N/A | No |
 
 
-## Setpoint Parameters
+### Setpoint Parameters
 
 The setpoint mode select (`SMSL`) and the setpoint location (`STPL`) fields
 determine where the setpoint value is obtained, which is held in the `VAL`
@@ -160,7 +151,7 @@ and the value can be modified at run-time via database access or channel access.
 | VAL | Setpoint value | DOUBLE | No | 0 | Yes | Yes | Yes | Yes |
 
 
-## Output Parameters
+### Output Parameters
 
 There are two fields which control the output of the EPID record, `FBON`
 (Feedback On) and `OUTL` (Output Link). The meanings of these fields depends
@@ -187,7 +178,7 @@ upon what device support is used:
 | FBON | Feedback On or Off | MENU | Yes | Off | Yes | Yes | No | No |
 
 
-## Feedback Parameters
+### Feedback Parameters
 
 The discrete form of the PID expression is as follows:
 
@@ -282,7 +273,7 @@ Channel" and "Fast Epid" device support both calculate these as follows:
 | DRVH | High limit on OVAL | DOUBLE | Yes | 0 | Yes | Yes | No | No |
 
 
-## Feedback Tuning
+### Feedback Tuning
 
 The following is intended to provide some guidance on selecting the optimal
 values for `KP`, `KI` and `KD`.
@@ -311,7 +302,7 @@ values for `KP`, `KI` and `KD`.
    overshoot.
 
 
-## Operator Display Parameters
+### Operator Display Parameters
 
 These parameters are used to present meaningful data to the operator. They
 display the setpoint (`VAL`), the controlled variable (`CVAL`), the output value
@@ -340,7 +331,7 @@ is called.
 | DESC | Description | STRING | Yes | Null | Yes | Yes | No | No |
 
 
-## Alarm Parameters
+### Alarm Parameters
 
 The possible alarm conditions for EPID are the SCAN alarm, limit alarms, and an
 alarm that is triggered when `INP` is not a database link. The SCAN and `INP`
@@ -364,7 +355,7 @@ can be either NO ALARM, MINOR, or MAJOR.
 | HYST | Alarm Deadband | DOUBLE | Yes | 0 | Yes | Yes | No | No |
 
 
-## Monitor Parameters
+### Monitor Parameters
 
 These parameters are used to determine when to send monitors placed on the
 `VAL` field. These fields contain values configured by the user. The monitors
@@ -392,7 +383,7 @@ following fields which comprise the PID expression: `P`, `I`, `D`, `CT`, `DT`,
 | ODEL | Output deadband | DOUBLE | Yes | 0 | Yes | Yes | No | No |
 
 
-## Run-Time Parameters
+### Run-Time Parameters
 
 The `LALM`, `ALST`, and `MLST` fields are used by record processing to
 implement the monitors for this record. These fields hold the values for the
@@ -408,9 +399,11 @@ monitors are triggered.
 | MLST | Value when last monitors for value changes were triggered | DOUBLE | No | 0 | Yes | No | No | No |
 
 
-## Record Support Routines
+Record Support Routines
+-----------------------
 
 ### `init_record`
+---
 
 If `STPL` is a constant link, initialize `VAL` with its value and set `UDF` to
 false.
@@ -420,22 +413,27 @@ this does nothing. For "Fast Epid" device support this establishes the
 connection to the fastPIDServer server.
 
 ### `process`
+---
 
 See [Record Processing](#record-processing) below.
 
 ### `get_value`
+---
 
 Null.
 
 ### `get_units`
+---
 
 Retrieves `EGU`.
 
 ### `get_precision`
+---
 
 Retrieves `PREC`.
 
 ### `get_graphic_double`
+---
 
 Sets the following values:
 
@@ -450,6 +448,7 @@ For the `OVAL`, `P`, `I`, and `D` fields:
 2. `lower_disp_limit` = `DRVL`
 
 ### `get_control_double`
+---
 
 Sets the following values:
 
@@ -464,6 +463,7 @@ For the `OVAL`, `P`, `I`, and `D` fields:
 2. `lower_ctrl_limit` = `DRVL`
 
 ### `get_alarm_double`
+---
 
 Sets the following values if the field is `VAL`:
 
@@ -473,7 +473,8 @@ Sets the following values if the field is `VAL`:
 - `lower_alarm_limit` = `LOLO`
 
 
-## Record Processing
+Record Processing
+-----------------
 
 Routine `process` implements the following algorithm:
 
@@ -493,7 +494,8 @@ Routine `process` implements the following algorithm:
      `D`, `CT`, `DT`, `ERR`, and `DERR`.
 
 
-## Device Support
+Device Support
+--------------
 
 Device support for the EPID record should implement at least the `init_record`
 and `do_pid` functions. New device support for the EPID record could be written,
@@ -503,13 +505,15 @@ There is presently device support for "Soft Channel" (which is very similar to
 the record support in the EPICS PID record), "Async Soft Channel", and "Fast
 Epid".
 
-### "Soft Channel"
+### Soft Channel
 
-**`init_record()`**
+### `init_record`
+---
 
 This does nothing in the current implementation.
 
-**`do_pid()`**
+### `do_pid`
+---
 
 1. If `INP` is not a database link a major alarm is declared and the algorithm
    completes.
@@ -522,13 +526,15 @@ This does nothing in the current implementation.
 5. If feedback is On (`FBON`=1) and `OUTL` is a valid output link then `OVAL`
    is written to the output link.
 
-### "Async Soft Channel"
+### Async Soft Channel
 
-**`init_record()`**
+### `init_record`
+---
 
 This does nothing in the current implementation.
 
-**`do_pid()`**
+### `do_pid`
+---
 
 Same algorithm as "Soft Channel", except that before reading `CVAL` from `INP`,
 device support first writes `TVAL` to the `TRIG` link using
@@ -536,14 +542,16 @@ device support first writes `TVAL` to the `TRIG` link using
 device has finished processing), the `CVAL` is then read from `INP`. This
 allows PID control with slow or averaging readback devices.
 
-### "Fast Epid"
+### Fast Epid
 
-**`init_record()`**
+### `init_record`
+---
 
 This calls the `dev_init` routine, which creates the asyn objects and
 establishes communication with the fastPIDServer server.
 
-**`do_pid()`**
+### `do_pid`
+---
 
 1. Checks to see if any of the parameters `KP`, `KI`, `KD`, `DT`, `DRVH`,
    `DRVL`, `VAL`, or `FBON` have changed and if so sends the new values to the

@@ -6,8 +6,18 @@ nav_order: 4
 
 
 # delayDo
+{: .no_toc}
 
-For situations when something needs to be done after an intelligent delay.
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
+
+The `delayDo.db` database and `delayDo.st` SNL program provide intelligent
+delayed-action triggering for situations when something needs to be done after
+a configurable delay, with the ability to reset the timer or temporarily disable
+it.
 
 ## Motivation
 

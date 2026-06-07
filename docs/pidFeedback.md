@@ -6,6 +6,13 @@ nav_order: 5
 
 
 # PID Feedback
+{: .no_toc}
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 The std module provides three databases for PID (Proportional-Integral-Derivative)
 feedback control, all built around the [EPID record](epidRecord.md). They differ

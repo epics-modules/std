@@ -7,8 +7,15 @@ nav_order: 2
 
 
 # throttle -- Record for Throttling Value Changes
+{: .no_toc}
 
-## 1. Introduction
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
+
+## Introduction
 
 This record was created for solving the problem of an output floating-point
 value being changed too fast for a device that is referencing that value. As an
@@ -22,7 +29,7 @@ where the user of a control might tweak things at a rate that the system doesn't
 want. Instead of trying to change human behavior, this record protects the
 controls in a minimally disruptive way.
 
-## 2. Operation
+## Operation
 
 If the value is naturally changed slower than the specified delay, the throttle
 record is completely transparent. The record only cares that the period is
@@ -39,7 +46,8 @@ positive difference. A status flag is set when the record hits a limit,
 signifying which limit. If the clipped flag is set, then when a limit is hit,
 the limit value is used instead of not changing the value.
 
-## 3. Record Fields
+Parameter Fields
+----------------
 
 The `VAL` field holds the current proposed value to send to the `OUT` link.
 When this value is sent is determined by how long ago a value was previously
@@ -93,14 +101,17 @@ The version of the record is kept in `VER` as a string, in the example form of
 | VER | Record Version | STRING | Yes | | Yes | No | No | No |
 
 
-## 4. Record Support Routines
+Record Support Routines
+----------------------
 
 ### `init_record`
+---
 
 The timing callbacks are configured, and the `OUT` link is checked. The `DRVLH`
 and `DRVLL` limits are checked to see if a positive range is defined.
 
 ### `process`
+---
 
 The validity of the `OUT` output link is checked to make sure it is a connected
 PV.
@@ -117,6 +128,7 @@ delay has been met.
 The `SENT` field is whatever was last sent to `OUT`.
 
 ### `special`
+---
 
 Changing the `DLY` delay will cause the current timed callback (used for timing)
 to be canceled, and a new one with the current `DLY` value will be started to

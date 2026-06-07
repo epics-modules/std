@@ -6,6 +6,13 @@ nav_order: 10
 
 
 # Femto Amplifier Support
+{: .no_toc}
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 Support for [Femto](http://www.femto.de/) brand low-noise current amplifiers.
 Two independent driver approaches are available in the std module.

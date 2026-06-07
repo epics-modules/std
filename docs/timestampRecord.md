@@ -7,6 +7,13 @@ nav_order: 3
 
 
 # Timestamp Record
+{: .no_toc}
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 Author: Susumu Yoshida
 
@@ -19,7 +26,8 @@ embedding human-readable timestamps in databases, display screens, or log
 entries.
 
 
-## Record Fields
+Parameter Fields
+----------------
 
 | Field | Summary | Type | DCT | Initial | Access | Modify | Rec Proc Monitor | PP |
 |-------|---------|------|-----|---------|--------|--------|------------------|----|

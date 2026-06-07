@@ -6,6 +6,13 @@ nav_order: 6
 
 
 # Soft Motor Support
+{: .no_toc}
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 The std module provides two databases that create EPICS motor records backed by
 soft-channel device support. A soft motor presents any position-based PV (a

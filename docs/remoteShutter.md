@@ -6,8 +6,13 @@ nav_order: 9
 
 
 # Remote Shutter
+{: .no_toc}
 
-## Overview
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 The `remoteShutter.db` database provides remote open/close control of beamline
 hutch shutters using a remote shutter control box connected via digital output

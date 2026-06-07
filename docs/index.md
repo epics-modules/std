@@ -6,6 +6,13 @@ nav_order: 1
 
 
 # The synApps std Module
+{: .no_toc}
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 The std module is part of the [synApps](https://epics.anl.gov/bcda/synApps) suite
 and provides a collection of records, databases, SNL programs, device support,
@@ -14,7 +21,7 @@ and utility code for EPICS IOC applications.
 - **Contact:** Keenan Lang
 - **Repository:** [epics-modules/std](https://github.com/epics-modules/std)
 
-### Quick Links
+## Quick Links
 
 | [Record Support](records.md) | Guides | Database Reference |
 |---|---|---|

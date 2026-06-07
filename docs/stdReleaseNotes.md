@@ -6,8 +6,16 @@ nav_order: 2
 
 
 # std Release Notes
+{: .no_toc}
 
-> **Note:** The scaler record and its device support were moved to a separate
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
+
+{: .note }
+> The scaler record and its device support were moved to a separate
 > [SCALER](https://github.com/epics-modules/scaler) module in Release 3-6-3.
 > References to scaler code in older release notes below are historical.
 

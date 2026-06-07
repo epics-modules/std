@@ -7,6 +7,13 @@ has_children: true
 
 
 # Record Support
+{: .no_toc}
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 The std module provides three custom EPICS record types.
 

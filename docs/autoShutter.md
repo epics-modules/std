@@ -6,8 +6,13 @@ nav_order: 8
 
 
 # Auto Shutter
+{: .no_toc}
 
-## Overview
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 The `autoShutter.vdb` database provides automatic shutter control based on
 synchrotron storage ring current. It integrates with the `countDownTimer.vdb`

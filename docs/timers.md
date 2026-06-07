@@ -6,6 +6,13 @@ nav_order: 7
 
 
 # Timers & Scheduling
+{: .no_toc}
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
 
 The std module provides three databases for time-based triggering. They serve
 different use cases:
