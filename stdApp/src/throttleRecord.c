@@ -322,6 +322,7 @@ static long special(DBADDR *paddr, int after)
 
   struct link *plink;
   unsigned short    *plinkValid;
+  short        *plinkStat;
   struct dbAddr        dbAddr;
 
   int new_st;
@@ -344,11 +345,13 @@ static long special(DBADDR *paddr, int after)
         {
           plink   = &prec->out;
           plinkValid = &prec->ov;
+          plinkStat = &prpvt->outLinkStat;
         }
       else
         {
           plink   = &prec->sinp;
           plinkValid = &prec->siv;
+          plinkStat = &prpvt->sinpLinkStat;
         }
               
       if (plink->type == CONSTANT) 
@@ -368,7 +371,7 @@ static long special(DBADDR *paddr, int after)
             {
               prpvt->pending_checkLinkCB = 1;
               callbackRequestDelayed(&prpvt->checkLinkCb, 0.5);
-              prpvt->outLinkStat = CA_LINK_NOT_OK;
+              *plinkStat = CA_LINK_NOT_OK;
             }
         }
       db_post_events(prec,plinkValid,DBE_VALUE|DBE_LOG);
@@ -684,8 +687,6 @@ static void checkLink(struct throttleRecord *prec)
 {
   struct rpvtStruct   *prpvt = (struct rpvtStruct *)prec->rpvt;
   int stat;
-  int caLink   = 0;
-  int caLinkNc = 0;
 
   struct link *plink;
   unsigned short *plinkValid;
@@ -697,6 +698,9 @@ static void checkLink(struct throttleRecord *prec)
 
   for( i = 0; i < 2; i++)
     {
+      int caLink   = 0;
+      int caLinkNc = 0;
+
       if( !i)
         {
           plink   = &prec->out;
