@@ -198,6 +198,15 @@ static long process(epidRecord *pepid)
 #else
             recGblSetSevr(pepid,UDF_ALARM,pepid->udfs);
 #endif
+            /* Commit the UDF alarm through the normal path before returning;
+             * recGblResetAlarms (called from monitor) is the sole owner that
+             * copies nsta/nsev to stat/sevr and posts them. */
+            pepid->pact = TRUE;
+            recGblGetTimeStamp(pepid);
+            checkAlarms(pepid);
+            monitor(pepid);
+            recGblFwdLink(pepid);
+            pepid->pact = FALSE;
             return(0);
         }
     }
