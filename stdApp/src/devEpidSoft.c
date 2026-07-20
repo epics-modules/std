@@ -108,7 +108,8 @@ static long do_pid(epidRecord *pepid)
     
     /* fetch the controlled value */
     if (pepid->inp.type == CONSTANT) { /* nothing to control*/
-        if (recGblSetSevr(pepid,SOFT_ALARM,INVALID_ALARM)) return(0);
+        recGblSetSevr(pepid,SOFT_ALARM,INVALID_ALARM);
+        return(0);
     }
     if (dbGetLink(&pepid->inp,DBR_DOUBLE,&pepid->cval,0,0)) {
         recGblSetSevr(pepid,LINK_ALARM,INVALID_ALARM);
