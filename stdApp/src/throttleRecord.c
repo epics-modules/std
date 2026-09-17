@@ -534,7 +534,9 @@ static void delayFuncCallback(CALLBACK *pcallback)
   //  printf("delayFuncCallback()\n");
 
   callbackGetUser(prec, pcallback);
+  dbScanLock((struct dbCommon *)prec);
   valuePut( prec);
+  dbScanUnlock((struct dbCommon *)prec);
 }
 
 static void valuePut( throttleRecord *prec)
