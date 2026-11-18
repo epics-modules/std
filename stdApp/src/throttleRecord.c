@@ -54,15 +54,15 @@ Modification Log:
 /* Create RSET - Record Support Entry Table */
 #define report NULL
 #define initialize NULL
-static long init_record();
-static long process();
-static long special();
+static long init_record(void *precord, int pass);
+static long process(throttleRecord *prec);
+static long special(DBADDR *paddr, int after);
 #define get_value NULL
 #define cvt_dbaddr NULL
 #define get_array_info NULL
 #define put_array_info NULL
 #define get_units NULL
-static long get_precision();
+static long get_precision(dbAddr *paddr, long *precision);
 #define get_enum_str NULL
 #define get_enum_strs NULL
 #define put_enum_str NULL
@@ -75,15 +75,15 @@ rset throttleRSET =
     RSETNUMBER,
     report,
     initialize,
-    init_record,
-    process,
+    (long (*)(struct dbCommon *, int))init_record,
+    (long (*)(struct dbCommon *))process,
     special,
     get_value,
     cvt_dbaddr,
     get_array_info,
     put_array_info,
     get_units,
-    get_precision,
+    (long (*)(const struct dbAddr *, long *))get_precision,
     get_enum_str,
     get_enum_strs,
     put_enum_str,
@@ -98,12 +98,12 @@ static void checkAlarms(throttleRecord *prec);
 //static void monitor(throttleRecord *prec);
 
 static void enterValue( throttleRecord *prec);
-static void delayFuncCallback();
+static void delayFuncCallback(CALLBACK *pcallback);
 static void valuePut( throttleRecord *prec);
 static void valueSync( throttleRecord *prec);
 
-static void checkLinkCallback();
-static void checkLink();
+static void checkLinkCallback(CALLBACK *pcallback);
+static void checkLink(struct throttleRecord *prec);
 
 enum { NOT_CA_LINK, CA_LINK_OK, CA_LINK_NOT_OK };
 typedef struct rpvtStruct 

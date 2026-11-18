@@ -70,10 +70,10 @@
 #include "epicsExport.h"
 
 
-static long init_record();
-static long createString();
-static long aiReadTs();
-static long no_op();
+static long init_record(struct stringinRecord *psi);
+static long createString(struct stringinRecord *psi);
+static long aiReadTs(struct aiRecord *pai);
+static long no_op(struct aiRecord *pai);
 
 
 typedef struct {
@@ -89,13 +89,12 @@ typedef struct {
 
 /* define different DSET's for different input link types */
 
-TOD_DSET devSiTodString = { 5, NULL, NULL,init_record,NULL,createString,NULL };
-TOD_DSET devAiTodSeconds= { 6, NULL, NULL,init_record,NULL,aiReadTs,no_op};
+TOD_DSET devSiTodString = { 5, NULL, NULL,(DEVSUPFUN)init_record,NULL,(DEVSUPFUN)createString,NULL };
+TOD_DSET devAiTodSeconds= { 6, NULL, NULL,(DEVSUPFUN)init_record,NULL,(DEVSUPFUN)aiReadTs,(DEVSUPFUN)no_op};
 epicsExportAddress(dset,devSiTodString);
 epicsExportAddress(dset,devAiTodSeconds);
 
-static long init_record(psi)
-    struct stringinRecord	*psi;
+static long init_record(struct stringinRecord *psi)
 {
     long  status = 0;
 
@@ -103,16 +102,14 @@ static long init_record(psi)
 }
 
 
-static long no_op(pai)
-    struct aiRecord       *pai;
+static long no_op(struct aiRecord *pai)
 {
     long  status = 0;
 
     return(status);
 }
 
-static long createString(psi)
-    struct stringinRecord       *psi;
+static long createString(struct stringinRecord *psi)
 {
 
 
@@ -138,8 +135,7 @@ static long createString(psi)
 }
 
 
-static long aiReadTs(pai)
-    struct aiRecord       *pai;
+static long aiReadTs(struct aiRecord *pai)
 {
 
         recGblGetTimeStamp(pai);        /* get time stamp NOW */

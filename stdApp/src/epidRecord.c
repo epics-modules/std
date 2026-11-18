@@ -100,35 +100,35 @@
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
 #define initialize NULL
-static long init_record();
-static long process();
+static long init_record(epidRecord *pepid, int pass);
+static long process(epidRecord *pepid);
 #define special NULL
 #define get_value NULL
 #define cvt_dbaddr NULL
 #define get_array_info NULL
 #define put_array_info NULL
-static long get_units();
-static long get_precision();
+static long get_units(struct dbAddr *paddr, char *units);
+static long get_precision(struct dbAddr *paddr, long *precision);
 #define get_enum_str NULL
 #define get_enum_strs NULL
 #define put_enum_str NULL
-static long get_graphic_double();
-static long get_control_double();
-static long get_alarm_double();
+static long get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd);
+static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd);
+static long get_alarm_double(struct dbAddr *paddr, struct dbr_alDouble *pad);
 
 rset epidRSET={
     RSETNUMBER,
     report,
     initialize,
-    init_record,
-    process,
+    (long (*)(struct dbCommon *, int))init_record,
+    (long (*)(struct dbCommon *))process,
     special,
     get_value,
     cvt_dbaddr,
     get_array_info,
     put_array_info,
     get_units,
-    get_precision,
+    (long (*)(const struct dbAddr *, long *))get_precision,
     get_enum_str,
     get_enum_strs,
     put_enum_str,
@@ -147,8 +147,8 @@ struct epidDSET { /* epid DSET */
     DEVSUPFUN       do_pid;
 };
 
-static void checkAlarms();
-static void monitor();
+static void checkAlarms(epidRecord *pepid);
+static void monitor(epidRecord *pepid);
 
 
 static long init_record(epidRecord *pepid, int pass)
@@ -175,7 +175,7 @@ static long init_record(epidRecord *pepid, int pass)
         return(S_dev_missingSup);
     }
     if (pdset->init_record) {
-        if ((status=(*pdset->init_record)(pepid))) return(status);
+        if ((status=(*(long (*)(void *))pdset->init_record)(pepid))) return(status);
     }
     return(0);
 }
@@ -211,7 +211,7 @@ static long process(epidRecord *pepid)
         }
     }
 
-    status = (*pdset->do_pid)(pepid);
+    status = (*(long (*)(void *))pdset->do_pid)(pepid);
     /* See if device support set pact=true, meaning  it will call us back */
     if (!pact && pepid->pact) return(0);
     pepid->pact = TRUE;

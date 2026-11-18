@@ -36,7 +36,7 @@
 #include	<timestampRecord.h>
 #undef  GEN_SIZE_OFFSET
 
-static void monitor();
+static void monitor(timestampRecord *ptimestamp);
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL

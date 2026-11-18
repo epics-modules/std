@@ -58,8 +58,8 @@
 #include	<epicsExport.h>
 
 /* Create DSET */
-static long init_record();
-static long do_pid();
+static long init_record(epidRecord *pepid);
+static long do_pid(epidRecord *pepid);
 typedef struct { /* epid DSET */
 	long		number;
 	DEVSUPFUN	dev_report;
@@ -73,9 +73,9 @@ EPID_SOFT_DSET devEpidSoftCB = {
 	5,
 	NULL,
 	NULL,
-	init_record,
+	(DEVSUPFUN)init_record,
 	NULL,
-	do_pid
+	(DEVSUPFUN)do_pid
 };
 epicsExportAddress(dset, devEpidSoftCB);
 
