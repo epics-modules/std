@@ -94,9 +94,9 @@ epidFastDset devEpidFast = {
     6,
     NULL,
     NULL,
-    init_record,
+    (DEVSUPFUN)init_record,
     NULL,
-    update_params
+    (DEVSUPFUN)update_params
 };
 epicsExportAddress(dset, devEpidFast);
 
